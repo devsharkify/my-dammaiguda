@@ -313,6 +313,192 @@ export default function Profile() {
           </CardContent>
         </Card>
 
+        {/* Notification Preferences */}
+        <Card className="border-border/50">
+          <CardHeader>
+            <CardTitle className="text-lg flex items-center gap-2">
+              <Bell className="h-5 w-5" />
+              {language === "te" ? "నోటిఫికేషన్లు" : "Notifications"}
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            {loadingPrefs ? (
+              <div className="flex justify-center py-4">
+                <Loader2 className="h-6 w-6 animate-spin text-primary" />
+              </div>
+            ) : (
+              <>
+                {/* Master Push Toggle */}
+                <div className="flex items-center justify-between p-4 bg-gradient-to-r from-primary/10 to-teal-500/10 rounded-xl">
+                  <div className="flex items-center gap-3">
+                    {pushSubscribed ? (
+                      <Bell className="h-6 w-6 text-primary" />
+                    ) : (
+                      <BellOff className="h-6 w-6 text-muted-foreground" />
+                    )}
+                    <div>
+                      <p className="font-semibold">
+                        {language === "te" ? "పుష్ నోటిఫికేషన్లు" : "Push Notifications"}
+                      </p>
+                      <p className="text-xs text-muted-foreground">
+                        {pushSubscribed 
+                          ? (language === "te" ? "ఎనేబుల్ చేయబడింది" : "Enabled")
+                          : (language === "te" ? "డిసేబుల్ చేయబడింది" : "Disabled")
+                        }
+                      </p>
+                    </div>
+                  </div>
+                  <Switch
+                    checked={pushSubscribed}
+                    onCheckedChange={(checked) => checked ? subscribeToPush() : unsubscribeFromPush()}
+                    data-testid="push-toggle"
+                  />
+                </div>
+
+                {pushSubscribed && (
+                  <div className="space-y-3 pt-2">
+                    <p className="text-sm text-muted-foreground">
+                      {language === "te" ? "నోటిఫికేషన్ రకాలను నిర్వహించండి:" : "Manage notification types:"}
+                    </p>
+                    
+                    {/* SOS Alerts */}
+                    <div className="flex items-center justify-between py-2">
+                      <div className="flex items-center gap-3">
+                        <div className="h-10 w-10 rounded-full bg-red-100 flex items-center justify-center">
+                          <AlertTriangle className="h-5 w-5 text-red-600" />
+                        </div>
+                        <div>
+                          <p className="font-medium text-sm">
+                            {language === "te" ? "SOS అలర్ట్‌లు" : "SOS Alerts"}
+                          </p>
+                          <p className="text-xs text-muted-foreground">
+                            {language === "te" ? "అత్యవసర అలర్ట్‌లు" : "Emergency alerts"}
+                          </p>
+                        </div>
+                      </div>
+                      <Switch
+                        checked={notifPrefs.sos_alerts}
+                        onCheckedChange={(checked) => updateNotifPref("sos_alerts", checked)}
+                        disabled={savingPrefs}
+                      />
+                    </div>
+
+                    {/* Geofence Alerts */}
+                    <div className="flex items-center justify-between py-2">
+                      <div className="flex items-center gap-3">
+                        <div className="h-10 w-10 rounded-full bg-orange-100 flex items-center justify-center">
+                          <MapPinned className="h-5 w-5 text-orange-600" />
+                        </div>
+                        <div>
+                          <p className="font-medium text-sm">
+                            {language === "te" ? "జియో-ఫెన్స్ అలర్ట్‌లు" : "Geo-fence Alerts"}
+                          </p>
+                          <p className="text-xs text-muted-foreground">
+                            {language === "te" ? "సేఫ్ జోన్ నోటిఫికేషన్లు" : "Safe zone notifications"}
+                          </p>
+                        </div>
+                      </div>
+                      <Switch
+                        checked={notifPrefs.geofence_alerts}
+                        onCheckedChange={(checked) => updateNotifPref("geofence_alerts", checked)}
+                        disabled={savingPrefs}
+                      />
+                    </div>
+
+                    {/* News Updates */}
+                    <div className="flex items-center justify-between py-2">
+                      <div className="flex items-center gap-3">
+                        <div className="h-10 w-10 rounded-full bg-blue-100 flex items-center justify-center">
+                          <Newspaper className="h-5 w-5 text-blue-600" />
+                        </div>
+                        <div>
+                          <p className="font-medium text-sm">
+                            {language === "te" ? "వార్తా నవీకరణలు" : "News Updates"}
+                          </p>
+                          <p className="text-xs text-muted-foreground">
+                            {language === "te" ? "ముఖ్యమైన వార్తలు" : "Important news"}
+                          </p>
+                        </div>
+                      </div>
+                      <Switch
+                        checked={notifPrefs.news_updates}
+                        onCheckedChange={(checked) => updateNotifPref("news_updates", checked)}
+                        disabled={savingPrefs}
+                      />
+                    </div>
+
+                    {/* Community Updates */}
+                    <div className="flex items-center justify-between py-2">
+                      <div className="flex items-center gap-3">
+                        <div className="h-10 w-10 rounded-full bg-purple-100 flex items-center justify-center">
+                          <Users className="h-5 w-5 text-purple-600" />
+                        </div>
+                        <div>
+                          <p className="font-medium text-sm">
+                            {language === "te" ? "కమ్యూనిటీ నవీకరణలు" : "Community Updates"}
+                          </p>
+                          <p className="text-xs text-muted-foreground">
+                            {language === "te" ? "సిటిజన్ వాల్ యాక్టివిటీ" : "Citizen Wall activity"}
+                          </p>
+                        </div>
+                      </div>
+                      <Switch
+                        checked={notifPrefs.community_updates}
+                        onCheckedChange={(checked) => updateNotifPref("community_updates", checked)}
+                        disabled={savingPrefs}
+                      />
+                    </div>
+
+                    {/* Health Reminders */}
+                    <div className="flex items-center justify-between py-2">
+                      <div className="flex items-center gap-3">
+                        <div className="h-10 w-10 rounded-full bg-green-100 flex items-center justify-center">
+                          <Heart className="h-5 w-5 text-green-600" />
+                        </div>
+                        <div>
+                          <p className="font-medium text-sm">
+                            {language === "te" ? "ఆరోగ్య రిమైండర్లు" : "Health Reminders"}
+                          </p>
+                          <p className="text-xs text-muted-foreground">
+                            {language === "te" ? "నీరు, నిద్ర గుర్తులు" : "Water, sleep reminders"}
+                          </p>
+                        </div>
+                      </div>
+                      <Switch
+                        checked={notifPrefs.health_reminders}
+                        onCheckedChange={(checked) => updateNotifPref("health_reminders", checked)}
+                        disabled={savingPrefs}
+                      />
+                    </div>
+
+                    {/* Challenge Updates */}
+                    <div className="flex items-center justify-between py-2">
+                      <div className="flex items-center gap-3">
+                        <div className="h-10 w-10 rounded-full bg-yellow-100 flex items-center justify-center">
+                          <Trophy className="h-5 w-5 text-yellow-600" />
+                        </div>
+                        <div>
+                          <p className="font-medium text-sm">
+                            {language === "te" ? "ఛాలెంజ్ అప్‌డేట్‌లు" : "Challenge Updates"}
+                          </p>
+                          <p className="text-xs text-muted-foreground">
+                            {language === "te" ? "ఫిట్‌నెస్ ఛాలెంజ్‌లు" : "Fitness challenges"}
+                          </p>
+                        </div>
+                      </div>
+                      <Switch
+                        checked={notifPrefs.challenge_updates}
+                        onCheckedChange={(checked) => updateNotifPref("challenge_updates", checked)}
+                        disabled={savingPrefs}
+                      />
+                    </div>
+                  </div>
+                )}
+              </>
+            )}
+          </CardContent>
+        </Card>
+
         {/* Logout */}
         <Button
           variant="outline"
