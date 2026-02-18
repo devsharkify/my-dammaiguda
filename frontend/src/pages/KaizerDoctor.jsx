@@ -81,7 +81,7 @@ const MOODS = [
 
 export default function KaizerDoctor() {
   const { language } = useLanguage();
-  const { user } = useAuth();
+  const { user, token } = useAuth();
   const [dashboard, setDashboard] = useState(null);
   const [healthMetrics, setHealthMetrics] = useState(null);
   const [nutritionSummary, setNutritionSummary] = useState(null);
