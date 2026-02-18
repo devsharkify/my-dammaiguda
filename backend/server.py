@@ -430,6 +430,10 @@ async def scrape_news_from_rss(category: str = "national", limit: int = 20) -> L
                 soup = BeautifulSoup(response.text, 'lxml-xml')
                 items = soup.find_all('item')[:limit]
                 
+                if not items:
+                    # Fall back to placeholder if no items found
+                    return generate_placeholder_news(category, limit)
+                
                 for idx, item in enumerate(items):
                     title = item.find('title')
                     link = item.find('link')
