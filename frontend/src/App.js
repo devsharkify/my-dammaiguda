@@ -19,6 +19,8 @@ import Polls from "./pages/Polls";
 import VolunteerDashboard from "./pages/VolunteerDashboard";
 import AdminDashboard from "./pages/AdminDashboard";
 import Profile from "./pages/Profile";
+import MyFamily from "./pages/MyFamily";
+import AQIReport from "./pages/AQIReport";
 
 import "./App.css";
 
