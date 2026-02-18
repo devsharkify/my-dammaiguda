@@ -35,9 +35,8 @@ export default function Layout({ children, title, showBackButton = false }) {
 
   const navItems = [
     { path: "/dashboard", icon: <Home className="h-5 w-5" />, label: t("home") },
-    { path: "/issues", icon: <AlertTriangle className="h-5 w-5" />, label: t("issues") },
-    { path: "/fitness", icon: <Activity className="h-5 w-5" />, label: t("fitness") },
-    { path: "/profile", icon: <User className="h-5 w-5" />, label: t("profile") }
+    { path: "/news", icon: <Newspaper className="h-5 w-5" />, label: language === "te" ? "వార్తలు" : "News" },
+    { path: "/wall", icon: <PenSquare className="h-5 w-5" />, label: language === "te" ? "వాల్" : "Wall" }
   ];
 
   const menuItems = [
