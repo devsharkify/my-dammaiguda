@@ -3,202 +3,190 @@
 ## Project Overview
 **Name:** My Dammaiguda  
 **Type:** Civic Engagement Platform (PWA)  
-**Version:** 2.2.0  
+**Version:** 2.4.0  
 **Target:** GHMC Ward-level citizen engagement for Dammaiguda  
 **Primary Language:** Telugu (with English toggle)
-**Last Updated:** February 18, 2026
+**Last Updated:** December 18, 2025
 
 ## Architecture
 - **Frontend:** React 19 + Tailwind CSS + Shadcn/UI
-- **Backend:** FastAPI (Python)
+- **Backend:** FastAPI (Python) - Modular Router Structure
 - **Database:** MongoDB
 - **AI:** Emergent LLM (GPT-4o-mini via Emergent integrations)
-- **Authentication:** Phone OTP (Mock for dev, ready for Twilio)
-- **Media:** Cloudinary (configured)
+- **Authentication:** Phone OTP (Mock for dev - static 123456)
+- **Media:** Cloudinary (configured but NOT integrated - uses base64)
 - **Maps:** Google Maps API (configured)
 - **AQI Data:** Live scraping from aqi.in
 - **News:** RSS feeds + placeholder content
 
 ## User Personas
-1. **Citizens** - Report issues, track fitness, access benefits, use AI chat, family tracking, read news
+1. **Citizens** - Report issues, track fitness, access benefits, use AI chat, family tracking, read news, Citizen Wall
 2. **Volunteers** - Verify reported issues, assist elderly
 3. **Admins** - Manage content, view analytics, moderate
 
-## Core Requirements (Static)
-1. ✅ Mobile-first PWA design
-2. ✅ Telugu-first language with English toggle
-3. ✅ No political party symbols or colors
-4. ✅ Accessibility-first (elderly-friendly)
-5. ✅ Role-based access (Citizen, Volunteer, Admin)
+## What's Been Implemented
 
-## What's Been Implemented (Feb 2026)
+### ✅ Citizen Wall & Group Chat (NEW v2.4)
+- **Posts Feed:**
+  - Create text, photo, video posts
+  - Like/unlike posts with live count update
+  - Comment on posts with dialog UI
+  - Share posts (native share or clipboard)
+  - Visibility: Public or Colony-only
+- **Groups:**
+  - Create public/private groups
+  - Join public groups
+  - Discover groups section
+  - Group invites system with accept/decline
+  - Leave group functionality
+- **Group Chat (Client-Side Storage):**
+  - Uses IndexedDB for storing messages locally
+  - ~500 message limit per group
+  - Messages NOT synced to server
+  - Clear indicator: "Messages stored only on your device"
 
-### Authentication Module
-- ✅ Phone OTP login (Mock OTP: 123456)
-- ✅ User registration with colony and age range
-- ✅ JWT-based session management
-- ✅ Role management
+### ✅ Kaizer Doctor UI Enhancement (NEW v2.4)
+- Premium enterprise-grade UI matching Kaizer Fit
+- Motivational health quotes banner
+- Health score card with BMI display
+- Quick action buttons with gradient design
+- Enhanced dialogs for:
+  - Water tracking with progress bar
+  - Meal logging with food search
+  - Health metrics (weight, height, BP, blood sugar)
+  - Mood logging with visual selection
+  - Sleep logging with quality stars
+- Health recommendations section
+- Tabbed interface: Nutrition, Vitals, Plans
 
-### Issue Reporting System
-- ✅ 7 Categories: Dump Yard, Garbage, Drainage, Water, Roads, Lights, Parks
-- ✅ Photo/video upload support
-- ✅ GPS location capture (Google Maps API configured)
-- ✅ Status flow: Reported → Verified → Escalated → Closed
-- ✅ Public issue feed with filters
+### ✅ Backend Refactoring (v2.3)
+- Modular router structure in `/app/backend/routers/`
+- Routes: auth, aqi, family, sos, news, fitness, doctor, chat, wall, issues
+- Added route aliases for frontend compatibility (/send-otp, /verify-otp)
 
-### AQI Live Widget (v2.1)
-- ✅ Live AQI scraping from aqi.in
-- ✅ Dammaiguda (Vayushakti Nagar station) & Hyderabad AQI
-- ✅ PM2.5 and PM10 pollutant values
-- ✅ Indian AQI scale calculation
-- ✅ Color-coded health impact warnings (Telugu)
-- ✅ Dashboard widget + Full report page
+### ✅ Previous Features (v2.0-2.2)
+- Phone OTP login (Mock OTP: 123456)
+- Issue Reporting with 7 categories
+- AQI Live Widget (Dammaiguda + Hyderabad)
+- My Family Module with GPS tracking
+- SOS Emergency Alerts (stub - no SMS)
+- Geo-fencing/Safe Zones
+- News Shorts (RSS + placeholder)
+- Kaizer Fit (enhanced premium UI)
+- AI Chat with 5 assistants
+- Citizen Benefits, Expenditure Dashboard, Polls
 
-### News Shorts Module (NEW v2.2) 📰
-- ✅ 10 Categories:
-  1. **Local** - Dammaiguda news (స్థానిక)
-  2. **City** - Hyderabad news (నగరం)
-  3. **State** - Telangana news (రాష్ట్రం)
-  4. **National** - India news (జాతీయ)
-  5. **International** - World news (అంతర్జాతీయ)
-  6. **Sports** - Sports news (క్రీడలు)
-  7. **Entertainment** - Entertainment (వినోదం)
-  8. **Tech** - Technology (టెక్నాలజీ)
-  9. **Health** - Health news (ఆరోగ్యం)
-  10. **Business** - Business news (వ్యాపారం)
-- ✅ RSS feed integration (The Hindu, Hans India)
-- ✅ Placeholder content for local news
-- ✅ Swipeable card UI (like Inshorts/DailyHunt)
-- ✅ Category tabs
-- ✅ Share functionality
-- ✅ Telugu-first content display
+## API Endpoints (v2.4)
 
-### My Family Module (ENHANCED v2.2) 👨‍👩‍👧‍👦
-- ✅ Family member request/accept flow
-- ✅ Relationship types: Spouse, Child, Parent, Sibling, Other
-- ✅ Real-time GPS location tracking
-- ✅ Location history storage
-- ✅ View on Google Maps
-- ✅ **SOS Emergency Alerts (NEW):**
-  - 🚨 Big red SOS button on Family page
-  - 1-3 emergency contacts setup
-  - Sends alert with GPS location
-  - Alert history tracking
-- ✅ **Geo-fencing (Safe Zones) (NEW):**
-  - Create safe zones for family members
-  - Configurable radius (100m - 2km)
-  - Inside/outside zone detection
-  - Haversine formula for distance calculation
+### Citizen Wall (NEW)
+- `GET /api/wall/posts` - Get posts feed
+- `POST /api/wall/post` - Create post (text/image/video)
+- `POST /api/wall/post/{id}/like` - Like/unlike post
+- `POST /api/wall/post/{id}/comment` - Add comment
+- `GET /api/wall/post/{id}` - Get post with comments
+- `DELETE /api/wall/post/{id}` - Delete own post
+- `POST /api/wall/group` - Create group
+- `GET /api/wall/groups` - Get user's groups
+- `GET /api/wall/groups/discover` - Discover public groups
+- `POST /api/wall/group/{id}/join` - Join public group
+- `POST /api/wall/group/{id}/leave` - Leave group
+- `POST /api/wall/group/{id}/invite` - Invite to group
+- `GET /api/wall/group-invites` - Get pending invites
+- `POST /api/wall/group-invite/{id}/respond` - Accept/decline invite
 
-### Kaizer Fit Module (ENHANCED v2.1)
-- ✅ 9 Activity Types: Walking, Running, Cycling, Yoga, Gym, Swimming, Sports, Dancing, Hiking
-- ✅ Activity logging with duration, distance, steps, calories
-- ✅ Fitness dashboard with scores
-- ✅ Activity streak tracking
-- ✅ Leaderboard & community challenges
-- ✅ Motivational quotes banner (Telugu & English)
-- ✅ Premium gradient UI design
-- ✅ Device sync placeholder
+### Auth Routes (aliases added)
+- `POST /api/auth/otp` OR `/api/auth/send-otp`
+- `POST /api/auth/verify` OR `/api/auth/verify-otp`
+- `PUT /api/auth/me` OR `/api/auth/profile`
 
-### Kaizer Doctor Module (v2.0)
-- ✅ Health Metrics tracking
-- ✅ South Indian meal logging (40+ foods)
-- ✅ Water/Sleep/Mood tracking
-- ✅ 5 Diet Plans
-- ✅ Personalized recommendations
-
-### AI Chat Module (v2.0)
-- ✅ 5 AI Assistants: General, Health, Fitness, Doctor, Psychologist
-- ✅ Chat history storage
-- ✅ Powered by GPT-4o-mini via Emergent LLM
-
-### Other Modules
-- ✅ Citizen Benefits
-- ✅ Ward Expenditure Dashboard
-- ✅ Polls & Surveys
-- ✅ Dump Yard Info
-
-## API Endpoints (v2.2)
-### New in v2.2:
-- `/api/news/categories` - Get all news categories
-- `/api/news/{category}` - Get news by category
-- `/api/news/feed/all` - Get mixed news feed
-- `/api/news/save` - Save article for later
-- `/api/sos/contacts` - Manage SOS emergency contacts
-- `/api/sos/trigger` - Trigger SOS alert
-- `/api/sos/history` - Get SOS history
-- `/api/sos/resolve/{alert_id}` - Resolve SOS alert
-- `/api/family/geofence` - Create geo-fence
-- `/api/family/geofences/{member_id}` - Get member's geo-fences
-- `/api/family/check-geofences/{member_id}` - Check geo-fence status
-
-### Existing:
-- `/api/auth/*` - Authentication
-- `/api/issues/*` - Issue management
-- `/api/aqi/*` - Live AQI data
-- `/api/family/*` - Family tracking
-- `/api/fitness/*` - Kaizer Fit
-- `/api/doctor/*` - Kaizer Doctor
-- `/api/chat` - AI Chat
-- `/api/benefits/*`, `/api/expenditure/*`, `/api/polls/*`
+## Key Database Schema
+- **wall_posts:** `{id, user_id, user_name, content, image_url, video_url, visibility, likes[], comments_count, created_at}`
+- **wall_comments:** `{id, post_id, user_id, user_name, content, created_at}`
+- **groups:** `{id, name, description, is_private, created_by, members[], members_count, created_at}`
+- **group_invites:** `{id, group_id, group_name, invited_user_id, invited_by, status, created_at}`
 
 ## Prioritized Backlog
 
 ### P0 (Critical) - COMPLETED ✅
-- ✅ AQI Live Widget
-- ✅ My Family location tracking
-- ✅ SOS Emergency Alerts
-- ✅ Geo-fencing (Safe Zones)
-- ✅ News Shorts module
+- ✅ Citizen Wall with posts and groups
+- ✅ Group Chat with client-side storage
+- ✅ Kaizer Doctor UI enhancement
 
-### P1 (High Priority)
+### P1 (High Priority) - NEXT
+- [ ] News Scraper improvements (more sources, rephrasing, admin push)
 - [ ] Activate real Twilio SMS for OTP
-- [ ] Activate real SMS for SOS alerts
 - [ ] Cloudinary media upload integration
-- [ ] Kaizer Doctor UI enhancement
-- [ ] Admin moderation tools
+- [ ] SOS alerts with real SMS
 
 ### P2 (Medium Priority)
 - [ ] Smart device integration (pedometer, smartwatch)
 - [ ] "Psychologist AI" enhanced mode
-- [ ] Push notifications (PWA)
-- [ ] Social sharing cards for achievements
-- [ ] WhatsApp share integration
+- [ ] PWA push notifications for SOS/geo-fencing
+- [ ] Social sharing cards
 
 ### P3 (Low Priority)
 - [ ] PWA Offline support
 - [ ] Multi-ward scalability
 - [ ] Data export features
-- [ ] Refactor server.py into routers
 
 ## Testing Status
-- **Backend:** 100% (24/24 tests passed)
-- **Frontend:** 100% (All features verified)
-- **Test Reports:** `/app/test_reports/iteration_4.json`
+- **Citizen Wall Backend:** 100% (26/26 tests passed)
+- **Citizen Wall Frontend:** 100% verified
+- **Test Report:** `/app/test_reports/iteration_5.json`
 
 ## Test Credentials
 - **Phone:** Any number (e.g., 9876543210)
 - **OTP:** 123456 (MOCKED)
 
 ## Mocked APIs
-1. OTP verification - uses static code `123456`
-2. News local/city/state - uses placeholder data when RSS unavailable
-3. SOS alerts - records in database but doesn't send actual SMS
-4. File uploads - mock URLs (Cloudinary configured but not integrated)
+1. **OTP verification** - uses static code `123456`
+2. **Media uploads** - uses base64 data URLs (Cloudinary NOT integrated)
+3. **Group Chat** - client-side only (IndexedDB)
+4. **SOS alerts** - records in database but NO actual SMS sent
 
 ## Key Files
-- `/app/backend/server.py` - Main backend (1500+ lines, needs refactoring)
-- `/app/frontend/src/pages/NewsShorts.jsx` - News shorts UI
-- `/app/frontend/src/pages/MyFamily.jsx` - Family tracking + SOS + Geofencing
-- `/app/frontend/src/pages/Dashboard.jsx` - Dashboard with AQI + News
-- `/app/frontend/src/components/AQIWidget.jsx` - AQI widget
+- `/app/backend/server.py` - Main FastAPI app with router imports
+- `/app/backend/routers/` - Modular backend routers
+- `/app/frontend/src/pages/CitizenWall.jsx` - Posts + Groups + Chat
+- `/app/frontend/src/pages/KaizerDoctor.jsx` - Enhanced health UI
+- `/app/frontend/src/pages/KaizerFit.jsx` - Fitness tracking (premium)
+- `/app/memory/PRD.md` - This file
+
+## Code Architecture
+```
+/app/
+├── backend/
+│   ├── .env
+│   ├── requirements.txt
+│   ├── server.py
+│   └── routers/
+│       ├── auth.py, aqi.py, chat.py, doctor.py
+│       ├── family.py, fitness.py, issues.py
+│       ├── news.py, sos.py, utils.py, wall.py
+├── frontend/
+│   ├── src/
+│   │   ├── components/ (AQIWidget, Layout, ui/*)
+│   │   ├── pages/ (CitizenWall, KaizerDoctor, etc.)
+│   │   ├── context/ (AuthContext, LanguageContext)
+│   │   └── App.js
+│   └── package.json
+└── memory/
+    └── PRD.md
+```
 
 ## Environment Variables
 ### Backend (.env)
-- ✅ MONGO_URL, DB_NAME
-- ✅ JWT_SECRET
-- ✅ TWILIO_ACCOUNT_SID, AUTH_TOKEN, WHATSAPP_NUMBER
-- ✅ CLOUDINARY_CLOUD_NAME, API_KEY, API_SECRET
-- ✅ EMERGENT_LLM_KEY
-- ✅ GOOGLE_VISION_API_KEY
-- ✅ GOOGLE_MAPS_API_KEY
+- MONGO_URL, DB_NAME, JWT_SECRET
+- TWILIO_ACCOUNT_SID, AUTH_TOKEN (configured, NOT used)
+- CLOUDINARY_CLOUD_NAME, API_KEY (configured, NOT used)
+- EMERGENT_LLM_KEY (used for AI Chat)
+- GOOGLE_MAPS_API_KEY
+
+## Bug Fixes in This Session
+1. **Dashboard.jsx** - Fixed `recentIssues.map is not a function` error (API returns `{issues: [...]}` not array)
+2. **auth.py** - Added route aliases for frontend compatibility (`/send-otp`, `/verify-otp`, `/profile`)
+
+## Next Steps for Future Agent
+1. **News Scraper:** Implement reliable scraping with multiple fallback sources
+2. **Real API Integrations:** Twilio SMS, Cloudinary uploads
+3. **Advanced Features:** Psychologist AI, PWA push notifications
