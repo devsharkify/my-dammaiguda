@@ -140,7 +140,7 @@ async def get_current_aqi():
     """Get AQI for multiple Hyderabad locations"""
     locations = [
         {"url": "https://www.aqi.in/in/dashboard/india/telangana/secunderabad/vayushakti-nagar", "name": "Dammaiguda", "name_te": "దమ్మాయిగూడ"},
-        {"url": "https://www.aqi.in/in/dashboard/india/telangana/hyderabad/bowenpally", "name": "Bowenpally", "name_te": "బోయెన్‌పల్లి"},
+        {"url": "https://www.aqi.in/in/dashboard/india/telangana/hyderabad/begumpet", "name": "Begumpet", "name_te": "బేగంపేట్"},
         {"url": "https://www.aqi.in/in/dashboard/india/telangana/hyderabad", "name": "Hyderabad City", "name_te": "హైదరాబాద్ నగరం"}
     ]
     
