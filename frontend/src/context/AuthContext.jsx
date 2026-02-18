@@ -56,7 +56,7 @@ export function AuthProvider({ children }) {
       ...userData
     });
     
-    if (response.data.success) {
+    if (response.data.success && response.data.token) {
       const { token: newToken, user: newUser } = response.data;
       localStorage.setItem("dammaiguda_token", newToken);
       setToken(newToken);
