@@ -18,7 +18,9 @@ import {
   BarChart3,
   FileText,
   Users,
-  Settings
+  Settings,
+  MessageCircle,
+  Stethoscope
 } from "lucide-react";
 import { useState } from "react";
 
