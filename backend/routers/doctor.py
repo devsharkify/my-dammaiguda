@@ -382,3 +382,255 @@ async def get_doctor_dashboard(user: dict = Depends(get_current_user)):
             "mood": mood_today.get("mood") if mood_today else None
         }
     }
+
+# ============== PSYCHOLOGIST AI ==============
+
+import os
+from dotenv import load_dotenv
+
+load_dotenv()
+
+EMERGENT_LLM_KEY = os.environ.get("EMERGENT_LLM_KEY")
+
+PSYCHOLOGIST_SYSTEM_PROMPT = """You are a compassionate AI psychologist assistant named "Kaizer Mind". Your role is to:
+
+1. EMPATHETIC LISTENING: Listen with empathy and validate the user's feelings. Never dismiss or minimize their emotions.
+
+2. CONVERSATIONAL THERAPY: Use evidence-based therapeutic approaches:
+   - Cognitive Behavioral Therapy (CBT) techniques
+   - Mindfulness and grounding exercises
+   - Positive psychology principles
+   - Stress management strategies
+
+3. MENTAL HEALTH ASSESSMENT: When appropriate, gently assess:
+   - Stress levels (1-10)
+   - Anxiety indicators
+   - Mood patterns
+   - Sleep and energy levels
+
+4. RECOMMENDATIONS: Provide actionable suggestions:
+   - Breathing exercises
+   - Mindfulness activities
+   - Lifestyle improvements
+   - When to seek professional help
+
+5. BOUNDARIES: 
+   - You are NOT a replacement for professional mental health care
+   - For serious concerns (self-harm, suicide, severe depression), always recommend professional help
+   - Emergency helplines: iCall (9152987821), Vandrevala Foundation (1860-2662-345)
+
+6. LANGUAGE: Respond in the same language the user uses. Support both English and Telugu.
+
+7. TONE: Warm, supportive, non-judgmental, patient, and encouraging.
+
+Remember: Your goal is to support emotional well-being, not diagnose or treat mental illness."""
+
+class PsychologistMessage(BaseModel):
+    message: str
+    session_id: Optional[str] = None
+    include_assessment: bool = False
+
+class MentalHealthAssessment(BaseModel):
+    stress_level: int  # 1-10
+    sleep_quality: int  # 1-5
+    energy_level: int  # 1-10
+    anxiety_symptoms: List[str] = []
+    mood_description: str
+    recent_challenges: Optional[str] = None
+
+@router.post("/psychologist/chat")
+async def psychologist_chat(msg: PsychologistMessage, user: dict = Depends(get_current_user)):
+    """Chat with the AI Psychologist (Kaizer Mind)"""
+    if not EMERGENT_LLM_KEY:
+        raise HTTPException(status_code=503, detail="AI service not configured")
+    
+    try:
+        from emergentintegrations.llm.chat import LlmChat, UserMessage
+        
+        # Create or use session
+        session_id = msg.session_id or f"psych_{user['id']}_{datetime.now(timezone.utc).strftime('%Y%m%d')}"
+        
+        # Get conversation history from DB (last 10 messages)
+        history = await db.psychologist_sessions.find(
+            {"session_id": session_id},
+            {"_id": 0}
+        ).sort("created_at", -1).limit(10).to_list(10)
+        
+        history = list(reversed(history))  # Chronological order
+        
+        # Build context with history
+        context = PSYCHOLOGIST_SYSTEM_PROMPT
+        if history:
+            context += "\n\nPrevious conversation:\n"
+            for h in history[-5:]:  # Last 5 exchanges
+                context += f"User: {h.get('user_message', '')}\nKaizer Mind: {h.get('ai_response', '')}\n"
+        
+        chat = LlmChat(
+            api_key=EMERGENT_LLM_KEY,
+            session_id=session_id,
+            system_message=context
+        ).with_model("openai", "gpt-4o-mini")
+        
+        user_message = UserMessage(text=msg.message)
+        response = await chat.send_message(user_message)
+        
+        # Store in DB
+        chat_entry = {
+            "id": generate_id(),
+            "session_id": session_id,
+            "user_id": user["id"],
+            "user_message": msg.message,
+            "ai_response": response,
+            "created_at": now_iso()
+        }
+        await db.psychologist_sessions.insert_one(chat_entry)
+        
+        # Generate assessment if requested
+        assessment = None
+        if msg.include_assessment:
+            assessment_prompt = f"""Based on this conversation, provide a brief mental wellness assessment in JSON format:
+            {{
+                "stress_indicator": "low/moderate/high",
+                "mood_assessment": "brief description",
+                "recommended_action": "one specific suggestion",
+                "seek_professional_help": true/false
+            }}
+            User's message: {msg.message}"""
+            
+            assessment_chat = LlmChat(
+                api_key=EMERGENT_LLM_KEY,
+                session_id=f"assess_{session_id}",
+                system_message="You are a mental health assessment assistant. Respond only with valid JSON."
+            ).with_model("openai", "gpt-4o-mini")
+            
+            assessment_response = await assessment_chat.send_message(UserMessage(text=assessment_prompt))
+            try:
+                import json
+                assessment = json.loads(assessment_response)
+            except:
+                assessment = {"note": "Assessment unavailable"}
+        
+        return {
+            "response": response,
+            "session_id": session_id,
+            "assessment": assessment,
+            "timestamp": now_iso()
+        }
+        
+    except ImportError:
+        raise HTTPException(status_code=503, detail="AI library not available")
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"AI service error: {str(e)}")
+
+@router.post("/psychologist/assessment")
+async def submit_mental_health_assessment(assessment: MentalHealthAssessment, user: dict = Depends(get_current_user)):
+    """Submit a structured mental health self-assessment"""
+    
+    # Calculate wellness score
+    wellness_score = 100
+    wellness_score -= (assessment.stress_level - 1) * 5  # High stress reduces score
+    wellness_score -= (5 - assessment.sleep_quality) * 5  # Poor sleep reduces score
+    wellness_score -= (10 - assessment.energy_level) * 3  # Low energy reduces score
+    wellness_score -= len(assessment.anxiety_symptoms) * 5  # Each symptom reduces score
+    wellness_score = max(0, min(100, wellness_score))
+    
+    # Determine risk level
+    risk_level = "low"
+    if wellness_score < 40:
+        risk_level = "high"
+    elif wellness_score < 60:
+        risk_level = "moderate"
+    
+    # Generate recommendations
+    recommendations = []
+    if assessment.stress_level > 6:
+        recommendations.append({
+            "type": "stress",
+            "title": "Try deep breathing",
+            "title_te": "గాఢ శ్వాసను ప్రయత్నించండి",
+            "description": "Practice 4-7-8 breathing: inhale 4s, hold 7s, exhale 8s",
+            "description_te": "4-7-8 శ్వాస: 4సె పీల్చు, 7సె ఆపు, 8సె విడుదల"
+        })
+    if assessment.sleep_quality < 3:
+        recommendations.append({
+            "type": "sleep",
+            "title": "Improve sleep hygiene",
+            "title_te": "నిద్ర పరిశుభ్రతను మెరుగుపరచండి",
+            "description": "Avoid screens 1 hour before bed, maintain regular sleep schedule",
+            "description_te": "నిద్రకు 1 గంట ముందు స్క్రీన్లు మానుకోండి"
+        })
+    if assessment.energy_level < 5:
+        recommendations.append({
+            "type": "energy",
+            "title": "Boost your energy",
+            "title_te": "మీ శక్తిని పెంచుకోండి",
+            "description": "Take a 10-minute walk, stay hydrated, eat protein-rich snacks",
+            "description_te": "10 నిమిషాలు నడవండి, నీరు తాగండి"
+        })
+    if len(assessment.anxiety_symptoms) > 2:
+        recommendations.append({
+            "type": "anxiety",
+            "title": "Grounding exercise",
+            "title_te": "గ్రౌండింగ్ వ్యాయామం",
+            "description": "5-4-3-2-1: Name 5 things you see, 4 you hear, 3 you touch, 2 you smell, 1 you taste",
+            "description_te": "5-4-3-2-1: 5 చూడు, 4 విను, 3 తాకు, 2 వాసన, 1 రుచి"
+        })
+    
+    # Always recommend professional help for high risk
+    if risk_level == "high":
+        recommendations.append({
+            "type": "professional",
+            "title": "Consider professional support",
+            "title_te": "వృత్తిపరమైన సహాయాన్ని పరిగణించండి",
+            "description": "Helplines: iCall 9152987821, Vandrevala Foundation 1860-2662-345",
+            "description_te": "హెల్ప్‌లైన్లు: iCall 9152987821"
+        })
+    
+    # Store assessment
+    record = {
+        "id": generate_id(),
+        "user_id": user["id"],
+        "date": datetime.now(timezone.utc).strftime("%Y-%m-%d"),
+        "stress_level": assessment.stress_level,
+        "sleep_quality": assessment.sleep_quality,
+        "energy_level": assessment.energy_level,
+        "anxiety_symptoms": assessment.anxiety_symptoms,
+        "mood_description": assessment.mood_description,
+        "recent_challenges": assessment.recent_challenges,
+        "wellness_score": wellness_score,
+        "risk_level": risk_level,
+        "created_at": now_iso()
+    }
+    
+    await db.mental_health_assessments.insert_one(record)
+    record.pop("_id", None)
+    
+    return {
+        "assessment_id": record["id"],
+        "wellness_score": wellness_score,
+        "risk_level": risk_level,
+        "recommendations": recommendations,
+        "message": "Your assessment has been recorded. Remember, it's okay to seek help." if risk_level in ["moderate", "high"] else "You're doing well! Keep up the healthy habits."
+    }
+
+@router.get("/psychologist/history")
+async def get_psychologist_history(days: int = 7, user: dict = Depends(get_current_user)):
+    """Get chat history with the psychologist"""
+    cutoff = (datetime.now(timezone.utc) - timedelta(days=days)).isoformat()
+    
+    sessions = await db.psychologist_sessions.find(
+        {"user_id": user["id"], "created_at": {"$gte": cutoff}},
+        {"_id": 0}
+    ).sort("created_at", -1).to_list(50)
+    
+    return {"sessions": sessions, "count": len(sessions)}
+
+@router.get("/psychologist/assessments")
+async def get_assessment_history(user: dict = Depends(get_current_user)):
+    """Get mental health assessment history"""
+    assessments = await db.mental_health_assessments.find(
+        {"user_id": user["id"]},
+        {"_id": 0}
+    ).sort("created_at", -1).to_list(30)
+    
+    return {"assessments": assessments, "count": len(assessments)}
