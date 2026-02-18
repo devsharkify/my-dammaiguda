@@ -432,6 +432,7 @@ async def scrape_news_from_rss(category: str = "national", limit: int = 20) -> L
                 
                 if not items:
                     # Fall back to placeholder if no items found
+                    logging.info(f"No RSS items for {category}, using placeholder")
                     return generate_placeholder_news(category, limit)
                 
                 for idx, item in enumerate(items):
