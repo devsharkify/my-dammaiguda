@@ -3,417 +3,204 @@ import { useNavigate } from "react-router-dom";
 import { useLanguage } from "../context/LanguageContext";
 import { useAuth } from "../context/AuthContext";
 import axios from "axios";
-import { Card, CardContent, CardHeader, CardTitle } from "../components/ui/card";
+import Layout from "../components/Layout";
+import { Card, CardContent } from "../components/ui/card";
 import { Button } from "../components/ui/button";
 import { Input } from "../components/ui/input";
-import { Progress } from "../components/ui/progress";
-import { Badge } from "../components/ui/badge";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "../components/ui/dialog";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "../components/ui/tabs";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../components/ui/select";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "../components/ui/dialog";
+import { Badge } from "../components/ui/badge";
 import { toast } from "sonner";
-import Layout from "../components/Layout";
+import {
+  LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Area, AreaChart
+} from "recharts";
 import {
   Activity,
   Footprints,
-  Trophy,
-  Users,
-  Target,
-  TrendingUp,
-  AlertTriangle,
-  Clock,
-  Plus,
-  Medal,
-  Bike,
-  PersonStanding,
   Flame,
+  Target,
+  TrendingDown,
+  TrendingUp,
+  Plus,
+  Play,
+  Scale,
+  Calendar,
+  Award,
+  Zap,
   Heart,
   Timer,
-  MapPin,
-  Zap,
-  Award,
-  Calendar,
-  Sparkles,
-  Crown,
-  Star,
   ChevronRight,
-  Watch,
-  Smartphone,
-  Bluetooth,
-  RefreshCw,
-  Trash2,
-  Check,
-  Loader2,
-  Link as LinkIcon,
-  Unlink,
-  Play
+  Sparkles,
+  History,
+  Goal
 } from "lucide-react";
 
 const API = `${process.env.REACT_APP_BACKEND_URL}/api`;
 
-// Motivational quotes
-const MOTIVATIONAL_QUOTES = {
-  en: [
-    "Your only limit is you. Push harder! 💪",
-    "Champions train, losers complain. Be a champion!",
-    "Every step counts. Keep moving forward! 🏃",
-    "Sweat now, shine later! ✨",
-    "Make yourself proud today!",
-    "The body achieves what the mind believes!",
-    "Strong body, strong mind, strong life!",
-    "Your future self will thank you!"
-  ],
-  te: [
-    "మీ పరిమితి మీరే. మరింత కష్టపడండి! 💪",
-    "ఛాంపియన్లు శిక్షణ పొందుతారు. ఛాంపియన్ అవ్వండి!",
-    "ప్రతి అడుగు ముఖ్యం. ముందుకు నడవండి! 🏃",
-    "ఇప్పుడు చెమట, తర్వాత వెలుగు! ✨",
-    "ఈ రోజు మిమ్మల్ని మీరు గర్వపడేలా చేసుకోండి!",
-    "మనసు నమ్మేది శరీరం సాధిస్తుంది!",
-    "బలమైన శరీరం, బలమైన మనసు, బలమైన జీవితం!",
-    "మీ భవిష్యత్ మీకు ధన్యవాదాలు చెప్తుంది!"
-  ]
-};
-
-const ACTIVITY_TYPES = [
-  { value: "walking", label: { en: "Walking", te: "నడక" }, icon: <Footprints className="h-5 w-5" />, color: "bg-green-100 text-green-600", gradient: "from-green-400 to-emerald-500" },
-  { value: "running", label: { en: "Running", te: "పరుగు" }, icon: <PersonStanding className="h-5 w-5" />, color: "bg-orange-100 text-orange-600", gradient: "from-orange-400 to-red-500" },
-  { value: "cycling", label: { en: "Cycling", te: "సైక్లింగ్" }, icon: <Bike className="h-5 w-5" />, color: "bg-blue-100 text-blue-600", gradient: "from-blue-400 to-cyan-500" },
-  { value: "yoga", label: { en: "Yoga", te: "యోగా" }, icon: <Heart className="h-5 w-5" />, color: "bg-purple-100 text-purple-600", gradient: "from-purple-400 to-pink-500" },
-  { value: "gym", label: { en: "Gym", te: "జిమ్" }, icon: <Zap className="h-5 w-5" />, color: "bg-red-100 text-red-600", gradient: "from-red-400 to-rose-500" },
-  { value: "swimming", label: { en: "Swimming", te: "ఈత" }, icon: <Activity className="h-5 w-5" />, color: "bg-cyan-100 text-cyan-600", gradient: "from-cyan-400 to-blue-500" },
-  { value: "sports", label: { en: "Sports", te: "క్రీడలు" }, icon: <Trophy className="h-5 w-5" />, color: "bg-yellow-100 text-yellow-600", gradient: "from-yellow-400 to-orange-500" },
-  { value: "dancing", label: { en: "Dancing", te: "నృత్యం" }, icon: <Sparkles className="h-5 w-5" />, color: "bg-pink-100 text-pink-600", gradient: "from-pink-400 to-rose-500" },
-  { value: "hiking", label: { en: "Hiking", te: "హైకింగ్" }, icon: <MapPin className="h-5 w-5" />, color: "bg-emerald-100 text-emerald-600", gradient: "from-emerald-400 to-green-500" }
+// Activity types for live tracking
+const LIVE_ACTIVITIES = [
+  { id: "running", name_en: "Running", name_te: "పరుగు", icon: "🏃", color: "from-orange-500 to-red-500" },
+  { id: "walking", name_en: "Walking", name_te: "నడక", icon: "🚶", color: "from-green-500 to-emerald-500" },
+  { id: "cycling", name_en: "Cycling", name_te: "సైక్లింగ్", icon: "🚴", color: "from-blue-500 to-cyan-500" },
+  { id: "yoga", name_en: "Yoga", name_te: "యోగా", icon: "🧘", color: "from-purple-500 to-pink-500" },
+  { id: "gym", name_en: "Gym", name_te: "జిమ్", icon: "💪", color: "from-red-500 to-rose-500" },
+  { id: "swimming", name_en: "Swimming", name_te: "ఈత", icon: "🏊", color: "from-cyan-500 to-blue-500" },
 ];
 
 export default function KaizerFit() {
   const { language } = useLanguage();
   const { user, token } = useAuth();
   const navigate = useNavigate();
-  const [dashboard, setDashboard] = useState(null);
-  const [leaderboard, setLeaderboard] = useState([]);
-  const [challenges, setChallenges] = useState([]);
-  const [activities, setActivities] = useState([]);
+  
+  // Dashboard data
+  const [todayStats, setTodayStats] = useState(null);
   const [loading, setLoading] = useState(true);
   
-  // Activity logging
-  const [showActivityDialog, setShowActivityDialog] = useState(false);
-  const [activityType, setActivityType] = useState("walking");
-  const [duration, setDuration] = useState("");
-  const [distance, setDistance] = useState("");
-  const [steps, setSteps] = useState("");
-  const [logLoading, setLogLoading] = useState(false);
+  // Weight tracking
+  const [weightHistory, setWeightHistory] = useState([]);
+  const [weightStats, setWeightStats] = useState(null);
+  const [showAddWeight, setShowAddWeight] = useState(false);
+  const [showSetGoal, setShowSetGoal] = useState(false);
+  const [newWeight, setNewWeight] = useState("");
+  const [goalWeight, setGoalWeight] = useState("");
+  const [submitting, setSubmitting] = useState(false);
   
-  // Smart Device state
-  const [connectedDevices, setConnectedDevices] = useState([]);
-  const [showDeviceDialog, setShowDeviceDialog] = useState(false);
-  const [selectedDeviceType, setSelectedDeviceType] = useState("phone");
-  const [selectedBrand, setSelectedBrand] = useState("");
-  const [connectingDevice, setConnectingDevice] = useState(false);
-  const [syncingDevice, setSyncingDevice] = useState(null);
-  
-  // Live Activity state
-  const [showLiveActivityDialog, setShowLiveActivityDialog] = useState(false);
-  const [selectedLiveActivity, setSelectedLiveActivity] = useState("running");
+  // Live activity
+  const [showActivityPicker, setShowActivityPicker] = useState(false);
   
   const headers = { Authorization: `Bearer ${token}` };
-  
-  // Motivational quote (random on mount)
-  const [quote] = useState(() => {
-    const quotes = MOTIVATIONAL_QUOTES["en"];
-    return quotes[Math.floor(Math.random() * quotes.length)];
-  });
 
   useEffect(() => {
-    fetchData();
-    fetchDevices();
+    fetchAllData();
   }, []);
 
-  const fetchData = async () => {
+  const fetchAllData = async () => {
+    setLoading(true);
     try {
-      const [dashRes, leaderRes, challengesRes, activitiesRes] = await Promise.all([
-        axios.get(`${API}/fitness/dashboard`).catch(() => ({ data: null })),
-        axios.get(`${API}/fitness/leaderboard`).catch(() => ({ data: [] })),
-        axios.get(`${API}/fitness/challenges`).catch(() => ({ data: [] })),
-        axios.get(`${API}/fitness/activities?days=7`).catch(() => ({ data: [] }))
+      const [dashRes, weightRes, statsRes] = await Promise.all([
+        axios.get(`${API}/fitness/dashboard`, { headers }).catch(() => ({ data: null })),
+        axios.get(`${API}/fitness/weight/history?days=30`, { headers }).catch(() => ({ data: { records: [] } })),
+        axios.get(`${API}/fitness/weight/stats`, { headers }).catch(() => ({ data: null }))
       ]);
       
-      setDashboard(dashRes.data);
-      setLeaderboard(leaderRes.data);
-      setChallenges(challengesRes.data);
-      setActivities(activitiesRes.data);
+      setTodayStats(dashRes.data);
+      setWeightHistory(weightRes.data?.records || []);
+      setWeightStats(statsRes.data);
+      
+      if (statsRes.data?.goal_weight) {
+        setGoalWeight(statsRes.data.goal_weight.toString());
+      }
     } catch (error) {
-      console.error("Error fetching fitness data:", error);
+      console.error("Error fetching data:", error);
     } finally {
       setLoading(false);
     }
   };
 
-  const fetchDevices = async () => {
-    try {
-      const response = await axios.get(`${API}/fitness/devices`, { headers });
-      setConnectedDevices(response.data.devices || []);
-    } catch (error) {
-      console.error("Error fetching devices:", error);
-    }
-  };
-
-  const connectDevice = async () => {
-    if (!selectedDeviceType) {
-      toast.error(language === "te" ? "పరికర రకాన్ని ఎంచుకోండి" : "Select device type");
+  const logWeight = async () => {
+    if (!newWeight || parseFloat(newWeight) <= 0) {
+      toast.error(language === "te" ? "సరైన బరువు నమోదు చేయండి" : "Enter valid weight");
       return;
     }
     
-    setConnectingDevice(true);
+    setSubmitting(true);
     try {
-      const deviceData = {
-        device_type: selectedDeviceType,
-        device_brand: selectedBrand || null,
-        device_name: selectedDeviceType === "phone" ? "Phone Pedometer" : `${selectedBrand} Smartwatch`,
-        permissions: ["steps", "calories", "distance"]
-      };
-      
-      if (selectedDeviceType === "smartwatch") {
-        deviceData.permissions.push("heart_rate", "sleep");
-      }
-      
-      await axios.post(`${API}/fitness/devices/connect`, deviceData, { headers });
-      toast.success(language === "te" ? "పరికరం కనెక్ట్ అయింది!" : "Device connected!");
-      setShowDeviceDialog(false);
-      setSelectedBrand("");
-      fetchDevices();
+      await axios.post(`${API}/fitness/weight`, { weight_kg: parseFloat(newWeight) }, { headers });
+      toast.success(language === "te" ? "బరువు నమోదు అయింది!" : "Weight logged!");
+      setShowAddWeight(false);
+      setNewWeight("");
+      fetchAllData();
     } catch (error) {
-      toast.error("Failed to connect device");
+      toast.error(language === "te" ? "నమోదు విఫలమైంది" : "Failed to log");
     } finally {
-      setConnectingDevice(false);
+      setSubmitting(false);
     }
   };
 
-  const disconnectDevice = async (deviceId) => {
-    try {
-      await axios.delete(`${API}/fitness/devices/${deviceId}`, { headers });
-      toast.success(language === "te" ? "పరికరం డిస్కనెక్ట్ అయింది" : "Device disconnected");
-      fetchDevices();
-    } catch (error) {
-      toast.error("Failed to disconnect device");
-    }
-  };
-
-  const syncPhoneSensors = async () => {
-    setSyncingDevice("phone");
-    try {
-      // Simulate getting data from phone sensors
-      // In a real PWA, this would use the Web Pedometer API or native app bridge
-      const mockSensorData = {
-        steps: Math.floor(3000 + Math.random() * 5000),
-        distance_meters: Math.floor(2000 + Math.random() * 4000),
-        active_minutes: Math.floor(20 + Math.random() * 60),
-        timestamp: new Date().toISOString(),
-        source: "phone_pedometer"
-      };
-      
-      await axios.post(`${API}/fitness/sync/phone-sensors`, mockSensorData, { headers });
-      toast.success(language === "te" ? "ఫోన్ సెన్సర్ డేటా సింక్ అయింది!" : "Phone sensor data synced!");
-      fetchData();
-    } catch (error) {
-      toast.error("Failed to sync phone data");
-    } finally {
-      setSyncingDevice(null);
-    }
-  };
-
-  const syncSmartwatch = async (brand) => {
-    setSyncingDevice(brand);
-    try {
-      // Simulate smartwatch data sync
-      const mockWatchData = {
-        device_brand: brand,
-        steps: Math.floor(4000 + Math.random() * 6000),
-        heart_rate_current: Math.floor(65 + Math.random() * 30),
-        heart_rate_resting: Math.floor(55 + Math.random() * 15),
-        calories_total: Math.floor(200 + Math.random() * 400),
-        distance_meters: Math.floor(3000 + Math.random() * 5000),
-        active_minutes: Math.floor(30 + Math.random() * 90),
-        blood_oxygen: Math.floor(95 + Math.random() * 4),
-        stress_level: Math.floor(20 + Math.random() * 50),
-        sleep_data: {
-          duration_hours: 6 + Math.random() * 2,
-          deep_sleep_mins: Math.floor(60 + Math.random() * 60),
-          light_sleep_mins: Math.floor(120 + Math.random() * 120),
-          rem_sleep_mins: Math.floor(60 + Math.random() * 60),
-          score: Math.floor(60 + Math.random() * 35)
-        },
-        sync_timestamp: new Date().toISOString()
-      };
-      
-      await axios.post(`${API}/fitness/sync/smartwatch`, mockWatchData, { headers });
-      toast.success(language === "te" ? `${brand} వాచ్ సింక్ అయింది!` : `${brand} watch synced!`);
-      fetchData();
-    } catch (error) {
-      toast.error("Failed to sync smartwatch");
-    } finally {
-      setSyncingDevice(null);
-    }
-  };
-
-  const logActivity = async () => {
-    if (!duration || parseInt(duration) <= 0) {
-      toast.error(language === "te" ? "సమయం నమోదు చేయండి" : "Enter duration");
+  const setWeightGoal = async () => {
+    if (!goalWeight || parseFloat(goalWeight) <= 0) {
+      toast.error(language === "te" ? "సరైన లక్ష్యం నమోదు చేయండి" : "Enter valid goal");
       return;
     }
-
-    setLogLoading(true);
+    
+    setSubmitting(true);
     try {
-      await axios.post(`${API}/fitness/activity`, {
-        activity_type: activityType,
-        duration_minutes: parseInt(duration),
-        distance_km: distance ? parseFloat(distance) : null,
-        steps: steps ? parseInt(steps) : null,
-        source: "manual"
-      });
-      
-      toast.success(language === "te" ? "యాక్టివిటీ నమోదు చేయబడింది!" : "Activity logged!");
-      setShowActivityDialog(false);
-      setDuration("");
-      setDistance("");
-      setSteps("");
-      fetchData();
+      await axios.post(`${API}/fitness/weight/goal`, { target_weight_kg: parseFloat(goalWeight) }, { headers });
+      toast.success(language === "te" ? "లక్ష్యం సెట్ అయింది!" : "Goal set!");
+      setShowSetGoal(false);
+      fetchAllData();
     } catch (error) {
-      toast.error(error.response?.data?.detail || "Failed to log activity");
+      toast.error(language === "te" ? "సెట్ చేయడం విఫలమైంది" : "Failed to set goal");
     } finally {
-      setLogLoading(false);
+      setSubmitting(false);
     }
   };
 
-  const joinChallenge = async (challengeId) => {
-    try {
-      await axios.post(`${API}/fitness/challenges/${challengeId}/join`);
-      toast.success(language === "te" ? "ఛాలెంజ్‌లో చేరారు!" : "Joined challenge!");
-      fetchData();
-    } catch (error) {
-      toast.error(error.response?.data?.detail || "Failed to join");
-    }
-  };
+  // Format weight chart data
+  const chartData = weightHistory.map(w => ({
+    date: new Date(w.date).toLocaleDateString("en-IN", { day: "numeric", month: "short" }),
+    weight: w.weight_kg,
+    goal: weightStats?.goal_weight || null
+  }));
 
-  const getScoreColor = (score) => {
-    if (score >= 80) return "text-green-500";
-    if (score >= 50) return "text-yellow-500";
-    return "text-red-500";
-  };
+  // Current stats
+  const currentWeight = weightStats?.current_weight || user?.health_profile?.weight_kg || 0;
+  const startWeight = weightStats?.starting_weight || currentWeight;
+  const targetWeight = weightStats?.goal_weight;
+  const weightChange = weightStats?.total_change || 0;
+  const progressPercent = weightStats?.progress_to_goal || 0;
 
   if (loading) {
     return (
       <Layout showBackButton title={language === "te" ? "కైజర్ ఫిట్" : "Kaizer Fit"}>
-        <div className="flex items-center justify-center min-h-[50vh]">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
+        <div className="flex items-center justify-center min-h-[60vh]">
+          <div className="text-center">
+            <div className="h-12 w-12 mx-auto rounded-full border-4 border-primary/30 border-t-primary animate-spin" />
+            <p className="mt-4 text-muted-foreground">{language === "te" ? "లోడ్ అవుతోంది..." : "Loading..."}</p>
+          </div>
         </div>
       </Layout>
     );
   }
 
-  const today = dashboard?.today || { total_steps: 0, total_calories: 0, fitness_score: 0 };
-  
-  // Get localized quote
-  const localizedQuote = MOTIVATIONAL_QUOTES[language]?.[MOTIVATIONAL_QUOTES["en"].indexOf(quote)] || quote;
-
-  // Calculate progress percentage
-  const stepsGoal = 10000;
-  const stepsProgress = Math.min(100, Math.round((today.total_steps / stepsGoal) * 100));
-  const caloriesGoal = 500;
-  const caloriesProgress = Math.min(100, Math.round((today.total_calories / caloriesGoal) * 100));
-
   return (
     <Layout showBackButton title={language === "te" ? "కైజర్ ఫిట్" : "Kaizer Fit"}>
-      <div className="space-y-5" data-testid="kaizer-fit-expanded">
-        {/* Motivational Banner */}
-        <div className="relative overflow-hidden rounded-2xl bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-600 p-5 text-white">
-          <div className="absolute top-0 right-0 opacity-10">
-            <Sparkles className="h-32 w-32 -mt-8 -mr-8" />
-          </div>
-          <div className="relative z-10">
-            <div className="flex items-center gap-2 mb-2">
-              <Star className="h-5 w-5 text-yellow-300 fill-yellow-300" />
-              <span className="text-sm font-medium text-white/90">
-                {language === "te" ? "ఈ రోజు మీ ప్రేరణ" : "Today's Motivation"}
-              </span>
-            </div>
-            <p className="text-lg font-semibold leading-relaxed">{localizedQuote}</p>
-          </div>
-        </div>
-
-        {/* Stats Header - Premium Design */}
-        <Card className="bg-gradient-to-br from-primary via-teal-600 to-emerald-600 text-white border-0 shadow-lg overflow-hidden relative">
-          <div className="absolute -top-10 -right-10 h-40 w-40 rounded-full bg-white/10" />
-          <div className="absolute -bottom-10 -left-10 h-32 w-32 rounded-full bg-white/10" />
-          <CardContent className="p-6 relative z-10">
-            <div className="flex items-center justify-between mb-6">
-              <div className="flex items-center gap-4">
-                <div className="h-16 w-16 rounded-2xl bg-white/20 flex items-center justify-center shadow-inner">
-                  <Activity className="h-8 w-8" />
-                </div>
-                <div>
-                  <p className="text-white/80 text-sm font-medium">
-                    {language === "te" ? "ఈ రోజు మొత్తం" : "Today's Total"}
-                  </p>
-                  <p className="text-4xl font-bold tracking-tight">
-                    {today.total_steps?.toLocaleString() || 0}
-                  </p>
-                  <p className="text-white/70 text-sm">
-                    {language === "te" ? `/ ${stepsGoal.toLocaleString()} అడుగుల లక్ష్యం` : `/ ${stepsGoal.toLocaleString()} steps goal`}
-                  </p>
-                </div>
+      <div className="space-y-5 pb-6" data-testid="kaizer-fit-page">
+        
+        {/* Hero Stats Card */}
+        <Card className="overflow-hidden border-0 shadow-xl bg-gradient-to-br from-blue-600 via-blue-700 to-indigo-800">
+          <CardContent className="p-5 text-white">
+            <div className="flex items-center justify-between mb-4">
+              <div>
+                <p className="text-blue-200 text-sm font-medium">
+                  {language === "te" ? "ఈ రోజు" : "Today"}
+                </p>
+                <p className="text-3xl font-bold mt-1">
+                  {todayStats?.steps?.toLocaleString() || "0"}
+                </p>
+                <p className="text-blue-200 text-sm">{language === "te" ? "అడుగులు" : "steps"}</p>
               </div>
-              <div className="text-right">
-                <div className="relative">
-                  <div className="h-20 w-20 rounded-full border-4 border-white/30 flex items-center justify-center">
-                    <div className="text-center">
-                      <p className="text-2xl font-bold">{today.fitness_score || 0}</p>
-                      <p className="text-xs text-white/70">{language === "te" ? "స్కోర్" : "Score"}</p>
-                    </div>
-                  </div>
-                  {today.fitness_score >= 80 && (
-                    <Crown className="absolute -top-2 -right-1 h-6 w-6 text-yellow-300 fill-yellow-300" />
-                  )}
-                </div>
+              <div className="h-20 w-20 rounded-2xl bg-white/10 backdrop-blur flex items-center justify-center">
+                <Footprints className="h-10 w-10 text-white/90" />
               </div>
             </div>
             
-            {/* Progress Bar */}
-            <div className="mb-5">
-              <div className="flex justify-between text-sm mb-1">
-                <span className="text-white/80">{language === "te" ? "అడుగుల పురోగతి" : "Steps Progress"}</span>
-                <span className="font-bold">{stepsProgress}%</span>
+            {/* Mini stats row */}
+            <div className="grid grid-cols-3 gap-3 pt-3 border-t border-white/20">
+              <div className="text-center">
+                <Flame className="h-5 w-5 mx-auto text-orange-300" />
+                <p className="text-lg font-bold mt-1">{todayStats?.calories || 0}</p>
+                <p className="text-[10px] text-blue-200">{language === "te" ? "కేలరీలు" : "Calories"}</p>
               </div>
-              <div className="h-3 bg-white/20 rounded-full overflow-hidden">
-                <div 
-                  className="h-full bg-gradient-to-r from-yellow-300 to-amber-400 rounded-full transition-all duration-500"
-                  style={{ width: `${stepsProgress}%` }}
-                />
+              <div className="text-center">
+                <Activity className="h-5 w-5 mx-auto text-green-300" />
+                <p className="text-lg font-bold mt-1">{todayStats?.distance_km?.toFixed(1) || "0"}</p>
+                <p className="text-[10px] text-blue-200">{language === "te" ? "కి.మీ" : "km"}</p>
               </div>
-            </div>
-            
-            {/* Quick Stats Grid */}
-            <div className="grid grid-cols-4 gap-2">
-              <div className="bg-white/15 backdrop-blur-sm rounded-xl p-3 text-center">
-                <Flame className="h-5 w-5 mx-auto mb-1 text-orange-300" />
-                <p className="font-bold text-lg">{today.total_calories || 0}</p>
-                <p className="text-[10px] text-white/70">{language === "te" ? "కేలరీలు" : "Cal"}</p>
-              </div>
-              <div className="bg-white/15 backdrop-blur-sm rounded-xl p-3 text-center">
-                <Award className="h-5 w-5 mx-auto mb-1 text-yellow-300" />
-                <p className="font-bold text-lg">{dashboard?.streak?.current || 0}</p>
-                <p className="text-[10px] text-white/70">{language === "te" ? "స్ట్రీక్" : "Streak"}</p>
-              </div>
-              <div className="bg-white/15 backdrop-blur-sm rounded-xl p-3 text-center">
-                <Timer className="h-5 w-5 mx-auto mb-1 text-cyan-300" />
-                <p className="font-bold text-lg">{today.total_duration_minutes || 0}</p>
-                <p className="text-[10px] text-white/70">{language === "te" ? "నిమిషం" : "Min"}</p>
-              </div>
-              <div className="bg-white/15 backdrop-blur-sm rounded-xl p-3 text-center">
-                <MapPin className="h-5 w-5 mx-auto mb-1 text-green-300" />
-                <p className="font-bold text-lg">{today.total_distance_km?.toFixed(1) || "0"}</p>
-                <p className="text-[10px] text-white/70">{language === "te" ? "కి.మీ" : "km"}</p>
+              <div className="text-center">
+                <Timer className="h-5 w-5 mx-auto text-purple-300" />
+                <p className="text-lg font-bold mt-1">{todayStats?.active_minutes || 0}</p>
+                <p className="text-[10px] text-blue-200">{language === "te" ? "నిమిషాలు" : "min"}</p>
               </div>
             </div>
           </CardContent>
@@ -421,543 +208,355 @@ export default function KaizerFit() {
 
         {/* Start Live Activity Button */}
         <Button
-          onClick={() => setShowLiveActivityDialog(true)}
-          className="w-full h-16 bg-gradient-to-r from-primary via-teal-500 to-emerald-500 text-white rounded-2xl text-lg font-bold shadow-xl hover:shadow-2xl transition-all"
+          onClick={() => setShowActivityPicker(true)}
+          className="w-full h-14 bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600 text-white rounded-2xl text-base font-semibold shadow-lg shadow-emerald-500/25 transition-all active:scale-[0.98]"
           data-testid="start-live-activity-btn"
         >
-          <Play className="h-6 w-6 mr-3" />
+          <Play className="h-5 w-5 mr-2" />
           {language === "te" ? "లైవ్ యాక్టివిటీ ప్రారంభించండి" : "Start Live Activity"}
         </Button>
 
-        {/* Quick Action Buttons */}
-        <div className="grid grid-cols-2 gap-3">
-          <Dialog open={showActivityDialog} onOpenChange={setShowActivityDialog}>
-            <DialogTrigger asChild>
-              <Button 
-                className="h-16 bg-gradient-to-r from-secondary to-orange-500 text-white rounded-xl text-base font-semibold shadow-lg hover:shadow-xl transition-all"
-                data-testid="log-activity-btn"
-              >
-                <Plus className="h-6 w-6 mr-2" />
-                {language === "te" ? "యాక్టివిటీ నమోదు" : "Log Activity"}
-              </Button>
-            </DialogTrigger>
-            <DialogContent className="max-w-md">
-              <DialogHeader>
-                <DialogTitle className="flex items-center gap-2">
-                  <Activity className="h-5 w-5 text-primary" />
-                  {language === "te" ? "యాక్టివిటీ నమోదు" : "Log Activity"}
-                </DialogTitle>
-              </DialogHeader>
-              <div className="space-y-4 mt-4">
-                {/* Activity Type Selection - Grid Layout */}
-                <div className="grid grid-cols-3 gap-2">
-                  {ACTIVITY_TYPES.map((type) => (
-                    <button
-                      key={type.value}
-                      onClick={() => setActivityType(type.value)}
-                      className={`p-3 rounded-xl flex flex-col items-center gap-2 transition-all border-2 ${
-                        activityType === type.value 
-                          ? `bg-gradient-to-br ${type.gradient} text-white border-transparent shadow-lg scale-105`
-                          : "bg-muted border-transparent hover:border-primary/30"
-                      }`}
-                      data-testid={`activity-type-${type.value}`}
-                    >
-                      {type.icon}
-                      <span className="text-xs font-medium">{type.label[language]}</span>
-                    </button>
-                  ))}
-                </div>
-
-              <div className="space-y-3">
-                <div>
-                  <label className="text-sm font-medium">
-                    {language === "te" ? "సమయం (నిమిషాలు)" : "Duration (minutes)"} *
-                  </label>
-                  <Input
-                    type="number"
-                    value={duration}
-                    onChange={(e) => setDuration(e.target.value)}
-                    placeholder="30"
-                    className="h-12 mt-1"
-                    data-testid="duration-input"
-                  />
-                </div>
-                
-                {["walking", "running", "cycling"].includes(activityType) && (
-                  <>
-                    <div>
-                      <label className="text-sm font-medium">
-                        {language === "te" ? "దూరం (కి.మీ.)" : "Distance (km)"}
-                      </label>
-                      <Input
-                        type="number"
-                        step="0.1"
-                        value={distance}
-                        onChange={(e) => setDistance(e.target.value)}
-                        placeholder="5.0"
-                        className="h-12 mt-1"
-                      />
-                    </div>
-                    <div>
-                      <label className="text-sm font-medium">
-                        {language === "te" ? "అడుగులు" : "Steps"}
-                      </label>
-                      <Input
-                        type="number"
-                        value={steps}
-                        onChange={(e) => setSteps(e.target.value)}
-                        placeholder="5000"
-                        className="h-12 mt-1"
-                      />
-                    </div>
-                  </>
-                )}
-              </div>
-
+        {/* Weight Section */}
+        <div className="space-y-4">
+          <div className="flex items-center justify-between">
+            <h2 className="font-bold text-lg flex items-center gap-2">
+              <Scale className="h-5 w-5 text-primary" />
+              {language === "te" ? "బరువు ట్రాకర్" : "Weight Tracker"}
+            </h2>
+            <div className="flex gap-2">
               <Button
-                onClick={logActivity}
-                disabled={logLoading}
-                className="w-full h-12 bg-gradient-to-r from-primary to-teal-500 text-white rounded-full font-semibold"
-                data-testid="submit-activity-btn"
+                size="sm"
+                variant="outline"
+                onClick={() => setShowSetGoal(true)}
+                className="h-8 text-xs rounded-full"
               >
-                {logLoading ? "..." : (language === "te" ? "నమోదు చేయండి" : "Log Activity")}
+                <Target className="h-3.5 w-3.5 mr-1" />
+                {language === "te" ? "లక్ష్యం" : "Goal"}
+              </Button>
+              <Button
+                size="sm"
+                onClick={() => setShowAddWeight(true)}
+                className="h-8 text-xs rounded-full bg-primary"
+              >
+                <Plus className="h-3.5 w-3.5 mr-1" />
+                {language === "te" ? "నమోదు" : "Log"}
               </Button>
             </div>
-          </DialogContent>
-        </Dialog>
+          </div>
 
-          <Button 
-            variant="outline"
-            className="h-16 border-2 border-primary/30 rounded-xl text-base font-semibold hover:bg-primary/5"
-            onClick={() => toast.info(language === "te" ? "స్మార్ట్‌వాచ్ సింక్ త్వరలో వస్తుంది!" : "Smartwatch sync coming soon!")}
-          >
-            <Watch className="h-5 w-5 mr-2 text-primary" />
-            {language === "te" ? "డివైస్ సింక్" : "Sync Device"}
-          </Button>
-        </div>
-
-        {/* Pollution Alert */}
-        <Card className="bg-gradient-to-r from-orange-50 to-amber-50 border-orange-200">
-          <CardContent className="p-4 flex items-start gap-3">
-            <div className="h-10 w-10 rounded-full bg-orange-100 flex items-center justify-center flex-shrink-0">
-              <AlertTriangle className="h-5 w-5 text-orange-600" />
-            </div>
-            <div>
-              <p className="font-semibold text-orange-800">
-                {language === "te" ? "కాలుష్య హెచ్చరిక" : "Pollution Alert"}
-              </p>
-              <p className="text-sm text-orange-700 mt-1">
-                {language === "te"
-                  ? "డంప్ యార్డ్ దగ్గర బయటి వ్యాయామం నివారించండి. ఉదయం 6-7 మధ్య వ్యాయామం చేయడం మంచిది."
-                  : "Avoid outdoor exercise near dump yard. Best time: 6-7 AM."}
-              </p>
-            </div>
-          </CardContent>
-        </Card>
-
-        {/* Smart Devices Card */}
-        <Card className="border-border/50 overflow-hidden">
-          <CardHeader className="pb-2 bg-gradient-to-r from-indigo-50 to-purple-50">
-            <div className="flex items-center justify-between">
-              <CardTitle className="text-lg flex items-center gap-2">
-                <Watch className="h-5 w-5 text-indigo-600" />
-                {language === "te" ? "స్మార్ట్ డివైసెస్" : "Smart Devices"}
-              </CardTitle>
-              <Dialog open={showDeviceDialog} onOpenChange={setShowDeviceDialog}>
-                <DialogTrigger asChild>
-                  <Button size="sm" variant="outline" className="h-8" data-testid="add-device-btn">
-                    <Plus className="h-4 w-4 mr-1" />
-                    {language === "te" ? "జోడించు" : "Add"}
-                  </Button>
-                </DialogTrigger>
-                <DialogContent className="max-w-md">
-                  <DialogHeader>
-                    <DialogTitle className="flex items-center gap-2">
-                      <Bluetooth className="h-5 w-5 text-indigo-600" />
-                      {language === "te" ? "పరికరాన్ని కనెక్ట్ చేయండి" : "Connect Device"}
-                    </DialogTitle>
-                  </DialogHeader>
-                  <div className="space-y-4 mt-4">
-                    <div className="grid grid-cols-2 gap-3">
-                      <button
-                        onClick={() => setSelectedDeviceType("phone")}
-                        className={`p-4 rounded-xl border-2 transition-all ${
-                          selectedDeviceType === "phone"
-                            ? "border-indigo-500 bg-indigo-50"
-                            : "border-border hover:border-indigo-300"
-                        }`}
-                      >
-                        <Smartphone className="h-8 w-8 mx-auto mb-2 text-indigo-600" />
-                        <p className="text-sm font-medium">{language === "te" ? "ఫోన్" : "Phone"}</p>
-                        <p className="text-xs text-muted-foreground">{language === "te" ? "పెడోమీటర్" : "Pedometer"}</p>
-                      </button>
-                      <button
-                        onClick={() => setSelectedDeviceType("smartwatch")}
-                        className={`p-4 rounded-xl border-2 transition-all ${
-                          selectedDeviceType === "smartwatch"
-                            ? "border-indigo-500 bg-indigo-50"
-                            : "border-border hover:border-indigo-300"
-                        }`}
-                      >
-                        <Watch className="h-8 w-8 mx-auto mb-2 text-indigo-600" />
-                        <p className="text-sm font-medium">{language === "te" ? "స్మార్ట్‌వాచ్" : "Smartwatch"}</p>
-                        <p className="text-xs text-muted-foreground">{language === "te" ? "పూర్తి ట్రాకింగ్" : "Full tracking"}</p>
-                      </button>
-                    </div>
-                    
-                    {selectedDeviceType === "smartwatch" && (
-                      <Select value={selectedBrand} onValueChange={setSelectedBrand}>
-                        <SelectTrigger className="h-12">
-                          <SelectValue placeholder={language === "te" ? "బ్రాండ్ ఎంచుకోండి" : "Select brand"} />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="apple">Apple Watch</SelectItem>
-                          <SelectItem value="samsung">Samsung Galaxy Watch</SelectItem>
-                          <SelectItem value="fitbit">Fitbit</SelectItem>
-                          <SelectItem value="garmin">Garmin</SelectItem>
-                          <SelectItem value="mi">Mi Band / Watch</SelectItem>
-                          <SelectItem value="amazfit">Amazfit</SelectItem>
-                        </SelectContent>
-                      </Select>
-                    )}
-                    
-                    <Button
-                      onClick={connectDevice}
-                      disabled={connectingDevice || (selectedDeviceType === "smartwatch" && !selectedBrand)}
-                      className="w-full h-12 bg-gradient-to-r from-indigo-500 to-purple-500"
-                    >
-                      {connectingDevice ? (
-                        <Loader2 className="h-4 w-4 animate-spin mr-2" />
-                      ) : (
-                        <LinkIcon className="h-4 w-4 mr-2" />
-                      )}
-                      {language === "te" ? "కనెక్ట్ చేయండి" : "Connect Device"}
-                    </Button>
-                  </div>
-                </DialogContent>
-              </Dialog>
-            </div>
-          </CardHeader>
-          <CardContent className="p-4">
-            {connectedDevices.length === 0 ? (
-              <div className="text-center py-4">
-                <Bluetooth className="h-10 w-10 mx-auto mb-2 text-muted-foreground/50" />
-                <p className="text-sm text-muted-foreground">
-                  {language === "te" ? "కనెక్ట్ చేసిన పరికరాలు లేవు" : "No connected devices"}
+          {/* Weight Overview Cards */}
+          <div className="grid grid-cols-3 gap-3">
+            <Card className="border-0 shadow-md bg-gradient-to-br from-slate-50 to-slate-100">
+              <CardContent className="p-3 text-center">
+                <p className="text-[10px] text-muted-foreground font-medium uppercase tracking-wide">
+                  {language === "te" ? "ప్రస్తుతం" : "Current"}
                 </p>
-                <p className="text-xs text-muted-foreground mt-1">
-                  {language === "te" ? "మీ స్టెప్‌లను ట్రాక్ చేయడానికి పరికరాన్ని జోడించండి" : "Add a device to track your steps"}
+                <p className="text-2xl font-bold text-slate-800 mt-1">
+                  {currentWeight || "—"}
                 </p>
-              </div>
-            ) : (
-              <div className="space-y-2">
-                {connectedDevices.map((device) => (
-                  <div
-                    key={device.id}
-                    className="flex items-center justify-between p-3 bg-gradient-to-r from-indigo-50 to-purple-50 rounded-xl"
-                  >
-                    <div className="flex items-center gap-3">
-                      {device.device_type === "phone" ? (
-                        <div className="h-10 w-10 rounded-full bg-indigo-100 flex items-center justify-center">
-                          <Smartphone className="h-5 w-5 text-indigo-600" />
-                        </div>
-                      ) : (
-                        <div className="h-10 w-10 rounded-full bg-purple-100 flex items-center justify-center">
-                          <Watch className="h-5 w-5 text-purple-600" />
-                        </div>
-                      )}
-                      <div>
-                        <p className="font-medium text-sm">{device.device_name}</p>
-                        <div className="flex items-center gap-1">
-                          <span className="h-2 w-2 rounded-full bg-green-500"></span>
-                          <span className="text-xs text-muted-foreground">
-                            {language === "te" ? "కనెక్ట్ అయింది" : "Connected"}
-                          </span>
-                        </div>
-                      </div>
-                    </div>
-                    <div className="flex gap-2">
-                      <Button
-                        size="sm"
-                        variant="ghost"
-                        className="h-8 w-8 p-0"
-                        onClick={() => device.device_type === "phone" ? syncPhoneSensors() : syncSmartwatch(device.device_brand)}
-                        disabled={syncingDevice !== null}
-                      >
-                        {syncingDevice === (device.device_type === "phone" ? "phone" : device.device_brand) ? (
-                          <Loader2 className="h-4 w-4 animate-spin" />
-                        ) : (
-                          <RefreshCw className="h-4 w-4" />
-                        )}
-                      </Button>
-                      <Button
-                        size="sm"
-                        variant="ghost"
-                        className="h-8 w-8 p-0 text-red-500 hover:text-red-600"
-                        onClick={() => disconnectDevice(device.id)}
-                      >
-                        <Unlink className="h-4 w-4" />
-                      </Button>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            )}
-          </CardContent>
-        </Card>
-
-        <Tabs defaultValue="activities" className="w-full">
-          <TabsList className="grid w-full grid-cols-4 h-12 bg-muted/50 p-1 rounded-xl">
-            <TabsTrigger value="activities" className="text-xs rounded-lg data-[state=active]:bg-white data-[state=active]:shadow-sm">
-              {language === "te" ? "యాక్టివిటీ" : "Activity"}
-            </TabsTrigger>
-            <TabsTrigger value="leaderboard" className="text-xs rounded-lg data-[state=active]:bg-white data-[state=active]:shadow-sm">
-              {language === "te" ? "టాప్ 10" : "Top 10"}
-            </TabsTrigger>
-            <TabsTrigger value="challenges" className="text-xs rounded-lg data-[state=active]:bg-white data-[state=active]:shadow-sm">
-              {language === "te" ? "ఛాలెంజ్" : "Challenge"}
-            </TabsTrigger>
-            <TabsTrigger value="stats" className="text-xs rounded-lg data-[state=active]:bg-white data-[state=active]:shadow-sm">
-              {language === "te" ? "గణాంకాలు" : "Stats"}
-            </TabsTrigger>
-          </TabsList>
-
-          {/* Activities Tab */}
-          <TabsContent value="activities" className="mt-4 space-y-3">
-            {activities.length === 0 ? (
-              <div className="text-center py-8">
-                <Activity className="h-12 w-12 mx-auto mb-3 text-muted-foreground/50" />
-                <p className="text-text-muted">
-                  {language === "te" ? "యాక్టివిటీలు ఇంకా లేవు" : "No activities yet"}
-                </p>
-              </div>
-            ) : (
-              activities.slice(0, 10).map((activity) => {
-                const actType = ACTIVITY_TYPES.find(t => t.value === activity.activity_type);
-                return (
-                  <Card key={activity.id} className="border-border/50">
-                    <CardContent className="p-4 flex items-center gap-4">
-                      <div className={`h-12 w-12 rounded-xl ${actType?.color || "bg-gray-100"} flex items-center justify-center`}>
-                        {actType?.icon || <Activity className="h-5 w-5" />}
-                      </div>
-                      <div className="flex-1">
-                        <p className="font-semibold text-text-primary">
-                          {actType?.label[language] || activity.activity_type}
-                        </p>
-                        <div className="flex items-center gap-3 text-xs text-text-muted mt-1">
-                          <span><Timer className="h-3 w-3 inline mr-1" />{activity.duration_minutes} min</span>
-                          {activity.distance_km && <span><MapPin className="h-3 w-3 inline mr-1" />{activity.distance_km} km</span>}
-                          {activity.steps && <span><Footprints className="h-3 w-3 inline mr-1" />{activity.steps}</span>}
-                        </div>
-                      </div>
-                      <div className="text-right">
-                        <p className="font-bold text-secondary">{activity.calories_burned}</p>
-                        <p className="text-xs text-text-muted">{language === "te" ? "కేలరీలు" : "cal"}</p>
-                      </div>
-                    </CardContent>
-                  </Card>
-                );
-              })
-            )}
-          </TabsContent>
-
-          {/* Leaderboard Tab */}
-          <TabsContent value="leaderboard" className="mt-4 space-y-3">
-            {leaderboard.length === 0 ? (
-              <div className="text-center py-8">
-                <Trophy className="h-12 w-12 mx-auto mb-3 text-muted-foreground/50" />
-                <p className="text-text-muted">{language === "te" ? "లీడర్‌బోర్డ్ ఇంకా లేదు" : "No leaderboard data"}</p>
-              </div>
-            ) : (
-              leaderboard.map((entry, idx) => (
-                <Card key={idx} className={`border-border/50 ${idx < 3 ? "bg-gradient-to-r from-amber-50 to-white" : ""}`}>
-                  <CardContent className="p-4 flex items-center gap-4">
-                    <div className={`h-10 w-10 rounded-full flex items-center justify-center font-bold ${
-                      idx === 0 ? "bg-yellow-400 text-yellow-900" :
-                      idx === 1 ? "bg-gray-300 text-gray-700" :
-                      idx === 2 ? "bg-amber-600 text-amber-100" :
-                      "bg-muted text-text-muted"
-                    }`}>
-                      {idx < 3 ? <Medal className="h-5 w-5" /> : entry.rank}
-                    </div>
-                    <div className="flex-1">
-                      <p className="font-semibold text-text-primary">{entry.name}</p>
-                      {entry.colony && <p className="text-xs text-text-muted">{entry.colony}</p>}
-                    </div>
-                    <div className="text-right">
-                      <p className="font-bold text-primary">{(entry.total_steps || entry.total || 0).toLocaleString()}</p>
-                      <p className="text-xs text-text-muted">{entry.days_active || 0} {language === "te" ? "రోజులు" : "days"}</p>
-                    </div>
-                  </CardContent>
-                </Card>
-              ))
-            )}
-          </TabsContent>
-
-          {/* Challenges Tab */}
-          <TabsContent value="challenges" className="mt-4 space-y-3">
-            {challenges.length === 0 ? (
-              <div className="text-center py-8">
-                <Target className="h-12 w-12 mx-auto mb-3 text-muted-foreground/50" />
-                <p className="text-text-muted">{language === "te" ? "ఛాలెంజ్‌లు ఇంకా లేవు" : "No challenges yet"}</p>
-              </div>
-            ) : (
-              challenges.map((challenge) => (
-                <Card key={challenge.id} className="border-border/50">
-                  <CardContent className="p-4">
-                    <div className="flex items-start justify-between">
-                      <div>
-                        <h3 className="font-semibold text-text-primary">
-                          {language === "te" ? challenge.name_te : challenge.name}
-                        </h3>
-                        <p className="text-sm text-text-muted mt-1">
-                          {language === "te" ? challenge.description_te : challenge.description}
-                        </p>
-                      </div>
-                      <Badge className="bg-primary/10 text-primary">
-                        {challenge.participants} {language === "te" ? "మంది" : "joined"}
-                      </Badge>
-                    </div>
-                    <div className="flex items-center justify-between mt-4">
-                      <div className="flex items-center gap-2 text-sm text-text-muted">
-                        <Target className="h-4 w-4" />
-                        {challenge.target_steps?.toLocaleString()} {language === "te" ? "అడుగులు" : "steps"}
-                      </div>
-                      <Button
-                        size="sm"
-                        onClick={() => joinChallenge(challenge.id)}
-                        className="bg-secondary text-white rounded-full"
-                      >
-                        {language === "te" ? "చేరండి" : "Join"}
-                      </Button>
-                    </div>
-                  </CardContent>
-                </Card>
-              ))
-            )}
-          </TabsContent>
-
-          {/* Stats Tab */}
-          <TabsContent value="stats" className="mt-4 space-y-4">
-            {/* Monthly Stats */}
-            <Card className="border-border/50">
-              <CardHeader className="pb-2">
-                <CardTitle className="text-lg flex items-center gap-2">
-                  <Calendar className="h-5 w-5 text-primary" />
-                  {language === "te" ? "నెలవారీ గణాంకాలు" : "Monthly Stats"}
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="grid grid-cols-2 gap-4">
-                  <div className="text-center p-3 bg-muted/50 rounded-lg">
-                    <p className="text-2xl font-bold text-primary">
-                      {dashboard?.monthly_stats?.total_steps?.toLocaleString() || 0}
-                    </p>
-                    <p className="text-xs text-text-muted">{language === "te" ? "మొత్తం అడుగులు" : "Total Steps"}</p>
-                  </div>
-                  <div className="text-center p-3 bg-muted/50 rounded-lg">
-                    <p className="text-2xl font-bold text-secondary">
-                      {dashboard?.monthly_stats?.total_calories?.toLocaleString() || 0}
-                    </p>
-                    <p className="text-xs text-text-muted">{language === "te" ? "కేలరీలు కాల్చారు" : "Calories Burned"}</p>
-                  </div>
-                  <div className="text-center p-3 bg-muted/50 rounded-lg">
-                    <p className="text-2xl font-bold text-blue-600">
-                      {dashboard?.monthly_stats?.total_distance_km || 0} km
-                    </p>
-                    <p className="text-xs text-text-muted">{language === "te" ? "దూరం" : "Distance"}</p>
-                  </div>
-                  <div className="text-center p-3 bg-muted/50 rounded-lg">
-                    <p className="text-2xl font-bold text-emerald-600">
-                      {dashboard?.monthly_stats?.total_activities || 0}
-                    </p>
-                    <p className="text-xs text-text-muted">{language === "te" ? "యాక్టివిటీలు" : "Activities"}</p>
-                  </div>
-                </div>
+                <p className="text-[10px] text-muted-foreground">kg</p>
               </CardContent>
             </Card>
+            
+            <Card className="border-0 shadow-md bg-gradient-to-br from-blue-50 to-indigo-50">
+              <CardContent className="p-3 text-center">
+                <p className="text-[10px] text-muted-foreground font-medium uppercase tracking-wide">
+                  {language === "te" ? "లక్ష్యం" : "Goal"}
+                </p>
+                <p className="text-2xl font-bold text-blue-700 mt-1">
+                  {targetWeight || "—"}
+                </p>
+                <p className="text-[10px] text-muted-foreground">kg</p>
+              </CardContent>
+            </Card>
+            
+            <Card className={`border-0 shadow-md ${weightChange < 0 ? "bg-gradient-to-br from-green-50 to-emerald-50" : weightChange > 0 ? "bg-gradient-to-br from-orange-50 to-red-50" : "bg-gradient-to-br from-gray-50 to-slate-50"}`}>
+              <CardContent className="p-3 text-center">
+                <p className="text-[10px] text-muted-foreground font-medium uppercase tracking-wide">
+                  {language === "te" ? "మార్పు" : "Change"}
+                </p>
+                <p className={`text-2xl font-bold mt-1 flex items-center justify-center gap-1 ${weightChange < 0 ? "text-green-600" : weightChange > 0 ? "text-orange-600" : "text-slate-600"}`}>
+                  {weightChange < 0 && <TrendingDown className="h-4 w-4" />}
+                  {weightChange > 0 && <TrendingUp className="h-4 w-4" />}
+                  {Math.abs(weightChange) || "0"}
+                </p>
+                <p className="text-[10px] text-muted-foreground">kg</p>
+              </CardContent>
+            </Card>
+          </div>
 
-            {/* Activity Breakdown */}
-            {dashboard?.activity_breakdown && Object.keys(dashboard.activity_breakdown).length > 0 && (
-              <Card className="border-border/50">
-                <CardHeader className="pb-2">
-                  <CardTitle className="text-lg">
-                    {language === "te" ? "యాక్టివిటీ విభజన" : "Activity Breakdown"}
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="space-y-3">
-                    {Object.entries(dashboard.activity_breakdown).map(([type, data]) => {
-                      const actType = ACTIVITY_TYPES.find(t => t.value === type);
-                      return (
-                        <div key={type} className="flex items-center gap-3">
-                          <div className={`h-8 w-8 rounded ${actType?.color || "bg-gray-100"} flex items-center justify-center`}>
-                            {actType?.icon || <Activity className="h-4 w-4" />}
-                          </div>
-                          <div className="flex-1">
-                            <p className="text-sm font-medium">{actType?.label[language] || type}</p>
-                          </div>
-                          <div className="text-right text-sm">
-                            <span className="font-medium">{data.count}</span>
-                            <span className="text-text-muted"> | {data.calories} cal</span>
-                          </div>
-                        </div>
-                      );
-                    })}
+          {/* Progress to Goal */}
+          {targetWeight && (
+            <Card className="border-0 shadow-md">
+              <CardContent className="p-4">
+                <div className="flex items-center justify-between mb-2">
+                  <span className="text-sm font-medium">
+                    {language === "te" ? "లక్ష్యం వైపు పురోగతి" : "Progress to Goal"}
+                  </span>
+                  <span className="text-sm font-bold text-primary">{progressPercent}%</span>
+                </div>
+                <div className="h-3 bg-slate-100 rounded-full overflow-hidden">
+                  <div 
+                    className="h-full bg-gradient-to-r from-primary to-emerald-500 rounded-full transition-all duration-500"
+                    style={{ width: `${Math.min(100, progressPercent)}%` }}
+                  />
+                </div>
+                <p className="text-xs text-muted-foreground mt-2 text-center">
+                  {currentWeight} kg → {targetWeight} kg
+                </p>
+              </CardContent>
+            </Card>
+          )}
+
+          {/* Weight Chart */}
+          {chartData.length > 1 && (
+            <Card className="border-0 shadow-md">
+              <CardContent className="p-4">
+                <div className="flex items-center justify-between mb-3">
+                  <h3 className="font-semibold text-sm flex items-center gap-2">
+                    <History className="h-4 w-4 text-primary" />
+                    {language === "te" ? "30 రోజుల చరిత్ర" : "30-Day History"}
+                  </h3>
+                  <Badge variant="outline" className="text-[10px]">
+                    {chartData.length} {language === "te" ? "ఎంట్రీలు" : "entries"}
+                  </Badge>
+                </div>
+                <div className="h-48">
+                  <ResponsiveContainer width="100%" height="100%">
+                    <AreaChart data={chartData} margin={{ top: 5, right: 5, left: -20, bottom: 5 }}>
+                      <defs>
+                        <linearGradient id="weightGradient" x1="0" y1="0" x2="0" y2="1">
+                          <stop offset="5%" stopColor="#3B82F6" stopOpacity={0.3}/>
+                          <stop offset="95%" stopColor="#3B82F6" stopOpacity={0}/>
+                        </linearGradient>
+                      </defs>
+                      <CartesianGrid strokeDasharray="3 3" stroke="#E2E8F0" />
+                      <XAxis 
+                        dataKey="date" 
+                        tick={{ fontSize: 10, fill: '#94A3B8' }}
+                        axisLine={{ stroke: '#E2E8F0' }}
+                      />
+                      <YAxis 
+                        domain={['dataMin - 2', 'dataMax + 2']}
+                        tick={{ fontSize: 10, fill: '#94A3B8' }}
+                        axisLine={{ stroke: '#E2E8F0' }}
+                      />
+                      <Tooltip 
+                        contentStyle={{ 
+                          borderRadius: '12px', 
+                          border: 'none', 
+                          boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
+                          fontSize: '12px'
+                        }}
+                        formatter={(value) => [`${value} kg`, language === "te" ? "బరువు" : "Weight"]}
+                      />
+                      <Area 
+                        type="monotone" 
+                        dataKey="weight" 
+                        stroke="#3B82F6" 
+                        strokeWidth={2.5}
+                        fill="url(#weightGradient)"
+                        dot={{ fill: '#3B82F6', strokeWidth: 2, r: 4 }}
+                        activeDot={{ r: 6, fill: '#3B82F6' }}
+                      />
+                      {targetWeight && (
+                        <Line 
+                          type="monotone" 
+                          dataKey="goal" 
+                          stroke="#10B981" 
+                          strokeWidth={2}
+                          strokeDasharray="5 5"
+                          dot={false}
+                        />
+                      )}
+                    </AreaChart>
+                  </ResponsiveContainer>
+                </div>
+                {targetWeight && (
+                  <div className="flex items-center justify-center gap-4 mt-2 text-xs">
+                    <div className="flex items-center gap-1">
+                      <div className="w-3 h-0.5 bg-blue-500 rounded" />
+                      <span className="text-muted-foreground">{language === "te" ? "బరువు" : "Weight"}</span>
+                    </div>
+                    <div className="flex items-center gap-1">
+                      <div className="w-3 h-0.5 bg-emerald-500 rounded" style={{ borderStyle: 'dashed' }} />
+                      <span className="text-muted-foreground">{language === "te" ? "లక్ష్యం" : "Goal"}</span>
+                    </div>
                   </div>
-                </CardContent>
-              </Card>
-            )}
-          </TabsContent>
-        </Tabs>
+                )}
+              </CardContent>
+            </Card>
+          )}
 
-        {/* Live Activity Dialog */}
-        <Dialog open={showLiveActivityDialog} onOpenChange={setShowLiveActivityDialog}>
-          <DialogContent className="max-w-md">
-            <DialogHeader>
-              <DialogTitle className="flex items-center gap-2">
-                <Play className="h-5 w-5 text-primary" />
-                {language === "te" ? "లైవ్ ట్రాకింగ్ ప్రారంభించండి" : "Start Live Tracking"}
-              </DialogTitle>
-            </DialogHeader>
-            <div className="space-y-4 mt-4">
-              <p className="text-sm text-muted-foreground">
-                {language === "te" 
-                  ? "యాక్టివిటీ ఎంచుకోండి మరియు GPS, టైమర్, కేలరీలతో ట్రాక్ చేయండి" 
-                  : "Select an activity and track with GPS, timer, and calories"}
-              </p>
-              <div className="grid grid-cols-3 gap-2">
-                {ACTIVITY_TYPES.slice(0, 9).map((type) => (
-                  <button
-                    key={type.value}
-                    onClick={() => setSelectedLiveActivity(type.value)}
-                    className={`p-3 rounded-xl flex flex-col items-center gap-2 transition-all border-2 ${
-                      selectedLiveActivity === type.value 
-                        ? `bg-gradient-to-br ${type.gradient} text-white border-transparent shadow-lg scale-105`
-                        : "bg-muted border-transparent hover:border-primary/30"
-                    }`}
-                    data-testid={`live-activity-${type.value}`}
-                  >
-                    {type.icon}
-                    <span className="text-xs font-medium">{type.label[language]}</span>
-                  </button>
-                ))}
+          {/* No data message */}
+          {chartData.length <= 1 && (
+            <Card className="border-dashed border-2">
+              <CardContent className="p-6 text-center">
+                <Scale className="h-10 w-10 mx-auto text-muted-foreground/50 mb-3" />
+                <p className="font-medium text-muted-foreground">
+                  {language === "te" ? "బరువు చరిత్ర లేదు" : "No weight history yet"}
+                </p>
+                <p className="text-sm text-muted-foreground mt-1">
+                  {language === "te" ? "పురోగతి చూడటానికి బరువు నమోదు చేయండి" : "Log your weight to see progress"}
+                </p>
+                <Button
+                  onClick={() => setShowAddWeight(true)}
+                  className="mt-4"
+                  size="sm"
+                >
+                  <Plus className="h-4 w-4 mr-1" />
+                  {language === "te" ? "మొదటి బరువు నమోదు" : "Log First Weight"}
+                </Button>
+              </CardContent>
+            </Card>
+          )}
+        </div>
+
+        {/* Quick Stats */}
+        <Card className="border-0 shadow-md bg-gradient-to-br from-amber-50 to-orange-50">
+          <CardContent className="p-4">
+            <div className="flex items-center gap-3">
+              <div className="h-12 w-12 rounded-xl bg-gradient-to-br from-amber-400 to-orange-500 flex items-center justify-center shadow-lg shadow-amber-500/30">
+                <Award className="h-6 w-6 text-white" />
               </div>
-              <Button
-                onClick={() => {
-                  setShowLiveActivityDialog(false);
-                  navigate(`/live-activity/${selectedLiveActivity}`);
-                }}
-                className="w-full h-12 bg-gradient-to-r from-primary to-teal-500 text-white rounded-full font-semibold"
-                data-testid="go-live-btn"
-              >
-                <Play className="h-5 w-5 mr-2" />
-                {language === "te" ? "ట్రాకింగ్ ప్రారంభించండి" : "Start Tracking"}
-              </Button>
+              <div className="flex-1">
+                <p className="font-semibold">
+                  {language === "te" ? "ఈ వారం" : "This Week"}
+                </p>
+                <p className="text-sm text-muted-foreground">
+                  {todayStats?.weekly_steps?.toLocaleString() || "0"} {language === "te" ? "అడుగులు" : "steps"} • {todayStats?.weekly_calories || 0} {language === "te" ? "కేలరీలు" : "cal"}
+                </p>
+              </div>
+              <ChevronRight className="h-5 w-5 text-muted-foreground" />
             </div>
-          </DialogContent>
-        </Dialog>
+          </CardContent>
+        </Card>
+
       </div>
+
+      {/* Add Weight Dialog */}
+      <Dialog open={showAddWeight} onOpenChange={setShowAddWeight}>
+        <DialogContent className="max-w-xs rounded-2xl">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <Scale className="h-5 w-5 text-primary" />
+              {language === "te" ? "బరువు నమోదు చేయండి" : "Log Weight"}
+            </DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4 pt-2">
+            <div>
+              <label className="text-sm text-muted-foreground mb-1 block">
+                {language === "te" ? "బరువు (kg)" : "Weight (kg)"}
+              </label>
+              <Input
+                type="number"
+                step="0.1"
+                placeholder="72.5"
+                value={newWeight}
+                onChange={(e) => setNewWeight(e.target.value)}
+                className="text-center text-2xl h-14 font-bold"
+                data-testid="weight-input"
+              />
+            </div>
+            <Button
+              onClick={logWeight}
+              disabled={submitting}
+              className="w-full h-12 rounded-xl"
+              data-testid="log-weight-btn"
+            >
+              {submitting ? (
+                <span className="flex items-center gap-2">
+                  <div className="h-4 w-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                  {language === "te" ? "నమోదు చేస్తోంది..." : "Logging..."}
+                </span>
+              ) : (
+                language === "te" ? "నమోదు చేయండి" : "Log Weight"
+              )}
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* Set Goal Dialog */}
+      <Dialog open={showSetGoal} onOpenChange={setShowSetGoal}>
+        <DialogContent className="max-w-xs rounded-2xl">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <Target className="h-5 w-5 text-primary" />
+              {language === "te" ? "లక్ష్య బరువు సెట్ చేయండి" : "Set Goal Weight"}
+            </DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4 pt-2">
+            <div>
+              <label className="text-sm text-muted-foreground mb-1 block">
+                {language === "te" ? "లక్ష్య బరువు (kg)" : "Target Weight (kg)"}
+              </label>
+              <Input
+                type="number"
+                step="0.1"
+                placeholder="68.0"
+                value={goalWeight}
+                onChange={(e) => setGoalWeight(e.target.value)}
+                className="text-center text-2xl h-14 font-bold"
+                data-testid="goal-weight-input"
+              />
+            </div>
+            {currentWeight > 0 && goalWeight && (
+              <p className="text-sm text-center text-muted-foreground">
+                {currentWeight > parseFloat(goalWeight) 
+                  ? `${(currentWeight - parseFloat(goalWeight)).toFixed(1)} kg ${language === "te" ? "తగ్గించాలి" : "to lose"}`
+                  : `${(parseFloat(goalWeight) - currentWeight).toFixed(1)} kg ${language === "te" ? "పెరగాలి" : "to gain"}`
+                }
+              </p>
+            )}
+            <Button
+              onClick={setWeightGoal}
+              disabled={submitting}
+              className="w-full h-12 rounded-xl"
+              data-testid="set-goal-btn"
+            >
+              {submitting ? (
+                <span className="flex items-center gap-2">
+                  <div className="h-4 w-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                  {language === "te" ? "సెట్ చేస్తోంది..." : "Setting..."}
+                </span>
+              ) : (
+                language === "te" ? "లక్ష్యం సెట్ చేయండి" : "Set Goal"
+              )}
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* Activity Picker Dialog */}
+      <Dialog open={showActivityPicker} onOpenChange={setShowActivityPicker}>
+        <DialogContent className="max-w-sm rounded-2xl">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <Play className="h-5 w-5 text-primary" />
+              {language === "te" ? "యాక్టివిటీ ఎంచుకోండి" : "Select Activity"}
+            </DialogTitle>
+          </DialogHeader>
+          <div className="grid grid-cols-3 gap-3 pt-2">
+            {LIVE_ACTIVITIES.map((activity) => (
+              <button
+                key={activity.id}
+                onClick={() => {
+                  setShowActivityPicker(false);
+                  navigate(`/live-activity/${activity.id}`);
+                }}
+                className={`p-4 rounded-2xl flex flex-col items-center gap-2 bg-gradient-to-br ${activity.color} text-white shadow-lg active:scale-95 transition-transform`}
+                data-testid={`activity-${activity.id}`}
+              >
+                <span className="text-2xl">{activity.icon}</span>
+                <span className="text-xs font-medium">
+                  {language === "te" ? activity.name_te : activity.name_en}
+                </span>
+              </button>
+            ))}
+          </div>
+        </DialogContent>
+      </Dialog>
     </Layout>
   );
 }
