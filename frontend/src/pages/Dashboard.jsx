@@ -376,16 +376,62 @@ export default function Dashboard() {
               </span>
             </button>
           ))}
+
+          {/* Groups as Circles */}
+          {myGroups.slice(0, 5).map((group) => (
+            <Link
+              key={group.id}
+              to="/wall"
+              className="flex flex-col items-center flex-shrink-0"
+            >
+              <div className="relative">
+                <div className="h-14 w-14 rounded-full p-[2px] bg-gradient-to-br from-purple-400 to-pink-500">
+                  <div className="h-full w-full rounded-full bg-white p-[2px]">
+                    <div className="h-full w-full rounded-full bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center text-white font-bold text-xs">
+                      {group.name?.[0]?.toUpperCase() || "G"}
+                    </div>
+                  </div>
+                </div>
+                {/* Notification badge for unread messages */}
+                {group.unread_count > 0 && (
+                  <div className="absolute -top-1 -right-1 h-5 w-5 bg-red-500 rounded-full flex items-center justify-center border-2 border-white">
+                    <span className="text-[9px] text-white font-bold">
+                      {group.unread_count > 9 ? "9+" : group.unread_count}
+                    </span>
+                  </div>
+                )}
+              </div>
+              <span className="text-[9px] mt-1 text-text-muted truncate max-w-[50px]">
+                {group.name?.substring(0, 6)}
+              </span>
+            </Link>
+          ))}
         </div>
 
-        {/* Quick Actions - Single Row */}
-        <div className="grid grid-cols-4 gap-3">
+        {/* Quick Actions Row 1 - Report, Issues, Dump Yard */}
+        <div className="grid grid-cols-3 gap-3">
           <Link to="/report" data-testid="quick-action-report">
             <div className="h-16 rounded-xl bg-red-50 flex flex-col items-center justify-center shadow-sm active:scale-95 transition-transform border border-red-100">
               <AlertTriangle className="h-6 w-6 text-red-600" />
-              <span className="text-[10px] mt-1 font-medium text-red-700">{language === "te" ? "సమస్య" : "Report"}</span>
+              <span className="text-[10px] mt-1 font-medium text-red-700">{language === "te" ? "రిపోర్ట్" : "Report"}</span>
             </div>
           </Link>
+          <Link to="/issues" data-testid="quick-action-issues">
+            <div className="h-16 rounded-xl bg-orange-50 flex flex-col items-center justify-center shadow-sm active:scale-95 transition-transform border border-orange-100">
+              <FileText className="h-6 w-6 text-orange-600" />
+              <span className="text-[10px] mt-1 font-medium text-orange-700">{language === "te" ? "సమస్యలు" : "Issues"}</span>
+            </div>
+          </Link>
+          <Link to="/dump-yard" data-testid="quick-action-dump">
+            <div className="h-16 rounded-xl bg-amber-50 flex flex-col items-center justify-center shadow-sm active:scale-95 transition-transform border border-amber-100">
+              <Trash className="h-6 w-6 text-amber-600" />
+              <span className="text-[10px] mt-1 font-medium text-amber-700">{language === "te" ? "డంప్ యార్డ్" : "Dump"}</span>
+            </div>
+          </Link>
+        </div>
+
+        {/* Quick Actions Row 2 - Fit, Doctor, My Family */}
+        <div className="grid grid-cols-3 gap-3">
           <Link to="/fitness" data-testid="quick-action-fit">
             <div className="h-16 rounded-xl bg-blue-50 flex flex-col items-center justify-center shadow-sm active:scale-95 transition-transform border border-blue-100">
               <Activity className="h-6 w-6 text-blue-600" />
@@ -398,10 +444,10 @@ export default function Dashboard() {
               <span className="text-[10px] mt-1 font-medium text-teal-700">{language === "te" ? "డాక్టర్" : "Doctor"}</span>
             </div>
           </Link>
-          <Link to="/news" data-testid="quick-action-news">
-            <div className="h-16 rounded-xl bg-orange-50 flex flex-col items-center justify-center shadow-sm active:scale-95 transition-transform border border-orange-100">
-              <Newspaper className="h-6 w-6 text-orange-600" />
-              <span className="text-[10px] mt-1 font-medium text-orange-700">{language === "te" ? "వార్తలు" : "News"}</span>
+          <Link to="/family" data-testid="quick-action-family">
+            <div className="h-16 rounded-xl bg-purple-50 flex flex-col items-center justify-center shadow-sm active:scale-95 transition-transform border border-purple-100">
+              <Users className="h-6 w-6 text-purple-600" />
+              <span className="text-[10px] mt-1 font-medium text-purple-700">{language === "te" ? "కుటుంబం" : "Family"}</span>
             </div>
           </Link>
         </div>
