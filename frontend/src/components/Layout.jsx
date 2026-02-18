@@ -22,7 +22,8 @@ import {
   MessageCircle,
   Stethoscope,
   Wind,
-  Newspaper
+  Newspaper,
+  PenSquare
 } from "lucide-react";
 import { useState } from "react";
 
