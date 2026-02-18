@@ -79,13 +79,18 @@ class DammaigiudaAPITester:
         result = self.run_test("Send OTP", "POST", "auth/send-otp", 200, data)
         return result is not None
 
-    def test_verify_otp_new_user(self, phone="9876543210", otp="123456"):
-        """Test OTP verification for new user"""
+    def test_verify_otp_and_login(self, phone="9876543210", otp="123456"):
+        """Test OTP verification and login (handles both new and existing users)"""
         data = {"phone": phone, "otp": otp}
-        result = self.run_test("Verify OTP (New User)", "POST", "auth/verify-otp", 200, data)
+        result = self.run_test("Verify OTP & Login", "POST", "auth/verify-otp", 200, data)
         
-        if result and result.get("is_new"):
+        if result and result.get("token"):
+            self.token = result["token"]
+            self.user_id = result["user"]["id"]
             return True
+        elif result and result.get("needs_registration"):
+            # New user needs registration
+            return self.test_register_user(phone, otp, "Test User")
         return False
 
     def test_register_user(self, phone="9876543210", otp="123456", name="Test User"):
