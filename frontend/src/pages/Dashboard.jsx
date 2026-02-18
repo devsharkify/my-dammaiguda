@@ -26,6 +26,7 @@ const API = `${process.env.REACT_APP_BACKEND_URL}/api`;
 export default function Dashboard() {
   const { language } = useLanguage();
   const { user } = useAuth();
+  const navigate = useNavigate();
   const [stats, setStats] = useState(null);
   const [fitnessStats, setFitnessStats] = useState(null);
   const [recentIssues, setRecentIssues] = useState([]);
