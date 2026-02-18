@@ -131,6 +131,9 @@ export default function Dashboard() {
           )}
         </div>
 
+        {/* AQI Widget - Live Pollution Data */}
+        <AQIWidget onViewFullReport={() => navigate("/aqi")} />
+
         {/* Quick Actions */}
         <div className="grid grid-cols-2 gap-3">
           {quickActions.map((action, index) => (
