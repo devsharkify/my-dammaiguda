@@ -333,9 +333,25 @@ class DammaigiudaAPITester:
         print("\n🏭 Testing Dump Yard Module...")
         self.test_get_dumpyard_info()
 
-        print("\n💪 Testing Fitness Module...")
-        self.test_fitness_log()
-        self.test_fitness_stats()
+        print("\n💪 Testing Kaizer Fit Module...")
+        self.test_fitness_activity_log()
+        self.test_fitness_dashboard()
+        self.test_fitness_leaderboard()
+
+        print("\n🩺 Testing Kaizer Doctor Module...")
+        self.test_doctor_health_metrics()
+        self.test_doctor_food_database()
+        self.test_doctor_diet_plans()
+        self.test_doctor_meal_log()
+        self.test_doctor_water_log()
+        self.test_doctor_dashboard()
+
+        print("\n🤖 Testing AI Chat Module...")
+        self.test_ai_chat()
+        self.test_ai_chat_types()
+
+        print("\n🔍 Testing Version Check...")
+        self.test_health_version()
 
         print("\n🗳️ Testing Polls...")
         self.test_get_polls()
