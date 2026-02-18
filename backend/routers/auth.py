@@ -110,6 +110,7 @@ async def get_me(user: dict = Depends(get_current_user)):
     return user
 
 @router.put("/me")
+@router.put("/profile")
 async def update_me(updates: UserUpdate, user: dict = Depends(get_current_user)):
     """Update current user profile"""
     update_data = {k: v for k, v in updates.dict().items() if v is not None}
