@@ -1,7 +1,7 @@
 {
-  "timestamp": "2026-02-18T18:23:05.541511",
-  "total_tests": 3,
-  "passed_tests": 3,
+  "timestamp": "2026-02-18T18:24:07.514149",
+  "total_tests": 33,
+  "passed_tests": 33,
   "success_rate": 100.0,
   "results": [
     {
@@ -15,7 +15,157 @@
       "details": ""
     },
     {
-      "test": "Verify OTP (New User)",
+      "test": "Verify OTP & Login",
+      "success": true,
+      "details": ""
+    },
+    {
+      "test": "Get Profile",
+      "success": true,
+      "details": ""
+    },
+    {
+      "test": "Create Issue",
+      "success": true,
+      "details": ""
+    },
+    {
+      "test": "Get Issues",
+      "success": true,
+      "details": ""
+    },
+    {
+      "test": "Get Dump Yard Info",
+      "success": true,
+      "details": ""
+    },
+    {
+      "test": "Dump Yard Info Validation",
+      "success": true,
+      "details": ""
+    },
+    {
+      "test": "Log Fitness Activity",
+      "success": true,
+      "details": ""
+    },
+    {
+      "test": "Get Fitness Dashboard",
+      "success": true,
+      "details": ""
+    },
+    {
+      "test": "Get Fitness Leaderboard",
+      "success": true,
+      "details": ""
+    },
+    {
+      "test": "Update Health Metrics",
+      "success": true,
+      "details": ""
+    },
+    {
+      "test": "Get Food Database",
+      "success": true,
+      "details": ""
+    },
+    {
+      "test": "Food Database Telugu Names",
+      "success": true,
+      "details": ""
+    },
+    {
+      "test": "Get Diet Plans",
+      "success": true,
+      "details": ""
+    },
+    {
+      "test": "Diet Plans Count (>=5)",
+      "success": true,
+      "details": ""
+    },
+    {
+      "test": "Log Meal",
+      "success": true,
+      "details": ""
+    },
+    {
+      "test": "Log Water",
+      "success": true,
+      "details": ""
+    },
+    {
+      "test": "Get Doctor Dashboard",
+      "success": true,
+      "details": ""
+    },
+    {
+      "test": "Send AI Chat Message",
+      "success": true,
+      "details": ""
+    },
+    {
+      "test": "AI Chat Response Generated",
+      "success": true,
+      "details": ""
+    },
+    {
+      "test": "AI Chat - General",
+      "success": true,
+      "details": ""
+    },
+    {
+      "test": "AI Chat - Health",
+      "success": true,
+      "details": ""
+    },
+    {
+      "test": "AI Chat - Fitness",
+      "success": true,
+      "details": ""
+    },
+    {
+      "test": "AI Chat - Doctor",
+      "success": true,
+      "details": ""
+    },
+    {
+      "test": "AI Chat - Psychologist",
+      "success": true,
+      "details": ""
+    },
+    {
+      "test": "Health Version Check",
+      "success": true,
+      "details": ""
+    },
+    {
+      "test": "Version 2.0.0 Check",
+      "success": true,
+      "details": ""
+    },
+    {
+      "test": "Get Polls",
+      "success": true,
+      "details": ""
+    },
+    {
+      "test": "Get Expenditure",
+      "success": true,
+      "details": ""
+    },
+    {
+      "test": "Apply for Benefit",
+      "success": true,
+      "details": ""
+    },
+    {
+      "test": "Get My Benefits",
+      "success": true,
+      "details": ""
+    },
+    {
+      "test": "Get Upload Signature",
       "success": true,
       "details": ""
     }
