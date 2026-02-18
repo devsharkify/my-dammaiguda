@@ -74,6 +74,16 @@ function AppRoutes() {
           <KaizerFit />
         </ProtectedRoute>
       } />
+      <Route path="/doctor" element={
+        <ProtectedRoute>
+          <KaizerDoctor />
+        </ProtectedRoute>
+      } />
+      <Route path="/chat" element={
+        <ProtectedRoute>
+          <AIChat />
+        </ProtectedRoute>
+      } />
       <Route path="/benefits" element={
         <ProtectedRoute>
           <CitizenBenefits />
