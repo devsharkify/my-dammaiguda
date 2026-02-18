@@ -181,12 +181,8 @@ export default function KaizerFit() {
 
   const today = dashboard?.today || { total_steps: 0, total_calories: 0, fitness_score: 0 };
   
-  // Get random motivational quote
-  const getQuote = () => {
-    const quotes = MOTIVATIONAL_QUOTES[language] || MOTIVATIONAL_QUOTES.en;
-    return quotes[Math.floor(Math.random() * quotes.length)];
-  };
-  const [quote] = useState(getQuote());
+  // Get localized quote
+  const localizedQuote = MOTIVATIONAL_QUOTES[language]?.[MOTIVATIONAL_QUOTES["en"].indexOf(quote)] || quote;
 
   // Calculate progress percentage
   const stepsGoal = 10000;
@@ -209,7 +205,7 @@ export default function KaizerFit() {
                 {language === "te" ? "ఈ రోజు మీ ప్రేరణ" : "Today's Motivation"}
               </span>
             </div>
-            <p className="text-lg font-semibold leading-relaxed">{quote}</p>
+            <p className="text-lg font-semibold leading-relaxed">{localizedQuote}</p>
           </div>
         </div>
 
