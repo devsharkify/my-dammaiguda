@@ -96,6 +96,12 @@ function AppRoutes() {
           <Profile />
         </ProtectedRoute>
       } />
+      <Route path="/family" element={
+        <ProtectedRoute>
+          <MyFamily />
+        </ProtectedRoute>
+      } />
+      <Route path="/aqi" element={<AQIReport />} />
       
       {/* Volunteer Routes */}
       <Route path="/volunteer" element={
