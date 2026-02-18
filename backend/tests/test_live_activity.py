@@ -333,6 +333,12 @@ class TestLiveActivityActive:
         """Test getting active session"""
         headers = {"Authorization": f"Bearer {auth_token}"}
         
+        # First, clean up any existing active sessions
+        existing = requests.get(f"{BASE_URL}/api/fitness/live/active", headers=headers)
+        if existing.status_code == 200 and existing.json().get("active_session"):
+            old_session_id = existing.json()["active_session"]["id"]
+            requests.delete(f"{BASE_URL}/api/fitness/live/{old_session_id}", headers=headers)
+        
         # Start a session
         start_response = requests.post(f"{BASE_URL}/api/fitness/live/start", json={
             "activity_type": "walking"
