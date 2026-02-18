@@ -20,12 +20,12 @@ class TestWeightTracking:
     @pytest.fixture(scope="class")
     def auth_token(self):
         """Get authentication token"""
-        # Request OTP
-        response = requests.post(f"{BASE_URL}/api/auth/request-otp", json={"phone": TEST_PHONE})
+        # Request OTP (use /api/auth/otp or /api/auth/send-otp)
+        response = requests.post(f"{BASE_URL}/api/auth/otp", json={"phone": TEST_PHONE})
         assert response.status_code == 200, f"OTP request failed: {response.text}"
         
-        # Verify OTP
-        response = requests.post(f"{BASE_URL}/api/auth/verify-otp", json={
+        # Verify OTP (use /api/auth/verify or /api/auth/verify-otp)
+        response = requests.post(f"{BASE_URL}/api/auth/verify", json={
             "phone": TEST_PHONE,
             "otp": TEST_OTP
         })
@@ -245,10 +245,10 @@ class TestFitnessDashboard:
     @pytest.fixture(scope="class")
     def auth_token(self):
         """Get authentication token"""
-        response = requests.post(f"{BASE_URL}/api/auth/request-otp", json={"phone": TEST_PHONE})
+        response = requests.post(f"{BASE_URL}/api/auth/otp", json={"phone": TEST_PHONE})
         assert response.status_code == 200
         
-        response = requests.post(f"{BASE_URL}/api/auth/verify-otp", json={
+        response = requests.post(f"{BASE_URL}/api/auth/verify", json={
             "phone": TEST_PHONE,
             "otp": TEST_OTP
         })
