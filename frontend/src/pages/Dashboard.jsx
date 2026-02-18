@@ -32,7 +32,11 @@ import {
   Stethoscope,
   PenSquare,
   Play,
-  Send
+  Send,
+  Bot,
+  Trash,
+  Ticket,
+  FileText
 } from "lucide-react";
 
 const API = `${process.env.REACT_APP_BACKEND_URL}/api`;
