@@ -93,6 +93,12 @@ export default function KaizerFit() {
   const [distance, setDistance] = useState("");
   const [steps, setSteps] = useState("");
   const [logLoading, setLogLoading] = useState(false);
+  
+  // Motivational quote (random on mount)
+  const [quote] = useState(() => {
+    const quotes = MOTIVATIONAL_QUOTES["en"];
+    return quotes[Math.floor(Math.random() * quotes.length)];
+  });
 
   useEffect(() => {
     fetchData();
