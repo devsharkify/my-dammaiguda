@@ -135,6 +135,26 @@ async def get_both_aqi():
         "fetched_at": datetime.now(timezone.utc).isoformat()
     }
 
+@router.get("/current")
+async def get_current_aqi():
+    """Get AQI for multiple Hyderabad locations"""
+    locations = [
+        {"url": "https://www.aqi.in/in/dashboard/india/telangana/secunderabad/vayushakti-nagar", "name": "Dammaiguda", "name_te": "దమ్మాయిగూడ"},
+        {"url": "https://www.aqi.in/in/dashboard/india/telangana/hyderabad/bowenpally", "name": "Bowenpally", "name_te": "బోయెన్‌పల్లి"},
+        {"url": "https://www.aqi.in/in/dashboard/india/telangana/hyderabad", "name": "Hyderabad City", "name_te": "హైదరాబాద్ నగరం"}
+    ]
+    
+    result = {}
+    for loc in locations:
+        key = loc["name"].lower().replace(" ", "_")
+        data = await scrape_aqi_in(loc["url"])
+        data["location"] = loc["name"]
+        data["location_te"] = loc["name_te"]
+        result[key] = data
+    
+    result["fetched_at"] = datetime.now(timezone.utc).isoformat()
+    return result
+
 @router.get("/scrape/{location:path}")
 async def scrape_location_aqi(location: str):
     """Scrape AQI for any location on aqi.in"""
