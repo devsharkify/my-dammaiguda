@@ -21,6 +21,19 @@ class CreateStory(BaseModel):
 class StoryView(BaseModel):
     story_id: str
 
+class AdminAd(BaseModel):
+    ad_type: str  # video, image, carousel
+    title: str
+    title_te: Optional[str] = None
+    media_url: str
+    click_url: Optional[str] = None
+    cta_text: Optional[str] = None
+    cta_text_te: Optional[str] = None
+    duration_seconds: Optional[int] = 15  # For video ads
+    target_placement: List[str] = ["stories", "news"]  # Where to show
+    priority: int = 1
+    is_active: bool = True
+
 # ============== HELPER FUNCTIONS ==============
 
 def is_story_active(story: dict) -> bool:
