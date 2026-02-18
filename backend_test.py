@@ -144,19 +144,127 @@ class DammaigiudaAPITester:
         
         return result is not None
 
-    def test_fitness_log(self):
-        """Test fitness logging"""
+    def test_fitness_activity_log(self):
+        """Test Kaizer Fit activity logging"""
         data = {
-            "steps": 8500,
-            "date": datetime.now().strftime("%Y-%m-%d")
+            "activity_type": "walking",
+            "duration_minutes": 30,
+            "distance_km": 2.5,
+            "steps": 3000,
+            "source": "manual"
         }
-        result = self.run_test("Log Fitness", "POST", "fitness/log", 200, data)
+        result = self.run_test("Log Fitness Activity", "POST", "fitness/activity", 200, data)
         return result is not None
 
-    def test_fitness_stats(self):
-        """Test fitness stats"""
-        result = self.run_test("Get Fitness Stats", "GET", "fitness/my-stats", 200)
+    def test_fitness_dashboard(self):
+        """Test Kaizer Fit dashboard"""
+        result = self.run_test("Get Fitness Dashboard", "GET", "fitness/dashboard", 200)
         return result is not None
+
+    def test_fitness_leaderboard(self):
+        """Test Kaizer Fit leaderboard"""
+        result = self.run_test("Get Fitness Leaderboard", "GET", "fitness/leaderboard", 200)
+        return result is not None
+
+    def test_doctor_health_metrics(self):
+        """Test Kaizer Doctor health metrics"""
+        data = {
+            "weight_kg": 70.5,
+            "height_cm": 175,
+            "blood_sugar": 95.0
+        }
+        result = self.run_test("Update Health Metrics", "POST", "doctor/health-metrics", 200, data)
+        return result is not None
+
+    def test_doctor_food_database(self):
+        """Test Kaizer Doctor food database"""
+        result = self.run_test("Get Food Database", "GET", "doctor/food-database", 200)
+        
+        if result and isinstance(result, list):
+            # Check for South Indian foods with Telugu names
+            has_telugu_names = any(food.get("name_te") for food in result)
+            if has_telugu_names:
+                self.log_test("Food Database Telugu Names", True)
+            else:
+                self.log_test("Food Database Telugu Names", False, "No Telugu names found")
+            return True
+        return False
+
+    def test_doctor_diet_plans(self):
+        """Test Kaizer Doctor diet plans"""
+        result = self.run_test("Get Diet Plans", "GET", "doctor/diet-plans", 200)
+        
+        if result and isinstance(result, list) and len(result) >= 5:
+            self.log_test("Diet Plans Count (>=5)", True)
+            return True
+        else:
+            self.log_test("Diet Plans Count (>=5)", False, f"Expected >=5 plans, got {len(result) if result else 0}")
+            return False
+
+    def test_doctor_meal_log(self):
+        """Test Kaizer Doctor meal logging"""
+        data = {
+            "meal_type": "breakfast",
+            "food_items": [
+                {"name": "Idli", "calories": 120, "protein": 4, "carbs": 24, "fat": 1}
+            ],
+            "total_calories": 120
+        }
+        result = self.run_test("Log Meal", "POST", "doctor/meal", 200, data)
+        return result is not None
+
+    def test_doctor_water_log(self):
+        """Test Kaizer Doctor water logging"""
+        data = {"glasses": 2}
+        result = self.run_test("Log Water", "POST", "doctor/water", 200, data)
+        return result is not None
+
+    def test_doctor_dashboard(self):
+        """Test Kaizer Doctor dashboard"""
+        result = self.run_test("Get Doctor Dashboard", "GET", "doctor/dashboard", 200)
+        return result is not None
+
+    def test_ai_chat(self):
+        """Test AI Chat functionality"""
+        data = {
+            "message": "Hello, how are you?",
+            "chat_type": "general"
+        }
+        result = self.run_test("Send AI Chat Message", "POST", "chat", 200, data)
+        
+        if result and result.get("response"):
+            self.log_test("AI Chat Response Generated", True)
+            return True
+        else:
+            self.log_test("AI Chat Response Generated", False, "No response generated")
+            return False
+
+    def test_ai_chat_types(self):
+        """Test different AI chat types"""
+        chat_types = ["general", "health", "fitness", "doctor", "psychologist"]
+        success_count = 0
+        
+        for chat_type in chat_types:
+            data = {
+                "message": f"Test message for {chat_type}",
+                "chat_type": chat_type
+            }
+            result = self.run_test(f"AI Chat - {chat_type.title()}", "POST", "chat", 200, data)
+            if result:
+                success_count += 1
+        
+        return success_count == len(chat_types)
+
+    def test_health_version(self):
+        """Test health endpoint returns version 2.0.0"""
+        result = self.run_test("Health Version Check", "GET", "health", 200)
+        
+        if result and result.get("version") == "2.0.0":
+            self.log_test("Version 2.0.0 Check", True)
+            return True
+        else:
+            self.log_test("Version 2.0.0 Check", False, f"Expected version 2.0.0, got {result.get('version') if result else 'None'}")
+            return False
 
     def test_get_polls(self):
         """Test getting polls"""
