@@ -319,12 +319,8 @@ class DammaigiudaAPITester:
             print("❌ OTP sending failed")
             return False
 
-        if not self.test_verify_otp_new_user():
-            print("❌ OTP verification failed")
-            return False
-
-        if not self.test_register_user():
-            print("❌ User registration failed")
+        if not self.test_verify_otp_and_login():
+            print("❌ OTP verification and login failed")
             return False
 
         # Test authenticated endpoints
