@@ -372,7 +372,7 @@ export default function KaizerFit() {
               <Button
                 onClick={logActivity}
                 disabled={logLoading}
-                className="w-full h-12 bg-primary text-white rounded-full"
+                className="w-full h-12 bg-gradient-to-r from-primary to-teal-500 text-white rounded-full font-semibold"
                 data-testid="submit-activity-btn"
               >
                 {logLoading ? "..." : (language === "te" ? "నమోదు చేయండి" : "Log Activity")}
@@ -381,12 +381,24 @@ export default function KaizerFit() {
           </DialogContent>
         </Dialog>
 
+          <Button 
+            variant="outline"
+            className="h-16 border-2 border-primary/30 rounded-xl text-base font-semibold hover:bg-primary/5"
+            onClick={() => toast.info(language === "te" ? "స్మార్ట్‌వాచ్ సింక్ త్వరలో వస్తుంది!" : "Smartwatch sync coming soon!")}
+          >
+            <Watch className="h-5 w-5 mr-2 text-primary" />
+            {language === "te" ? "డివైస్ సింక్" : "Sync Device"}
+          </Button>
+        </div>
+
         {/* Pollution Alert */}
-        <Card className="bg-orange-50 border-orange-200">
+        <Card className="bg-gradient-to-r from-orange-50 to-amber-50 border-orange-200">
           <CardContent className="p-4 flex items-start gap-3">
-            <AlertTriangle className="h-5 w-5 text-orange-600 flex-shrink-0 mt-0.5" />
+            <div className="h-10 w-10 rounded-full bg-orange-100 flex items-center justify-center flex-shrink-0">
+              <AlertTriangle className="h-5 w-5 text-orange-600" />
+            </div>
             <div>
-              <p className="font-medium text-orange-800">
+              <p className="font-semibold text-orange-800">
                 {language === "te" ? "కాలుష్య హెచ్చరిక" : "Pollution Alert"}
               </p>
               <p className="text-sm text-orange-700 mt-1">
@@ -399,17 +411,17 @@ export default function KaizerFit() {
         </Card>
 
         <Tabs defaultValue="activities" className="w-full">
-          <TabsList className="grid w-full grid-cols-4 h-12">
-            <TabsTrigger value="activities" className="text-xs">
+          <TabsList className="grid w-full grid-cols-4 h-12 bg-muted/50 p-1 rounded-xl">
+            <TabsTrigger value="activities" className="text-xs rounded-lg data-[state=active]:bg-white data-[state=active]:shadow-sm">
               {language === "te" ? "యాక్టివిటీ" : "Activity"}
             </TabsTrigger>
-            <TabsTrigger value="leaderboard" className="text-xs">
+            <TabsTrigger value="leaderboard" className="text-xs rounded-lg data-[state=active]:bg-white data-[state=active]:shadow-sm">
               {language === "te" ? "టాప్ 10" : "Top 10"}
             </TabsTrigger>
-            <TabsTrigger value="challenges" className="text-xs">
+            <TabsTrigger value="challenges" className="text-xs rounded-lg data-[state=active]:bg-white data-[state=active]:shadow-sm">
               {language === "te" ? "ఛాలెంజ్" : "Challenge"}
             </TabsTrigger>
-            <TabsTrigger value="stats" className="text-xs">
+            <TabsTrigger value="stats" className="text-xs rounded-lg data-[state=active]:bg-white data-[state=active]:shadow-sm">
               {language === "te" ? "గణాంకాలు" : "Stats"}
             </TabsTrigger>
           </TabsList>
