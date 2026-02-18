@@ -28,9 +28,9 @@ import {
   Trash2,
   Clock,
   Wind,
-  Trash,
-  Bot,
-  UserCircle,
+  Gift,
+  Stethoscope,
+  PenSquare,
   Play,
   Send
 } from "lucide-react";
