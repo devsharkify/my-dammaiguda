@@ -20,7 +20,8 @@ import {
   Users,
   Settings,
   MessageCircle,
-  Stethoscope
+  Stethoscope,
+  Wind
 } from "lucide-react";
 import { useState } from "react";
 
