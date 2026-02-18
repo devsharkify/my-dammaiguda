@@ -260,3 +260,100 @@ async def get_user_stories(user_id: str, user: dict = Depends(get_current_user))
             active.append(story)
     
     return {"stories": active, "count": len(active)}
+
+# ============== ADMIN ADS/REELS ==============
+
+@router.post("/admin/ad")
+async def create_admin_ad(ad: AdminAd, user: dict = Depends(get_current_user)):
+    """Admin: Create an ad/reel to show between stories and news"""
+    if user.get("role") != "admin":
+        raise HTTPException(status_code=403, detail="Admin access required")
+    
+    new_ad = {
+        "id": generate_id(),
+        "ad_type": ad.ad_type,
+        "title": ad.title,
+        "title_te": ad.title_te or ad.title,
+        "media_url": ad.media_url,
+        "click_url": ad.click_url,
+        "cta_text": ad.cta_text,
+        "cta_text_te": ad.cta_text_te or ad.cta_text,
+        "duration_seconds": ad.duration_seconds,
+        "target_placement": ad.target_placement,
+        "priority": ad.priority,
+        "is_active": ad.is_active,
+        "impressions": 0,
+        "clicks": 0,
+        "created_by": user["id"],
+        "created_at": now_iso()
+    }
+    
+    await db.admin_ads.insert_one(new_ad)
+    new_ad.pop("_id", None)
+    
+    return {"success": True, "ad": new_ad}
+
+@router.get("/admin/ads")
+async def get_admin_ads(user: dict = Depends(get_current_user)):
+    """Admin: Get all ads"""
+    if user.get("role") != "admin":
+        raise HTTPException(status_code=403, detail="Admin access required")
+    
+    ads = await db.admin_ads.find({}, {"_id": 0}).sort("created_at", -1).to_list(100)
+    return {"ads": ads, "count": len(ads)}
+
+@router.put("/admin/ad/{ad_id}")
+async def update_admin_ad(ad_id: str, updates: dict, user: dict = Depends(get_current_user)):
+    """Admin: Update an ad"""
+    if user.get("role") != "admin":
+        raise HTTPException(status_code=403, detail="Admin access required")
+    
+    allowed_fields = ["title", "title_te", "media_url", "click_url", "cta_text", "cta_text_te", "priority", "is_active", "target_placement"]
+    update_data = {k: v for k, v in updates.items() if k in allowed_fields}
+    update_data["updated_at"] = now_iso()
+    
+    await db.admin_ads.update_one({"id": ad_id}, {"$set": update_data})
+    
+    updated = await db.admin_ads.find_one({"id": ad_id}, {"_id": 0})
+    return {"success": True, "ad": updated}
+
+@router.delete("/admin/ad/{ad_id}")
+async def delete_admin_ad(ad_id: str, user: dict = Depends(get_current_user)):
+    """Admin: Delete an ad"""
+    if user.get("role") != "admin":
+        raise HTTPException(status_code=403, detail="Admin access required")
+    
+    result = await db.admin_ads.delete_one({"id": ad_id})
+    return {"success": True, "deleted": result.deleted_count > 0}
+
+@router.get("/ads/stories")
+async def get_story_ads(user: dict = Depends(get_current_user)):
+    """Get active ads for stories placement"""
+    ads = await db.admin_ads.find(
+        {"is_active": True, "target_placement": "stories"},
+        {"_id": 0}
+    ).sort("priority", 1).to_list(10)
+    
+    return {"ads": ads}
+
+@router.get("/ads/news")
+async def get_news_ads(user: dict = Depends(get_current_user)):
+    """Get active ads for news placement"""
+    ads = await db.admin_ads.find(
+        {"is_active": True, "target_placement": "news"},
+        {"_id": 0}
+    ).sort("priority", 1).to_list(10)
+    
+    return {"ads": ads}
+
+@router.post("/ads/{ad_id}/impression")
+async def record_ad_impression(ad_id: str, user: dict = Depends(get_current_user)):
+    """Record an ad impression"""
+    await db.admin_ads.update_one({"id": ad_id}, {"$inc": {"impressions": 1}})
+    return {"success": True}
+
+@router.post("/ads/{ad_id}/click")
+async def record_ad_click(ad_id: str, user: dict = Depends(get_current_user)):
+    """Record an ad click"""
+    await db.admin_ads.update_one({"id": ad_id}, {"$inc": {"clicks": 1}})
+    return {"success": True}
