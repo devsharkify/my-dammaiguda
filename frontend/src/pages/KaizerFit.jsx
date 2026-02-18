@@ -113,6 +113,10 @@ export default function KaizerFit() {
   const [connectingDevice, setConnectingDevice] = useState(false);
   const [syncingDevice, setSyncingDevice] = useState(null);
   
+  // Live Activity state
+  const [showLiveActivityDialog, setShowLiveActivityDialog] = useState(false);
+  const [selectedLiveActivity, setSelectedLiveActivity] = useState("running");
+  
   const headers = { Authorization: `Bearer ${token}` };
   
   // Motivational quote (random on mount)
