@@ -76,7 +76,7 @@ async def log_activity(activity: ActivityLog, user: dict = Depends(get_current_u
     """Log physical activity"""
     valid_types = ["walking", "running", "cycling", "yoga", "gym", "swimming", "sports", "dancing", "hiking"]
     if activity.activity_type not in valid_types:
-        raise HTTPException(status_code=400, detail=f"Invalid activity type")
+        raise HTTPException(status_code=400, detail="Invalid activity type")
     
     health_profile = user.get("health_profile", {})
     weight = health_profile.get("weight_kg", 70)
