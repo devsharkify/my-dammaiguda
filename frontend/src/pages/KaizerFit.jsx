@@ -87,7 +87,7 @@ const ACTIVITY_TYPES = [
 
 export default function KaizerFit() {
   const { language } = useLanguage();
-  const { user } = useAuth();
+  const { user, token } = useAuth();
   const [dashboard, setDashboard] = useState(null);
   const [leaderboard, setLeaderboard] = useState([]);
   const [challenges, setChallenges] = useState([]);
@@ -101,6 +101,16 @@ export default function KaizerFit() {
   const [distance, setDistance] = useState("");
   const [steps, setSteps] = useState("");
   const [logLoading, setLogLoading] = useState(false);
+  
+  // Smart Device state
+  const [connectedDevices, setConnectedDevices] = useState([]);
+  const [showDeviceDialog, setShowDeviceDialog] = useState(false);
+  const [selectedDeviceType, setSelectedDeviceType] = useState("phone");
+  const [selectedBrand, setSelectedBrand] = useState("");
+  const [connectingDevice, setConnectingDevice] = useState(false);
+  const [syncingDevice, setSyncingDevice] = useState(null);
+  
+  const headers = { Authorization: `Bearer ${token}` };
   
   // Motivational quote (random on mount)
   const [quote] = useState(() => {
