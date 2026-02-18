@@ -910,6 +910,53 @@ export default function KaizerFit() {
             )}
           </TabsContent>
         </Tabs>
+
+        {/* Live Activity Dialog */}
+        <Dialog open={showLiveActivityDialog} onOpenChange={setShowLiveActivityDialog}>
+          <DialogContent className="max-w-md">
+            <DialogHeader>
+              <DialogTitle className="flex items-center gap-2">
+                <Play className="h-5 w-5 text-primary" />
+                {language === "te" ? "లైవ్ ట్రాకింగ్ ప్రారంభించండి" : "Start Live Tracking"}
+              </DialogTitle>
+            </DialogHeader>
+            <div className="space-y-4 mt-4">
+              <p className="text-sm text-muted-foreground">
+                {language === "te" 
+                  ? "యాక్టివిటీ ఎంచుకోండి మరియు GPS, టైమర్, కేలరీలతో ట్రాక్ చేయండి" 
+                  : "Select an activity and track with GPS, timer, and calories"}
+              </p>
+              <div className="grid grid-cols-3 gap-2">
+                {ACTIVITY_TYPES.slice(0, 9).map((type) => (
+                  <button
+                    key={type.value}
+                    onClick={() => setSelectedLiveActivity(type.value)}
+                    className={`p-3 rounded-xl flex flex-col items-center gap-2 transition-all border-2 ${
+                      selectedLiveActivity === type.value 
+                        ? `bg-gradient-to-br ${type.gradient} text-white border-transparent shadow-lg scale-105`
+                        : "bg-muted border-transparent hover:border-primary/30"
+                    }`}
+                    data-testid={`live-activity-${type.value}`}
+                  >
+                    {type.icon}
+                    <span className="text-xs font-medium">{type.label[language]}</span>
+                  </button>
+                ))}
+              </div>
+              <Button
+                onClick={() => {
+                  setShowLiveActivityDialog(false);
+                  navigate(`/live-activity/${selectedLiveActivity}`);
+                }}
+                className="w-full h-12 bg-gradient-to-r from-primary to-teal-500 text-white rounded-full font-semibold"
+                data-testid="go-live-btn"
+              >
+                <Play className="h-5 w-5 mr-2" />
+                {language === "te" ? "ట్రాకింగ్ ప్రారంభించండి" : "Start Tracking"}
+              </Button>
+            </div>
+          </DialogContent>
+        </Dialog>
       </div>
     </Layout>
   );
