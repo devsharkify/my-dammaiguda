@@ -22,12 +22,13 @@ from routers.chat import router as chat_router
 from routers.wall import router as wall_router
 from routers.issues import router as issues_router
 from routers.notifications import router as notifications_router
+from routers.stories import router as stories_router
 
 # Create FastAPI app
 app = FastAPI(
     title="My Dammaiguda API",
     description="Civic Engagement Platform for Dammaiguda Ward",
-    version="2.5.0"
+    version="2.6.0"
 )
 
 # CORS middleware
@@ -51,13 +52,14 @@ app.include_router(chat_router, prefix="/api")
 app.include_router(wall_router, prefix="/api")
 app.include_router(issues_router, prefix="/api")
 app.include_router(notifications_router, prefix="/api")
+app.include_router(stories_router, prefix="/api")
 
 # Health check endpoint
 @app.get("/api/health")
 async def health_check():
     return {
         "status": "healthy",
-        "version": "2.5.0",
+        "version": "2.6.0",
         "service": "My Dammaiguda API"
     }
 
