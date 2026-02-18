@@ -80,6 +80,12 @@ export default function Dashboard() {
   
   // Benefits data
   const [benefits, setBenefits] = useState([]);
+  
+  // Floating AI Chat
+  const [showAiChat, setShowAiChat] = useState(false);
+  const [aiMessage, setAiMessage] = useState("");
+  const [aiResponse, setAiResponse] = useState("");
+  const [aiLoading, setAiLoading] = useState(false);
 
   const headers = { Authorization: `Bearer ${token}` };
 
