@@ -154,7 +154,21 @@ export default function KaizerDoctor() {
       setHealthMetrics(metricsRes.data);
       setNutritionSummary(nutritionRes.data);
       setFoods(foodsRes.data);
-      setDietPlans(plansRes.data);
+      // Convert diet plans object to array if needed
+      const plansData = plansRes.data;
+      if (plansData && typeof plansData === 'object' && !Array.isArray(plansData)) {
+        const plansArray = Object.entries(plansData).map(([id, plan]) => ({
+          id,
+          name: plan.name,
+          name_te: plan.name_te,
+          calories_target: plan.daily_calories,
+          description: `${plan.meals?.breakfast?.length || 0} breakfast, ${plan.meals?.lunch?.length || 0} lunch items`,
+          description_te: `${plan.meals?.breakfast?.length || 0} అల్పాహారం, ${plan.meals?.lunch?.length || 0} భోజనం`
+        }));
+        setDietPlans(plansArray);
+      } else {
+        setDietPlans(plansData || []);
+      }
       setWaterGlasses(waterRes.data?.glasses || 0);
     } catch (error) {
       console.error("Error fetching doctor data:", error);
