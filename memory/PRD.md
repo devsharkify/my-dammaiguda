@@ -3,7 +3,7 @@
 ## Project Overview
 **Name:** My Dammaiguda  
 **Type:** Civic Engagement Platform (PWA)  
-**Version:** 2.1.0  
+**Version:** 2.2.0  
 **Target:** GHMC Ward-level citizen engagement for Dammaiguda  
 **Primary Language:** Telugu (with English toggle)
 **Last Updated:** February 18, 2026
@@ -17,9 +17,10 @@
 - **Media:** Cloudinary (configured)
 - **Maps:** Google Maps API (configured)
 - **AQI Data:** Live scraping from aqi.in
+- **News:** RSS feeds + placeholder content
 
 ## User Personas
-1. **Citizens** - Report issues, track fitness, access benefits, use AI chat, family tracking
+1. **Citizens** - Report issues, track fitness, access benefits, use AI chat, family tracking, read news
 2. **Volunteers** - Verify reported issues, assist elderly
 3. **Admins** - Manage content, view analytics, moderate
 
@@ -45,164 +46,159 @@
 - ✅ Status flow: Reported → Verified → Escalated → Closed
 - ✅ Public issue feed with filters
 
-### Dump Yard & Environment Module
-- ✅ Pollution risk zoning (Red/Orange/Green)
-- ✅ Health risk information
-- ✅ Affected groups (Children, Pregnant, Elderly)
-- ✅ Cadmium exposure info
-
-### AQI Live Widget (NEW v2.1)
+### AQI Live Widget (v2.1)
 - ✅ Live AQI scraping from aqi.in
-- ✅ Dammaiguda (Vayushakti Nagar station) AQI
-- ✅ Hyderabad city AQI comparison
+- ✅ Dammaiguda (Vayushakti Nagar station) & Hyderabad AQI
 - ✅ PM2.5 and PM10 pollutant values
 - ✅ Indian AQI scale calculation
-- ✅ Color-coded health impact warnings
-- ✅ Telugu translations for all categories
-- ✅ Dashboard widget with quick view
-- ✅ Full AQI report page with health tips
-- ✅ Refresh functionality
+- ✅ Color-coded health impact warnings (Telugu)
+- ✅ Dashboard widget + Full report page
 
-### My Family Module (NEW v2.1)
+### News Shorts Module (NEW v2.2) 📰
+- ✅ 10 Categories:
+  1. **Local** - Dammaiguda news (స్థానిక)
+  2. **City** - Hyderabad news (నగరం)
+  3. **State** - Telangana news (రాష్ట్రం)
+  4. **National** - India news (జాతీయ)
+  5. **International** - World news (అంతర్జాతీయ)
+  6. **Sports** - Sports news (క్రీడలు)
+  7. **Entertainment** - Entertainment (వినోదం)
+  8. **Tech** - Technology (టెక్నాలజీ)
+  9. **Health** - Health news (ఆరోగ్యం)
+  10. **Business** - Business news (వ్యాపారం)
+- ✅ RSS feed integration (The Hindu, Hans India)
+- ✅ Placeholder content for local news
+- ✅ Swipeable card UI (like Inshorts/DailyHunt)
+- ✅ Category tabs
+- ✅ Share functionality
+- ✅ Telugu-first content display
+
+### My Family Module (ENHANCED v2.2) 👨‍👩‍👧‍👦
 - ✅ Family member request/accept flow
 - ✅ Relationship types: Spouse, Child, Parent, Sibling, Other
-- ✅ Real-time location tracking (GPS)
+- ✅ Real-time GPS location tracking
 - ✅ Location history storage
-- ✅ View family member location on Google Maps
-- ✅ Battery level tracking
-- ✅ Auto location updates every 5 minutes
-- ✅ Remove family member functionality
+- ✅ View on Google Maps
+- ✅ **SOS Emergency Alerts (NEW):**
+  - 🚨 Big red SOS button on Family page
+  - 1-3 emergency contacts setup
+  - Sends alert with GPS location
+  - Alert history tracking
+- ✅ **Geo-fencing (Safe Zones) (NEW):**
+  - Create safe zones for family members
+  - Configurable radius (100m - 2km)
+  - Inside/outside zone detection
+  - Haversine formula for distance calculation
 
 ### Kaizer Fit Module (ENHANCED v2.1)
 - ✅ 9 Activity Types: Walking, Running, Cycling, Yoga, Gym, Swimming, Sports, Dancing, Hiking
 - ✅ Activity logging with duration, distance, steps, calories
-- ✅ Daily/Weekly/Monthly fitness dashboard
-- ✅ Fitness score calculation (0-100)
+- ✅ Fitness dashboard with scores
 - ✅ Activity streak tracking
-- ✅ Anonymized leaderboard
-- ✅ Community challenges
-- ✅ Ward-level statistics
-- ✅ Wearable sync API (Apple Watch, Android Wear, Fitbit compatible)
-- ✅ Pollution-aware exercise alerts
-- ✅ **NEW: Motivational quotes banner (Telugu & English)**
-- ✅ **NEW: Premium gradient UI design**
-- ✅ **NEW: Steps progress bar with goal tracking**
-- ✅ **NEW: Device sync button placeholder**
+- ✅ Leaderboard & community challenges
+- ✅ Motivational quotes banner (Telugu & English)
+- ✅ Premium gradient UI design
+- ✅ Device sync placeholder
 
 ### Kaizer Doctor Module (v2.0)
-- ✅ Health Metrics: Weight, Height, BMI, Blood Sugar, Blood Pressure
-- ✅ Meal Logging with South Indian/Hyderabad food database
-  - 40+ Telugu-named foods (Idli, Dosa, Biryani, Pesarattu, etc.)
-  - Calorie, Protein, Carbs, Fat tracking
-- ✅ Water Intake Tracking (glasses per day)
-- ✅ Sleep Logging with duration and quality
-- ✅ Mood Tracking (Happy, Calm, Stressed, Anxious, Sad, Energetic)
-- ✅ 5 Diet Plans: Weight Loss, Weight Gain, Maintenance, Diabetic, Heart Healthy
-- ✅ Daily Nutrition Summary
-- ✅ Health Score calculation
-- ✅ Personalized Recommendations
+- ✅ Health Metrics tracking
+- ✅ South Indian meal logging (40+ foods)
+- ✅ Water/Sleep/Mood tracking
+- ✅ 5 Diet Plans
+- ✅ Personalized recommendations
 
 ### AI Chat Module (v2.0)
-- ✅ 5 AI Assistants:
-  1. General - Platform help
-  2. Health - Pollution-related health concerns
-  3. Fitness - Exercise recommendations
-  4. Doctor - Diet advice (South Indian focus)
-  5. Psychologist - Mental wellness support
-- ✅ Chat history storage in MongoDB
-- ✅ Conversation context awareness
-- ✅ Telugu/English language support
+- ✅ 5 AI Assistants: General, Health, Fitness, Doctor, Psychologist
+- ✅ Chat history storage
 - ✅ Powered by GPT-4o-mini via Emergent LLM
 
-### Citizen Benefits Module
-- ✅ Health checkup registration
-- ✅ Education voucher (₹50,000 with Emeritus)
-- ✅ Accidental insurance enrollment
-- ✅ Health insurance support (25% cashback)
-- ✅ Application tracking
+### Other Modules
+- ✅ Citizen Benefits
+- ✅ Ward Expenditure Dashboard
+- ✅ Polls & Surveys
+- ✅ Dump Yard Info
 
-### Ward Expenditure Dashboard
-- ✅ Year-wise expenditure view
-- ✅ Category-wise breakdown
-- ✅ RTI document links
-- ✅ Ground reality notes
+## API Endpoints (v2.2)
+### New in v2.2:
+- `/api/news/categories` - Get all news categories
+- `/api/news/{category}` - Get news by category
+- `/api/news/feed/all` - Get mixed news feed
+- `/api/news/save` - Save article for later
+- `/api/sos/contacts` - Manage SOS emergency contacts
+- `/api/sos/trigger` - Trigger SOS alert
+- `/api/sos/history` - Get SOS history
+- `/api/sos/resolve/{alert_id}` - Resolve SOS alert
+- `/api/family/geofence` - Create geo-fence
+- `/api/family/geofences/{member_id}` - Get member's geo-fences
+- `/api/family/check-geofences/{member_id}` - Check geo-fence status
 
-### Polls & Surveys
-- ✅ Yes/No and choice-based polls
-- ✅ Anonymous voting
-- ✅ Live result visualization
-
-## API Endpoints (v2.1)
+### Existing:
 - `/api/auth/*` - Authentication
 - `/api/issues/*` - Issue management
-- `/api/dumpyard/*` - Dump yard info
-- `/api/aqi/*` - Live AQI data (dammaiguda, hyderabad, both)
-- `/api/family/*` - Family tracking (members, requests, location)
-- `/api/fitness/*` - Kaizer Fit (activity, dashboard, leaderboard, challenges, sync)
-- `/api/doctor/*` - Kaizer Doctor (health-metrics, meal, water, sleep, mood, diet-plans)
+- `/api/aqi/*` - Live AQI data
+- `/api/family/*` - Family tracking
+- `/api/fitness/*` - Kaizer Fit
+- `/api/doctor/*` - Kaizer Doctor
 - `/api/chat` - AI Chat
-- `/api/benefits/*` - Citizen benefits
-- `/api/expenditure/*` - Ward expenditure
-- `/api/polls/*` - Polls and surveys
-- `/api/volunteer/*` - Volunteer features
-- `/api/admin/*` - Admin dashboard
-
-## Environment Variables Configured
-### Backend (.env)
-- ✅ MONGO_URL, DB_NAME
-- ✅ JWT_SECRET
-- ✅ TWILIO_ACCOUNT_SID, AUTH_TOKEN, WHATSAPP_NUMBER
-- ✅ CLOUDINARY_CLOUD_NAME, API_KEY, API_SECRET
-- ✅ EMERGENT_LLM_KEY (for AI Chat)
-- ✅ GOOGLE_VISION_API_KEY
-- ✅ **GOOGLE_MAPS_API_KEY (NEW)**
+- `/api/benefits/*`, `/api/expenditure/*`, `/api/polls/*`
 
 ## Prioritized Backlog
 
-### P0 (Critical) - COMPLETED
-- ✅ AQI Live Widget with Dammaiguda & Hyderabad data
-- ✅ My Family location tracking module
-- ✅ Google Maps API integration
-- ✅ Kaizer Fit motivational enhancements
+### P0 (Critical) - COMPLETED ✅
+- ✅ AQI Live Widget
+- ✅ My Family location tracking
+- ✅ SOS Emergency Alerts
+- ✅ Geo-fencing (Safe Zones)
+- ✅ News Shorts module
 
-### P1 (High Priority) - IN PROGRESS
-- [ ] Activate real Twilio SMS OTP
-- [ ] WhatsApp share card generation
-- [ ] Push notifications (PWA)
+### P1 (High Priority)
+- [ ] Activate real Twilio SMS for OTP
+- [ ] Activate real SMS for SOS alerts
+- [ ] Cloudinary media upload integration
 - [ ] Kaizer Doctor UI enhancement
-- [ ] Smart device deep integration
+- [ ] Admin moderation tools
 
 ### P2 (Medium Priority)
-- [ ] "Psychologist AI" enhanced mode for Kaizer Doctor
-- [ ] Admin content moderation tools
-- [ ] Drone image gallery for dump yard
-- [ ] Issue resolution time analytics
-- [ ] Voice input for elderly
-- [ ] Social sharing cards for fitness achievements
+- [ ] Smart device integration (pedometer, smartwatch)
+- [ ] "Psychologist AI" enhanced mode
+- [ ] Push notifications (PWA)
+- [ ] Social sharing cards for achievements
+- [ ] WhatsApp share integration
 
 ### P3 (Low Priority)
 - [ ] PWA Offline support
 - [ ] Multi-ward scalability
 - [ ] Data export features
+- [ ] Refactor server.py into routers
 
 ## Testing Status
-- **Testing Agent:** Used after Phase 1 implementation
-- **Test Report:** `/app/test_reports/iteration_3.json`
-- **Backend:** 100% (15/15 tests passed)
-- **Frontend:** 100% (All Phase 1 features verified)
+- **Backend:** 100% (24/24 tests passed)
+- **Frontend:** 100% (All features verified)
+- **Test Reports:** `/app/test_reports/iteration_4.json`
 
 ## Test Credentials
 - **Phone:** Any number (e.g., 9876543210)
-- **OTP:** 123456 (MOCKED for development)
+- **OTP:** 123456 (MOCKED)
 
 ## Mocked APIs
-- OTP verification uses static code `123456`
-- File uploads use mock URLs (Cloudinary configured but not integrated)
+1. OTP verification - uses static code `123456`
+2. News local/city/state - uses placeholder data when RSS unavailable
+3. SOS alerts - records in database but doesn't send actual SMS
+4. File uploads - mock URLs (Cloudinary configured but not integrated)
 
 ## Key Files
-- `/app/backend/server.py` - Main backend (monolithic, needs refactoring)
-- `/app/frontend/src/pages/Dashboard.jsx` - Dashboard with AQI widget
-- `/app/frontend/src/pages/MyFamily.jsx` - Family tracking page
-- `/app/frontend/src/pages/AQIReport.jsx` - Full AQI report
-- `/app/frontend/src/pages/KaizerFit.jsx` - Enhanced fitness module
-- `/app/frontend/src/components/AQIWidget.jsx` - AQI widget component
+- `/app/backend/server.py` - Main backend (1500+ lines, needs refactoring)
+- `/app/frontend/src/pages/NewsShorts.jsx` - News shorts UI
+- `/app/frontend/src/pages/MyFamily.jsx` - Family tracking + SOS + Geofencing
+- `/app/frontend/src/pages/Dashboard.jsx` - Dashboard with AQI + News
+- `/app/frontend/src/components/AQIWidget.jsx` - AQI widget
+
+## Environment Variables
+### Backend (.env)
+- ✅ MONGO_URL, DB_NAME
+- ✅ JWT_SECRET
+- ✅ TWILIO_ACCOUNT_SID, AUTH_TOKEN, WHATSAPP_NUMBER
+- ✅ CLOUDINARY_CLOUD_NAME, API_KEY, API_SECRET
+- ✅ EMERGENT_LLM_KEY
+- ✅ GOOGLE_VISION_API_KEY
+- ✅ GOOGLE_MAPS_API_KEY
