@@ -853,6 +853,136 @@ export default function KaizerDoctor() {
             </Card>
           </TabsContent>
 
+          {/* Mind/Psychologist Tab */}
+          <TabsContent value="mind" className="mt-4 space-y-4">
+            <Card className="border-border/50 overflow-hidden">
+              <CardHeader className="pb-2 bg-gradient-to-r from-violet-50 to-purple-50">
+                <CardTitle className="text-lg flex items-center gap-2">
+                  <Brain className="h-5 w-5 text-violet-600" />
+                  {language === "te" ? "కైజర్ మైండ్ - AI మానసిక సహాయకుడు" : "Kaizer Mind - AI Counselor"}
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="p-0">
+                {/* Chat Messages */}
+                <div className="h-80 overflow-y-auto p-4 space-y-3 bg-gradient-to-b from-violet-50/30 to-white">
+                  {psychMessages.length === 0 ? (
+                    <div className="text-center py-8">
+                      <div className="h-16 w-16 mx-auto rounded-full bg-gradient-to-br from-violet-400 to-purple-500 flex items-center justify-center mb-4">
+                        <Brain className="h-8 w-8 text-white" />
+                      </div>
+                      <h3 className="font-semibold text-lg mb-2">
+                        {language === "te" ? "కైజర్ మైండ్‌కు స్వాగతం" : "Welcome to Kaizer Mind"}
+                      </h3>
+                      <p className="text-sm text-muted-foreground max-w-xs mx-auto">
+                        {language === "te" 
+                          ? "మీ మానసిక ఆరోగ్యం గురించి మాట్లాడండి. నేను వినడానికి మరియు సహాయం చేయడానికి ఇక్కడ ఉన్నాను."
+                          : "Talk about your mental well-being. I'm here to listen and help."}
+                      </p>
+                      <div className="flex flex-wrap justify-center gap-2 mt-4">
+                        {[
+                          { en: "I feel stressed", te: "నేను ఒత్తిడిలో ఉన్నాను" },
+                          { en: "Help me relax", te: "రిలాక్స్ చేయడంలో సహాయం చేయండి" },
+                          { en: "I can't sleep", te: "నాకు నిద్ర రావడం లేదు" }
+                        ].map((prompt, idx) => (
+                          <Button
+                            key={idx}
+                            variant="outline"
+                            size="sm"
+                            className="text-xs"
+                            onClick={() => {
+                              setPsychInput(language === "te" ? prompt.te : prompt.en);
+                            }}
+                          >
+                            {language === "te" ? prompt.te : prompt.en}
+                          </Button>
+                        ))}
+                      </div>
+                    </div>
+                  ) : (
+                    psychMessages.map((msg, idx) => (
+                      <div
+                        key={idx}
+                        className={`flex ${msg.role === "user" ? "justify-end" : "justify-start"}`}
+                      >
+                        <div className={`max-w-[80%] rounded-2xl px-4 py-3 ${
+                          msg.role === "user"
+                            ? "bg-gradient-to-r from-violet-500 to-purple-500 text-white rounded-br-sm"
+                            : "bg-white border border-violet-100 rounded-bl-sm shadow-sm"
+                        }`}>
+                          {msg.role === "assistant" && (
+                            <div className="flex items-center gap-2 mb-1">
+                              <Brain className="h-4 w-4 text-violet-600" />
+                              <span className="text-xs font-semibold text-violet-600">Kaizer Mind</span>
+                            </div>
+                          )}
+                          <p className={`text-sm whitespace-pre-wrap ${msg.role === "user" ? "text-white" : "text-text-primary"}`}>
+                            {msg.content}
+                          </p>
+                        </div>
+                      </div>
+                    ))
+                  )}
+                  {psychLoading && (
+                    <div className="flex justify-start">
+                      <div className="bg-white border border-violet-100 rounded-2xl rounded-bl-sm px-4 py-3 shadow-sm">
+                        <div className="flex items-center gap-2">
+                          <Loader2 className="h-4 w-4 animate-spin text-violet-600" />
+                          <span className="text-sm text-muted-foreground">
+                            {language === "te" ? "ఆలోచిస్తోంది..." : "Thinking..."}
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+                  <div ref={psychChatRef} />
+                </div>
+                
+                {/* Chat Input */}
+                <div className="p-3 border-t border-violet-100 bg-white flex gap-2">
+                  <Input
+                    placeholder={language === "te" ? "మీ ఆలోచనలు షేర్ చేయండి..." : "Share your thoughts..."}
+                    value={psychInput}
+                    onChange={(e) => setPsychInput(e.target.value)}
+                    onKeyPress={(e) => e.key === "Enter" && !psychLoading && sendPsychMessage()}
+                    className="flex-1 border-violet-200 focus:border-violet-400"
+                    disabled={psychLoading}
+                    data-testid="psych-input"
+                  />
+                  <Button
+                    onClick={sendPsychMessage}
+                    disabled={psychLoading || !psychInput.trim()}
+                    className="bg-gradient-to-r from-violet-500 to-purple-500"
+                    data-testid="psych-send-btn"
+                  >
+                    <Send className="h-4 w-4" />
+                  </Button>
+                </div>
+              </CardContent>
+            </Card>
+            
+            {/* Emergency Helplines Card */}
+            <Card className="bg-gradient-to-r from-amber-50 to-orange-50 border-amber-200">
+              <CardContent className="p-4">
+                <div className="flex items-start gap-3">
+                  <div className="h-10 w-10 rounded-full bg-amber-100 flex items-center justify-center flex-shrink-0">
+                    <Phone className="h-5 w-5 text-amber-600" />
+                  </div>
+                  <div>
+                    <p className="font-semibold text-amber-800 text-sm">
+                      {language === "te" ? "అత్యవసర సహాయం అవసరమా?" : "Need immediate help?"}
+                    </p>
+                    <p className="text-xs text-amber-700 mt-1">
+                      iCall: <span className="font-mono font-bold">9152987821</span>
+                    </p>
+                    <p className="text-xs text-amber-700">
+                      Vandrevala Foundation: <span className="font-mono font-bold">1860-2662-345</span>
+                    </p>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          </TabsContent>
+
           {/* Diet Plans Tab */}
           <TabsContent value="plans" className="mt-4 space-y-3">
             {dietPlans.length === 0 ? (
