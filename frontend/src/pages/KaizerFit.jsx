@@ -31,20 +31,50 @@ import {
   MapPin,
   Zap,
   Award,
-  Calendar
+  Calendar,
+  Sparkles,
+  Crown,
+  Star,
+  ChevronRight,
+  Watch
 } from "lucide-react";
 
 const API = `${process.env.REACT_APP_BACKEND_URL}/api`;
 
+// Motivational quotes
+const MOTIVATIONAL_QUOTES = {
+  en: [
+    "Your only limit is you. Push harder! 💪",
+    "Champions train, losers complain. Be a champion!",
+    "Every step counts. Keep moving forward! 🏃",
+    "Sweat now, shine later! ✨",
+    "Make yourself proud today!",
+    "The body achieves what the mind believes!",
+    "Strong body, strong mind, strong life!",
+    "Your future self will thank you!"
+  ],
+  te: [
+    "మీ పరిమితి మీరే. మరింత కష్టపడండి! 💪",
+    "ఛాంపియన్లు శిక్షణ పొందుతారు. ఛాంపియన్ అవ్వండి!",
+    "ప్రతి అడుగు ముఖ్యం. ముందుకు నడవండి! 🏃",
+    "ఇప్పుడు చెమట, తర్వాత వెలుగు! ✨",
+    "ఈ రోజు మిమ్మల్ని మీరు గర్వపడేలా చేసుకోండి!",
+    "మనసు నమ్మేది శరీరం సాధిస్తుంది!",
+    "బలమైన శరీరం, బలమైన మనసు, బలమైన జీవితం!",
+    "మీ భవిష్యత్ మీకు ధన్యవాదాలు చెప్తుంది!"
+  ]
+};
+
 const ACTIVITY_TYPES = [
-  { value: "walking", label: { en: "Walking", te: "నడక" }, icon: <Footprints className="h-5 w-5" />, color: "bg-green-100 text-green-600" },
-  { value: "running", label: { en: "Running", te: "పరుగు" }, icon: <PersonStanding className="h-5 w-5" />, color: "bg-orange-100 text-orange-600" },
-  { value: "cycling", label: { en: "Cycling", te: "సైక్లింగ్" }, icon: <Bike className="h-5 w-5" />, color: "bg-blue-100 text-blue-600" },
-  { value: "yoga", label: { en: "Yoga", te: "యోగా" }, icon: <Heart className="h-5 w-5" />, color: "bg-purple-100 text-purple-600" },
-  { value: "gym", label: { en: "Gym", te: "జిమ్" }, icon: <Zap className="h-5 w-5" />, color: "bg-red-100 text-red-600" },
-  { value: "swimming", label: { en: "Swimming", te: "ఈత" }, icon: <Activity className="h-5 w-5" />, color: "bg-cyan-100 text-cyan-600" },
-  { value: "sports", label: { en: "Sports", te: "క్రీడలు" }, icon: <Trophy className="h-5 w-5" />, color: "bg-yellow-100 text-yellow-600" },
-  { value: "dancing", label: { en: "Dancing", te: "నృత్యం" }, icon: <Activity className="h-5 w-5" />, color: "bg-pink-100 text-pink-600" }
+  { value: "walking", label: { en: "Walking", te: "నడక" }, icon: <Footprints className="h-5 w-5" />, color: "bg-green-100 text-green-600", gradient: "from-green-400 to-emerald-500" },
+  { value: "running", label: { en: "Running", te: "పరుగు" }, icon: <PersonStanding className="h-5 w-5" />, color: "bg-orange-100 text-orange-600", gradient: "from-orange-400 to-red-500" },
+  { value: "cycling", label: { en: "Cycling", te: "సైక్లింగ్" }, icon: <Bike className="h-5 w-5" />, color: "bg-blue-100 text-blue-600", gradient: "from-blue-400 to-cyan-500" },
+  { value: "yoga", label: { en: "Yoga", te: "యోగా" }, icon: <Heart className="h-5 w-5" />, color: "bg-purple-100 text-purple-600", gradient: "from-purple-400 to-pink-500" },
+  { value: "gym", label: { en: "Gym", te: "జిమ్" }, icon: <Zap className="h-5 w-5" />, color: "bg-red-100 text-red-600", gradient: "from-red-400 to-rose-500" },
+  { value: "swimming", label: { en: "Swimming", te: "ఈత" }, icon: <Activity className="h-5 w-5" />, color: "bg-cyan-100 text-cyan-600", gradient: "from-cyan-400 to-blue-500" },
+  { value: "sports", label: { en: "Sports", te: "క్రీడలు" }, icon: <Trophy className="h-5 w-5" />, color: "bg-yellow-100 text-yellow-600", gradient: "from-yellow-400 to-orange-500" },
+  { value: "dancing", label: { en: "Dancing", te: "నృత్యం" }, icon: <Sparkles className="h-5 w-5" />, color: "bg-pink-100 text-pink-600", gradient: "from-pink-400 to-rose-500" },
+  { value: "hiking", label: { en: "Hiking", te: "హైకింగ్" }, icon: <MapPin className="h-5 w-5" />, color: "bg-emerald-100 text-emerald-600", gradient: "from-emerald-400 to-green-500" }
 ];
 
 export default function KaizerFit() {
