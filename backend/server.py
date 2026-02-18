@@ -260,10 +260,12 @@ async def verify_otp(request: OTPVerify):
         token = create_token(user["id"], user.get("role", "citizen"))
         return {"success": True, "token": token, "user": user, "is_new": False}
     else:
-        # New user - register
+        # New user - check if name provided for registration
         if not request.name:
-            raise HTTPException(status_code=400, detail="Name is required for new users")
+            # First call - indicate this is a new user who needs to register
+            return {"success": True, "is_new": True, "needs_registration": True}
         
+        # Complete registration with name
         new_user = {
             "id": generate_id(),
             "phone": phone,
