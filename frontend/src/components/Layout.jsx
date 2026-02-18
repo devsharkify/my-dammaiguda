@@ -42,6 +42,7 @@ export default function Layout({ children, title, showBackButton = false }) {
 
   const menuItems = [
     { path: "/dashboard", icon: <Home className="h-5 w-5" />, label: t("dashboard") },
+    { path: "/wall", icon: <PenSquare className="h-5 w-5" />, label: language === "te" ? "సిటిజన్ వాల్" : "Citizen Wall" },
     { path: "/news", icon: <Newspaper className="h-5 w-5" />, label: language === "te" ? "వార్తలు" : "News" },
     { path: "/issues", icon: <AlertTriangle className="h-5 w-5" />, label: t("issues") },
     { path: "/report", icon: <AlertTriangle className="h-5 w-5" />, label: t("reportIssue") },
