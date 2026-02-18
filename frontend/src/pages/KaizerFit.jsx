@@ -120,6 +120,7 @@ export default function KaizerFit() {
 
   useEffect(() => {
     fetchData();
+    fetchDevices();
   }, []);
 
   const fetchData = async () => {
@@ -139,6 +140,113 @@ export default function KaizerFit() {
       console.error("Error fetching fitness data:", error);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const fetchDevices = async () => {
+    try {
+      const response = await axios.get(`${API}/fitness/devices`, { headers });
+      setConnectedDevices(response.data.devices || []);
+    } catch (error) {
+      console.error("Error fetching devices:", error);
+    }
+  };
+
+  const connectDevice = async () => {
+    if (!selectedDeviceType) {
+      toast.error(language === "te" ? "పరికర రకాన్ని ఎంచుకోండి" : "Select device type");
+      return;
+    }
+    
+    setConnectingDevice(true);
+    try {
+      const deviceData = {
+        device_type: selectedDeviceType,
+        device_brand: selectedBrand || null,
+        device_name: selectedDeviceType === "phone" ? "Phone Pedometer" : `${selectedBrand} Smartwatch`,
+        permissions: ["steps", "calories", "distance"]
+      };
+      
+      if (selectedDeviceType === "smartwatch") {
+        deviceData.permissions.push("heart_rate", "sleep");
+      }
+      
+      await axios.post(`${API}/fitness/devices/connect`, deviceData, { headers });
+      toast.success(language === "te" ? "పరికరం కనెక్ట్ అయింది!" : "Device connected!");
+      setShowDeviceDialog(false);
+      setSelectedBrand("");
+      fetchDevices();
+    } catch (error) {
+      toast.error("Failed to connect device");
+    } finally {
+      setConnectingDevice(false);
+    }
+  };
+
+  const disconnectDevice = async (deviceId) => {
+    try {
+      await axios.delete(`${API}/fitness/devices/${deviceId}`, { headers });
+      toast.success(language === "te" ? "పరికరం డిస్కనెక్ట్ అయింది" : "Device disconnected");
+      fetchDevices();
+    } catch (error) {
+      toast.error("Failed to disconnect device");
+    }
+  };
+
+  const syncPhoneSensors = async () => {
+    setSyncingDevice("phone");
+    try {
+      // Simulate getting data from phone sensors
+      // In a real PWA, this would use the Web Pedometer API or native app bridge
+      const mockSensorData = {
+        steps: Math.floor(3000 + Math.random() * 5000),
+        distance_meters: Math.floor(2000 + Math.random() * 4000),
+        active_minutes: Math.floor(20 + Math.random() * 60),
+        timestamp: new Date().toISOString(),
+        source: "phone_pedometer"
+      };
+      
+      await axios.post(`${API}/fitness/sync/phone-sensors`, mockSensorData, { headers });
+      toast.success(language === "te" ? "ఫోన్ సెన్సర్ డేటా సింక్ అయింది!" : "Phone sensor data synced!");
+      fetchData();
+    } catch (error) {
+      toast.error("Failed to sync phone data");
+    } finally {
+      setSyncingDevice(null);
+    }
+  };
+
+  const syncSmartwatch = async (brand) => {
+    setSyncingDevice(brand);
+    try {
+      // Simulate smartwatch data sync
+      const mockWatchData = {
+        device_brand: brand,
+        steps: Math.floor(4000 + Math.random() * 6000),
+        heart_rate_current: Math.floor(65 + Math.random() * 30),
+        heart_rate_resting: Math.floor(55 + Math.random() * 15),
+        calories_total: Math.floor(200 + Math.random() * 400),
+        distance_meters: Math.floor(3000 + Math.random() * 5000),
+        active_minutes: Math.floor(30 + Math.random() * 90),
+        blood_oxygen: Math.floor(95 + Math.random() * 4),
+        stress_level: Math.floor(20 + Math.random() * 50),
+        sleep_data: {
+          duration_hours: 6 + Math.random() * 2,
+          deep_sleep_mins: Math.floor(60 + Math.random() * 60),
+          light_sleep_mins: Math.floor(120 + Math.random() * 120),
+          rem_sleep_mins: Math.floor(60 + Math.random() * 60),
+          score: Math.floor(60 + Math.random() * 35)
+        },
+        sync_timestamp: new Date().toISOString()
+      };
+      
+      await axios.post(`${API}/fitness/sync/smartwatch`, mockWatchData, { headers });
+      toast.success(language === "te" ? `${brand} వాచ్ సింక్ అయింది!` : `${brand} watch synced!`);
+      fetchData();
+    } catch (error) {
+      toast.error("Failed to sync smartwatch");
+    } finally {
+      setSyncingDevice(null);
     }
   };
 
