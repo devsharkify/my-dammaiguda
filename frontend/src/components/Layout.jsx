@@ -43,6 +43,8 @@ export default function Layout({ children, title, showBackButton = false }) {
     { path: "/report", icon: <AlertTriangle className="h-5 w-5" />, label: t("reportIssue") },
     { path: "/dumpyard", icon: <MapPin className="h-5 w-5" />, label: t("dumpYard") },
     { path: "/fitness", icon: <Activity className="h-5 w-5" />, label: t("fitness") },
+    { path: "/doctor", icon: <Stethoscope className="h-5 w-5" />, label: language === "te" ? "కైజర్ డాక్టర్" : "Kaizer Doctor" },
+    { path: "/chat", icon: <MessageCircle className="h-5 w-5" />, label: language === "te" ? "AI చాట్" : "AI Chat" },
     { path: "/benefits", icon: <Heart className="h-5 w-5" />, label: t("benefits") },
     { path: "/expenditure", icon: <BarChart3 className="h-5 w-5" />, label: t("expenditure") },
     { path: "/polls", icon: <FileText className="h-5 w-5" />, label: t("polls") },
