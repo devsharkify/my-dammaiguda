@@ -1022,6 +1022,291 @@ async def remove_family_member(member_id: str, user: dict = Depends(get_current_
     
     return {"success": True, "message": "Family member removed"}
 
+# ============== GEO-FENCING ROUTES ==============
+
+@api_router.post("/family/geofence")
+async def add_geofence(fence: GeoFence, user: dict = Depends(get_current_user)):
+    """Add a geofence for a family member"""
+    # Verify they are family members
+    link = await db.family_members.find_one({
+        "user_id": user["id"],
+        "family_member_id": fence.member_id
+    })
+    
+    if not link:
+        raise HTTPException(status_code=403, detail="Not a family member")
+    
+    geofence = {
+        "id": generate_id(),
+        "created_by": user["id"],
+        "member_id": fence.member_id,
+        "name": fence.name,
+        "latitude": fence.latitude,
+        "longitude": fence.longitude,
+        "radius_meters": fence.radius_meters,
+        "is_active": True,
+        "created_at": now_iso()
+    }
+    
+    await db.geofences.insert_one(geofence)
+    geofence.pop("_id", None)
+    
+    return {"success": True, "geofence": geofence}
+
+@api_router.get("/family/geofences/{member_id}")
+async def get_member_geofences(member_id: str, user: dict = Depends(get_current_user)):
+    """Get all geofences for a family member"""
+    # Verify they are family members or it's their own
+    if member_id != user["id"]:
+        link = await db.family_members.find_one({
+            "user_id": user["id"],
+            "family_member_id": member_id
+        })
+        if not link:
+            raise HTTPException(status_code=403, detail="Not a family member")
+    
+    geofences = await db.geofences.find(
+        {"member_id": member_id, "is_active": True},
+        {"_id": 0}
+    ).to_list(50)
+    
+    return geofences
+
+@api_router.delete("/family/geofence/{fence_id}")
+async def delete_geofence(fence_id: str, user: dict = Depends(get_current_user)):
+    """Delete a geofence"""
+    result = await db.geofences.delete_one({
+        "id": fence_id,
+        "created_by": user["id"]
+    })
+    
+    if result.deleted_count == 0:
+        raise HTTPException(status_code=404, detail="Geofence not found")
+    
+    return {"success": True, "message": "Geofence deleted"}
+
+@api_router.get("/family/check-geofences/{member_id}")
+async def check_geofence_status(member_id: str, user: dict = Depends(get_current_user)):
+    """Check if a family member is inside/outside their geofences"""
+    # Verify they are family members
+    link = await db.family_members.find_one({
+        "user_id": user["id"],
+        "family_member_id": member_id
+    })
+    
+    if not link:
+        raise HTTPException(status_code=403, detail="Not a family member")
+    
+    # Get member's last location
+    location = await db.family_locations.find_one(
+        {"user_id": member_id},
+        {"_id": 0}
+    )
+    
+    if not location:
+        return {"status": "unknown", "message": "No location data available"}
+    
+    # Get all geofences for this member
+    geofences = await db.geofences.find(
+        {"member_id": member_id, "is_active": True},
+        {"_id": 0}
+    ).to_list(50)
+    
+    results = []
+    for fence in geofences:
+        inside = is_inside_geofence(
+            location["latitude"], location["longitude"],
+            fence["latitude"], fence["longitude"],
+            fence["radius_meters"]
+        )
+        distance = haversine_distance(
+            location["latitude"], location["longitude"],
+            fence["latitude"], fence["longitude"]
+        )
+        results.append({
+            "fence_id": fence["id"],
+            "fence_name": fence["name"],
+            "is_inside": inside,
+            "distance_meters": round(distance, 2)
+        })
+    
+    # Check if outside all safe zones - generate alert
+    all_outside = all(not r["is_inside"] for r in results) if results else False
+    
+    return {
+        "member_location": location,
+        "geofences": results,
+        "alert": all_outside and len(results) > 0,
+        "alert_message": "Family member is outside all safe zones!" if all_outside else None
+    }
+
+# ============== SOS ROUTES ==============
+
+@api_router.post("/sos/contacts")
+async def set_sos_contacts(contacts: List[SOSContact], user: dict = Depends(get_current_user)):
+    """Set emergency contacts for SOS (max 3)"""
+    if len(contacts) > 3:
+        raise HTTPException(status_code=400, detail="Maximum 3 emergency contacts allowed")
+    
+    # Validate all contacts have phone numbers
+    for contact in contacts:
+        if not contact.phone or len(contact.phone) < 10:
+            raise HTTPException(status_code=400, detail="Invalid phone number")
+    
+    # Update user's emergency contacts
+    await db.users.update_one(
+        {"id": user["id"]},
+        {"$set": {
+            "emergency_contacts": [c.dict() for c in contacts],
+            "emergency_contacts_updated": now_iso()
+        }}
+    )
+    
+    return {"success": True, "message": "Emergency contacts saved", "count": len(contacts)}
+
+@api_router.get("/sos/contacts")
+async def get_sos_contacts(user: dict = Depends(get_current_user)):
+    """Get user's emergency contacts"""
+    user_data = await db.users.find_one({"id": user["id"]}, {"_id": 0})
+    return user_data.get("emergency_contacts", [])
+
+@api_router.post("/sos/trigger")
+async def trigger_sos(sos: SOSTrigger, user: dict = Depends(get_current_user)):
+    """Trigger SOS alert to all emergency contacts"""
+    user_data = await db.users.find_one({"id": user["id"]}, {"_id": 0})
+    
+    if not user_data:
+        raise HTTPException(status_code=404, detail="User not found")
+    
+    emergency_contacts = user_data.get("emergency_contacts", [])
+    
+    if not emergency_contacts:
+        raise HTTPException(status_code=400, detail="No emergency contacts configured")
+    
+    # Get current location if not provided
+    lat, lng = sos.latitude, sos.longitude
+    if not lat or not lng:
+        # Try to get last known location
+        location = await db.family_locations.find_one({"user_id": user["id"]}, {"_id": 0})
+        if location:
+            lat, lng = location["latitude"], location["longitude"]
+    
+    # Create SOS record
+    sos_record = {
+        "id": generate_id(),
+        "user_id": user["id"],
+        "user_name": user_data.get("name"),
+        "user_phone": user_data.get("phone"),
+        "message": sos.message or "EMERGENCY! I need help!",
+        "latitude": lat,
+        "longitude": lng,
+        "map_link": f"https://www.google.com/maps?q={lat},{lng}" if lat and lng else None,
+        "contacts_notified": [c["phone"] for c in emergency_contacts],
+        "status": "triggered",
+        "triggered_at": now_iso()
+    }
+    
+    await db.sos_alerts.insert_one(sos_record)
+    sos_record.pop("_id", None)
+    
+    # In production, this would send SMS/WhatsApp to all contacts
+    # For now, we just record the alert
+    
+    return {
+        "success": True,
+        "message": f"SOS alert sent to {len(emergency_contacts)} contacts",
+        "alert": sos_record,
+        "contacts_notified": emergency_contacts
+    }
+
+@api_router.get("/sos/history")
+async def get_sos_history(user: dict = Depends(get_current_user)):
+    """Get user's SOS alert history"""
+    alerts = await db.sos_alerts.find(
+        {"user_id": user["id"]},
+        {"_id": 0}
+    ).sort("triggered_at", -1).to_list(50)
+    
+    return alerts
+
+@api_router.post("/sos/resolve/{alert_id}")
+async def resolve_sos(alert_id: str, user: dict = Depends(get_current_user)):
+    """Mark an SOS alert as resolved"""
+    result = await db.sos_alerts.update_one(
+        {"id": alert_id, "user_id": user["id"]},
+        {"$set": {"status": "resolved", "resolved_at": now_iso()}}
+    )
+    
+    if result.matched_count == 0:
+        raise HTTPException(status_code=404, detail="Alert not found")
+    
+    return {"success": True, "message": "SOS alert resolved"}
+
+# ============== NEWS ROUTES ==============
+
+@api_router.get("/news/categories")
+async def get_news_categories():
+    """Get all available news categories"""
+    return NEWS_CATEGORIES
+
+@api_router.get("/news/{category}")
+async def get_news_by_category(category: str, limit: int = 20):
+    """Get news for a specific category"""
+    if category not in NEWS_CATEGORIES:
+        raise HTTPException(status_code=400, detail=f"Invalid category. Valid: {list(NEWS_CATEGORIES.keys())}")
+    
+    news = await scrape_news_from_rss(category, limit)
+    
+    return {
+        "category": category,
+        "category_info": NEWS_CATEGORIES[category],
+        "news": news,
+        "count": len(news),
+        "fetched_at": now_iso()
+    }
+
+@api_router.get("/news/feed/all")
+async def get_all_news(limit: int = 5):
+    """Get news from all categories (mixed feed)"""
+    all_news = []
+    
+    for category in ["local", "city", "state", "national", "sports", "entertainment"]:
+        news = await scrape_news_from_rss(category, limit)
+        all_news.extend(news)
+    
+    # Sort by published date (newest first)
+    all_news.sort(key=lambda x: x.get("published_at", ""), reverse=True)
+    
+    return {
+        "news": all_news[:limit * 6],
+        "categories": list(NEWS_CATEGORIES.keys()),
+        "fetched_at": now_iso()
+    }
+
+@api_router.post("/news/save")
+async def save_news_article(article_id: str, user: dict = Depends(get_current_user)):
+    """Save a news article for later reading"""
+    saved = {
+        "id": generate_id(),
+        "user_id": user["id"],
+        "article_id": article_id,
+        "saved_at": now_iso()
+    }
+    
+    await db.saved_news.insert_one(saved)
+    
+    return {"success": True, "message": "Article saved"}
+
+@api_router.get("/news/saved")
+async def get_saved_news(user: dict = Depends(get_current_user)):
+    """Get user's saved news articles"""
+    saved = await db.saved_news.find(
+        {"user_id": user["id"]},
+        {"_id": 0}
+    ).sort("saved_at", -1).to_list(100)
+    
+    return saved
+
 # ============== KAIZER FIT ROUTES (EXPANDED) ==============
 
 @api_router.post("/fitness/activity")
