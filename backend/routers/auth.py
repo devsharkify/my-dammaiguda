@@ -33,6 +33,7 @@ class UserUpdate(BaseModel):
 # ============== ROUTES ==============
 
 @router.post("/otp")
+@router.post("/send-otp")
 async def send_otp(request: OTPRequest):
     """Send OTP to phone number (mock for development)"""
     otp = "123456"  # Fixed OTP for testing
@@ -45,6 +46,7 @@ async def send_otp(request: OTPRequest):
     }
 
 @router.post("/verify")
+@router.post("/verify-otp")
 async def verify_otp(request: OTPVerify):
     """Verify OTP and login/register user"""
     stored_otp = otp_store.get(request.phone)
