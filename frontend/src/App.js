@@ -23,6 +23,7 @@ import MyFamily from "./pages/MyFamily";
 import AQIReport from "./pages/AQIReport";
 import NewsShorts from "./pages/NewsShorts";
 import CitizenWall from "./pages/CitizenWall";
+import LiveActivity from "./pages/LiveActivity";
 
 import "./App.css";
 
@@ -108,6 +109,11 @@ function AppRoutes() {
       <Route path="/wall" element={
         <ProtectedRoute>
           <CitizenWall />
+        </ProtectedRoute>
+      } />
+      <Route path="/live-activity/:activityType" element={
+        <ProtectedRoute>
+          <LiveActivity />
         </ProtectedRoute>
       } />
       
