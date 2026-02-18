@@ -254,6 +254,37 @@ export default function KaizerDoctor() {
     }
   };
 
+  // Psychologist AI Chat
+  const sendPsychMessage = async () => {
+    if (!psychInput.trim()) return;
+    
+    const userMsg = { role: "user", content: psychInput.trim(), timestamp: new Date().toISOString() };
+    setPsychMessages(prev => [...prev, userMsg]);
+    setPsychInput("");
+    setPsychLoading(true);
+    
+    try {
+      const response = await axios.post(`${API}/doctor/psychologist/chat`, {
+        message: userMsg.content,
+        session_id: psychSessionId
+      }, { headers });
+      
+      setPsychSessionId(response.data.session_id);
+      const aiMsg = { 
+        role: "assistant", 
+        content: response.data.response, 
+        timestamp: response.data.timestamp 
+      };
+      setPsychMessages(prev => [...prev, aiMsg]);
+    } catch (error) {
+      toast.error(language === "te" ? "సందేశం పంపడంలో విఫలమైంది" : "Failed to send message");
+      // Remove the user message on error
+      setPsychMessages(prev => prev.slice(0, -1));
+    } finally {
+      setPsychLoading(false);
+    }
+  };
+
   const filteredFoods = foodSearch 
     ? foods.filter(f => 
         f.name.toLowerCase().includes(foodSearch.toLowerCase()) ||
