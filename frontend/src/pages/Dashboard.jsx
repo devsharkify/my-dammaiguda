@@ -93,12 +93,14 @@ export default function Dashboard() {
 
   const fetchDashboardData = async () => {
     try {
-      const [issuesRes, storiesRes, groupsRes, aqiRes, adsRes] = await Promise.all([
+      const [issuesRes, storiesRes, groupsRes, aqiRes, adsRes, wallRes, benefitsRes] = await Promise.all([
         axios.get(`${API}/issues?limit=3`).catch(() => ({ data: { issues: [] } })),
         axios.get(`${API}/stories/feed`, { headers }).catch(() => ({ data: { feed: [], my_stories: null } })),
         axios.get(`${API}/wall/groups`, { headers }).catch(() => ({ data: [] })),
         axios.get(`${API}/aqi/current`).catch(() => ({ data: null })),
-        axios.get(`${API}/stories/ads/stories`, { headers }).catch(() => ({ data: { ads: [] } }))
+        axios.get(`${API}/stories/ads/stories`, { headers }).catch(() => ({ data: { ads: [] } })),
+        axios.get(`${API}/wall/posts?limit=1`, { headers }).catch(() => ({ data: { posts: [] } })),
+        axios.get(`${API}/benefits`).catch(() => ({ data: [] }))
       ]);
       
       setRecentIssues(issuesRes.data?.issues || issuesRes.data || []);
@@ -107,6 +109,8 @@ export default function Dashboard() {
       setMyGroups(groupsRes.data || []);
       setAqiData(aqiRes.data);
       setStoryAds(adsRes.data?.ads || []);
+      setLatestWallPost(wallRes.data?.posts?.[0] || null);
+      setBenefits(benefitsRes.data || []);
     } catch (error) {
       console.error("Error fetching dashboard data:", error);
     } finally {
