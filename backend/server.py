@@ -164,6 +164,22 @@ class DietPlan(BaseModel):
     allergies: List[str] = []
     health_conditions: List[str] = []
 
+# ============== MY FAMILY MODELS ==============
+
+class FamilyMemberRequest(BaseModel):
+    phone: str
+    relationship: str  # spouse, child, parent, sibling, other
+
+class FamilyRequestResponse(BaseModel):
+    request_id: str
+    action: str  # accept, decline
+
+class LocationUpdate(BaseModel):
+    latitude: float
+    longitude: float
+    accuracy: Optional[float] = None
+    battery_level: Optional[int] = None
+
 # ============== AI CHAT MODELS ==============
 
 class ChatMessage(BaseModel):
