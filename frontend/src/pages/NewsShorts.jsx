@@ -218,11 +218,14 @@ export default function NewsShorts() {
     }
   };
 
-  const currentArticle = news[currentIndex];
-  const config = CATEGORY_CONFIG[activeCategory] || CATEGORY_CONFIG.local;
+  const currentItem = mergedFeed[currentIndex];
+  const config = currentItem?.isAd ? null : (CATEGORY_CONFIG[activeCategory] || CATEGORY_CONFIG.local);
 
   // Get localized content
   const getTitle = (article) => {
+    if (article.isAd) {
+      return language === "te" ? (article.title_te || article.title) : article.title;
+    }
     if (language === "te") {
       return article.title_te || article.title;
     }
@@ -230,10 +233,15 @@ export default function NewsShorts() {
   };
 
   const getSummary = (article) => {
+    if (article.isAd) return null;
     if (language === "te") {
       return article.summary_te || article.summary;
     }
     return article.summary;
+  };
+
+  const getCTA = (ad) => {
+    return language === "te" ? (ad.cta_text_te || ad.cta_text) : ad.cta_text;
   };
 
   const getCategoryLabel = () => {
