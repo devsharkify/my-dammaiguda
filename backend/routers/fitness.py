@@ -101,6 +101,211 @@ async def update_daily_fitness_summary(user_id: str, date: str):
 
 # ============== ROUTES ==============
 
+# Activity type configurations with MET values and icons
+ACTIVITY_TYPES = {
+    "running": {"name_en": "Running", "name_te": "పరుగు", "met": 9.8, "icon": "running", "tracks_gps": True},
+    "walking": {"name_en": "Walking", "name_te": "నడక", "met": 3.5, "icon": "walking", "tracks_gps": True},
+    "cycling": {"name_en": "Cycling", "name_te": "సైక్లింగ్", "met": 7.5, "icon": "bike", "tracks_gps": True},
+    "yoga": {"name_en": "Yoga", "name_te": "యోగా", "met": 2.5, "icon": "yoga", "tracks_gps": False},
+    "gym": {"name_en": "Gym Workout", "name_te": "జిమ్", "met": 6.0, "icon": "gym", "tracks_gps": False},
+    "swimming": {"name_en": "Swimming", "name_te": "ఈత", "met": 8.0, "icon": "swimming", "tracks_gps": False},
+    "hiking": {"name_en": "Hiking", "name_te": "హైకింగ్", "met": 6.0, "icon": "hiking", "tracks_gps": True},
+    "sports": {"name_en": "Sports", "name_te": "క్రీడలు", "met": 7.0, "icon": "sports", "tracks_gps": False},
+    "dancing": {"name_en": "Dancing", "name_te": "నృత్యం", "met": 5.0, "icon": "dancing", "tracks_gps": False},
+    "hiit": {"name_en": "HIIT", "name_te": "HIIT", "met": 8.0, "icon": "hiit", "tracks_gps": False},
+    "pilates": {"name_en": "Pilates", "name_te": "పిలేట్స్", "met": 3.0, "icon": "pilates", "tracks_gps": False},
+    "badminton": {"name_en": "Badminton", "name_te": "బ్యాడ్మింటన్", "met": 5.5, "icon": "badminton", "tracks_gps": False},
+    "cricket": {"name_en": "Cricket", "name_te": "క్రికెట్", "met": 5.0, "icon": "cricket", "tracks_gps": False},
+    "football": {"name_en": "Football", "name_te": "ఫుట్‌బాల్", "met": 7.0, "icon": "football", "tracks_gps": True},
+    "tennis": {"name_en": "Tennis", "name_te": "టెన్నిస్", "met": 7.0, "icon": "tennis", "tracks_gps": False},
+    "skipping": {"name_en": "Skipping", "name_te": "తాడు దూకడం", "met": 12.0, "icon": "skipping", "tracks_gps": False},
+    "meditation": {"name_en": "Meditation", "name_te": "ధ్యానం", "met": 1.0, "icon": "meditation", "tracks_gps": False}
+}
+
+@router.get("/activity-types")
+async def get_activity_types():
+    """Get all supported activity types"""
+    return ACTIVITY_TYPES
+
+# ============== LIVE ACTIVITY TRACKING ==============
+
+@router.post("/live/start")
+async def start_live_activity(data: LiveActivityStart, user: dict = Depends(get_current_user)):
+    """Start a live activity tracking session"""
+    if data.activity_type not in ACTIVITY_TYPES:
+        raise HTTPException(status_code=400, detail="Invalid activity type")
+    
+    activity_config = ACTIVITY_TYPES[data.activity_type]
+    
+    session = {
+        "id": generate_id(),
+        "user_id": user["id"],
+        "activity_type": data.activity_type,
+        "activity_name": activity_config["name_en"],
+        "activity_name_te": activity_config["name_te"],
+        "met_value": activity_config["met"],
+        "tracks_gps": activity_config["tracks_gps"],
+        "target_duration": data.target_duration,
+        "target_distance": data.target_distance,
+        "target_calories": data.target_calories,
+        "status": "active",
+        "started_at": now_iso(),
+        "gps_points": [],
+        "last_update": now_iso()
+    }
+    
+    await db.live_activities.insert_one(session)
+    session.pop("_id", None)
+    
+    return {"success": True, "session": session}
+
+@router.post("/live/update")
+async def update_live_activity(data: LiveActivityUpdate, user: dict = Depends(get_current_user)):
+    """Update live activity with current stats"""
+    session = await db.live_activities.find_one({
+        "id": data.session_id,
+        "user_id": user["id"],
+        "status": "active"
+    })
+    
+    if not session:
+        raise HTTPException(status_code=404, detail="Active session not found")
+    
+    # Calculate calories if not provided
+    if not data.current_calories:
+        weight = user.get("health_profile", {}).get("weight_kg", 70)
+        met = session.get("met_value", 5.0)
+        hours = data.current_duration_seconds / 3600
+        data.current_calories = int(met * weight * hours)
+    
+    update_data = {
+        "current_duration_seconds": data.current_duration_seconds,
+        "current_distance_meters": data.current_distance_meters,
+        "current_calories": data.current_calories,
+        "current_steps": data.current_steps,
+        "current_heart_rate": data.heart_rate,
+        "current_speed_kmh": data.speed_kmh,
+        "current_pace": data.pace_min_per_km,
+        "last_update": now_iso()
+    }
+    
+    # Append GPS points if provided
+    if data.gps_points:
+        update_data["$push"] = {"gps_points": {"$each": data.gps_points}}
+    
+    await db.live_activities.update_one(
+        {"id": data.session_id},
+        {"$set": {k: v for k, v in update_data.items() if not k.startswith("$")}}
+    )
+    
+    if data.gps_points:
+        await db.live_activities.update_one(
+            {"id": data.session_id},
+            {"$push": {"gps_points": {"$each": data.gps_points}}}
+        )
+    
+    return {"success": True, "updated": True}
+
+@router.post("/live/end")
+async def end_live_activity(data: LiveActivityEnd, user: dict = Depends(get_current_user)):
+    """End live activity and save to history"""
+    session = await db.live_activities.find_one({
+        "id": data.session_id,
+        "user_id": user["id"]
+    })
+    
+    if not session:
+        raise HTTPException(status_code=404, detail="Session not found")
+    
+    # Calculate final stats
+    weight = user.get("health_profile", {}).get("weight_kg", 70)
+    met = session.get("met_value", 5.0)
+    duration_minutes = data.total_duration_seconds // 60
+    hours = data.total_duration_seconds / 3600
+    
+    calories = data.total_calories or int(met * weight * hours)
+    distance_km = (data.total_distance_meters or 0) / 1000
+    
+    today = datetime.now(timezone.utc).strftime("%Y-%m-%d")
+    
+    # Save to activities collection
+    activity = {
+        "id": generate_id(),
+        "user_id": user["id"],
+        "activity_type": session["activity_type"],
+        "duration_minutes": duration_minutes,
+        "distance_km": round(distance_km, 2),
+        "calories_burned": calories,
+        "steps": data.total_steps,
+        "heart_rate_avg": data.avg_heart_rate,
+        "heart_rate_max": data.max_heart_rate,
+        "avg_speed_kmh": data.avg_speed_kmh,
+        "avg_pace_min_per_km": data.avg_pace_min_per_km,
+        "route_polyline": data.route_polyline,
+        "gps_points": data.gps_points or session.get("gps_points", []),
+        "source": "live_tracking",
+        "live_session_id": data.session_id,
+        "date": today,
+        "started_at": session["started_at"],
+        "ended_at": now_iso(),
+        "created_at": now_iso()
+    }
+    
+    await db.activities.insert_one(activity)
+    activity.pop("_id", None)
+    
+    # Mark session as completed
+    await db.live_activities.update_one(
+        {"id": data.session_id},
+        {"$set": {
+            "status": "completed",
+            "ended_at": now_iso(),
+            "final_stats": {
+                "duration_seconds": data.total_duration_seconds,
+                "distance_meters": data.total_distance_meters,
+                "calories": calories,
+                "steps": data.total_steps
+            }
+        }}
+    )
+    
+    # Update daily summary
+    await update_daily_fitness_summary(user["id"], today)
+    
+    return {"success": True, "activity": activity}
+
+@router.get("/live/active")
+async def get_active_session(user: dict = Depends(get_current_user)):
+    """Get user's active live session if any"""
+    session = await db.live_activities.find_one(
+        {"user_id": user["id"], "status": "active"},
+        {"_id": 0}
+    )
+    
+    return {"active_session": session}
+
+@router.delete("/live/{session_id}")
+async def cancel_live_activity(session_id: str, user: dict = Depends(get_current_user)):
+    """Cancel/discard a live activity session"""
+    result = await db.live_activities.delete_one({
+        "id": session_id,
+        "user_id": user["id"]
+    })
+    
+    return {"success": True, "deleted": result.deleted_count > 0}
+
+@router.get("/live/history")
+async def get_live_activity_history(limit: int = 10, user: dict = Depends(get_current_user)):
+    """Get history of live tracked activities"""
+    activities = await db.activities.find(
+        {"user_id": user["id"], "source": "live_tracking"},
+        {"_id": 0}
+    ).sort("created_at", -1).limit(limit).to_list(limit)
+    
+    return {"activities": activities, "count": len(activities)}
+
+# ============== MANUAL ACTIVITY LOGGING ==============
+
 @router.post("/activity")
 async def log_activity(activity: ActivityLog, user: dict = Depends(get_current_user)):
     """Log physical activity"""
