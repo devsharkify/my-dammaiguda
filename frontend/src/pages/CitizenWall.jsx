@@ -493,7 +493,11 @@ export default function CitizenWall() {
                     <p className="text-text-primary mb-3 whitespace-pre-wrap">{post.content}</p>
 
                     {post.image_url && (
-                      <img src={post.image_url} alt="Post" className="rounded-lg mb-3 w-full" />
+                      <img src={post.image_url} alt="Post" className="rounded-lg mb-3 w-full max-h-80 object-cover" />
+                    )}
+                    
+                    {post.video_url && (
+                      <video src={post.video_url} controls className="rounded-lg mb-3 w-full max-h-80" />
                     )}
 
                     {/* Post Actions */}
@@ -503,15 +507,34 @@ export default function CitizenWall() {
                         size="sm"
                         onClick={() => likePost(post.id)}
                         className={post.liked_by_me ? "text-red-500" : "text-text-muted"}
+                        data-testid={`like-btn-${post.id}`}
                       >
                         <Heart className={`h-5 w-5 mr-1 ${post.liked_by_me ? "fill-red-500" : ""}`} />
                         {post.likes_count || 0}
                       </Button>
-                      <Button variant="ghost" size="sm" className="text-text-muted">
+                      <Button 
+                        variant="ghost" 
+                        size="sm" 
+                        className="text-text-muted"
+                        onClick={() => openComments(post)}
+                        data-testid={`comment-btn-${post.id}`}
+                      >
                         <MessageCircle className="h-5 w-5 mr-1" />
                         {post.comments_count || 0}
                       </Button>
-                      <Button variant="ghost" size="sm" className="text-text-muted">
+                      <Button 
+                        variant="ghost" 
+                        size="sm" 
+                        className="text-text-muted"
+                        onClick={() => {
+                          if (navigator.share) {
+                            navigator.share({ text: post.content, title: "Citizen Wall Post" });
+                          } else {
+                            navigator.clipboard.writeText(post.content);
+                            toast.success(language === "te" ? "కాపీ చేయబడింది!" : "Copied to clipboard!");
+                          }
+                        }}
+                      >
                         <Share2 className="h-5 w-5" />
                       </Button>
                     </div>
@@ -523,84 +546,220 @@ export default function CitizenWall() {
 
           {/* Groups Tab */}
           <TabsContent value="groups" className="space-y-4 mt-4">
-            <Button
-              onClick={() => setShowCreateGroup(true)}
-              className="w-full bg-gradient-to-r from-indigo-500 to-purple-500"
-            >
-              <Plus className="h-5 w-5 mr-2" />
-              {language === "te" ? "కొత్త గ్రూప్ సృష్టించండి" : "Create New Group"}
-            </Button>
-
-            {/* Group Invites */}
-            {groupInvites.length > 0 && (
-              <div className="space-y-2">
-                <h3 className="font-semibold text-sm text-text-muted">
-                  {language === "te" ? "గ్రూప్ ఆహ్వానాలు" : "Group Invites"}
-                </h3>
-                {groupInvites.map((invite) => (
-                  <Card key={invite.id} className="border-orange-200 bg-orange-50">
-                    <CardContent className="p-3 flex items-center justify-between">
-                      <div>
-                        <p className="font-semibold">{invite.group_name}</p>
-                        <p className="text-xs text-text-muted">
-                          {language === "te" ? "ఆహ్వానించినవారు:" : "Invited by:"} {invite.invited_by_name}
-                        </p>
-                      </div>
-                      <div className="flex gap-2">
-                        <Button size="sm" onClick={() => respondToInvite(invite.id, "accept")} className="bg-green-500">
-                          <Check className="h-4 w-4" />
-                        </Button>
-                        <Button size="sm" variant="outline" onClick={() => respondToInvite(invite.id, "decline")}>
-                          <X className="h-4 w-4" />
-                        </Button>
-                      </div>
-                    </CardContent>
-                  </Card>
-                ))}
-              </div>
-            )}
-
-            {/* My Groups */}
-            <h3 className="font-semibold text-sm text-text-muted">
-              {language === "te" ? "నా గ్రూప్‌లు" : "My Groups"}
-            </h3>
-            {groups.length === 0 ? (
-              <div className="text-center py-8">
-                <Users className="h-12 w-12 mx-auto text-text-muted opacity-30 mb-3" />
-                <p className="text-text-muted text-sm">
-                  {language === "te" ? "ఇంకా గ్రూప్‌లు లేవు" : "No groups yet"}
+            {selectedGroup ? (
+              /* Group Chat View */
+              <div className="flex flex-col h-[65vh]" data-testid="group-chat">
+                {/* Chat Header */}
+                <div className="flex items-center gap-3 p-3 bg-gradient-to-r from-purple-500 to-pink-500 rounded-t-xl text-white">
+                  <Button 
+                    variant="ghost" 
+                    size="sm" 
+                    className="text-white hover:bg-white/20 p-1"
+                    onClick={() => setSelectedGroup(null)}
+                  >
+                    <ArrowLeft className="h-5 w-5" />
+                  </Button>
+                  <div className="h-10 w-10 rounded-full bg-white/20 flex items-center justify-center font-bold">
+                    {selectedGroup.name[0].toUpperCase()}
+                  </div>
+                  <div className="flex-1">
+                    <p className="font-semibold">{selectedGroup.name}</p>
+                    <p className="text-xs text-white/80">
+                      {selectedGroup.members_count} {language === "te" ? "సభ్యులు" : "members"}
+                    </p>
+                  </div>
+                  <Button 
+                    variant="ghost" 
+                    size="sm" 
+                    className="text-white hover:bg-white/20"
+                    onClick={() => leaveGroup(selectedGroup.id)}
+                  >
+                    <X className="h-4 w-4" />
+                  </Button>
+                </div>
+                
+                {/* Chat Messages */}
+                <div className="flex-1 overflow-y-auto p-3 bg-gray-50 space-y-3">
+                  {chatMessages.length === 0 ? (
+                    <div className="text-center py-12 text-text-muted">
+                      <MessageSquare className="h-12 w-12 mx-auto opacity-30 mb-3" />
+                      <p>{language === "te" ? "ఇంకా సందేశాలు లేవు" : "No messages yet"}</p>
+                      <p className="text-xs mt-1">{language === "te" ? "సంభాషణను ప్రారంభించండి!" : "Start the conversation!"}</p>
+                    </div>
+                  ) : (
+                    chatMessages.map((msg) => {
+                      const isMe = msg.sender.id === user.id;
+                      return (
+                        <div 
+                          key={msg.id} 
+                          className={`flex ${isMe ? "justify-end" : "justify-start"}`}
+                        >
+                          <div className={`max-w-[75%] rounded-2xl px-4 py-2 ${
+                            isMe 
+                              ? "bg-gradient-to-r from-indigo-500 to-purple-500 text-white rounded-br-sm" 
+                              : "bg-white border border-border/50 rounded-bl-sm"
+                          }`}>
+                            {!isMe && (
+                              <p className="text-xs font-semibold text-indigo-600 mb-1">{msg.sender.name}</p>
+                            )}
+                            <p className={`text-sm ${isMe ? "text-white" : "text-text-primary"}`}>{msg.content}</p>
+                            <p className={`text-[10px] mt-1 ${isMe ? "text-white/70" : "text-text-muted"}`}>
+                              {formatTime(msg.timestamp)}
+                            </p>
+                          </div>
+                        </div>
+                      );
+                    })
+                  )}
+                  <div ref={chatEndRef} />
+                </div>
+                
+                {/* Chat Input */}
+                <div className="p-3 bg-white border-t border-border/30 flex gap-2">
+                  <Input
+                    placeholder={language === "te" ? "సందేశం టైప్ చేయండి..." : "Type a message..."}
+                    value={newMessage}
+                    onChange={(e) => setNewMessage(e.target.value)}
+                    onKeyPress={(e) => e.key === "Enter" && sendChatMessage()}
+                    className="flex-1"
+                    data-testid="chat-input"
+                  />
+                  <Button 
+                    onClick={sendChatMessage}
+                    className="bg-gradient-to-r from-indigo-500 to-purple-500"
+                    data-testid="send-message-btn"
+                  >
+                    <Send className="h-4 w-4" />
+                  </Button>
+                </div>
+                
+                {/* Client-side storage notice */}
+                <p className="text-[10px] text-center text-text-muted py-1 bg-amber-50">
+                  {language === "te" ? "💾 సందేశాలు మీ పరికరంలో మాత్రమే నిల్వ చేయబడతాయి" : "💾 Messages stored only on your device"}
                 </p>
               </div>
             ) : (
-              groups.map((group) => (
-                <Card key={group.id} className="cursor-pointer hover:shadow-md transition-shadow">
-                  <CardContent className="p-4 flex items-center gap-4">
-                    <div className="h-12 w-12 rounded-full bg-gradient-to-br from-purple-400 to-pink-500 flex items-center justify-center text-white font-bold text-lg">
-                      {group.name[0].toUpperCase()}
-                    </div>
-                    <div className="flex-1">
-                      <div className="flex items-center gap-2">
-                        <p className="font-semibold">{group.name}</p>
-                        {group.is_private && (
-                          <Badge variant="secondary" className="text-xs">
-                            {language === "te" ? "ప్రైవేట్" : "Private"}
-                          </Badge>
-                        )}
-                      </div>
-                      <p className="text-sm text-text-muted">
-                        {group.members_count} {language === "te" ? "సభ్యులు" : "members"}
-                      </p>
-                    </div>
-                  </CardContent>
-                </Card>
-              ))
+              /* Groups List View */
+              <>
+                <Button
+                  onClick={() => setShowCreateGroup(true)}
+                  className="w-full bg-gradient-to-r from-indigo-500 to-purple-500"
+                  data-testid="create-group-btn"
+                >
+                  <Plus className="h-5 w-5 mr-2" />
+                  {language === "te" ? "కొత్త గ్రూప్ సృష్టించండి" : "Create New Group"}
+                </Button>
+
+                {/* Group Invites */}
+                {groupInvites.length > 0 && (
+                  <div className="space-y-2">
+                    <h3 className="font-semibold text-sm text-text-muted">
+                      {language === "te" ? "గ్రూప్ ఆహ్వానాలు" : "Group Invites"}
+                    </h3>
+                    {groupInvites.map((invite) => (
+                      <Card key={invite.id} className="border-orange-200 bg-orange-50">
+                        <CardContent className="p-3 flex items-center justify-between">
+                          <div>
+                            <p className="font-semibold">{invite.group_name}</p>
+                            <p className="text-xs text-text-muted">
+                              {language === "te" ? "ఆహ్వానించినవారు:" : "Invited by:"} {invite.invited_by_name}
+                            </p>
+                          </div>
+                          <div className="flex gap-2">
+                            <Button size="sm" onClick={() => respondToInvite(invite.id, "accept")} className="bg-green-500">
+                              <Check className="h-4 w-4" />
+                            </Button>
+                            <Button size="sm" variant="outline" onClick={() => respondToInvite(invite.id, "decline")}>
+                              <X className="h-4 w-4" />
+                            </Button>
+                          </div>
+                        </CardContent>
+                      </Card>
+                    ))}
+                  </div>
+                )}
+
+                {/* My Groups */}
+                <h3 className="font-semibold text-sm text-text-muted">
+                  {language === "te" ? "నా గ్రూప్‌లు" : "My Groups"}
+                </h3>
+                {groups.length === 0 ? (
+                  <div className="text-center py-8">
+                    <Users className="h-12 w-12 mx-auto text-text-muted opacity-30 mb-3" />
+                    <p className="text-text-muted text-sm">
+                      {language === "te" ? "ఇంకా గ్రూప్‌లు లేవు" : "No groups yet"}
+                    </p>
+                  </div>
+                ) : (
+                  groups.map((group) => (
+                    <Card 
+                      key={group.id} 
+                      className="cursor-pointer hover:shadow-md transition-shadow"
+                      onClick={() => setSelectedGroup(group)}
+                      data-testid={`group-${group.id}`}
+                    >
+                      <CardContent className="p-4 flex items-center gap-4">
+                        <div className="h-12 w-12 rounded-full bg-gradient-to-br from-purple-400 to-pink-500 flex items-center justify-center text-white font-bold text-lg">
+                          {group.name[0].toUpperCase()}
+                        </div>
+                        <div className="flex-1">
+                          <div className="flex items-center gap-2">
+                            <p className="font-semibold">{group.name}</p>
+                            {group.is_private && (
+                              <Badge variant="secondary" className="text-xs">
+                                {language === "te" ? "ప్రైవేట్" : "Private"}
+                              </Badge>
+                            )}
+                          </div>
+                          <p className="text-sm text-text-muted">
+                            {group.members_count} {language === "te" ? "సభ్యులు" : "members"}
+                          </p>
+                        </div>
+                        <ChevronRight className="h-5 w-5 text-text-muted" />
+                      </CardContent>
+                    </Card>
+                  ))
+                )}
+                
+                {/* Discover Groups */}
+                {discoverGroups.length > 0 && (
+                  <>
+                    <h3 className="font-semibold text-sm text-text-muted mt-4">
+                      {language === "te" ? "గ్రూప్‌లను కనుగొనండి" : "Discover Groups"}
+                    </h3>
+                    {discoverGroups.map((group) => (
+                      <Card key={group.id} className="border-dashed">
+                        <CardContent className="p-4 flex items-center gap-4">
+                          <div className="h-12 w-12 rounded-full bg-gradient-to-br from-cyan-400 to-blue-500 flex items-center justify-center text-white font-bold text-lg">
+                            {group.name[0].toUpperCase()}
+                          </div>
+                          <div className="flex-1">
+                            <p className="font-semibold">{group.name}</p>
+                            <p className="text-sm text-text-muted">
+                              {group.members_count} {language === "te" ? "సభ్యులు" : "members"}
+                            </p>
+                          </div>
+                          <Button 
+                            size="sm" 
+                            onClick={(e) => { e.stopPropagation(); joinGroup(group.id); }}
+                            className="bg-gradient-to-r from-cyan-500 to-blue-500"
+                          >
+                            <UserPlus className="h-4 w-4 mr-1" />
+                            {language === "te" ? "చేరండి" : "Join"}
+                          </Button>
+                        </CardContent>
+                      </Card>
+                    ))}
+                  </>
+                )}
+              </>
             )}
           </TabsContent>
         </Tabs>
 
         {/* Create Post Dialog */}
-        <Dialog open={showCreatePost} onOpenChange={setShowCreatePost}>
-          <DialogContent className="max-w-md">
+        <Dialog open={showCreatePost} onOpenChange={(open) => { setShowCreatePost(open); if (!open) clearMedia(); }}>
+          <DialogContent className="max-w-md max-h-[85vh] overflow-y-auto">
             <DialogHeader>
               <DialogTitle className="flex items-center gap-2">
                 <PenSquare className="h-5 w-5 text-primary" />
@@ -613,7 +772,56 @@ export default function CitizenWall() {
                 value={newPost.content}
                 onChange={(e) => setNewPost({ ...newPost, content: e.target.value })}
                 className="w-full min-h-[120px] p-3 rounded-lg border border-input resize-none focus:outline-none focus:ring-2 focus:ring-primary"
+                data-testid="post-content-input"
               />
+              
+              {/* Media Preview */}
+              {mediaPreview && (
+                <div className="relative">
+                  {mediaType === "image" ? (
+                    <img src={mediaPreview} alt="Preview" className="rounded-lg w-full max-h-48 object-cover" />
+                  ) : (
+                    <video src={mediaPreview} controls className="rounded-lg w-full max-h-48" />
+                  )}
+                  <Button
+                    variant="destructive"
+                    size="sm"
+                    className="absolute top-2 right-2"
+                    onClick={clearMedia}
+                  >
+                    <Trash2 className="h-4 w-4" />
+                  </Button>
+                </div>
+              )}
+              
+              {/* Media Upload Buttons */}
+              <div className="flex gap-2">
+                <input
+                  type="file"
+                  accept="image/*,video/*"
+                  ref={fileInputRef}
+                  onChange={handleMediaSelect}
+                  className="hidden"
+                />
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => fileInputRef.current?.click()}
+                  disabled={uploadingMedia}
+                >
+                  <ImageIcon className="h-4 w-4 mr-1" />
+                  {language === "te" ? "ఫోటో" : "Photo"}
+                </Button>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => fileInputRef.current?.click()}
+                  disabled={uploadingMedia}
+                >
+                  <Video className="h-4 w-4 mr-1" />
+                  {language === "te" ? "వీడియో" : "Video"}
+                </Button>
+              </div>
               
               <div className="flex gap-2">
                 <Button
@@ -638,11 +846,78 @@ export default function CitizenWall() {
                 onClick={createPost}
                 disabled={posting}
                 className="w-full bg-gradient-to-r from-indigo-500 to-purple-500"
+                data-testid="submit-post-btn"
               >
                 {posting ? <Loader2 className="h-4 w-4 animate-spin" /> : <Send className="h-4 w-4 mr-2" />}
                 {language === "te" ? "పోస్ట్ చేయండి" : "Post"}
               </Button>
             </div>
+          </DialogContent>
+        </Dialog>
+
+        {/* Comments Dialog */}
+        <Dialog open={!!selectedPost} onOpenChange={(open) => !open && setSelectedPost(null)}>
+          <DialogContent className="max-w-md max-h-[80vh] overflow-hidden flex flex-col">
+            <DialogHeader>
+              <DialogTitle className="flex items-center gap-2">
+                <MessageCircle className="h-5 w-5 text-primary" />
+                {language === "te" ? "వ్యాఖ్యలు" : "Comments"}
+              </DialogTitle>
+            </DialogHeader>
+            
+            {selectedPost && (
+              <>
+                {/* Original Post Summary */}
+                <div className="p-3 bg-muted/50 rounded-lg mb-3">
+                  <p className="text-sm font-medium">{selectedPost.user_name}</p>
+                  <p className="text-sm text-text-muted line-clamp-2">{selectedPost.content}</p>
+                </div>
+                
+                {/* Comments List */}
+                <div className="flex-1 overflow-y-auto space-y-3 min-h-[200px] max-h-[300px]">
+                  {loadingComments ? (
+                    <div className="flex justify-center py-4">
+                      <Loader2 className="h-6 w-6 animate-spin text-primary" />
+                    </div>
+                  ) : comments.length === 0 ? (
+                    <div className="text-center py-8 text-text-muted">
+                      <MessageCircle className="h-10 w-10 mx-auto opacity-30 mb-2" />
+                      <p className="text-sm">{language === "te" ? "ఇంకా వ్యాఖ్యలు లేవు" : "No comments yet"}</p>
+                    </div>
+                  ) : (
+                    comments.map((comment) => (
+                      <div key={comment.id} className="flex gap-3">
+                        <div className="h-8 w-8 rounded-full bg-gradient-to-br from-cyan-400 to-blue-500 flex items-center justify-center text-white text-xs font-bold flex-shrink-0">
+                          {comment.user_name?.[0]?.toUpperCase() || "?"}
+                        </div>
+                        <div className="flex-1 bg-muted/50 rounded-lg p-2">
+                          <div className="flex items-center gap-2">
+                            <p className="text-sm font-medium">{comment.user_name}</p>
+                            <span className="text-[10px] text-text-muted">{formatTime(comment.created_at)}</span>
+                          </div>
+                          <p className="text-sm text-text-primary">{comment.content}</p>
+                        </div>
+                      </div>
+                    ))
+                  )}
+                </div>
+                
+                {/* Add Comment */}
+                <div className="flex gap-2 pt-3 border-t">
+                  <Input
+                    placeholder={language === "te" ? "వ్యాఖ్య రాయండి..." : "Write a comment..."}
+                    value={newComment}
+                    onChange={(e) => setNewComment(e.target.value)}
+                    onKeyPress={(e) => e.key === "Enter" && addComment()}
+                    className="flex-1"
+                    data-testid="comment-input"
+                  />
+                  <Button onClick={addComment} className="bg-primary" data-testid="submit-comment-btn">
+                    <Send className="h-4 w-4" />
+                  </Button>
+                </div>
+              </>
+            )}
           </DialogContent>
         </Dialog>
 
@@ -660,6 +935,7 @@ export default function CitizenWall() {
                 placeholder={language === "te" ? "గ్రూప్ పేరు" : "Group Name"}
                 value={newGroup.name}
                 onChange={(e) => setNewGroup({ ...newGroup, name: e.target.value })}
+                data-testid="group-name-input"
               />
               <textarea
                 placeholder={language === "te" ? "వివరణ (ఐచ్ఛికం)" : "Description (optional)"}
@@ -683,6 +959,7 @@ export default function CitizenWall() {
               <Button
                 onClick={createGroup}
                 className="w-full bg-gradient-to-r from-purple-500 to-pink-500"
+                data-testid="submit-group-btn"
               >
                 <Plus className="h-4 w-4 mr-2" />
                 {language === "te" ? "గ్రూప్ సృష్టించండి" : "Create Group"}
