@@ -174,97 +174,154 @@ export default function KaizerFit() {
   }
 
   const today = dashboard?.today || { total_steps: 0, total_calories: 0, fitness_score: 0 };
+  
+  // Get random motivational quote
+  const getQuote = () => {
+    const quotes = MOTIVATIONAL_QUOTES[language] || MOTIVATIONAL_QUOTES.en;
+    return quotes[Math.floor(Math.random() * quotes.length)];
+  };
+  const [quote] = useState(getQuote());
+
+  // Calculate progress percentage
+  const stepsGoal = 10000;
+  const stepsProgress = Math.min(100, Math.round((today.total_steps / stepsGoal) * 100));
+  const caloriesGoal = 500;
+  const caloriesProgress = Math.min(100, Math.round((today.total_calories / caloriesGoal) * 100));
 
   return (
     <Layout showBackButton title={language === "te" ? "కైజర్ ఫిట్" : "Kaizer Fit"}>
-      <div className="space-y-6" data-testid="kaizer-fit-expanded">
-        {/* Stats Header */}
-        <Card className="bg-gradient-to-br from-primary to-teal-600 text-white border-0">
-          <CardContent className="p-6">
-            <div className="flex items-center justify-between mb-4">
-              <div className="flex items-center gap-3">
-                <div className="h-14 w-14 rounded-full bg-white/20 flex items-center justify-center">
-                  <Activity className="h-7 w-7" />
+      <div className="space-y-5" data-testid="kaizer-fit-expanded">
+        {/* Motivational Banner */}
+        <div className="relative overflow-hidden rounded-2xl bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-600 p-5 text-white">
+          <div className="absolute top-0 right-0 opacity-10">
+            <Sparkles className="h-32 w-32 -mt-8 -mr-8" />
+          </div>
+          <div className="relative z-10">
+            <div className="flex items-center gap-2 mb-2">
+              <Star className="h-5 w-5 text-yellow-300 fill-yellow-300" />
+              <span className="text-sm font-medium text-white/90">
+                {language === "te" ? "ఈ రోజు మీ ప్రేరణ" : "Today's Motivation"}
+              </span>
+            </div>
+            <p className="text-lg font-semibold leading-relaxed">{quote}</p>
+          </div>
+        </div>
+
+        {/* Stats Header - Premium Design */}
+        <Card className="bg-gradient-to-br from-primary via-teal-600 to-emerald-600 text-white border-0 shadow-lg overflow-hidden relative">
+          <div className="absolute -top-10 -right-10 h-40 w-40 rounded-full bg-white/10" />
+          <div className="absolute -bottom-10 -left-10 h-32 w-32 rounded-full bg-white/10" />
+          <CardContent className="p-6 relative z-10">
+            <div className="flex items-center justify-between mb-6">
+              <div className="flex items-center gap-4">
+                <div className="h-16 w-16 rounded-2xl bg-white/20 flex items-center justify-center shadow-inner">
+                  <Activity className="h-8 w-8" />
                 </div>
                 <div>
-                  <p className="text-white/80 text-sm">
-                    {language === "te" ? "ఈ రోజు" : "Today"}
+                  <p className="text-white/80 text-sm font-medium">
+                    {language === "te" ? "ఈ రోజు మొత్తం" : "Today's Total"}
                   </p>
-                  <p className="text-3xl font-bold">
+                  <p className="text-4xl font-bold tracking-tight">
                     {today.total_steps?.toLocaleString() || 0}
                   </p>
-                  <p className="text-white/80 text-sm">
-                    {language === "te" ? "అడుగులు" : "steps"}
+                  <p className="text-white/70 text-sm">
+                    {language === "te" ? `/ ${stepsGoal.toLocaleString()} అడుగుల లక్ష్యం` : `/ ${stepsGoal.toLocaleString()} steps goal`}
                   </p>
                 </div>
               </div>
               <div className="text-right">
-                <p className={`text-4xl font-bold ${getScoreColor(today.fitness_score || 0)}`}>
-                  {today.fitness_score || 0}
-                </p>
-                <p className="text-white/80 text-sm">
-                  {language === "te" ? "ఫిట్‌నెస్ స్కోర్" : "Fitness Score"}
-                </p>
+                <div className="relative">
+                  <div className="h-20 w-20 rounded-full border-4 border-white/30 flex items-center justify-center">
+                    <div className="text-center">
+                      <p className="text-2xl font-bold">{today.fitness_score || 0}</p>
+                      <p className="text-xs text-white/70">{language === "te" ? "స్కోర్" : "Score"}</p>
+                    </div>
+                  </div>
+                  {today.fitness_score >= 80 && (
+                    <Crown className="absolute -top-2 -right-1 h-6 w-6 text-yellow-300 fill-yellow-300" />
+                  )}
+                </div>
               </div>
             </div>
             
-            {/* Quick Stats */}
-            <div className="grid grid-cols-3 gap-3">
-              <div className="bg-white/10 rounded-lg p-3 text-center">
-                <Flame className="h-5 w-5 mx-auto mb-1" />
-                <p className="font-bold">{today.total_calories || 0}</p>
-                <p className="text-xs text-white/70">{language === "te" ? "కేలరీలు" : "Calories"}</p>
+            {/* Progress Bar */}
+            <div className="mb-5">
+              <div className="flex justify-between text-sm mb-1">
+                <span className="text-white/80">{language === "te" ? "అడుగుల పురోగతి" : "Steps Progress"}</span>
+                <span className="font-bold">{stepsProgress}%</span>
               </div>
-              <div className="bg-white/10 rounded-lg p-3 text-center">
-                <Award className="h-5 w-5 mx-auto mb-1" />
-                <p className="font-bold">{dashboard?.streak?.current || 0}</p>
-                <p className="text-xs text-white/70">{language === "te" ? "స్ట్రీక్" : "Streak"}</p>
+              <div className="h-3 bg-white/20 rounded-full overflow-hidden">
+                <div 
+                  className="h-full bg-gradient-to-r from-yellow-300 to-amber-400 rounded-full transition-all duration-500"
+                  style={{ width: `${stepsProgress}%` }}
+                />
               </div>
-              <div className="bg-white/10 rounded-lg p-3 text-center">
-                <Timer className="h-5 w-5 mx-auto mb-1" />
-                <p className="font-bold">{today.total_duration_minutes || 0}</p>
-                <p className="text-xs text-white/70">{language === "te" ? "నిమిషాలు" : "Minutes"}</p>
+            </div>
+            
+            {/* Quick Stats Grid */}
+            <div className="grid grid-cols-4 gap-2">
+              <div className="bg-white/15 backdrop-blur-sm rounded-xl p-3 text-center">
+                <Flame className="h-5 w-5 mx-auto mb-1 text-orange-300" />
+                <p className="font-bold text-lg">{today.total_calories || 0}</p>
+                <p className="text-[10px] text-white/70">{language === "te" ? "కేలరీలు" : "Cal"}</p>
+              </div>
+              <div className="bg-white/15 backdrop-blur-sm rounded-xl p-3 text-center">
+                <Award className="h-5 w-5 mx-auto mb-1 text-yellow-300" />
+                <p className="font-bold text-lg">{dashboard?.streak?.current || 0}</p>
+                <p className="text-[10px] text-white/70">{language === "te" ? "స్ట్రీక్" : "Streak"}</p>
+              </div>
+              <div className="bg-white/15 backdrop-blur-sm rounded-xl p-3 text-center">
+                <Timer className="h-5 w-5 mx-auto mb-1 text-cyan-300" />
+                <p className="font-bold text-lg">{today.total_duration_minutes || 0}</p>
+                <p className="text-[10px] text-white/70">{language === "te" ? "నిమిషం" : "Min"}</p>
+              </div>
+              <div className="bg-white/15 backdrop-blur-sm rounded-xl p-3 text-center">
+                <MapPin className="h-5 w-5 mx-auto mb-1 text-green-300" />
+                <p className="font-bold text-lg">{today.total_distance_km?.toFixed(1) || "0"}</p>
+                <p className="text-[10px] text-white/70">{language === "te" ? "కి.మీ" : "km"}</p>
               </div>
             </div>
           </CardContent>
         </Card>
 
-        {/* Log Activity Button */}
-        <Dialog open={showActivityDialog} onOpenChange={setShowActivityDialog}>
-          <DialogTrigger asChild>
-            <Button 
-              className="w-full h-14 bg-secondary text-white rounded-xl text-lg"
-              data-testid="log-activity-btn"
-            >
-              <Plus className="h-6 w-6 mr-2" />
-              {language === "te" ? "యాక్టివిటీ నమోదు చేయండి" : "Log Activity"}
-            </Button>
-          </DialogTrigger>
-          <DialogContent className="max-w-md">
-            <DialogHeader>
-              <DialogTitle>
+        {/* Quick Action Buttons */}
+        <div className="grid grid-cols-2 gap-3">
+          <Dialog open={showActivityDialog} onOpenChange={setShowActivityDialog}>
+            <DialogTrigger asChild>
+              <Button 
+                className="h-16 bg-gradient-to-r from-secondary to-orange-500 text-white rounded-xl text-base font-semibold shadow-lg hover:shadow-xl transition-all"
+                data-testid="log-activity-btn"
+              >
+                <Plus className="h-6 w-6 mr-2" />
                 {language === "te" ? "యాక్టివిటీ నమోదు" : "Log Activity"}
-              </DialogTitle>
-            </DialogHeader>
-            <div className="space-y-4 mt-4">
-              {/* Activity Type Selection */}
-              <div className="grid grid-cols-4 gap-2">
-                {ACTIVITY_TYPES.map((type) => (
-                  <button
-                    key={type.value}
-                    onClick={() => setActivityType(type.value)}
-                    className={`p-3 rounded-lg flex flex-col items-center gap-1 transition-all ${
-                      activityType === type.value 
-                        ? `${type.color} ring-2 ring-primary`
-                        : "bg-muted hover:bg-muted/80"
-                    }`}
-                    data-testid={`activity-type-${type.value}`}
-                  >
-                    {type.icon}
-                    <span className="text-xs">{type.label[language]}</span>
-                  </button>
-                ))}
-              </div>
+              </Button>
+            </DialogTrigger>
+            <DialogContent className="max-w-md">
+              <DialogHeader>
+                <DialogTitle className="flex items-center gap-2">
+                  <Activity className="h-5 w-5 text-primary" />
+                  {language === "te" ? "యాక్టివిటీ నమోదు" : "Log Activity"}
+                </DialogTitle>
+              </DialogHeader>
+              <div className="space-y-4 mt-4">
+                {/* Activity Type Selection - Grid Layout */}
+                <div className="grid grid-cols-3 gap-2">
+                  {ACTIVITY_TYPES.map((type) => (
+                    <button
+                      key={type.value}
+                      onClick={() => setActivityType(type.value)}
+                      className={`p-3 rounded-xl flex flex-col items-center gap-2 transition-all border-2 ${
+                        activityType === type.value 
+                          ? `bg-gradient-to-br ${type.gradient} text-white border-transparent shadow-lg scale-105`
+                          : "bg-muted border-transparent hover:border-primary/30"
+                      }`}
+                      data-testid={`activity-type-${type.value}`}
+                    >
+                      {type.icon}
+                      <span className="text-xs font-medium">{type.label[language]}</span>
+                    </button>
+                  ))}
+                </div>
 
               <div className="space-y-3">
                 <div>
