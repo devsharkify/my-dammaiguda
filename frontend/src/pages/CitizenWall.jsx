@@ -113,13 +113,32 @@ export default function CitizenWall() {
   const [posts, setPosts] = useState([]);
   const [groups, setGroups] = useState([]);
   const [groupInvites, setGroupInvites] = useState([]);
+  const [discoverGroups, setDiscoverGroups] = useState([]);
   const [loading, setLoading] = useState(true);
   const [showCreatePost, setShowCreatePost] = useState(false);
   const [showCreateGroup, setShowCreateGroup] = useState(false);
-  const [newPost, setNewPost] = useState({ content: "", visibility: "public", image_url: "" });
+  const [newPost, setNewPost] = useState({ content: "", visibility: "public", image_url: "", video_url: "" });
   const [newGroup, setNewGroup] = useState({ name: "", description: "", is_private: false });
   const [posting, setPosting] = useState(false);
   const [visibility, setVisibility] = useState("all");
+  
+  // Media upload state
+  const [mediaPreview, setMediaPreview] = useState(null);
+  const [mediaType, setMediaType] = useState(null); // 'image' or 'video'
+  const [uploadingMedia, setUploadingMedia] = useState(false);
+  const fileInputRef = useRef(null);
+  
+  // Comments state
+  const [selectedPost, setSelectedPost] = useState(null);
+  const [comments, setComments] = useState([]);
+  const [newComment, setNewComment] = useState("");
+  const [loadingComments, setLoadingComments] = useState(false);
+  
+  // Group chat state
+  const [selectedGroup, setSelectedGroup] = useState(null);
+  const [chatMessages, setChatMessages] = useState([]);
+  const [newMessage, setNewMessage] = useState("");
+  const chatEndRef = useRef(null);
 
   const headers = { Authorization: `Bearer ${token}` };
 
