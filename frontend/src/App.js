@@ -103,6 +103,7 @@ function AppRoutes() {
         </ProtectedRoute>
       } />
       <Route path="/aqi" element={<AQIReport />} />
+      <Route path="/news" element={<NewsShorts />} />
       
       {/* Volunteer Routes */}
       <Route path="/volunteer" element={
