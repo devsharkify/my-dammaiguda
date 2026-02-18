@@ -389,6 +389,7 @@ export default function LiveActivity() {
             <button
               onClick={startActivity}
               disabled={loading}
+              data-testid="start-activity-btn"
               className="h-24 w-24 rounded-full bg-white text-green-600 flex items-center justify-center shadow-2xl active:scale-95 transition-transform"
             >
               {loading ? (
@@ -402,6 +403,7 @@ export default function LiveActivity() {
               {/* Pause/Resume */}
               <button
                 onClick={isPaused ? resumeActivity : pauseActivity}
+                data-testid={isPaused ? "resume-activity-btn" : "pause-activity-btn"}
                 className="h-16 w-16 rounded-full bg-white/90 text-gray-800 flex items-center justify-center shadow-lg active:scale-95 transition-transform"
               >
                 {isPaused ? <Play className="h-7 w-7 ml-0.5" /> : <Pause className="h-7 w-7" />}
@@ -411,6 +413,7 @@ export default function LiveActivity() {
               <button
                 onClick={stopActivity}
                 disabled={loading}
+                data-testid="stop-activity-btn"
                 className="h-24 w-24 rounded-full bg-white text-red-500 flex items-center justify-center shadow-2xl active:scale-95 transition-transform"
               >
                 {loading ? (
@@ -423,6 +426,7 @@ export default function LiveActivity() {
               {/* Discard */}
               <button
                 onClick={discardActivity}
+                data-testid="discard-activity-btn"
                 className="h-16 w-16 rounded-full bg-white/20 text-white flex items-center justify-center shadow-lg active:scale-95 transition-transform"
               >
                 <span className="text-2xl">✕</span>
