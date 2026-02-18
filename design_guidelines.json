@@ -1,163 +1,164 @@
 {
-  "identity": {
-    "name": "Kaizer Fit",
-    "persona": "The Digital Dojo",
-    "vibe": "Elite, High-Performance, Dark Mode, Cyber-Athletic",
-    "core_values": [
-      "Precision (Data is art)",
-      "Motivation (Color is energy)",
-      "Community (Telugu-first connection)"
-    ]
-  },
   "design_system": {
-    "theme": "dark",
-    "colors": {
-      "background": {
-        "default": "#09090b",
-        "card": "#18181b",
-        "card_hover": "#27272a",
-        "overlay": "rgba(9, 9, 11, 0.8)"
-      },
-      "primary": {
-        "name": "Neon Volt",
-        "hex": "#D4FF00",
-        "foreground": "#000000"
-      },
-      "secondary": {
-        "name": "Carbon",
-        "hex": "#27272a",
-        "foreground": "#ffffff"
-      },
-      "accents": {
-        "success": "#22c55e",
-        "warning": "#eab308",
-        "error": "#ef4444",
-        "chart_line": "#D4FF00",
-        "chart_grid": "#3f3f46"
-      },
-      "text": {
-        "primary": "#fafafa",
-        "secondary": "#a1a1aa",
-        "muted": "#52525b"
-      }
+    "identity": {
+      "name": "My Dammaiguda",
+      "tone": "Premium Civic Tech",
+      "keywords": ["Trustworthy", "Modern", "Clean", "Community-First", "High-Performance"],
+      "theme_strategy": "Light Mode Dominant with Section-Specific Accents"
     },
     "typography": {
       "font_family": {
-        "heading": "Barlow Condensed, sans-serif",
+        "headings": "Manrope, sans-serif",
         "body": "Inter, sans-serif",
-        "telugu": "Noto Sans Telugu, sans-serif"
+        "mono": "JetBrains Mono, monospace"
       },
-      "rules": [
-        "Use 'Barlow Condensed' (weight 700/800) for all numeric stats and English headings.",
-        "Use 'Noto Sans Telugu' for ALL Telugu text content to ensure legibility.",
-        "Use 'Inter' for English body text and labels.",
-        "Headings must be uppercase and tracking-tight for English text."
-      ],
-      "imports": [
-        "@import url('https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700;800&display=swap');"
-      ]
-    },
-    "visual_enhancers": {
-      "borders": "1px solid rgba(255,255,255,0.1)",
-      "radius": "rounded-xl",
-      "shadows": "0 4px 24px -2px rgba(0, 0, 0, 0.5)",
-      "glassmorphism": "backdrop-blur-xl bg-black/40 border-white/10",
-      "gradients": "None. Use solid colors or subtle noise textures."
-    }
-  },
-  "layout_strategies": {
-    "grid_system": "Bento Grid (Mode B - High Density)",
-    "container": "max-w-md mx-auto (Mobile-First Focus) or max-w-5xl (Desktop Dashboard)",
-    "spacing": {
-      "page_padding": "p-4 md:p-8",
-      "card_padding": "p-6",
-      "gap": "gap-4"
-    },
-    "structure": [
-      {
-        "section": "Header",
-        "style": "Sticky, Glassmorphic, High Z-Index. Contains User Profile & Settings."
-      },
-      {
-        "section": "Hero / Daily Stats",
-        "style": "Bento Grid. 3 Columns. Large 'Calories' block, smaller 'Steps' and 'Distance' blocks."
-      },
-      {
-        "section": "Weight Tracker",
-        "style": "Full-width card. Line Chart dominant. Input field overlay or modal trigger."
-      },
-      {
-        "section": "Live Activity",
-        "style": "Floating Action Button (FAB) or Fixed Bottom Bar for quick access."
+      "scale": {
+        "h1": "text-4xl md:text-5xl font-bold tracking-tight",
+        "h2": "text-3xl md:text-4xl font-semibold tracking-tight",
+        "h3": "text-2xl md:text-3xl font-semibold",
+        "h4": "text-xl md:text-2xl font-medium",
+        "body_lg": "text-lg leading-relaxed",
+        "body_base": "text-base leading-relaxed",
+        "caption": "text-sm text-muted-foreground"
       }
-    ]
+    },
+    "colors": {
+      "palette": {
+        "primary": {
+          "DEFAULT": "#0F172A",
+          "foreground": "#F8FAFC",
+          "description": "Deep Slate Navy - Authority & Trust"
+        },
+        "secondary": {
+          "DEFAULT": "#F1F5F9",
+          "foreground": "#0F172A",
+          "description": "Soft Slate - Backgrounds & Secondary Actions"
+        },
+        "accent_civic": {
+          "DEFAULT": "#3B82F6",
+          "foreground": "#FFFFFF",
+          "description": "Bright Blue - Civic Actions"
+        },
+        "accent_fitness": {
+          "DEFAULT": "#F97316",
+          "foreground": "#FFFFFF",
+          "description": "Electric Orange - Kaizer Fit Energy"
+        },
+        "accent_eco": {
+          "DEFAULT": "#10B981",
+          "foreground": "#FFFFFF",
+          "description": "Emerald Green - AQI & Environment"
+        },
+        "background": "#F8FAFC",
+        "surface": "#FFFFFF",
+        "border": "#E2E8F0"
+      },
+      "gradients": {
+        "civic_hero": "bg-gradient-to-br from-slate-900 to-slate-800",
+        "fitness_card": "bg-gradient-to-br from-orange-500 to-red-600",
+        "eco_card": "bg-gradient-to-br from-emerald-500 to-teal-600"
+      }
+    },
+    "spacing": {
+      "container_padding": "p-4 md:p-6 lg:p-8",
+      "section_gap": "gap-6 md:gap-8",
+      "card_padding": "p-6"
+    },
+    "borders": {
+      "radius": {
+        "sm": "rounded-lg",
+        "md": "rounded-xl",
+        "lg": "rounded-2xl",
+        "full": "rounded-full"
+      },
+      "width": "border",
+      "color": "border-slate-200"
+    },
+    "shadows": {
+      "card": "shadow-[0_2px_8px_rgba(0,0,0,0.04)] hover:shadow-[0_8px_24px_rgba(0,0,0,0.08)] transition-all duration-300",
+      "floating": "shadow-[0_12px_32px_rgba(0,0,0,0.12)]",
+      "inner": "shadow-inner"
+    },
+    "motion": {
+      "hover_lift": "hover:-translate-y-1 transition-transform duration-300 ease-out",
+      "button_press": "active:scale-95 transition-transform duration-100",
+      "fade_in": "animate-in fade-in duration-500 slide-in-from-bottom-4"
+    }
   },
   "components": {
     "cards": {
-      "base": "bg-card border border-white/10 rounded-xl overflow-hidden relative",
-      "hover": "hover:border-primary/50 transition-colors duration-300"
+      "style": "bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden",
+      "interaction": "hover:border-slate-300 transition-colors duration-300"
     },
     "buttons": {
-      "primary": "bg-[#D4FF00] text-black font-bold uppercase tracking-wide hover:bg-[#b5d900] rounded-full",
-      "secondary": "bg-white/10 text-white hover:bg-white/20 backdrop-blur-md rounded-full",
-      "ghost": "text-zinc-400 hover:text-white hover:bg-white/5"
+      "primary": "bg-slate-900 text-white hover:bg-slate-800 rounded-full px-6 py-2.5 font-medium shadow-lg shadow-slate-900/20 transition-all",
+      "secondary": "bg-white text-slate-900 border border-slate-200 hover:bg-slate-50 rounded-full px-6 py-2.5 font-medium transition-all",
+      "ghost": "text-slate-600 hover:text-slate-900 hover:bg-slate-100 rounded-lg px-4 py-2 transition-all"
+    },
+    "inputs": {
+      "style": "bg-slate-50 border-slate-200 focus:border-slate-900 focus:ring-1 focus:ring-slate-900 rounded-xl px-4 py-3 transition-all"
     },
     "charts": {
       "library": "recharts",
-      "style": "Minimalist. Hide axis lines where possible. Use Tooltips for data.",
-      "colors": ["#D4FF00", "#22c55e", "#3b82f6"]
+      "style": "minimal",
+      "grid": "stroke-slate-100 stroke-dasharray-3-3",
+      "tooltip": "bg-white border border-slate-100 shadow-xl rounded-lg p-3 text-sm"
+    }
+  },
+  "layout_strategies": {
+    "dashboard": {
+      "type": "bento_grid",
+      "classes": "grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6",
+      "hero_span": "col-span-1 md:col-span-2 lg:col-span-2 row-span-2"
     },
-    "inputs": {
-      "style": "bg-black/50 border-white/20 text-white focus:border-[#D4FF00] focus:ring-1 focus:ring-[#D4FF00] rounded-lg h-12"
+    "mobile_nav": {
+      "style": "fixed bottom-0 left-0 right-0 bg-white/80 backdrop-blur-lg border-t border-slate-200 p-2 flex justify-around items-center z-50 safe-area-pb"
     }
   },
   "assets": {
-    "images": [
-      {
-        "category": "hero_bg",
-        "url": "https://images.unsplash.com/photo-1708738072588-1f0528ed1873?crop=entropy&cs=srgb&fm=jpg&q=85",
-        "description": "Dark moody runner for activity section background"
+    "images": {
+      "hero_city": {
+        "url": "https://images.pexels.com/photos/11742414/pexels-photo-11742414.jpeg",
+        "alt": "Hyderabad City Skyline",
+        "usage": "Landing Page Hero, Dashboard Header Background"
       },
-      {
-        "category": "weight_tracker_bg",
-        "url": "https://images.unsplash.com/photo-1638536534847-2cb61af9efe3?crop=entropy&cs=srgb&fm=jpg&q=85",
-        "description": "Dumbbells aesthetic for weight section"
+      "fitness_cover": {
+        "url": "https://images.pexels.com/photos/4397838/pexels-photo-4397838.jpeg",
+        "alt": "Woman working out with weights",
+        "usage": "Kaizer Fit Hero Section"
       },
-      {
-        "category": "nutrition_bg",
-        "url": "https://images.pexels.com/photos/13887561/pexels-photo-13887561.jpeg",
-        "description": "Healthy food bowl for nutrition stats"
+      "nature_aqi": {
+        "url": "https://images.unsplash.com/photo-1591194144619-0d49deb41079?crop=entropy&cs=srgb&fm=jpg&ixid=M3w3NDQ2NDJ8MHwxfHNlYXJjaHwyfHxuYXR1cmUlMjBwYXJrJTIwZ3JlZW4lMjB0cmVlcyUyMHNreXxlbnwwfHx8fDE3NzE0NTQyNDh8MA&ixlib=rb-4.1.0&q=85",
+        "alt": "Green trees and blue sky",
+        "usage": "AQI Report Background"
+      },
+      "waste_management": {
+        "url": "https://images.unsplash.com/photo-1621859191129-6bc88cf02966?crop=entropy&cs=srgb&fm=jpg&ixid=M3w4NjAxODF8MHwxfHNlYXJjaHw0fHx3YXN0ZSUyMG1hbmFnZW1lbnQlMjByZWN5Y2xpbmclMjB0cnVjayUyMG1vZGVybnxlbnwwfHx8fDE3NzE0NTQyNTN8MA&ixlib=rb-4.1.0&q=85",
+        "alt": "Modern waste management truck",
+        "usage": "Dump Yard Info Page"
       }
-    ],
-    "icons": "Use 'lucide-react' for all UI icons (Activity, Dumbbell, Flame, MapPin)."
+    },
+    "icons": {
+      "library": "lucide-react",
+      "style": "stroke-width-1.5"
+    }
   },
   "instructions_to_main_agent": [
-    "CRITICAL: Do NOT break the existing 'Live Activity Tracking' feature. Wrap it in the new UI but keep logic intact.",
-    "Implement the 'Weight Tracker' with a Recharts LineChart. X-axis: Date, Y-axis: Weight.",
-    "Use the 'Neon Volt' (#D4FF00) color sparingly for high-impact data points and primary actions only.",
-    "Ensure all text is readable against the dark background. Use 'text-zinc-400' for labels and 'text-white' for values.",
-    "For Telugu text, ensure 'font-telugu' class is applied.",
-    "Create a 'GoalSetting' modal using Shadcn Dialog component.",
-    "Use 'framer-motion' for subtle entrance animations (fade-in-up) for the dashboard cards."
+    "Implement the 'Bento Grid' layout for the Dashboard.jsx page.",
+    "Use the 'Manrope' font for all headings. Add it to index.css via Google Fonts import if missing.",
+    "Ensure all cards have the 'hover_lift' motion effect defined in the design system.",
+    "For KaizerFit.jsx, use the 'accent_fitness' color (#F97316) for charts and primary buttons.",
+    "For AQIReport.jsx, use the 'accent_eco' color (#10B981) and the nature image as a subtle background or header.",
+    "For DumpYardInfo.jsx, focus on clarity and information hierarchy using the 'waste_management' image.",
+    "Ensure the mobile navigation bar is implemented with the glassmorphism style defined.",
+    "Use 'recharts' for all data visualization, styling them to match the minimal aesthetic.",
+    "Add 'data-testid' to all interactive elements."
   ],
-  "UNIVERSAL_GUIDELINES_FOR_MAIN_AGENT": [
-    "Dark colors look good when used independently without gradients. DO NOT use dark colors as gradients",
-    "Don't make generic centered layouts, simplistic gradients, and uniform styling.",
-    "Create depth through layered design elements with z-index hierarchy",
-    "Use glass-morphism effects with backdrop filters (12-24px blur)",
-    "You MUST NOT apply universal transition. Eg: transition: all. This results in breaking transforms. Always add transitions for specific interactive elements like button, input excluding transforms",
-    "You MUST NOT center align the app container, ie do not add .App { text-align: center; } in the css file. This disrupts the human natural reading flow of text",
-    "Always use modern button styles like pill-shaped, or sharp button with interaction animations & color relevant to the app style",
-    "NEVER: use AI assistant Emoji characters like 🤖🧠💭💡🔮🎯📚🎭🎬🎪🎉🎊🎁🎀🎂🍰🎈🎨🎰💰💵💳🏦💎🪙💸🤑📊📈📉💹🔢🏆🥇 etc for icons.",
-    "Every interaction needs micro-animations - hover states, transitions, parallax effects, and entrance animations. Static = dead.",
-    "Use 2-3x more spacing than feels comfortable. Cramped designs look cheap.",
-    "Subtle grain textures, noise overlays, custom cursors, selection states, and loading animations: separates good from extraordinary.",
-    "Main agent relies on these image URLs. Missing categories (especially sponsor logos) = main agent will use placeholder text which is FORBIDDEN",
-    "Prioritize using pre-existing components from src/components/ui when applicable",
-    "Create new components that match the style and conventions of existing components when needed",
-    "Examine existing components to understand the project's component patterns before creating new ones",
-    "Components MUST use named exports (export const ComponentName = ...)",
-    "Pages MUST use default exports (export default function PageName() {...})",
-    "Use sonner for toasts. Sonner component are located in /app/src/components/ui/sonner.tsx"
+  "universal_guidelines": [
+    "Avoid generic centered layouts. Use asymmetry and whitespace.",
+    "Do not use 'transition: all'. Animate specific properties.",
+    "Ensure high contrast for text accessibility.",
+    "Use 'sonner' for toast notifications.",
+    "Prioritize Shadcn components but customize them to match the 'Premium Civic Tech' theme."
   ]
 }
