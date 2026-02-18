@@ -538,6 +538,157 @@ export default function KaizerFit() {
           </CardContent>
         </Card>
 
+        {/* Smart Devices Card */}
+        <Card className="border-border/50 overflow-hidden">
+          <CardHeader className="pb-2 bg-gradient-to-r from-indigo-50 to-purple-50">
+            <div className="flex items-center justify-between">
+              <CardTitle className="text-lg flex items-center gap-2">
+                <Watch className="h-5 w-5 text-indigo-600" />
+                {language === "te" ? "స్మార్ట్ డివైసెస్" : "Smart Devices"}
+              </CardTitle>
+              <Dialog open={showDeviceDialog} onOpenChange={setShowDeviceDialog}>
+                <DialogTrigger asChild>
+                  <Button size="sm" variant="outline" className="h-8" data-testid="add-device-btn">
+                    <Plus className="h-4 w-4 mr-1" />
+                    {language === "te" ? "జోడించు" : "Add"}
+                  </Button>
+                </DialogTrigger>
+                <DialogContent className="max-w-md">
+                  <DialogHeader>
+                    <DialogTitle className="flex items-center gap-2">
+                      <Bluetooth className="h-5 w-5 text-indigo-600" />
+                      {language === "te" ? "పరికరాన్ని కనెక్ట్ చేయండి" : "Connect Device"}
+                    </DialogTitle>
+                  </DialogHeader>
+                  <div className="space-y-4 mt-4">
+                    <div className="grid grid-cols-2 gap-3">
+                      <button
+                        onClick={() => setSelectedDeviceType("phone")}
+                        className={`p-4 rounded-xl border-2 transition-all ${
+                          selectedDeviceType === "phone"
+                            ? "border-indigo-500 bg-indigo-50"
+                            : "border-border hover:border-indigo-300"
+                        }`}
+                      >
+                        <Smartphone className="h-8 w-8 mx-auto mb-2 text-indigo-600" />
+                        <p className="text-sm font-medium">{language === "te" ? "ఫోన్" : "Phone"}</p>
+                        <p className="text-xs text-muted-foreground">{language === "te" ? "పెడోమీటర్" : "Pedometer"}</p>
+                      </button>
+                      <button
+                        onClick={() => setSelectedDeviceType("smartwatch")}
+                        className={`p-4 rounded-xl border-2 transition-all ${
+                          selectedDeviceType === "smartwatch"
+                            ? "border-indigo-500 bg-indigo-50"
+                            : "border-border hover:border-indigo-300"
+                        }`}
+                      >
+                        <Watch className="h-8 w-8 mx-auto mb-2 text-indigo-600" />
+                        <p className="text-sm font-medium">{language === "te" ? "స్మార్ట్‌వాచ్" : "Smartwatch"}</p>
+                        <p className="text-xs text-muted-foreground">{language === "te" ? "పూర్తి ట్రాకింగ్" : "Full tracking"}</p>
+                      </button>
+                    </div>
+                    
+                    {selectedDeviceType === "smartwatch" && (
+                      <Select value={selectedBrand} onValueChange={setSelectedBrand}>
+                        <SelectTrigger className="h-12">
+                          <SelectValue placeholder={language === "te" ? "బ్రాండ్ ఎంచుకోండి" : "Select brand"} />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="apple">Apple Watch</SelectItem>
+                          <SelectItem value="samsung">Samsung Galaxy Watch</SelectItem>
+                          <SelectItem value="fitbit">Fitbit</SelectItem>
+                          <SelectItem value="garmin">Garmin</SelectItem>
+                          <SelectItem value="mi">Mi Band / Watch</SelectItem>
+                          <SelectItem value="amazfit">Amazfit</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    )}
+                    
+                    <Button
+                      onClick={connectDevice}
+                      disabled={connectingDevice || (selectedDeviceType === "smartwatch" && !selectedBrand)}
+                      className="w-full h-12 bg-gradient-to-r from-indigo-500 to-purple-500"
+                    >
+                      {connectingDevice ? (
+                        <Loader2 className="h-4 w-4 animate-spin mr-2" />
+                      ) : (
+                        <LinkIcon className="h-4 w-4 mr-2" />
+                      )}
+                      {language === "te" ? "కనెక్ట్ చేయండి" : "Connect Device"}
+                    </Button>
+                  </div>
+                </DialogContent>
+              </Dialog>
+            </div>
+          </CardHeader>
+          <CardContent className="p-4">
+            {connectedDevices.length === 0 ? (
+              <div className="text-center py-4">
+                <Bluetooth className="h-10 w-10 mx-auto mb-2 text-muted-foreground/50" />
+                <p className="text-sm text-muted-foreground">
+                  {language === "te" ? "కనెక్ట్ చేసిన పరికరాలు లేవు" : "No connected devices"}
+                </p>
+                <p className="text-xs text-muted-foreground mt-1">
+                  {language === "te" ? "మీ స్టెప్‌లను ట్రాక్ చేయడానికి పరికరాన్ని జోడించండి" : "Add a device to track your steps"}
+                </p>
+              </div>
+            ) : (
+              <div className="space-y-2">
+                {connectedDevices.map((device) => (
+                  <div
+                    key={device.id}
+                    className="flex items-center justify-between p-3 bg-gradient-to-r from-indigo-50 to-purple-50 rounded-xl"
+                  >
+                    <div className="flex items-center gap-3">
+                      {device.device_type === "phone" ? (
+                        <div className="h-10 w-10 rounded-full bg-indigo-100 flex items-center justify-center">
+                          <Smartphone className="h-5 w-5 text-indigo-600" />
+                        </div>
+                      ) : (
+                        <div className="h-10 w-10 rounded-full bg-purple-100 flex items-center justify-center">
+                          <Watch className="h-5 w-5 text-purple-600" />
+                        </div>
+                      )}
+                      <div>
+                        <p className="font-medium text-sm">{device.device_name}</p>
+                        <div className="flex items-center gap-1">
+                          <span className="h-2 w-2 rounded-full bg-green-500"></span>
+                          <span className="text-xs text-muted-foreground">
+                            {language === "te" ? "కనెక్ట్ అయింది" : "Connected"}
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+                    <div className="flex gap-2">
+                      <Button
+                        size="sm"
+                        variant="ghost"
+                        className="h-8 w-8 p-0"
+                        onClick={() => device.device_type === "phone" ? syncPhoneSensors() : syncSmartwatch(device.device_brand)}
+                        disabled={syncingDevice !== null}
+                      >
+                        {syncingDevice === (device.device_type === "phone" ? "phone" : device.device_brand) ? (
+                          <Loader2 className="h-4 w-4 animate-spin" />
+                        ) : (
+                          <RefreshCw className="h-4 w-4" />
+                        )}
+                      </Button>
+                      <Button
+                        size="sm"
+                        variant="ghost"
+                        className="h-8 w-8 p-0 text-red-500 hover:text-red-600"
+                        onClick={() => disconnectDevice(device.id)}
+                      >
+                        <Unlink className="h-4 w-4" />
+                      </Button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </CardContent>
+        </Card>
+
         <Tabs defaultValue="activities" className="w-full">
           <TabsList className="grid w-full grid-cols-4 h-12 bg-muted/50 p-1 rounded-xl">
             <TabsTrigger value="activities" className="text-xs rounded-lg data-[state=active]:bg-white data-[state=active]:shadow-sm">
