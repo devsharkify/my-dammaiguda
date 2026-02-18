@@ -20,7 +20,6 @@ import {
   Heart,
   Brain,
   Scale,
-  Ruler,
   Activity,
   Plus,
   TrendingUp,
@@ -29,20 +28,50 @@ import {
   Frown,
   Meh,
   Zap,
-  Clock,
   Utensils,
-  Search
+  Search,
+  Sparkles,
+  Star,
+  Award,
+  Target,
+  Pill,
+  Thermometer,
+  HeartPulse,
+  Timer,
+  Calendar,
+  ChevronRight,
+  Crown
 } from "lucide-react";
 
 const API = `${process.env.REACT_APP_BACKEND_URL}/api`;
 
+// Health motivation quotes
+const HEALTH_QUOTES = {
+  en: [
+    "Health is wealth. Invest wisely today! 💪",
+    "Your body is a temple. Take care of it! 🏛️",
+    "Small healthy choices lead to big results! ✨",
+    "Sleep well, eat well, live well! 🌟",
+    "Mental health matters as much as physical! 🧠",
+    "Prevention is better than cure! 💚"
+  ],
+  te: [
+    "ఆరోగ్యమే మహాభాగ్యం. ఈ రోజు పెట్టుబడి పెట్టండి! 💪",
+    "మీ శరీరం ఒక ఆలయం. దానిని జాగ్రత్తగా చూసుకోండి! 🏛️",
+    "చిన్న ఆరోగ్య ఎంపికలు పెద్ద ఫలితాలను ఇస్తాయి! ✨",
+    "బాగా నిద్రపోండి, బాగా తినండి, బాగా జీవించండి! 🌟",
+    "మానసిక ఆరోగ్యం శారీరక ఆరోగ్యం అంతే ముఖ్యం! 🧠",
+    "నివారణ నయం కంటే మంచిది! 💚"
+  ]
+};
+
 const MOODS = [
-  { value: "happy", label: { en: "Happy", te: "సంతోషం" }, icon: <Smile className="h-5 w-5" />, color: "bg-green-100 text-green-600" },
-  { value: "calm", label: { en: "Calm", te: "శాంతం" }, icon: <Meh className="h-5 w-5" />, color: "bg-blue-100 text-blue-600" },
-  { value: "energetic", label: { en: "Energetic", te: "శక్తివంతం" }, icon: <Zap className="h-5 w-5" />, color: "bg-yellow-100 text-yellow-600" },
-  { value: "stressed", label: { en: "Stressed", te: "ఒత్తిడి" }, icon: <AlertCircle className="h-5 w-5" />, color: "bg-orange-100 text-orange-600" },
-  { value: "anxious", label: { en: "Anxious", te: "ఆందోళన" }, icon: <Heart className="h-5 w-5" />, color: "bg-red-100 text-red-600" },
-  { value: "sad", label: { en: "Sad", te: "విచారం" }, icon: <Frown className="h-5 w-5" />, color: "bg-purple-100 text-purple-600" }
+  { value: "happy", label: { en: "Happy", te: "సంతోషం" }, icon: <Smile className="h-6 w-6" />, color: "bg-green-100 text-green-600", gradient: "from-green-400 to-emerald-500" },
+  { value: "calm", label: { en: "Calm", te: "శాంతం" }, icon: <Meh className="h-6 w-6" />, color: "bg-blue-100 text-blue-600", gradient: "from-blue-400 to-cyan-500" },
+  { value: "energetic", label: { en: "Energetic", te: "శక్తివంతం" }, icon: <Zap className="h-6 w-6" />, color: "bg-yellow-100 text-yellow-600", gradient: "from-yellow-400 to-orange-500" },
+  { value: "stressed", label: { en: "Stressed", te: "ఒత్తిడి" }, icon: <AlertCircle className="h-6 w-6" />, color: "bg-orange-100 text-orange-600", gradient: "from-orange-400 to-red-500" },
+  { value: "anxious", label: { en: "Anxious", te: "ఆందోళన" }, icon: <Heart className="h-6 w-6" />, color: "bg-red-100 text-red-600", gradient: "from-red-400 to-rose-500" },
+  { value: "sad", label: { en: "Sad", te: "విచారం" }, icon: <Frown className="h-6 w-6" />, color: "bg-purple-100 text-purple-600", gradient: "from-purple-400 to-pink-500" }
 ];
 
 export default function KaizerDoctor() {
@@ -69,11 +98,23 @@ export default function KaizerDoctor() {
   const [weight, setWeight] = useState("");
   const [height, setHeight] = useState("");
   const [bloodSugar, setBloodSugar] = useState("");
+  const [bloodPressure, setBloodPressure] = useState({ systolic: "", diastolic: "" });
   
   // Mood logging
   const [showMoodDialog, setShowMoodDialog] = useState(false);
   const [selectedMood, setSelectedMood] = useState("");
   const [energyLevel, setEnergyLevel] = useState(5);
+  
+  // Sleep logging
+  const [showSleepDialog, setShowSleepDialog] = useState(false);
+  const [sleepHours, setSleepHours] = useState("");
+  const [sleepQuality, setSleepQuality] = useState(3);
+  
+  // Quote
+  const [quote] = useState(() => {
+    const quotes = HEALTH_QUOTES["en"];
+    return quotes[Math.floor(Math.random() * quotes.length)];
+  });
 
   useEffect(() => {
     fetchData();
@@ -141,7 +182,9 @@ export default function KaizerDoctor() {
       await axios.post(`${API}/doctor/health-metrics`, {
         weight_kg: weight ? parseFloat(weight) : null,
         height_cm: height ? parseFloat(height) : null,
-        blood_sugar: bloodSugar ? parseFloat(bloodSugar) : null
+        blood_sugar: bloodSugar ? parseFloat(bloodSugar) : null,
+        blood_pressure_systolic: bloodPressure.systolic ? parseInt(bloodPressure.systolic) : null,
+        blood_pressure_diastolic: bloodPressure.diastolic ? parseInt(bloodPressure.diastolic) : null
       });
       
       toast.success(language === "te" ? "ఆరోగ్య వివరాలు నవీకరించబడ్డాయి!" : "Health metrics updated!");
@@ -172,6 +215,26 @@ export default function KaizerDoctor() {
     }
   };
 
+  const logSleep = async () => {
+    if (!sleepHours) {
+      toast.error(language === "te" ? "నిద్ర గంటలు నమోదు చేయండి" : "Enter sleep hours");
+      return;
+    }
+
+    try {
+      await axios.post(`${API}/doctor/sleep`, {
+        duration_hours: parseFloat(sleepHours),
+        quality: sleepQuality
+      });
+      
+      toast.success(language === "te" ? "నిద్ర నమోదు చేయబడింది!" : "Sleep logged!");
+      setShowSleepDialog(false);
+      fetchData();
+    } catch (error) {
+      toast.error("Failed to log sleep");
+    }
+  };
+
   const filteredFoods = foodSearch 
     ? foods.filter(f => 
         f.name.toLowerCase().includes(foodSearch.toLowerCase()) ||
@@ -187,6 +250,9 @@ export default function KaizerDoctor() {
     }
   };
 
+  // Get localized quote
+  const localizedQuote = HEALTH_QUOTES[language]?.[HEALTH_QUOTES["en"].indexOf(quote)] || quote;
+
   if (loading) {
     return (
       <Layout showBackButton title={language === "te" ? "కైజర్ డాక్టర్" : "Kaizer Doctor"}>
@@ -199,73 +265,140 @@ export default function KaizerDoctor() {
 
   const healthScore = dashboard?.health_score || 0;
   const today = dashboard?.today || {};
+  const waterGoal = 8;
+  const waterProgress = Math.min(100, Math.round((waterGlasses / waterGoal) * 100));
+  const caloriesGoal = 2000;
+  const caloriesConsumed = today.nutrition?.total_calories || 0;
+  const caloriesProgress = Math.min(100, Math.round((caloriesConsumed / caloriesGoal) * 100));
 
   return (
     <Layout showBackButton title={language === "te" ? "కైజర్ డాక్టర్" : "Kaizer Doctor"}>
-      <div className="space-y-6" data-testid="kaizer-doctor">
-        {/* Health Score Header */}
-        <Card className="bg-gradient-to-br from-emerald-500 to-teal-600 text-white border-0">
-          <CardContent className="p-6">
-            <div className="flex items-center justify-between">
+      <div className="space-y-5" data-testid="kaizer-doctor">
+        {/* Motivational Health Banner */}
+        <div className="relative overflow-hidden rounded-2xl bg-gradient-to-r from-teal-600 via-emerald-600 to-cyan-600 p-5 text-white">
+          <div className="absolute top-0 right-0 opacity-10">
+            <HeartPulse className="h-32 w-32 -mt-8 -mr-8" />
+          </div>
+          <div className="relative z-10">
+            <div className="flex items-center gap-2 mb-2">
+              <Star className="h-5 w-5 text-yellow-300 fill-yellow-300" />
+              <span className="text-sm font-medium text-white/90">
+                {language === "te" ? "ఈ రోజు ఆరోగ్య సూచన" : "Today's Health Tip"}
+              </span>
+            </div>
+            <p className="text-lg font-semibold leading-relaxed">{localizedQuote}</p>
+          </div>
+        </div>
+
+        {/* Premium Health Score Card */}
+        <Card className="bg-gradient-to-br from-emerald-600 via-teal-600 to-cyan-600 text-white border-0 shadow-lg overflow-hidden relative">
+          <div className="absolute -top-10 -right-10 h-40 w-40 rounded-full bg-white/10" />
+          <div className="absolute -bottom-10 -left-10 h-32 w-32 rounded-full bg-white/10" />
+          <CardContent className="p-6 relative z-10">
+            <div className="flex items-center justify-between mb-6">
               <div className="flex items-center gap-4">
-                <div className="h-16 w-16 rounded-full bg-white/20 flex items-center justify-center">
+                <div className="h-16 w-16 rounded-2xl bg-white/20 flex items-center justify-center shadow-inner">
                   <Stethoscope className="h-8 w-8" />
                 </div>
                 <div>
-                  <p className="text-white/80 text-sm">
-                    {language === "te" ? "ఆరోగ్య స్కోర్" : "Health Score"}
+                  <p className="text-white/80 text-sm font-medium">
+                    {language === "te" ? "మీ ఆరోగ్య స్కోర్" : "Your Health Score"}
                   </p>
-                  <p className="text-4xl font-bold">{healthScore}</p>
-                  <p className="text-white/80 text-xs">/100</p>
+                  <p className="text-4xl font-bold tracking-tight">{healthScore}</p>
+                  <p className="text-white/70 text-sm">/100</p>
                 </div>
               </div>
-              
-              {healthMetrics?.bmi && (
-                <div className="text-right">
-                  <p className="text-white/80 text-sm">BMI</p>
-                  <p className="text-2xl font-bold">{healthMetrics.bmi}</p>
-                  <Badge className={`mt-1 ${
-                    healthMetrics.bmi_category === "normal" ? "bg-green-200 text-green-800" :
-                    healthMetrics.bmi_category === "overweight" ? "bg-yellow-200 text-yellow-800" :
-                    "bg-red-200 text-red-800"
-                  }`}>
-                    {healthMetrics.bmi_category}
-                  </Badge>
+              <div className="text-right">
+                <div className="relative">
+                  <div className="h-20 w-20 rounded-full border-4 border-white/30 flex items-center justify-center">
+                    <div className="text-center">
+                      <p className="text-2xl font-bold">{healthMetrics?.bmi || "—"}</p>
+                      <p className="text-xs text-white/70">BMI</p>
+                    </div>
+                  </div>
+                  {healthScore >= 80 && (
+                    <Crown className="absolute -top-2 -right-1 h-6 w-6 text-yellow-300 fill-yellow-300" />
+                  )}
                 </div>
-              )}
+              </div>
+            </div>
+            
+            {/* Water Progress Bar */}
+            <div className="mb-4">
+              <div className="flex justify-between text-sm mb-1">
+                <span className="text-white/80 flex items-center gap-1">
+                  <Droplets className="h-4 w-4" />
+                  {language === "te" ? "నీరు" : "Water"}
+                </span>
+                <span className="font-bold">{waterGlasses}/{waterGoal} {language === "te" ? "గ్లాసులు" : "glasses"}</span>
+              </div>
+              <div className="h-3 bg-white/20 rounded-full overflow-hidden">
+                <div 
+                  className="h-full bg-gradient-to-r from-cyan-300 to-blue-400 rounded-full transition-all duration-500"
+                  style={{ width: `${waterProgress}%` }}
+                />
+              </div>
+            </div>
+            
+            {/* Quick Stats Grid */}
+            <div className="grid grid-cols-4 gap-2">
+              <div className="bg-white/15 backdrop-blur-sm rounded-xl p-3 text-center">
+                <Utensils className="h-5 w-5 mx-auto mb-1 text-orange-300" />
+                <p className="font-bold text-lg">{caloriesConsumed}</p>
+                <p className="text-[10px] text-white/70">{language === "te" ? "కేలరీలు" : "Kcal"}</p>
+              </div>
+              <div className="bg-white/15 backdrop-blur-sm rounded-xl p-3 text-center">
+                <Moon className="h-5 w-5 mx-auto mb-1 text-purple-300" />
+                <p className="font-bold text-lg">{today.sleep?.duration_hours || "—"}</p>
+                <p className="text-[10px] text-white/70">{language === "te" ? "నిద్ర గం" : "Sleep h"}</p>
+              </div>
+              <div className="bg-white/15 backdrop-blur-sm rounded-xl p-3 text-center">
+                <Brain className="h-5 w-5 mx-auto mb-1 text-pink-300" />
+                <p className="font-bold text-lg">{today.mood ? "😊" : "—"}</p>
+                <p className="text-[10px] text-white/70">{language === "te" ? "మూడ్" : "Mood"}</p>
+              </div>
+              <div className="bg-white/15 backdrop-blur-sm rounded-xl p-3 text-center">
+                <Scale className="h-5 w-5 mx-auto mb-1 text-green-300" />
+                <p className="font-bold text-lg">{healthMetrics?.current?.weight_kg || "—"}</p>
+                <p className="text-[10px] text-white/70">{language === "te" ? "కిలో" : "kg"}</p>
+              </div>
             </div>
           </CardContent>
         </Card>
 
-        {/* Quick Actions */}
-        <div className="grid grid-cols-4 gap-2">
-          {/* Water */}
-          <button
+        {/* Quick Actions - Premium Style */}
+        <div className="grid grid-cols-2 gap-3">
+          {/* Log Water */}
+          <Button
             onClick={logWater}
-            className="p-3 bg-blue-50 rounded-xl flex flex-col items-center gap-1 active:scale-95 transition-transform"
+            className="h-16 bg-gradient-to-r from-cyan-500 to-blue-500 text-white rounded-xl text-base font-semibold shadow-lg hover:shadow-xl transition-all"
             data-testid="log-water-btn"
           >
-            <Droplets className="h-6 w-6 text-blue-500" />
-            <span className="text-lg font-bold text-blue-600">{waterGlasses}/8</span>
-            <span className="text-xs text-blue-600">{language === "te" ? "నీరు" : "Water"}</span>
-          </button>
-
-          {/* Meal */}
+            <Droplets className="h-6 w-6 mr-2" />
+            {language === "te" ? "నీరు తాగండి" : "Drink Water"}
+          </Button>
+          
+          {/* Log Meal */}
           <Dialog open={showMealDialog} onOpenChange={setShowMealDialog}>
             <DialogTrigger asChild>
-              <button className="p-3 bg-orange-50 rounded-xl flex flex-col items-center gap-1" data-testid="log-meal-btn">
-                <Apple className="h-6 w-6 text-orange-500" />
-                <span className="text-lg font-bold text-orange-600">+</span>
-                <span className="text-xs text-orange-600">{language === "te" ? "భోజనం" : "Meal"}</span>
-              </button>
+              <Button 
+                className="h-16 bg-gradient-to-r from-orange-500 to-red-500 text-white rounded-xl text-base font-semibold shadow-lg hover:shadow-xl transition-all"
+                data-testid="log-meal-btn"
+              >
+                <Apple className="h-6 w-6 mr-2" />
+                {language === "te" ? "భోజనం నమోదు" : "Log Meal"}
+              </Button>
             </DialogTrigger>
             <DialogContent className="max-w-md max-h-[80vh] overflow-y-auto">
               <DialogHeader>
-                <DialogTitle>{language === "te" ? "భోజనం నమోదు" : "Log Meal"}</DialogTitle>
+                <DialogTitle className="flex items-center gap-2">
+                  <Apple className="h-5 w-5 text-orange-500" />
+                  {language === "te" ? "భోజనం నమోదు" : "Log Meal"}
+                </DialogTitle>
               </DialogHeader>
               <div className="space-y-4 mt-4">
                 <Select value={mealType} onValueChange={setMealType}>
-                  <SelectTrigger>
+                  <SelectTrigger className="h-12">
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
@@ -282,7 +415,7 @@ export default function KaizerDoctor() {
                     placeholder={language === "te" ? "ఆహారం వెతకండి..." : "Search food..."}
                     value={foodSearch}
                     onChange={(e) => setFoodSearch(e.target.value)}
-                    className="pl-10"
+                    className="pl-10 h-12"
                   />
                 </div>
 
@@ -291,9 +424,9 @@ export default function KaizerDoctor() {
                     <button
                       key={idx}
                       onClick={() => toggleFoodSelection(food)}
-                      className={`w-full p-3 rounded-lg text-left flex items-center justify-between transition-colors ${
+                      className={`w-full p-3 rounded-xl text-left flex items-center justify-between transition-all ${
                         selectedFoods.find(f => f.name === food.name)
-                          ? "bg-primary/10 border-primary border"
+                          ? "bg-gradient-to-r from-orange-100 to-red-100 border-2 border-orange-400"
                           : "bg-muted/50 hover:bg-muted"
                       }`}
                     >
@@ -303,77 +436,115 @@ export default function KaizerDoctor() {
                           P: {food.protein}g | C: {food.carbs}g | F: {food.fat}g
                         </p>
                       </div>
-                      <Badge>{food.calories} cal</Badge>
+                      <Badge className="bg-orange-500">{food.calories} cal</Badge>
                     </button>
                   ))}
                 </div>
 
                 {selectedFoods.length > 0 && (
-                  <div className="p-3 bg-muted/50 rounded-lg">
+                  <div className="p-3 bg-gradient-to-r from-orange-50 to-red-50 rounded-xl border border-orange-200">
                     <p className="text-sm font-medium mb-2">{language === "te" ? "ఎంచుకున్నవి" : "Selected"}:</p>
                     <div className="flex flex-wrap gap-1">
                       {selectedFoods.map((f, i) => (
-                        <Badge key={i} variant="secondary" className="text-xs">{f.name}</Badge>
+                        <Badge key={i} variant="secondary" className="text-xs bg-orange-100">{f.name}</Badge>
                       ))}
                     </div>
-                    <p className="text-right font-bold mt-2">
+                    <p className="text-right font-bold mt-2 text-orange-600">
                       {language === "te" ? "మొత్తం" : "Total"}: {selectedFoods.reduce((s, f) => s + f.calories, 0)} cal
                     </p>
                   </div>
                 )}
 
-                <Button onClick={logMeal} className="w-full bg-primary text-white rounded-full">
+                <Button onClick={logMeal} className="w-full h-12 bg-gradient-to-r from-orange-500 to-red-500 text-white rounded-full font-semibold">
                   {language === "te" ? "నమోదు చేయండి" : "Log Meal"}
                 </Button>
               </div>
             </DialogContent>
           </Dialog>
+        </div>
 
+        {/* Second Row of Actions */}
+        <div className="grid grid-cols-3 gap-2">
           {/* Health Metrics */}
           <Dialog open={showMetricsDialog} onOpenChange={setShowMetricsDialog}>
             <DialogTrigger asChild>
-              <button className="p-3 bg-purple-50 rounded-xl flex flex-col items-center gap-1" data-testid="health-metrics-btn">
-                <Scale className="h-6 w-6 text-purple-500" />
-                <span className="text-lg font-bold text-purple-600">{healthMetrics?.current?.weight_kg || "—"}</span>
-                <span className="text-xs text-purple-600">{language === "te" ? "బరువు" : "Weight"}</span>
+              <button className="p-4 bg-gradient-to-br from-purple-50 to-pink-50 rounded-xl flex flex-col items-center gap-1 active:scale-95 transition-all border border-purple-100" data-testid="health-metrics-btn">
+                <Scale className="h-7 w-7 text-purple-500" />
+                <span className="text-xl font-bold text-purple-600">{healthMetrics?.current?.weight_kg || "—"}</span>
+                <span className="text-xs text-purple-600/80">{language === "te" ? "బరువు kg" : "Weight kg"}</span>
               </button>
             </DialogTrigger>
-            <DialogContent>
+            <DialogContent className="max-w-md">
               <DialogHeader>
-                <DialogTitle>{language === "te" ? "ఆరోగ్య వివరాలు" : "Health Metrics"}</DialogTitle>
+                <DialogTitle className="flex items-center gap-2">
+                  <HeartPulse className="h-5 w-5 text-purple-500" />
+                  {language === "te" ? "ఆరోగ్య వివరాలు" : "Health Metrics"}
+                </DialogTitle>
               </DialogHeader>
               <div className="space-y-4 mt-4">
                 <div>
-                  <label className="text-sm font-medium">{language === "te" ? "బరువు (kg)" : "Weight (kg)"}</label>
+                  <label className="text-sm font-medium flex items-center gap-2">
+                    <Scale className="h-4 w-4 text-purple-500" />
+                    {language === "te" ? "బరువు (kg)" : "Weight (kg)"}
+                  </label>
                   <Input
                     type="number"
                     value={weight}
                     onChange={(e) => setWeight(e.target.value)}
                     placeholder={healthMetrics?.current?.weight_kg || "70"}
-                    className="mt-1"
+                    className="mt-1 h-12"
                   />
                 </div>
                 <div>
-                  <label className="text-sm font-medium">{language === "te" ? "ఎత్తు (cm)" : "Height (cm)"}</label>
+                  <label className="text-sm font-medium flex items-center gap-2">
+                    <Activity className="h-4 w-4 text-blue-500" />
+                    {language === "te" ? "ఎత్తు (cm)" : "Height (cm)"}
+                  </label>
                   <Input
                     type="number"
                     value={height}
                     onChange={(e) => setHeight(e.target.value)}
                     placeholder={healthMetrics?.current?.height_cm || "170"}
-                    className="mt-1"
+                    className="mt-1 h-12"
                   />
                 </div>
                 <div>
-                  <label className="text-sm font-medium">{language === "te" ? "బ్లడ్ షుగర్" : "Blood Sugar"}</label>
+                  <label className="text-sm font-medium flex items-center gap-2">
+                    <Thermometer className="h-4 w-4 text-red-500" />
+                    {language === "te" ? "బ్లడ్ షుగర్ (mg/dL)" : "Blood Sugar (mg/dL)"}
+                  </label>
                   <Input
                     type="number"
                     value={bloodSugar}
                     onChange={(e) => setBloodSugar(e.target.value)}
                     placeholder="100"
-                    className="mt-1"
+                    className="mt-1 h-12"
                   />
                 </div>
-                <Button onClick={updateHealthMetrics} className="w-full bg-primary text-white rounded-full">
+                <div>
+                  <label className="text-sm font-medium flex items-center gap-2">
+                    <HeartPulse className="h-4 w-4 text-pink-500" />
+                    {language === "te" ? "బ్లడ్ ప్రెషర్" : "Blood Pressure"}
+                  </label>
+                  <div className="flex gap-2 mt-1">
+                    <Input
+                      type="number"
+                      value={bloodPressure.systolic}
+                      onChange={(e) => setBloodPressure({ ...bloodPressure, systolic: e.target.value })}
+                      placeholder="120"
+                      className="h-12"
+                    />
+                    <span className="flex items-center text-xl">/</span>
+                    <Input
+                      type="number"
+                      value={bloodPressure.diastolic}
+                      onChange={(e) => setBloodPressure({ ...bloodPressure, diastolic: e.target.value })}
+                      placeholder="80"
+                      className="h-12"
+                    />
+                  </div>
+                </div>
+                <Button onClick={updateHealthMetrics} className="w-full h-12 bg-gradient-to-r from-purple-500 to-pink-500 text-white rounded-full font-semibold">
                   {language === "te" ? "నవీకరించు" : "Update"}
                 </Button>
               </div>
@@ -383,30 +554,35 @@ export default function KaizerDoctor() {
           {/* Mood */}
           <Dialog open={showMoodDialog} onOpenChange={setShowMoodDialog}>
             <DialogTrigger asChild>
-              <button className="p-3 bg-pink-50 rounded-xl flex flex-col items-center gap-1" data-testid="log-mood-btn">
-                <Brain className="h-6 w-6 text-pink-500" />
-                <span className="text-lg font-bold text-pink-600">
+              <button className="p-4 bg-gradient-to-br from-pink-50 to-rose-50 rounded-xl flex flex-col items-center gap-1 active:scale-95 transition-all border border-pink-100" data-testid="log-mood-btn">
+                <Brain className="h-7 w-7 text-pink-500" />
+                <span className="text-xl font-bold text-pink-600">
                   {today.mood ? MOODS.find(m => m.value === today.mood?.mood)?.icon : "😊"}
                 </span>
-                <span className="text-xs text-pink-600">{language === "te" ? "మూడ్" : "Mood"}</span>
+                <span className="text-xs text-pink-600/80">{language === "te" ? "మూడ్" : "Mood"}</span>
               </button>
             </DialogTrigger>
-            <DialogContent>
+            <DialogContent className="max-w-md">
               <DialogHeader>
-                <DialogTitle>{language === "te" ? "మూడ్ నమోదు" : "Log Mood"}</DialogTitle>
+                <DialogTitle className="flex items-center gap-2">
+                  <Brain className="h-5 w-5 text-pink-500" />
+                  {language === "te" ? "మూడ్ నమోదు" : "Log Mood"}
+                </DialogTitle>
               </DialogHeader>
               <div className="space-y-4 mt-4">
-                <div className="grid grid-cols-3 gap-2">
+                <div className="grid grid-cols-3 gap-3">
                   {MOODS.map((mood) => (
                     <button
                       key={mood.value}
                       onClick={() => setSelectedMood(mood.value)}
-                      className={`p-4 rounded-lg flex flex-col items-center gap-2 ${
-                        selectedMood === mood.value ? `${mood.color} ring-2 ring-primary` : "bg-muted"
+                      className={`p-4 rounded-xl flex flex-col items-center gap-2 transition-all ${
+                        selectedMood === mood.value 
+                          ? `bg-gradient-to-br ${mood.gradient} text-white shadow-lg scale-105` 
+                          : "bg-muted hover:bg-muted/80"
                       }`}
                     >
                       {mood.icon}
-                      <span className="text-xs">{mood.label[language]}</span>
+                      <span className="text-xs font-medium">{mood.label[language]}</span>
                     </button>
                   ))}
                 </div>
@@ -418,39 +594,89 @@ export default function KaizerDoctor() {
                     max="10"
                     value={energyLevel}
                     onChange={(e) => setEnergyLevel(parseInt(e.target.value))}
-                    className="w-full mt-2"
+                    className="w-full mt-2 accent-pink-500"
                   />
                 </div>
-                <Button onClick={logMood} className="w-full bg-primary text-white rounded-full">
+                <Button onClick={logMood} className="w-full h-12 bg-gradient-to-r from-pink-500 to-rose-500 text-white rounded-full font-semibold">
                   {language === "te" ? "నమోదు చేయండి" : "Log Mood"}
+                </Button>
+              </div>
+            </DialogContent>
+          </Dialog>
+
+          {/* Sleep */}
+          <Dialog open={showSleepDialog} onOpenChange={setShowSleepDialog}>
+            <DialogTrigger asChild>
+              <button className="p-4 bg-gradient-to-br from-indigo-50 to-purple-50 rounded-xl flex flex-col items-center gap-1 active:scale-95 transition-all border border-indigo-100" data-testid="log-sleep-btn">
+                <Moon className="h-7 w-7 text-indigo-500" />
+                <span className="text-xl font-bold text-indigo-600">{today.sleep?.duration_hours || "—"}</span>
+                <span className="text-xs text-indigo-600/80">{language === "te" ? "నిద్ర గం" : "Sleep h"}</span>
+              </button>
+            </DialogTrigger>
+            <DialogContent className="max-w-md">
+              <DialogHeader>
+                <DialogTitle className="flex items-center gap-2">
+                  <Moon className="h-5 w-5 text-indigo-500" />
+                  {language === "te" ? "నిద్ర నమోదు" : "Log Sleep"}
+                </DialogTitle>
+              </DialogHeader>
+              <div className="space-y-4 mt-4">
+                <div>
+                  <label className="text-sm font-medium">{language === "te" ? "నిద్ర గంటలు" : "Sleep Hours"}</label>
+                  <Input
+                    type="number"
+                    step="0.5"
+                    value={sleepHours}
+                    onChange={(e) => setSleepHours(e.target.value)}
+                    placeholder="7.5"
+                    className="mt-1 h-12"
+                  />
+                </div>
+                <div>
+                  <label className="text-sm font-medium">{language === "te" ? "నిద్ర నాణ్యత" : "Sleep Quality"}</label>
+                  <div className="flex justify-center gap-2 mt-2">
+                    {[1, 2, 3, 4, 5].map((star) => (
+                      <button
+                        key={star}
+                        onClick={() => setSleepQuality(star)}
+                        className={`text-3xl transition-all ${star <= sleepQuality ? "text-yellow-400 scale-110" : "text-gray-300"}`}
+                      >
+                        ★
+                      </button>
+                    ))}
+                  </div>
+                </div>
+                <Button onClick={logSleep} className="w-full h-12 bg-gradient-to-r from-indigo-500 to-purple-500 text-white rounded-full font-semibold">
+                  {language === "te" ? "నమోదు చేయండి" : "Log Sleep"}
                 </Button>
               </div>
             </DialogContent>
           </Dialog>
         </div>
 
-        {/* Recommendations */}
+        {/* Health Alert/Recommendation Card */}
         {dashboard?.recommendations && dashboard.recommendations.length > 0 && (
-          <Card className="border-border/50">
+          <Card className="bg-gradient-to-r from-amber-50 to-orange-50 border-amber-200 shadow-md">
             <CardHeader className="pb-2">
-              <CardTitle className="text-lg">
-                {language === "te" ? "సిఫార్సులు" : "Recommendations"}
+              <CardTitle className="text-lg flex items-center gap-2">
+                <AlertCircle className="h-5 w-5 text-amber-600" />
+                {language === "te" ? "ఆరోగ్య సిఫార్సులు" : "Health Recommendations"}
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-2">
-              {dashboard.recommendations.map((rec, idx) => (
+              {dashboard.recommendations.slice(0, 3).map((rec, idx) => (
                 <div
                   key={idx}
-                  className={`p-3 rounded-lg flex items-start gap-3 ${
-                    rec.priority === "high" ? "bg-red-50" :
-                    rec.priority === "medium" ? "bg-yellow-50" : "bg-blue-50"
+                  className={`p-3 rounded-xl flex items-start gap-3 ${
+                    rec.priority === "high" ? "bg-red-100/50" :
+                    rec.priority === "medium" ? "bg-amber-100/50" : "bg-blue-100/50"
                   }`}
                 >
-                  <div className={`h-8 w-8 rounded-full flex items-center justify-center ${
-                    rec.type === "water" ? "bg-blue-100 text-blue-600" :
-                    rec.type === "fitness" ? "bg-green-100 text-green-600" :
-                    rec.type === "sleep" ? "bg-purple-100 text-purple-600" :
-                    "bg-orange-100 text-orange-600"
+                  <div className={`h-8 w-8 rounded-full flex items-center justify-center flex-shrink-0 ${
+                    rec.type === "water" ? "bg-blue-200 text-blue-600" :
+                    rec.type === "fitness" ? "bg-green-200 text-green-600" :
+                    rec.type === "sleep" ? "bg-purple-200 text-purple-600" :
+                    "bg-orange-200 text-orange-600"
                   }`}>
                     {rec.type === "water" ? <Droplets className="h-4 w-4" /> :
                      rec.type === "fitness" ? <Activity className="h-4 w-4" /> :
@@ -466,50 +692,59 @@ export default function KaizerDoctor() {
           </Card>
         )}
 
+        {/* Tabs for Detailed Views */}
         <Tabs defaultValue="nutrition" className="w-full">
-          <TabsList className="grid w-full grid-cols-3 h-12">
-            <TabsTrigger value="nutrition">
+          <TabsList className="grid w-full grid-cols-3 h-12 bg-muted/50 p-1 rounded-xl">
+            <TabsTrigger value="nutrition" className="text-xs rounded-lg data-[state=active]:bg-white data-[state=active]:shadow-sm">
+              <Utensils className="h-4 w-4 mr-1" />
               {language === "te" ? "పోషణ" : "Nutrition"}
             </TabsTrigger>
-            <TabsTrigger value="sleep">
-              {language === "te" ? "నిద్ర" : "Sleep"}
+            <TabsTrigger value="vitals" className="text-xs rounded-lg data-[state=active]:bg-white data-[state=active]:shadow-sm">
+              <HeartPulse className="h-4 w-4 mr-1" />
+              {language === "te" ? "వైటల్స్" : "Vitals"}
             </TabsTrigger>
-            <TabsTrigger value="plans">
+            <TabsTrigger value="plans" className="text-xs rounded-lg data-[state=active]:bg-white data-[state=active]:shadow-sm">
+              <Target className="h-4 w-4 mr-1" />
               {language === "te" ? "ప్రణాళికలు" : "Plans"}
             </TabsTrigger>
           </TabsList>
 
           {/* Nutrition Tab */}
           <TabsContent value="nutrition" className="mt-4 space-y-4">
-            <Card className="border-border/50">
-              <CardHeader className="pb-2">
+            <Card className="border-border/50 overflow-hidden">
+              <CardHeader className="pb-2 bg-gradient-to-r from-orange-50 to-red-50">
                 <CardTitle className="text-lg flex items-center gap-2">
                   <Utensils className="h-5 w-5 text-orange-500" />
                   {language === "te" ? "ఈ రోజు పోషణ" : "Today's Nutrition"}
                 </CardTitle>
               </CardHeader>
-              <CardContent>
+              <CardContent className="p-4">
                 <div className="space-y-4">
                   <div>
                     <div className="flex justify-between text-sm mb-1">
-                      <span>{language === "te" ? "కేలరీలు" : "Calories"}</span>
-                      <span>{today.nutrition?.total_calories || 0} / 2000</span>
+                      <span className="font-medium">{language === "te" ? "కేలరీలు" : "Calories"}</span>
+                      <span className="font-bold text-orange-600">{caloriesConsumed} / {caloriesGoal}</span>
                     </div>
-                    <Progress value={((today.nutrition?.total_calories || 0) / 2000) * 100} className="h-2" />
+                    <div className="h-3 bg-orange-100 rounded-full overflow-hidden">
+                      <div 
+                        className="h-full bg-gradient-to-r from-orange-400 to-red-500 rounded-full transition-all duration-500"
+                        style={{ width: `${caloriesProgress}%` }}
+                      />
+                    </div>
                   </div>
                   
                   <div className="grid grid-cols-3 gap-3 text-center">
-                    <div className="p-2 bg-muted/50 rounded-lg">
-                      <p className="text-lg font-bold text-blue-600">{nutritionSummary?.average_protein || 0}g</p>
-                      <p className="text-xs text-muted-foreground">{language === "te" ? "ప్రోటీన్" : "Protein"}</p>
+                    <div className="p-3 bg-gradient-to-br from-blue-50 to-cyan-50 rounded-xl">
+                      <p className="text-2xl font-bold text-blue-600">{nutritionSummary?.average_protein || 0}g</p>
+                      <p className="text-xs text-text-muted">{language === "te" ? "ప్రోటీన్" : "Protein"}</p>
                     </div>
-                    <div className="p-2 bg-muted/50 rounded-lg">
-                      <p className="text-lg font-bold text-orange-600">{nutritionSummary?.average_calories || 0}</p>
-                      <p className="text-xs text-muted-foreground">{language === "te" ? "సగటు కేలరీలు" : "Avg Cal"}</p>
+                    <div className="p-3 bg-gradient-to-br from-orange-50 to-amber-50 rounded-xl">
+                      <p className="text-2xl font-bold text-orange-600">{nutritionSummary?.average_calories || 0}</p>
+                      <p className="text-xs text-text-muted">{language === "te" ? "సగటు కేల్" : "Avg Cal"}</p>
                     </div>
-                    <div className="p-2 bg-muted/50 rounded-lg">
-                      <p className="text-lg font-bold text-green-600">{waterGlasses * 250}ml</p>
-                      <p className="text-xs text-muted-foreground">{language === "te" ? "నీరు" : "Water"}</p>
+                    <div className="p-3 bg-gradient-to-br from-cyan-50 to-blue-50 rounded-xl">
+                      <p className="text-2xl font-bold text-cyan-600">{waterGlasses * 250}ml</p>
+                      <p className="text-xs text-text-muted">{language === "te" ? "నీరు" : "Water"}</p>
                     </div>
                   </div>
                 </div>
@@ -517,47 +752,87 @@ export default function KaizerDoctor() {
             </Card>
           </TabsContent>
 
-          {/* Sleep Tab */}
-          <TabsContent value="sleep" className="mt-4 space-y-4">
+          {/* Vitals Tab */}
+          <TabsContent value="vitals" className="mt-4 space-y-4">
             <Card className="border-border/50">
-              <CardContent className="p-6 text-center">
-                <Moon className="h-12 w-12 mx-auto mb-4 text-purple-500" />
-                <p className="text-2xl font-bold">
-                  {today.sleep?.duration_hours || "—"} {language === "te" ? "గంటలు" : "hours"}
-                </p>
-                <p className="text-muted-foreground">
-                  {language === "te" ? "చివరి నిద్ర" : "Last sleep"}
-                </p>
-                {today.sleep?.quality && (
-                  <div className="mt-4 flex justify-center gap-1">
-                    {[1,2,3,4,5].map((star) => (
-                      <span key={star} className={`text-xl ${star <= today.sleep.quality ? "text-yellow-400" : "text-gray-300"}`}>★</span>
-                    ))}
+              <CardContent className="p-6">
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="p-4 bg-gradient-to-br from-purple-50 to-pink-50 rounded-xl text-center">
+                    <Scale className="h-8 w-8 mx-auto mb-2 text-purple-500" />
+                    <p className="text-2xl font-bold text-purple-600">
+                      {healthMetrics?.current?.weight_kg || "—"} kg
+                    </p>
+                    <p className="text-xs text-text-muted">{language === "te" ? "బరువు" : "Weight"}</p>
                   </div>
-                )}
+                  <div className="p-4 bg-gradient-to-br from-blue-50 to-cyan-50 rounded-xl text-center">
+                    <Activity className="h-8 w-8 mx-auto mb-2 text-blue-500" />
+                    <p className="text-2xl font-bold text-blue-600">
+                      {healthMetrics?.current?.height_cm || "—"} cm
+                    </p>
+                    <p className="text-xs text-text-muted">{language === "te" ? "ఎత్తు" : "Height"}</p>
+                  </div>
+                  <div className="p-4 bg-gradient-to-br from-red-50 to-orange-50 rounded-xl text-center">
+                    <Thermometer className="h-8 w-8 mx-auto mb-2 text-red-500" />
+                    <p className="text-2xl font-bold text-red-600">
+                      {healthMetrics?.current?.blood_sugar || "—"}
+                    </p>
+                    <p className="text-xs text-text-muted">{language === "te" ? "షుగర్ mg/dL" : "Sugar mg/dL"}</p>
+                  </div>
+                  <div className="p-4 bg-gradient-to-br from-emerald-50 to-teal-50 rounded-xl text-center">
+                    <HeartPulse className="h-8 w-8 mx-auto mb-2 text-emerald-500" />
+                    <p className="text-2xl font-bold text-emerald-600">
+                      {healthMetrics?.bmi || "—"}
+                    </p>
+                    <p className="text-xs text-text-muted">BMI</p>
+                    {healthMetrics?.bmi_category && (
+                      <Badge className={`mt-1 ${
+                        healthMetrics.bmi_category === "normal" ? "bg-green-100 text-green-700" :
+                        healthMetrics.bmi_category === "overweight" ? "bg-yellow-100 text-yellow-700" :
+                        "bg-red-100 text-red-700"
+                      }`}>
+                        {healthMetrics.bmi_category}
+                      </Badge>
+                    )}
+                  </div>
+                </div>
               </CardContent>
             </Card>
           </TabsContent>
 
           {/* Diet Plans Tab */}
           <TabsContent value="plans" className="mt-4 space-y-3">
-            {dietPlans.map((plan) => (
-              <Card key={plan.id} className="border-border/50">
-                <CardContent className="p-4">
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <h3 className="font-semibold">{language === "te" ? plan.name_te : plan.name}</h3>
-                      <p className="text-sm text-muted-foreground mt-1">
-                        {language === "te" ? plan.description_te : plan.description}
-                      </p>
+            {dietPlans.length === 0 ? (
+              <div className="text-center py-8">
+                <Target className="h-12 w-12 mx-auto mb-3 text-muted-foreground/50" />
+                <p className="text-text-muted">{language === "te" ? "ప్రణాళికలు లేవు" : "No plans available"}</p>
+              </div>
+            ) : (
+              dietPlans.map((plan) => (
+                <Card key={plan.id} className="border-border/50 hover:shadow-md transition-shadow">
+                  <CardContent className="p-4">
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-3">
+                        <div className="h-12 w-12 rounded-xl bg-gradient-to-br from-emerald-400 to-teal-500 flex items-center justify-center text-white">
+                          <Target className="h-6 w-6" />
+                        </div>
+                        <div>
+                          <h3 className="font-semibold">{language === "te" ? plan.name_te : plan.name}</h3>
+                          <p className="text-sm text-muted-foreground mt-1 line-clamp-1">
+                            {language === "te" ? plan.description_te : plan.description}
+                          </p>
+                        </div>
+                      </div>
+                      <div className="text-right">
+                        <Badge className="bg-emerald-100 text-emerald-700">
+                          {plan.calories_target} cal
+                        </Badge>
+                        <ChevronRight className="h-5 w-5 text-muted-foreground mt-2" />
+                      </div>
                     </div>
-                    <Badge className="bg-primary/10 text-primary">
-                      {plan.calories_target} cal
-                    </Badge>
-                  </div>
-                </CardContent>
-              </Card>
-            ))}
+                  </CardContent>
+                </Card>
+              ))
+            )}
           </TabsContent>
         </Tabs>
       </div>
