@@ -513,7 +513,7 @@ export default function Profile() {
         {/* App Info */}
         <div className="text-center text-sm text-text-muted py-4">
           <p className="font-heading font-semibold text-primary">My Dammaiguda</p>
-          <p className="text-xs mt-1">Version 1.0.0</p>
+          <p className="text-xs mt-1">Version 2.5.0</p>
         </div>
       </div>
     </Layout>
