@@ -526,6 +526,287 @@ async def update_profile(
     updated_user = await db.users.find_one({"id": user["id"]}, {"_id": 0})
     return updated_user
 
+# ============== AQI ROUTES ==============
+
+@api_router.get("/aqi/dammaiguda")
+async def get_dammaiguda_aqi():
+    """Get AQI for Dammaiguda area (using nearest station)"""
+    url = "https://www.aqi.in/in/dashboard/india/telangana/secunderabad/vayushakti-nagar"
+    data = await scrape_aqi_in(url)
+    data["location"] = "Dammaiguda"
+    data["location_te"] = "దమ్మాయిగూడ"
+    return data
+
+@api_router.get("/aqi/hyderabad")
+async def get_hyderabad_aqi():
+    """Get AQI for Hyderabad"""
+    url = "https://www.aqi.in/in/dashboard/india/telangana/hyderabad"
+    data = await scrape_aqi_in(url)
+    data["location"] = "Hyderabad"
+    data["location_te"] = "హైదరాబాద్"
+    return data
+
+@api_router.get("/aqi/both")
+async def get_both_aqi():
+    """Get AQI for both Dammaiguda and Hyderabad"""
+    dammaiguda_url = "https://www.aqi.in/in/dashboard/india/telangana/secunderabad/vayushakti-nagar"
+    hyderabad_url = "https://www.aqi.in/in/dashboard/india/telangana/hyderabad"
+    
+    dammaiguda_data = await scrape_aqi_in(dammaiguda_url)
+    dammaiguda_data["location"] = "Dammaiguda"
+    dammaiguda_data["location_te"] = "దమ్మాయిగూడ"
+    
+    hyderabad_data = await scrape_aqi_in(hyderabad_url)
+    hyderabad_data["location"] = "Hyderabad"
+    hyderabad_data["location_te"] = "హైదరాబాద్"
+    
+    return {
+        "dammaiguda": dammaiguda_data,
+        "hyderabad": hyderabad_data,
+        "fetched_at": datetime.now(timezone.utc).isoformat()
+    }
+
+@api_router.get("/aqi/scrape/{location:path}")
+async def scrape_location_aqi(location: str):
+    """Scrape AQI for any location on aqi.in (path format: state/city/area)"""
+    url = f"https://www.aqi.in/in/dashboard/india/{location}"
+    return await scrape_aqi_in(url)
+
+# ============== MY FAMILY ROUTES ==============
+
+@api_router.post("/family/send-request")
+async def send_family_request(request: FamilyMemberRequest, user: dict = Depends(get_current_user)):
+    """Send a family tracking request to another user"""
+    # Find target user by phone
+    target_user = await db.users.find_one({"phone": request.phone}, {"_id": 0})
+    if not target_user:
+        raise HTTPException(status_code=404, detail="User not found. They need to register first.")
+    
+    if target_user["id"] == user["id"]:
+        raise HTTPException(status_code=400, detail="Cannot add yourself as family member")
+    
+    # Check if already family or pending request exists
+    existing = await db.family_requests.find_one({
+        "$or": [
+            {"from_user_id": user["id"], "to_user_id": target_user["id"]},
+            {"from_user_id": target_user["id"], "to_user_id": user["id"]}
+        ],
+        "status": {"$in": ["pending", "accepted"]}
+    })
+    
+    if existing:
+        if existing["status"] == "accepted":
+            raise HTTPException(status_code=400, detail="Already family members")
+        raise HTTPException(status_code=400, detail="Request already pending")
+    
+    new_request = {
+        "id": generate_id(),
+        "from_user_id": user["id"],
+        "from_user_name": user.get("name"),
+        "from_user_phone": user.get("phone"),
+        "to_user_id": target_user["id"],
+        "to_user_name": target_user.get("name"),
+        "to_user_phone": target_user.get("phone"),
+        "relationship": request.relationship,
+        "status": "pending",
+        "created_at": now_iso()
+    }
+    
+    await db.family_requests.insert_one(new_request)
+    new_request.pop("_id", None)
+    
+    return {"success": True, "message": "Request sent successfully", "request": new_request}
+
+@api_router.post("/family/respond")
+async def respond_to_family_request(response: FamilyRequestResponse, user: dict = Depends(get_current_user)):
+    """Accept or decline a family request"""
+    request = await db.family_requests.find_one({
+        "id": response.request_id,
+        "to_user_id": user["id"],
+        "status": "pending"
+    })
+    
+    if not request:
+        raise HTTPException(status_code=404, detail="Request not found or already processed")
+    
+    if response.action not in ["accept", "decline"]:
+        raise HTTPException(status_code=400, detail="Invalid action. Use 'accept' or 'decline'")
+    
+    new_status = "accepted" if response.action == "accept" else "declined"
+    
+    await db.family_requests.update_one(
+        {"id": response.request_id},
+        {"$set": {"status": new_status, "responded_at": now_iso()}}
+    )
+    
+    if response.action == "accept":
+        # Create bi-directional family link
+        family_link = {
+            "id": generate_id(),
+            "user_id": request["from_user_id"],
+            "family_member_id": request["to_user_id"],
+            "family_member_name": request["to_user_name"],
+            "family_member_phone": request["to_user_phone"],
+            "relationship": request["relationship"],
+            "created_at": now_iso()
+        }
+        await db.family_members.insert_one(family_link)
+        
+        # Reverse relationship
+        reverse_relationship = {
+            "spouse": "spouse",
+            "child": "parent",
+            "parent": "child",
+            "sibling": "sibling",
+            "other": "other"
+        }.get(request["relationship"], "other")
+        
+        reverse_link = {
+            "id": generate_id(),
+            "user_id": request["to_user_id"],
+            "family_member_id": request["from_user_id"],
+            "family_member_name": request["from_user_name"],
+            "family_member_phone": request["from_user_phone"],
+            "relationship": reverse_relationship,
+            "created_at": now_iso()
+        }
+        await db.family_members.insert_one(reverse_link)
+    
+    return {"success": True, "message": f"Request {new_status}"}
+
+@api_router.get("/family/requests")
+async def get_family_requests(user: dict = Depends(get_current_user)):
+    """Get pending family requests for current user"""
+    incoming = await db.family_requests.find(
+        {"to_user_id": user["id"], "status": "pending"},
+        {"_id": 0}
+    ).to_list(50)
+    
+    outgoing = await db.family_requests.find(
+        {"from_user_id": user["id"], "status": "pending"},
+        {"_id": 0}
+    ).to_list(50)
+    
+    return {"incoming": incoming, "outgoing": outgoing}
+
+@api_router.get("/family/members")
+async def get_family_members(user: dict = Depends(get_current_user)):
+    """Get list of family members"""
+    members = await db.family_members.find(
+        {"user_id": user["id"]},
+        {"_id": 0}
+    ).to_list(50)
+    
+    # Get latest location for each member
+    for member in members:
+        location = await db.family_locations.find_one(
+            {"user_id": member["family_member_id"]},
+            {"_id": 0},
+            sort=[("updated_at", -1)]
+        )
+        member["last_location"] = location
+    
+    return members
+
+@api_router.post("/family/update-location")
+async def update_my_location(location: LocationUpdate, user: dict = Depends(get_current_user)):
+    """Update current user's location for family tracking"""
+    location_entry = {
+        "user_id": user["id"],
+        "latitude": location.latitude,
+        "longitude": location.longitude,
+        "accuracy": location.accuracy,
+        "battery_level": location.battery_level,
+        "updated_at": now_iso()
+    }
+    
+    # Upsert location (keep only latest)
+    await db.family_locations.update_one(
+        {"user_id": user["id"]},
+        {"$set": location_entry},
+        upsert=True
+    )
+    
+    # Also store in history for tracking patterns
+    history_entry = {
+        "id": generate_id(),
+        **location_entry
+    }
+    await db.family_location_history.insert_one(history_entry)
+    
+    return {"success": True, "message": "Location updated"}
+
+@api_router.get("/family/member/{member_id}/location")
+async def get_member_location(member_id: str, user: dict = Depends(get_current_user)):
+    """Get a family member's current location"""
+    # Verify they are family members
+    link = await db.family_members.find_one({
+        "user_id": user["id"],
+        "family_member_id": member_id
+    })
+    
+    if not link:
+        raise HTTPException(status_code=403, detail="Not a family member")
+    
+    location = await db.family_locations.find_one(
+        {"user_id": member_id},
+        {"_id": 0}
+    )
+    
+    if not location:
+        return {"location": None, "message": "Location not available"}
+    
+    return {"location": location, "member_name": link.get("family_member_name")}
+
+@api_router.get("/family/member/{member_id}/history")
+async def get_member_location_history(
+    member_id: str,
+    hours: int = 24,
+    user: dict = Depends(get_current_user)
+):
+    """Get a family member's location history"""
+    # Verify they are family members
+    link = await db.family_members.find_one({
+        "user_id": user["id"],
+        "family_member_id": member_id
+    })
+    
+    if not link:
+        raise HTTPException(status_code=403, detail="Not a family member")
+    
+    cutoff = (datetime.now(timezone.utc) - timedelta(hours=hours)).isoformat()
+    
+    history = await db.family_location_history.find(
+        {"user_id": member_id, "updated_at": {"$gte": cutoff}},
+        {"_id": 0}
+    ).sort("updated_at", -1).to_list(500)
+    
+    return {"history": history, "member_name": link.get("family_member_name")}
+
+@api_router.delete("/family/member/{member_id}")
+async def remove_family_member(member_id: str, user: dict = Depends(get_current_user)):
+    """Remove a family member (bi-directional)"""
+    # Remove both directions
+    await db.family_members.delete_many({
+        "$or": [
+            {"user_id": user["id"], "family_member_id": member_id},
+            {"user_id": member_id, "family_member_id": user["id"]}
+        ]
+    })
+    
+    # Update request status
+    await db.family_requests.update_many(
+        {
+            "$or": [
+                {"from_user_id": user["id"], "to_user_id": member_id},
+                {"from_user_id": member_id, "to_user_id": user["id"]}
+            ]
+        },
+        {"$set": {"status": "removed", "removed_at": now_iso()}}
+    )
+    
+    return {"success": True, "message": "Family member removed"}
+
 # ============== KAIZER FIT ROUTES (EXPANDED) ==============
 
 @api_router.post("/fitness/activity")
