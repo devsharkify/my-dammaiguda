@@ -33,6 +33,36 @@ class CreateChallenge(BaseModel):
     start_date: str
     end_date: str
 
+class LiveActivityStart(BaseModel):
+    activity_type: str  # running, walking, cycling, yoga, gym, swimming, hiking, sports, dancing
+    target_duration: Optional[int] = None  # minutes
+    target_distance: Optional[float] = None  # km
+    target_calories: Optional[int] = None
+
+class LiveActivityUpdate(BaseModel):
+    session_id: str
+    current_duration_seconds: int
+    current_distance_meters: Optional[float] = None
+    current_calories: Optional[int] = None
+    current_steps: Optional[int] = None
+    heart_rate: Optional[int] = None
+    gps_points: Optional[List[dict]] = None  # [{lat, lng, timestamp}]
+    speed_kmh: Optional[float] = None
+    pace_min_per_km: Optional[float] = None
+
+class LiveActivityEnd(BaseModel):
+    session_id: str
+    total_duration_seconds: int
+    total_distance_meters: Optional[float] = None
+    total_calories: Optional[int] = None
+    total_steps: Optional[int] = None
+    avg_heart_rate: Optional[int] = None
+    max_heart_rate: Optional[int] = None
+    avg_speed_kmh: Optional[float] = None
+    avg_pace_min_per_km: Optional[float] = None
+    route_polyline: Optional[str] = None
+    gps_points: Optional[List[dict]] = None
+
 # ============== HELPER ==============
 
 async def update_daily_fitness_summary(user_id: str, date: str):
