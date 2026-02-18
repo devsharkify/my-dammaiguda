@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useLanguage } from "../context/LanguageContext";
 import { useAuth } from "../context/AuthContext";
 import axios from "axios";
@@ -40,7 +40,12 @@ import {
   Timer,
   Calendar,
   ChevronRight,
-  Crown
+  Crown,
+  MessageCircle,
+  Send,
+  Loader2,
+  Phone,
+  ShieldCheck
 } from "lucide-react";
 
 const API = `${process.env.REACT_APP_BACKEND_URL}/api`;
