@@ -744,7 +744,7 @@ export default function KaizerDoctor() {
 
         {/* Tabs for Detailed Views */}
         <Tabs defaultValue="nutrition" className="w-full">
-          <TabsList className="grid w-full grid-cols-3 h-12 bg-muted/50 p-1 rounded-xl">
+          <TabsList className="grid w-full grid-cols-4 h-12 bg-muted/50 p-1 rounded-xl">
             <TabsTrigger value="nutrition" className="text-xs rounded-lg data-[state=active]:bg-white data-[state=active]:shadow-sm">
               <Utensils className="h-4 w-4 mr-1" />
               {language === "te" ? "పోషణ" : "Nutrition"}
@@ -752,6 +752,10 @@ export default function KaizerDoctor() {
             <TabsTrigger value="vitals" className="text-xs rounded-lg data-[state=active]:bg-white data-[state=active]:shadow-sm">
               <HeartPulse className="h-4 w-4 mr-1" />
               {language === "te" ? "వైటల్స్" : "Vitals"}
+            </TabsTrigger>
+            <TabsTrigger value="mind" className="text-xs rounded-lg data-[state=active]:bg-white data-[state=active]:shadow-sm" data-testid="mind-tab">
+              <Brain className="h-4 w-4 mr-1" />
+              {language === "te" ? "మైండ్" : "Mind"}
             </TabsTrigger>
             <TabsTrigger value="plans" className="text-xs rounded-lg data-[state=active]:bg-white data-[state=active]:shadow-sm">
               <Target className="h-4 w-4 mr-1" />
