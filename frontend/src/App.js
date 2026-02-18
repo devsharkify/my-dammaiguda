@@ -21,6 +21,7 @@ import AdminDashboard from "./pages/AdminDashboard";
 import Profile from "./pages/Profile";
 import MyFamily from "./pages/MyFamily";
 import AQIReport from "./pages/AQIReport";
+import NewsShorts from "./pages/NewsShorts";
 
 import "./App.css";
 
