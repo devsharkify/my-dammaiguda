@@ -105,6 +105,11 @@ function AppRoutes() {
       } />
       <Route path="/aqi" element={<AQIReport />} />
       <Route path="/news" element={<NewsShorts />} />
+      <Route path="/wall" element={
+        <ProtectedRoute>
+          <CitizenWall />
+        </ProtectedRoute>
+      } />
       
       {/* Volunteer Routes */}
       <Route path="/volunteer" element={
