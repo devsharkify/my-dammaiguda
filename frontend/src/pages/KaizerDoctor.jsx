@@ -115,15 +115,29 @@ export default function KaizerDoctor() {
   const [sleepHours, setSleepHours] = useState("");
   const [sleepQuality, setSleepQuality] = useState(3);
   
+  // Psychologist AI state
+  const [psychMessages, setPsychMessages] = useState([]);
+  const [psychInput, setPsychInput] = useState("");
+  const [psychLoading, setPsychLoading] = useState(false);
+  const [psychSessionId, setPsychSessionId] = useState(null);
+  const psychChatRef = useRef(null);
+  
   // Quote
   const [quote] = useState(() => {
     const quotes = HEALTH_QUOTES["en"];
     return quotes[Math.floor(Math.random() * quotes.length)];
   });
 
+  const headers = { Authorization: `Bearer ${token}` };
+
   useEffect(() => {
     fetchData();
   }, []);
+
+  // Scroll to bottom of psychologist chat
+  useEffect(() => {
+    psychChatRef.current?.scrollIntoView({ behavior: "smooth" });
+  }, [psychMessages]);
 
   const fetchData = async () => {
     try {
