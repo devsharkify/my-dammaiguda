@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import { useLanguage } from "../context/LanguageContext";
 import { useAuth } from "../context/AuthContext";
 import axios from "axios";
@@ -22,15 +22,89 @@ import {
   Send,
   Loader2,
   Image as ImageIcon,
-  MoreVertical,
+  Video,
   Trash2,
   UserPlus,
   Clock,
   Check,
-  X
+  X,
+  ChevronRight,
+  ArrowLeft,
+  MessageSquare
 } from "lucide-react";
 
 const API = `${process.env.REACT_APP_BACKEND_URL}/api`;
+
+// IndexedDB for client-side chat storage
+const DB_NAME = "CitizenWallChat";
+const DB_VERSION = 1;
+const STORE_NAME = "messages";
+const MAX_MESSAGES_PER_GROUP = 500;
+
+const openChatDB = () => {
+  return new Promise((resolve, reject) => {
+    const request = indexedDB.open(DB_NAME, DB_VERSION);
+    request.onerror = () => reject(request.error);
+    request.onsuccess = () => resolve(request.result);
+    request.onupgradeneeded = (event) => {
+      const db = event.target.result;
+      if (!db.objectStoreNames.contains(STORE_NAME)) {
+        const store = db.createObjectStore(STORE_NAME, { keyPath: "id" });
+        store.createIndex("groupId", "groupId", { unique: false });
+        store.createIndex("timestamp", "timestamp", { unique: false });
+      }
+    };
+  });
+};
+
+const saveMessage = async (message) => {
+  const db = await openChatDB();
+  const tx = db.transaction(STORE_NAME, "readwrite");
+  const store = tx.objectStore(STORE_NAME);
+  store.put(message);
+  return new Promise((resolve, reject) => {
+    tx.oncomplete = () => resolve();
+    tx.onerror = () => reject(tx.error);
+  });
+};
+
+const getGroupMessages = async (groupId) => {
+  const db = await openChatDB();
+  const tx = db.transaction(STORE_NAME, "readonly");
+  const store = tx.objectStore(STORE_NAME);
+  const index = store.index("groupId");
+  const request = index.getAll(groupId);
+  return new Promise((resolve, reject) => {
+    request.onsuccess = () => {
+      const messages = request.result || [];
+      // Sort by timestamp and limit to MAX_MESSAGES_PER_GROUP
+      messages.sort((a, b) => new Date(a.timestamp) - new Date(b.timestamp));
+      resolve(messages.slice(-MAX_MESSAGES_PER_GROUP));
+    };
+    request.onerror = () => reject(request.error);
+  });
+};
+
+const clearOldMessages = async (groupId) => {
+  const db = await openChatDB();
+  const tx = db.transaction(STORE_NAME, "readwrite");
+  const store = tx.objectStore(STORE_NAME);
+  const index = store.index("groupId");
+  const request = index.getAll(groupId);
+  
+  return new Promise((resolve, reject) => {
+    request.onsuccess = () => {
+      const messages = request.result || [];
+      if (messages.length > MAX_MESSAGES_PER_GROUP) {
+        messages.sort((a, b) => new Date(a.timestamp) - new Date(b.timestamp));
+        const toDelete = messages.slice(0, messages.length - MAX_MESSAGES_PER_GROUP);
+        toDelete.forEach(msg => store.delete(msg.id));
+      }
+      resolve();
+    };
+    request.onerror = () => reject(request.error);
+  });
+};
 
 export default function CitizenWall() {
   const { language } = useLanguage();
