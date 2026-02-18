@@ -1,150 +1,163 @@
 {
+  "identity": {
+    "name": "Kaizer Fit",
+    "persona": "The Digital Dojo",
+    "vibe": "Elite, High-Performance, Dark Mode, Cyber-Athletic",
+    "core_values": [
+      "Precision (Data is art)",
+      "Motivation (Color is energy)",
+      "Community (Telugu-first connection)"
+    ]
+  },
   "design_system": {
+    "theme": "dark",
+    "colors": {
+      "background": {
+        "default": "#09090b",
+        "card": "#18181b",
+        "card_hover": "#27272a",
+        "overlay": "rgba(9, 9, 11, 0.8)"
+      },
+      "primary": {
+        "name": "Neon Volt",
+        "hex": "#D4FF00",
+        "foreground": "#000000"
+      },
+      "secondary": {
+        "name": "Carbon",
+        "hex": "#27272a",
+        "foreground": "#ffffff"
+      },
+      "accents": {
+        "success": "#22c55e",
+        "warning": "#eab308",
+        "error": "#ef4444",
+        "chart_line": "#D4FF00",
+        "chart_grid": "#3f3f46"
+      },
+      "text": {
+        "primary": "#fafafa",
+        "secondary": "#a1a1aa",
+        "muted": "#52525b"
+      }
+    },
     "typography": {
       "font_family": {
-        "heading": "Manrope, sans-serif",
+        "heading": "Barlow Condensed, sans-serif",
         "body": "Inter, sans-serif",
         "telugu": "Noto Sans Telugu, sans-serif"
       },
-      "scale": {
-        "h1": "text-2xl font-bold tracking-tight",
-        "h2": "text-xl font-bold tracking-tight",
-        "h3": "text-lg font-semibold",
-        "body": "text-base font-normal leading-relaxed",
-        "caption": "text-sm text-muted-foreground"
-      }
+      "rules": [
+        "Use 'Barlow Condensed' (weight 700/800) for all numeric stats and English headings.",
+        "Use 'Noto Sans Telugu' for ALL Telugu text content to ensure legibility.",
+        "Use 'Inter' for English body text and labels.",
+        "Headings must be uppercase and tracking-tight for English text."
+      ],
+      "imports": [
+        "@import url('https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700;800&display=swap');"
+      ]
     },
-    "colors": {
-      "primary": "#0F766E",
-      "secondary": "#C2410C",
-      "background": "#F8F9FA",
-      "surface": "#FFFFFF",
-      "text": {
-        "primary": "#111827",
-        "secondary": "#374151",
-        "muted": "#6B7280"
-      },
-      "status": {
-        "success": "#059669",
-        "warning": "#D97706",
-        "error": "#DC2626"
-      }
-    },
-    "spacing": {
-      "container_padding": "p-4 md:p-6",
-      "section_gap": "gap-6",
-      "item_gap": "gap-4"
-    },
-    "radius": {
-      "default": "rounded-lg",
-      "card": "rounded-xl",
-      "button": "rounded-full"
-    },
-    "shadows": {
-      "card": "shadow-sm hover:shadow-md transition-shadow duration-200",
-      "floating": "shadow-lg"
+    "visual_enhancers": {
+      "borders": "1px solid rgba(255,255,255,0.1)",
+      "radius": "rounded-xl",
+      "shadows": "0 4px 24px -2px rgba(0, 0, 0, 0.5)",
+      "glassmorphism": "backdrop-blur-xl bg-black/40 border-white/10",
+      "gradients": "None. Use solid colors or subtle noise textures."
     }
   },
-  "layout_strategy": {
-    "type": "mobile_first_vertical_stack",
-    "max_width": "max-w-md mx-auto md:max-w-2xl",
-    "sections_order": [
-      "Header (Logo + Profile + Lang)",
-      "Stories Bar",
-      "AQI Widget (Compact)",
-      "Quick Actions Grid (2x2)",
-      "Wall Widget (Medium)",
-      "Benefits Slider (Horizontal)",
-      "Bottom Navigation (Fixed)"
+  "layout_strategies": {
+    "grid_system": "Bento Grid (Mode B - High Density)",
+    "container": "max-w-md mx-auto (Mobile-First Focus) or max-w-5xl (Desktop Dashboard)",
+    "spacing": {
+      "page_padding": "p-4 md:p-8",
+      "card_padding": "p-6",
+      "gap": "gap-4"
+    },
+    "structure": [
+      {
+        "section": "Header",
+        "style": "Sticky, Glassmorphic, High Z-Index. Contains User Profile & Settings."
+      },
+      {
+        "section": "Hero / Daily Stats",
+        "style": "Bento Grid. 3 Columns. Large 'Calories' block, smaller 'Steps' and 'Distance' blocks."
+      },
+      {
+        "section": "Weight Tracker",
+        "style": "Full-width card. Line Chart dominant. Input field overlay or modal trigger."
+      },
+      {
+        "section": "Live Activity",
+        "style": "Floating Action Button (FAB) or Fixed Bottom Bar for quick access."
+      }
     ]
   },
   "components": {
-    "quick_actions": {
-      "layout": "grid grid-cols-4 gap-4 p-4",
-      "style": "flex flex-col items-center justify-center gap-2",
-      "items": [
-        {
-          "label": "Report",
-          "icon": "Megaphone",
-          "color": "text-red-600",
-          "bg": "bg-red-50"
-        },
-        {
-          "label": "Fit",
-          "icon": "Activity",
-          "color": "text-blue-600",
-          "bg": "bg-blue-50"
-        },
-        {
-          "label": "Doctor",
-          "icon": "Stethoscope",
-          "color": "text-teal-600",
-          "bg": "bg-teal-50"
-        },
-        {
-          "label": "News",
-          "icon": "Newspaper",
-          "color": "text-orange-600",
-          "bg": "bg-orange-50"
-        }
-      ]
+    "cards": {
+      "base": "bg-card border border-white/10 rounded-xl overflow-hidden relative",
+      "hover": "hover:border-primary/50 transition-colors duration-300"
     },
-    "wall_widget": {
-      "type": "card",
-      "size": "medium",
-      "content": "Latest community post preview with user avatar, name, time, and truncated text.",
-      "action": "View All -> Navigate to Wall Tab"
+    "buttons": {
+      "primary": "bg-[#D4FF00] text-black font-bold uppercase tracking-wide hover:bg-[#b5d900] rounded-full",
+      "secondary": "bg-white/10 text-white hover:bg-white/20 backdrop-blur-md rounded-full",
+      "ghost": "text-zinc-400 hover:text-white hover:bg-white/5"
     },
-    "benefits_slider": {
-      "type": "carousel",
-      "item_style": "w-64 h-40 flex-shrink-0 rounded-xl overflow-hidden relative",
-      "content": [
-        {
-          "title": "Senior Pension Scheme",
-          "image": "https://images.unsplash.com/photo-1768131502282-6d50ff4282ac?crop=entropy&cs=srgb&fm=jpg&q=85"
-        },
-        {
-          "title": "Clean Water Initiative",
-          "image": "https://images.unsplash.com/photo-1735617802117-7da46cd9865e?crop=entropy&cs=srgb&fm=jpg&q=85"
-        },
-        {
-          "title": "Community Health Camp",
-          "image": "https://images.pexels.com/photos/6136879/pexels-photo-6136879.jpeg"
-        }
-      ]
+    "charts": {
+      "library": "recharts",
+      "style": "Minimalist. Hide axis lines where possible. Use Tooltips for data.",
+      "colors": ["#D4FF00", "#22c55e", "#3b82f6"]
     },
-    "bottom_nav": {
-      "items": ["Home", "News", "Wall"],
-      "style": "fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 flex justify-around py-3 z-50 safe-area-bottom"
+    "inputs": {
+      "style": "bg-black/50 border-white/20 text-white focus:border-[#D4FF00] focus:ring-1 focus:ring-[#D4FF00] rounded-lg h-12"
     }
   },
   "assets": {
-    "icons_library": "lucide-react",
-    "images": {
-      "benefits": [
-        "https://images.unsplash.com/photo-1768131502282-6d50ff4282ac?crop=entropy&cs=srgb&fm=jpg&q=85",
-        "https://images.unsplash.com/photo-1735617802117-7da46cd9865e?crop=entropy&cs=srgb&fm=jpg&q=85",
-        "https://images.pexels.com/photos/6136879/pexels-photo-6136879.jpeg"
-      ]
-    }
+    "images": [
+      {
+        "category": "hero_bg",
+        "url": "https://images.unsplash.com/photo-1708738072588-1f0528ed1873?crop=entropy&cs=srgb&fm=jpg&q=85",
+        "description": "Dark moody runner for activity section background"
+      },
+      {
+        "category": "weight_tracker_bg",
+        "url": "https://images.unsplash.com/photo-1638536534847-2cb61af9efe3?crop=entropy&cs=srgb&fm=jpg&q=85",
+        "description": "Dumbbells aesthetic for weight section"
+      },
+      {
+        "category": "nutrition_bg",
+        "url": "https://images.pexels.com/photos/13887561/pexels-photo-13887561.jpeg",
+        "description": "Healthy food bowl for nutrition stats"
+      }
+    ],
+    "icons": "Use 'lucide-react' for all UI icons (Activity, Dumbbell, Flame, MapPin)."
   },
   "instructions_to_main_agent": [
-    "1. Refactor the Dashboard page to follow the 'sections_order' strictly.",
-    "2. Remove 'Dump', 'Wall', 'AI Chat' from the top quick actions. Only keep Report, Fit, Doctor, News.",
-    "3. Implement the 'Wall Widget' as a new component that fetches/shows a static preview of the latest post.",
-    "4. Implement the 'Benefits Slider' using a horizontal scroll container (overflow-x-auto). Use the provided image URLs.",
-    "5. Update the Bottom Navigation to only show Home, News, Wall.",
-    "6. Ensure all text uses the correct font families defined in App.css (Manrope for headings, Inter for body).",
-    "7. Maintain the 'Telugu-first' approach by ensuring all labels can be easily swapped for Telugu strings (use a simple translation object if needed, or keep English for now but ready for i18n).",
-    "8. Use 'lucide-react' for all icons.",
-    "9. Ensure the app remains responsive and looks good on mobile (max-w-md mx-auto for main container)."
+    "CRITICAL: Do NOT break the existing 'Live Activity Tracking' feature. Wrap it in the new UI but keep logic intact.",
+    "Implement the 'Weight Tracker' with a Recharts LineChart. X-axis: Date, Y-axis: Weight.",
+    "Use the 'Neon Volt' (#D4FF00) color sparingly for high-impact data points and primary actions only.",
+    "Ensure all text is readable against the dark background. Use 'text-zinc-400' for labels and 'text-white' for values.",
+    "For Telugu text, ensure 'font-telugu' class is applied.",
+    "Create a 'GoalSetting' modal using Shadcn Dialog component.",
+    "Use 'framer-motion' for subtle entrance animations (fade-in-up) for the dashboard cards."
   ],
   "UNIVERSAL_GUIDELINES_FOR_MAIN_AGENT": [
-    "Do not use gradients for backgrounds, use solid colors or subtle patterns.",
-    "Use 'sonner' for toasts.",
-    "Ensure all interactive elements have 'data-testid'.",
-    "Use 'Manrope' for all headings and 'Inter' for body text.",
-    "Primary color is #0F766E (Teal). Use it for primary actions.",
-    "Keep the UI clean, with generous whitespace (p-4 to p-6)."
+    "Dark colors look good when used independently without gradients. DO NOT use dark colors as gradients",
+    "Don't make generic centered layouts, simplistic gradients, and uniform styling.",
+    "Create depth through layered design elements with z-index hierarchy",
+    "Use glass-morphism effects with backdrop filters (12-24px blur)",
+    "You MUST NOT apply universal transition. Eg: transition: all. This results in breaking transforms. Always add transitions for specific interactive elements like button, input excluding transforms",
+    "You MUST NOT center align the app container, ie do not add .App { text-align: center; } in the css file. This disrupts the human natural reading flow of text",
+    "Always use modern button styles like pill-shaped, or sharp button with interaction animations & color relevant to the app style",
+    "NEVER: use AI assistant Emoji characters like 🤖🧠💭💡🔮🎯📚🎭🎬🎪🎉🎊🎁🎀🎂🍰🎈🎨🎰💰💵💳🏦💎🪙💸🤑📊📈📉💹🔢🏆🥇 etc for icons.",
+    "Every interaction needs micro-animations - hover states, transitions, parallax effects, and entrance animations. Static = dead.",
+    "Use 2-3x more spacing than feels comfortable. Cramped designs look cheap.",
+    "Subtle grain textures, noise overlays, custom cursors, selection states, and loading animations: separates good from extraordinary.",
+    "Main agent relies on these image URLs. Missing categories (especially sponsor logos) = main agent will use placeholder text which is FORBIDDEN",
+    "Prioritize using pre-existing components from src/components/ui when applicable",
+    "Create new components that match the style and conventions of existing components when needed",
+    "Examine existing components to understand the project's component patterns before creating new ones",
+    "Components MUST use named exports (export const ComponentName = ...)",
+    "Pages MUST use default exports (export default function PageName() {...})",
+    "Use sonner for toasts. Sonner component are located in /app/src/components/ui/sonner.tsx"
   ]
 }
