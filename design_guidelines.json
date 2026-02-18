@@ -1,0 +1,132 @@
+{
+  "design_system": {
+    "identity": {
+      "name": "My Dammaiguda",
+      "tone": "Trustworthy, Action-Oriented, Community-First, Transparent",
+      "archetype": "Organic & Earthy (Civic Trust)",
+      "theme_strategy": "Light Mode Default (High Contrast for Accessibility)"
+    },
+    "typography": {
+      "font_family": {
+        "heading": "Manrope, sans-serif",
+        "body": "Inter, sans-serif",
+        "regional": "Noto Sans Telugu, sans-serif"
+      },
+      "scale": {
+        "h1": "text-4xl font-bold tracking-tight",
+        "h2": "text-3xl font-semibold tracking-tight",
+        "h3": "text-2xl font-semibold",
+        "body_lg": "text-lg leading-relaxed",
+        "body_base": "text-base leading-relaxed",
+        "caption": "text-sm text-muted-foreground"
+      },
+      "rules": "Headings must use Manrope. Body text uses Inter. All Telugu content must use Noto Sans Telugu. Ensure 4.5:1 contrast ratio for all text."
+    },
+    "colors": {
+      "primary": {
+        "DEFAULT": "#0F766E",
+        "foreground": "#FFFFFF",
+        "description": "Deep Teal - Represents Health, Environment, and Stability. Use for primary buttons, active states, and key branding."
+      },
+      "secondary": {
+        "DEFAULT": "#C2410C",
+        "foreground": "#FFFFFF",
+        "description": "Terracotta - Represents Urgency, Action, and Earth. Use for 'Report Issue' buttons, alerts, and call-to-actions."
+      },
+      "background": {
+        "DEFAULT": "#F8F9FA",
+        "paper": "#FFFFFF",
+        "subtle": "#F3F4F6"
+      },
+      "text": {
+        "primary": "#111827",
+        "secondary": "#374151",
+        "muted": "#6B7280"
+      },
+      "status": {
+        "success": "#059669",
+        "warning": "#D97706",
+        "error": "#DC2626",
+        "info": "#2563EB"
+      }
+    },
+    "spacing": {
+      "container_padding": "p-4 md:p-6 lg:p-8",
+      "section_gap": "gap-6 md:gap-8",
+      "touch_target": "min-h-[48px] min-w-[48px]"
+    },
+    "layout": {
+      "grid_strategy": "Mobile-first single column (grid-cols-1). Tablet 2 columns. Desktop 3-4 columns.",
+      "container_width": "max-w-7xl mx-auto",
+      "border_radius": "rounded-xl"
+    },
+    "components": {
+      "buttons": {
+        "primary": "bg-primary text-primary-foreground hover:bg-primary/90 h-12 rounded-full px-8 font-medium shadow-md transition-all active:scale-95",
+        "secondary": "bg-secondary text-secondary-foreground hover:bg-secondary/90 h-12 rounded-full px-8 font-medium shadow-sm transition-all active:scale-95",
+        "outline": "border-2 border-primary text-primary hover:bg-primary/10 h-12 rounded-full px-8 font-medium transition-all"
+      },
+      "cards": {
+        "base": "bg-white rounded-xl border border-border/50 shadow-sm hover:shadow-md transition-shadow p-5",
+        "interactive": "cursor-pointer hover:border-primary/50 hover:shadow-lg transition-all duration-300"
+      },
+      "inputs": {
+        "base": "h-12 rounded-lg border-input bg-background px-3 py-2 text-base ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+      }
+    },
+    "accessibility": {
+      "contrast": "Ensure all text has at least 4.5:1 contrast ratio against background.",
+      "touch_targets": "All interactive elements must be at least 48x48px.",
+      "focus_states": "Visible focus rings (ring-2 ring-primary) for keyboard navigation.",
+      "screen_readers": "Use semantic HTML and aria-labels for icon-only buttons."
+    }
+  },
+  "assets": {
+    "images": {
+      "hero_clean_street": "https://images.unsplash.com/photo-1634139799875-eac30d9b946b",
+      "health_elderly_yoga": "https://images.unsplash.com/photo-1758274538676-87c2314bca60",
+      "environment_garbage_truck": "https://images.unsplash.com/photo-1762805544399-7cdf748371e0",
+      "community_meeting": "https://images.unsplash.com/photo-1723564211731-21ceb97443a5",
+      "issue_pothole": "https://images.unsplash.com/photo-1723000933593-837fea88aeae"
+    },
+    "icons": "Use Lucide React icons. For specific civic icons not in Lucide, use Phosphor Icons."
+  },
+  "modules": {
+    "auth": {
+      "style": "Clean, centered card. Phone number input with large country code. OTP input with distinct boxes.",
+      "image": "Use 'hero_clean_street' as a subtle background with overlay."
+    },
+    "dashboard": {
+      "layout": "Bento Grid style. Key metrics at top. Quick actions (Report Issue) prominent.",
+      "widgets": "Health Risk Card (Air Quality), Issue Status Tracker, Daily Steps."
+    },
+    "issue_reporting": {
+      "style": "Step-by-step wizard. Large category icons. Map integration prominent.",
+      "categories": ["Garbage", "Drainage", "Water", "Roads", "Lights", "Parks"]
+    },
+    "kaizer_fit": {
+      "style": "Energetic but clean. Progress rings for steps. Leaderboard list.",
+      "colors": "Use Teal and Emerald gradients for health metrics."
+    }
+  },
+  "instructions_to_main_agent": {
+    "general": "Build a mobile-first PWA. Prioritize speed and accessibility. Use the defined color palette strictly. Do not use political colors (Saffron, Bright Green, etc.).",
+    "language": "Implement a global language toggle (English/Telugu). Ensure layout handles Telugu text expansion gracefully.",
+    "components": "Customize Shadcn components to match the 'rounded-xl' and 'h-12' (large touch target) rules. Do not use default sharp corners.",
+    "testing": "Add data-testid to all interactive elements."
+  },
+  "universal_guidelines": {
+    "do_not": [
+      "Do not use gradients for text.",
+      "Do not use 'Inter' for headings.",
+      "Do not make touch targets smaller than 44px.",
+      "Do not use low contrast gray text."
+    ],
+    "do": [
+      "Use 'Manrope' for headings.",
+      "Use 'Deep Teal' for primary actions.",
+      "Ensure all images have alt text.",
+      "Use skeleton loaders for data fetching states."
+    ]
+  }
+}
