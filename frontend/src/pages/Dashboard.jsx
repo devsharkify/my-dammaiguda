@@ -68,18 +68,18 @@ export default function Dashboard() {
       color: "bg-primary text-white"
     },
     {
+      icon: <Users className="h-6 w-6" />,
+      title: language === "te" ? "నా కుటుంబం" : "My Family",
+      description: language === "te" ? "కుటుంబాన్ని ట్రాక్ చేయండి" : "Track your family",
+      link: "/family",
+      color: "bg-pink-500 text-white"
+    },
+    {
       icon: <Heart className="h-6 w-6" />,
       title: language === "te" ? "ప్రయోజనాలు" : "Benefits",
       description: language === "te" ? "ఉచిత ఆరోగ్య సేవలు" : "Free health services",
       link: "/benefits",
       color: "bg-emerald-500 text-white"
-    },
-    {
-      icon: <MapPin className="h-6 w-6" />,
-      title: language === "te" ? "డంప్ యార్డ్" : "Dump Yard",
-      description: language === "te" ? "కాలుష్య సమాచారం" : "Pollution info",
-      link: "/dumpyard",
-      color: "bg-red-500 text-white"
     }
   ];
 
