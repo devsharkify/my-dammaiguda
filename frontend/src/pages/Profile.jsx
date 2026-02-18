@@ -51,13 +51,100 @@ const ageRanges = ["18-25", "26-35", "36-45", "46-55", "56-65", "65+"];
 
 export default function Profile() {
   const { language, setLanguage } = useLanguage();
-  const { user, updateProfile, logout } = useAuth();
+  const { user, token, updateProfile, logout } = useAuth();
   const navigate = useNavigate();
   
   const [name, setName] = useState(user?.name || "");
   const [colony, setColony] = useState(user?.colony || "");
   const [ageRange, setAgeRange] = useState(user?.age_range || "");
   const [saving, setSaving] = useState(false);
+  
+  // Notification preferences
+  const [notifPrefs, setNotifPrefs] = useState({
+    sos_alerts: true,
+    geofence_alerts: true,
+    news_updates: true,
+    community_updates: true,
+    health_reminders: true,
+    challenge_updates: true
+  });
+  const [loadingPrefs, setLoadingPrefs] = useState(true);
+  const [savingPrefs, setSavingPrefs] = useState(false);
+  const [pushSubscribed, setPushSubscribed] = useState(false);
+
+  const headers = { Authorization: `Bearer ${token}` };
+
+  useEffect(() => {
+    fetchNotificationPrefs();
+  }, []);
+
+  const fetchNotificationPrefs = async () => {
+    try {
+      const response = await axios.get(`${API}/notifications/preferences`, { headers });
+      if (response.data) {
+        setNotifPrefs({
+          sos_alerts: response.data.sos_alerts ?? true,
+          geofence_alerts: response.data.geofence_alerts ?? true,
+          news_updates: response.data.news_updates ?? true,
+          community_updates: response.data.community_updates ?? true,
+          health_reminders: response.data.health_reminders ?? true,
+          challenge_updates: response.data.challenge_updates ?? true
+        });
+        setPushSubscribed(true);
+      }
+    } catch (error) {
+      console.error("Error fetching notification preferences:", error);
+    } finally {
+      setLoadingPrefs(false);
+    }
+  };
+
+  const updateNotifPref = async (key, value) => {
+    const newPrefs = { ...notifPrefs, [key]: value };
+    setNotifPrefs(newPrefs);
+    
+    setSavingPrefs(true);
+    try {
+      await axios.put(`${API}/notifications/preferences`, newPrefs, { headers });
+      toast.success(language === "te" ? "నోటిఫికేషన్ సెట్టింగ్స్ నవీకరించబడ్డాయి" : "Notification settings updated");
+    } catch (error) {
+      // Revert on error
+      setNotifPrefs({ ...notifPrefs, [key]: !value });
+      toast.error("Failed to update preferences");
+    } finally {
+      setSavingPrefs(false);
+    }
+  };
+
+  const subscribeToPush = async () => {
+    try {
+      // In a real PWA, we would request notification permission and get the subscription
+      // For now, we'll just register with a mock subscription
+      const mockSubscription = {
+        endpoint: `https://push.example.com/${user.id}/${Date.now()}`,
+        keys: {
+          p256dh: "mock_p256dh_key",
+          auth: "mock_auth_key"
+        }
+      };
+      
+      await axios.post(`${API}/notifications/subscribe`, mockSubscription, { headers });
+      setPushSubscribed(true);
+      toast.success(language === "te" ? "నోటిఫికేషన్లు ఎనేబుల్ చేయబడ్డాయి!" : "Notifications enabled!");
+    } catch (error) {
+      toast.error("Failed to enable notifications");
+    }
+  };
+
+  const unsubscribeFromPush = async () => {
+    try {
+      await axios.delete(`${API}/notifications/subscribe`, { headers });
+      setPushSubscribed(false);
+      toast.success(language === "te" ? "నోటిఫికేషన్లు డిసేబుల్ చేయబడ్డాయి" : "Notifications disabled");
+    } catch (error) {
+      toast.error("Failed to disable notifications");
+    }
+  };
 
   const handleSave = async () => {
     if (!name.trim()) {
