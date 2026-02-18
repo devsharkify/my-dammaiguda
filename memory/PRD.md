@@ -3,94 +3,79 @@
 ## Project Overview
 **Name:** My Dammaiguda  
 **Type:** Civic Engagement Platform (PWA)  
-**Version:** 2.7.0  
+**Version:** 2.8.0  
 **Target:** GHMC Ward-level citizen engagement for Dammaiguda  
 **Primary Language:** Telugu (with English toggle)
 **Last Updated:** February 18, 2026
 
-## What's Been Implemented (v2.7.0)
+## What's Been Implemented (v2.8.0)
 
-### ✅ Live Activity Tracking (NEW)
-- **Activity selection dialog** from Kaizer Fit page
-- **9 activity types:** Running, Walking, Cycling, Yoga, Gym, Swimming, Sports, Dancing, Hiking
-- **Real-time tracking:** Timer, Distance, Calories, Steps, Heart Rate (simulated)
-- **GPS tracking:** For applicable activities (running, walking, cycling, hiking, football)
-- **Session management:** Start, Pause/Resume, Stop, Discard
-- **Activity history:** View past live-tracked activities
-- **MET-based calorie calculation** for accurate burn estimates
-- **Route: `/live-activity/:activityType`**
+### ✅ Dashboard Redesign (NEW)
+- **Quick Actions (4 buttons):** Report, Fit, Doctor, News
+- **Removed:** Dump, Wall, AI Chat buttons
+- **Bottom Nav (3 items):** Home, News, Wall
+- **Removed:** Issues, Kaizer Fit from bottom nav
+- **Wall Widget:** Medium-sized card showing latest citizen wall post
+- **Benefits Slider:** Horizontal scroll with 4 benefit cards
+  - Senior Pension (₹2,500/month)
+  - Free Health Camp
+  - Education Scholarship (₹15,000/year)
+  - Ration Card Benefits
+- **Groups Section:** Quick access to user's groups
 
-### ✅ Stories/Status Feature (WhatsApp/Instagram Style)
-- **24-hour stories** with automatic expiry
-- **Content types:** Text, Photos, Videos
-- **Text stories:** Custom background colors
-- **Viewer tracking:** See who viewed your stories
-- **Story creation dialog:** Select type, preview, post
-- **Story viewer:** Full-screen with progress bar, navigation
-- **Delete stories:** Remove your own stories
-- **Stories bar:** Horizontal scroll on Dashboard
+### ✅ Public/Private Groups
+- Group creation dialog has privacy toggle
+- Private groups require invitation to join
+- Public groups can be discovered and joined directly
 
-### ✅ Dashboard Redesign
-- **Stories bar at top** - Add story button + user stories
-- **Compact quick actions** - 4 icons (Report, Fit, Doctor, News)
-- **Groups quick access** - Show user's groups with avatars
-- **Citizen Wall card** - Quick link to posts/groups/chat
-- **AQI Widget** - Live air quality
-- **Recent Issues** - Latest reported problems
+### ✅ Admin-Injected Ads in News Feed
+- Backend endpoints for admin to create/manage ads
+- Frontend injects ads every 5 news articles
+- Ads show with "Sponsored" badge and CTA button
+- Supports image and video ad types
 
-### ✅ News Tinder-Style
-- **Vertical swipe** - Swipe up/down for next/prev article
-- **Full-screen cards** - Gradient backgrounds with images
-- **Telugu content** - Title/summary in Telugu when toggled
-- **NO source display** - Only category badge shown
-- **Category pills** - Horizontal scroll with icons
-- **Progress indicator** - "1/14" counter
+### ✅ Live Activity Tracking
+- Activity selection: Running, Walking, Cycling, Yoga, Gym, Swimming, Sports, Dancing, Hiking
+- Real-time tracking: Timer, Distance, Calories, Steps
+- GPS tracking for applicable activities
+- Session management: Start, Pause/Resume, Stop, Discard
 
 ### Previous Features
-- Citizen Wall (posts, groups, client-side chat)
+- Stories/Status (24-hour ephemeral)
+- News Tinder-Style swipe UI
+- Citizen Wall with posts, groups, client-side chat
 - Psychologist AI "Kaizer Mind"
-- Smart Device integration (phone, smartwatch)
-- Enhanced News Scraper (multi-source, AI rephrasing)
+- Smart Device integration
 - PWA Push Notifications infrastructure
 - Kaizer Fit + Kaizer Doctor premium UI
 
-## API Endpoints (v2.7)
+## API Endpoints (v2.8)
 
-### Live Activity API (NEW)
-- `POST /api/fitness/live/start` - Start live tracking session
-- `POST /api/fitness/live/update` - Update session with stats/GPS
-- `POST /api/fitness/live/end` - End session and save activity
-- `GET /api/fitness/live/active` - Get user's active session
-- `DELETE /api/fitness/live/{session_id}` - Cancel/discard session
-- `GET /api/fitness/live/history` - Get live-tracked activities
-- `GET /api/fitness/activity-types` - Get all activity types with MET values
+### Admin Ads API
+- `POST /api/stories/admin/ad` - Create ad (admin only)
+- `GET /api/stories/admin/ads` - List all ads (admin only)
+- `PUT /api/stories/admin/ad/{id}` - Update ad (admin only)
+- `DELETE /api/stories/admin/ad/{id}` - Delete ad (admin only)
+- `GET /api/stories/ads/stories` - Get story ads (all users)
+- `GET /api/stories/ads/news` - Get news ads (all users)
+- `POST /api/stories/ads/{id}/impression` - Record impression
+- `POST /api/stories/ads/{id}/click` - Record click
 
-### Stories API
-- `POST /api/stories/create` - Create story (text/image/video)
-- `GET /api/stories/feed` - Get stories feed grouped by user
-- `GET /api/stories/my` - Get own active stories
-- `POST /api/stories/view` - Mark story as viewed
-- `GET /api/stories/{id}/viewers` - Get story viewers (owner only)
-- `DELETE /api/stories/{id}` - Delete own story
-
-## Testing Status (v2.7.0)
-- **Backend:** 100% (18/18 live activity tests passed)
-- **Frontend:** 100% (10/10 live activity features verified)
-- **Test Report:** `/app/test_reports/iteration_9.json`
-
-## Key Files (v2.7.0)
+### Key Files (v2.8.0)
 ```
-/app/backend/routers/
-├── fitness.py     - Live activity endpoints (lines 130-305)
-├── stories.py     - Stories/Status API
-└── ...
-
-/app/frontend/src/pages/
-├── LiveActivity.jsx   - Live tracking UI (NEW)
-├── KaizerFit.jsx      - Start Live Activity button + dialog
-├── Dashboard.jsx      - Stories bar + Groups
-└── ...
+/app/frontend/src/
+├── pages/
+│   ├── Dashboard.jsx     - Redesigned with Wall Widget, Benefits Slider
+│   ├── NewsShorts.jsx    - Admin ads injection every 5 articles
+│   ├── CitizenWall.jsx   - Public/private group toggle
+│   └── LiveActivity.jsx  - Live fitness tracking
+├── components/
+│   └── Layout.jsx        - 3-item bottom nav (Home, News, Wall)
 ```
+
+## Testing Status (v2.8.0)
+- **Frontend:** 100% (15/15 features verified)
+- **Test Report:** `/app/test_reports/iteration_10.json`
 
 ## Test Credentials
 - **Phone:** Any number (e.g., 9876543210)
@@ -103,15 +88,11 @@
 4. Group Chat - client-side only (IndexedDB)
 5. SOS alerts - DB record only (NO actual SMS)
 6. Push notifications - DB polling (NO real webpush)
-7. Heart rate during live tracking - simulated based on activity type
 
 ## Remaining Backlog
 
-### P0 (Pending User Request)
-- [ ] Public/Private Groups in Citizen Wall
-- [ ] Admin-injected video ads in News/Stories feeds
-
 ### P1 (High Priority)
+- [ ] Google Maps integration for live tracking routes
 - [ ] Activate real Twilio SMS for OTP
 - [ ] Cloudinary media upload integration
 - [ ] SOS alerts with real SMS
@@ -119,7 +100,7 @@
 ### P2 (Medium Priority)
 - [ ] Real webpush with VAPID keys
 - [ ] PWA Offline support
-- [ ] Google Maps integration for live tracking routes
+- [ ] Stories ad injection (between user stories)
 
 ### P3 (Future)
 - [ ] Multi-ward scalability
