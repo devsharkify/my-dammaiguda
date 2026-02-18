@@ -90,6 +90,7 @@ const ACTIVITY_TYPES = [
 export default function KaizerFit() {
   const { language } = useLanguage();
   const { user, token } = useAuth();
+  const navigate = useNavigate();
   const [dashboard, setDashboard] = useState(null);
   const [leaderboard, setLeaderboard] = useState([]);
   const [challenges, setChallenges] = useState([]);
