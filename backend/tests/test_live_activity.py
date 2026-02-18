@@ -20,7 +20,7 @@ class TestAuth:
     def auth_token(self):
         """Get auth token using test credentials"""
         # Request OTP
-        response = requests.post(f"{BASE_URL}/api/auth/request-otp", json={
+        response = requests.post(f"{BASE_URL}/api/auth/send-otp", json={
             "phone": "9876543210"
         })
         assert response.status_code == 200, f"Failed to request OTP: {response.text}"
@@ -49,7 +49,7 @@ class TestLiveActivityStart:
     @pytest.fixture(scope="class")
     def auth_token(self):
         """Get auth token"""
-        response = requests.post(f"{BASE_URL}/api/auth/request-otp", json={"phone": "9876543210"})
+        response = requests.post(f"{BASE_URL}/api/auth/send-otp", json={"phone": "9876543210"})
         response = requests.post(f"{BASE_URL}/api/auth/verify-otp", json={"phone": "9876543210", "otp": "123456"})
         return response.json().get("token")
     
@@ -162,7 +162,7 @@ class TestLiveActivityUpdate:
     @pytest.fixture(scope="class")
     def auth_token(self):
         """Get auth token"""
-        response = requests.post(f"{BASE_URL}/api/auth/request-otp", json={"phone": "9876543210"})
+        response = requests.post(f"{BASE_URL}/api/auth/send-otp", json={"phone": "9876543210"})
         response = requests.post(f"{BASE_URL}/api/auth/verify-otp", json={"phone": "9876543210", "otp": "123456"})
         return response.json().get("token")
     
@@ -239,7 +239,7 @@ class TestLiveActivityEnd:
     @pytest.fixture(scope="class")
     def auth_token(self):
         """Get auth token"""
-        response = requests.post(f"{BASE_URL}/api/auth/request-otp", json={"phone": "9876543210"})
+        response = requests.post(f"{BASE_URL}/api/auth/send-otp", json={"phone": "9876543210"})
         response = requests.post(f"{BASE_URL}/api/auth/verify-otp", json={"phone": "9876543210", "otp": "123456"})
         return response.json().get("token")
     
@@ -325,7 +325,7 @@ class TestLiveActivityActive:
     @pytest.fixture(scope="class")
     def auth_token(self):
         """Get auth token"""
-        response = requests.post(f"{BASE_URL}/api/auth/request-otp", json={"phone": "9876543210"})
+        response = requests.post(f"{BASE_URL}/api/auth/send-otp", json={"phone": "9876543210"})
         response = requests.post(f"{BASE_URL}/api/auth/verify-otp", json={"phone": "9876543210", "otp": "123456"})
         return response.json().get("token")
     
@@ -373,7 +373,7 @@ class TestLiveActivityCancel:
     @pytest.fixture(scope="class")
     def auth_token(self):
         """Get auth token"""
-        response = requests.post(f"{BASE_URL}/api/auth/request-otp", json={"phone": "9876543210"})
+        response = requests.post(f"{BASE_URL}/api/auth/send-otp", json={"phone": "9876543210"})
         response = requests.post(f"{BASE_URL}/api/auth/verify-otp", json={"phone": "9876543210", "otp": "123456"})
         return response.json().get("token")
     
@@ -409,7 +409,7 @@ class TestLiveActivityHistory:
     @pytest.fixture(scope="class")
     def auth_token(self):
         """Get auth token"""
-        response = requests.post(f"{BASE_URL}/api/auth/request-otp", json={"phone": "9876543210"})
+        response = requests.post(f"{BASE_URL}/api/auth/send-otp", json={"phone": "9876543210"})
         response = requests.post(f"{BASE_URL}/api/auth/verify-otp", json={"phone": "9876543210", "otp": "123456"})
         return response.json().get("token")
     
