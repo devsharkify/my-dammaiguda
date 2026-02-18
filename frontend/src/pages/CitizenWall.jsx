@@ -236,8 +236,8 @@ export default function CitizenWall() {
   };
 
   const createPost = async () => {
-    if (!newPost.content.trim()) {
-      toast.error(language === "te" ? "కంటెంట్ అవసరం" : "Content is required");
+    if (!newPost.content.trim() && !newPost.image_url && !newPost.video_url) {
+      toast.error(language === "te" ? "కంటెంట్ లేదా మీడియా అవసరం" : "Content or media is required");
       return;
     }
 
@@ -246,12 +246,98 @@ export default function CitizenWall() {
       await axios.post(`${API}/wall/post`, newPost, { headers });
       toast.success(language === "te" ? "పోస్ట్ విజయవంతం!" : "Posted successfully!");
       setShowCreatePost(false);
-      setNewPost({ content: "", visibility: "public", image_url: "" });
+      setNewPost({ content: "", visibility: "public", image_url: "", video_url: "" });
+      clearMedia();
       fetchPosts();
     } catch (error) {
       toast.error("Failed to create post");
     } finally {
       setPosting(false);
+    }
+  };
+
+  const fetchComments = async (postId) => {
+    setLoadingComments(true);
+    try {
+      const response = await axios.get(`${API}/wall/post/${postId}`, { headers });
+      setComments(response.data.comments || []);
+    } catch (error) {
+      console.error("Error fetching comments:", error);
+    } finally {
+      setLoadingComments(false);
+    }
+  };
+
+  const openComments = (post) => {
+    setSelectedPost(post);
+    fetchComments(post.id);
+  };
+
+  const addComment = async () => {
+    if (!newComment.trim()) return;
+    
+    try {
+      await axios.post(`${API}/wall/post/${selectedPost.id}/comment`, 
+        { content: newComment }, 
+        { headers }
+      );
+      setNewComment("");
+      fetchComments(selectedPost.id);
+      // Update comment count in posts list
+      setPosts(posts.map(p => 
+        p.id === selectedPost.id 
+          ? { ...p, comments_count: (p.comments_count || 0) + 1 }
+          : p
+      ));
+      toast.success(language === "te" ? "వ్యాఖ్య జోడించబడింది!" : "Comment added!");
+    } catch (error) {
+      toast.error("Failed to add comment");
+    }
+  };
+
+  const sendChatMessage = async () => {
+    if (!newMessage.trim() || !selectedGroup) return;
+
+    const message = {
+      id: `msg_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
+      groupId: selectedGroup.id,
+      content: newMessage.trim(),
+      sender: {
+        id: user.id,
+        name: user.name || "Anonymous"
+      },
+      timestamp: new Date().toISOString()
+    };
+
+    try {
+      await saveMessage(message);
+      await clearOldMessages(selectedGroup.id);
+      setChatMessages(prev => [...prev, message]);
+      setNewMessage("");
+    } catch (error) {
+      console.error("Error saving message:", error);
+      toast.error(language === "te" ? "సందేశం పంపడంలో విఫలమైంది" : "Failed to send message");
+    }
+  };
+
+  const joinGroup = async (groupId) => {
+    try {
+      await axios.post(`${API}/wall/group/${groupId}/join`, {}, { headers });
+      toast.success(language === "te" ? "గ్రూప్‌లో చేరారు!" : "Joined group!");
+      fetchGroups();
+    } catch (error) {
+      toast.error(error.response?.data?.detail || "Failed to join group");
+    }
+  };
+
+  const leaveGroup = async (groupId) => {
+    try {
+      await axios.post(`${API}/wall/group/${groupId}/leave`, {}, { headers });
+      toast.success(language === "te" ? "గ్రూప్ విడిచిపెట్టారు" : "Left group");
+      setSelectedGroup(null);
+      fetchGroups();
+    } catch (error) {
+      toast.error(error.response?.data?.detail || "Failed to leave group");
     }
   };
 
