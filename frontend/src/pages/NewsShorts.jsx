@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef, useCallback } from "react";
 import { useLanguage } from "../context/LanguageContext";
+import { useAuth } from "../context/AuthContext";
 import axios from "axios";
 import Layout from "../components/Layout";
 import { Button } from "../components/ui/button";
@@ -22,7 +23,9 @@ import {
   Loader2,
   ChevronUp,
   ChevronDown,
-  X
+  X,
+  ExternalLink,
+  Megaphone
 } from "lucide-react";
 
 const API = `${process.env.REACT_APP_BACKEND_URL}/api`;
