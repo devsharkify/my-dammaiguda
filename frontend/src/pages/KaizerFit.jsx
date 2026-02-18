@@ -36,7 +36,15 @@ import {
   Crown,
   Star,
   ChevronRight,
-  Watch
+  Watch,
+  Smartphone,
+  Bluetooth,
+  RefreshCw,
+  Trash2,
+  Check,
+  Loader2,
+  Link as LinkIcon,
+  Unlink
 } from "lucide-react";
 
 const API = `${process.env.REACT_APP_BACKEND_URL}/api`;
