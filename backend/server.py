@@ -330,7 +330,7 @@ async def create_issue(issue: IssueCreate, user: dict = Depends(get_current_user
         "updated_at": now_iso()
     }
     await db.issues.insert_one(new_issue)
-    del new_issue["_id"] if "_id" in new_issue else None
+    new_issue.pop("_id", None)
     return new_issue
 
 @api_router.get("/issues", response_model=List[IssueResponse])
@@ -427,7 +427,7 @@ async def create_poll(poll: PollCreate, user: dict = Depends(get_current_user)):
         "is_active": True
     }
     await db.polls.insert_one(new_poll)
-    del new_poll["_id"] if "_id" in new_poll else None
+    new_poll.pop("_id", None)
     del new_poll["voters"]
     return new_poll
 
@@ -476,7 +476,7 @@ async def create_expenditure(exp: ExpenditureCreate, user: dict = Depends(get_cu
         "created_at": now_iso()
     }
     await db.expenditure.insert_one(new_exp)
-    del new_exp["_id"] if "_id" in new_exp else None
+    new_exp.pop("_id", None)
     return new_exp
 
 @api_router.get("/expenditure", response_model=List[ExpenditureResponse])
@@ -533,7 +533,7 @@ async def apply_benefit(app: BenefitApplication, user: dict = Depends(get_curren
         "created_at": now_iso()
     }
     await db.benefits.insert_one(new_app)
-    del new_app["_id"] if "_id" in new_app else None
+    new_app.pop("_id", None)
     return new_app
 
 @api_router.get("/benefits/my-applications", response_model=List[BenefitResponse])
@@ -598,7 +598,7 @@ async def log_fitness(entry: FitnessEntry, user: dict = Depends(get_current_user
         "created_at": now_iso()
     }
     await db.fitness.insert_one(new_entry)
-    del new_entry["_id"] if "_id" in new_entry else None
+    new_entry.pop("_id", None)
     return new_entry
 
 @api_router.get("/fitness/my-stats")
@@ -700,7 +700,7 @@ async def create_challenge(challenge: ChallengeCreate, user: dict = Depends(get_
         "created_at": now_iso()
     }
     await db.challenges.insert_one(new_challenge)
-    del new_challenge["_id"] if "_id" in new_challenge else None
+    new_challenge.pop("_id", None)
     del new_challenge["participant_ids"]
     return new_challenge
 
@@ -811,7 +811,7 @@ async def add_dumpyard_update(
         "created_by": user["id"]
     }
     await db.dumpyard_updates.insert_one(update)
-    del update["_id"] if "_id" in update else None
+    update.pop("_id", None)
     return update
 
 # ============== VOLUNTEER ROUTES ==============
