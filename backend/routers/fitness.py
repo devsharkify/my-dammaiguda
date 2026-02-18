@@ -309,7 +309,7 @@ async def get_live_activity_history(limit: int = 10, user: dict = Depends(get_cu
 @router.post("/activity")
 async def log_activity(activity: ActivityLog, user: dict = Depends(get_current_user)):
     """Log physical activity"""
-    valid_types = ["walking", "running", "cycling", "yoga", "gym", "swimming", "sports", "dancing", "hiking"]
+    valid_types = list(ACTIVITY_TYPES.keys())
     if activity.activity_type not in valid_types:
         raise HTTPException(status_code=400, detail="Invalid activity type")
     
