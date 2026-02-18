@@ -45,9 +45,11 @@ const CATEGORY_CONFIG = {
 
 export default function NewsShorts() {
   const { language } = useLanguage();
+  const { token } = useAuth();
   const [categories, setCategories] = useState({});
   const [activeCategory, setActiveCategory] = useState("local");
   const [news, setNews] = useState([]);
+  const [newsAds, setNewsAds] = useState([]);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
@@ -59,9 +61,11 @@ export default function NewsShorts() {
   const [swipeDirection, setSwipeDirection] = useState(null); // 'up' or 'down'
   
   const containerRef = useRef(null);
+  const headers = token ? { Authorization: `Bearer ${token}` } : {};
 
   useEffect(() => {
     fetchCategories();
+    fetchNewsAds();
   }, []);
 
   useEffect(() => {
@@ -77,6 +81,38 @@ export default function NewsShorts() {
       console.error("Error fetching categories:", error);
     }
   };
+
+  const fetchNewsAds = async () => {
+    if (!token) return;
+    try {
+      const response = await axios.get(`${API}/stories/ads/news`, { headers });
+      setNewsAds(response.data?.ads || []);
+    } catch (error) {
+      console.error("Error fetching ads:", error);
+    }
+  };
+
+  // Inject ads into news feed (every 5 articles)
+  const getMergedFeed = useCallback(() => {
+    if (newsAds.length === 0) return news.map(n => ({ ...n, isAd: false }));
+    
+    const merged = [];
+    let adIndex = 0;
+    
+    news.forEach((article, idx) => {
+      merged.push({ ...article, isAd: false });
+      
+      // Insert ad after every 5 articles
+      if ((idx + 1) % 5 === 0 && adIndex < newsAds.length) {
+        merged.push({ ...newsAds[adIndex], isAd: true });
+        adIndex++;
+      }
+    });
+    
+    return merged;
+  }, [news, newsAds]);
+
+  const mergedFeed = getMergedFeed();
 
   const fetchNews = async (category) => {
     setLoading(true);
