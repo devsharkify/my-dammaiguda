@@ -44,7 +44,7 @@ export default function Dashboard() {
         axios.get(`${API}/fitness/my-stats?days=7`).catch(() => ({ data: null }))
       ]);
       
-      setRecentIssues(issuesRes.data);
+      setRecentIssues(issuesRes.data?.issues || issuesRes.data || []);
       setFitnessStats(fitnessRes.data);
     } catch (error) {
       console.error("Error fetching dashboard data:", error);
