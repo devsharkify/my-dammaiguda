@@ -155,12 +155,14 @@ export default function CitizenWall() {
 
   const fetchGroups = useCallback(async () => {
     try {
-      const [myGroups, invites] = await Promise.all([
+      const [myGroups, invites, discover] = await Promise.all([
         axios.get(`${API}/wall/groups`, { headers }),
-        axios.get(`${API}/wall/group-invites`, { headers })
+        axios.get(`${API}/wall/group-invites`, { headers }),
+        axios.get(`${API}/wall/groups/discover`, { headers })
       ]);
       setGroups(myGroups.data || []);
       setGroupInvites(invites.data || []);
+      setDiscoverGroups(discover.data || []);
     } catch (error) {
       console.error("Error fetching groups:", error);
     }
@@ -169,10 +171,69 @@ export default function CitizenWall() {
   useEffect(() => {
     if (activeTab === "feed") {
       fetchPosts();
-    } else {
+    } else if (activeTab === "groups" && !selectedGroup) {
       fetchGroups();
     }
-  }, [activeTab, fetchPosts, fetchGroups]);
+  }, [activeTab, fetchPosts, fetchGroups, selectedGroup]);
+
+  // Load chat messages when group is selected
+  useEffect(() => {
+    if (selectedGroup) {
+      loadChatMessages(selectedGroup.id);
+    }
+  }, [selectedGroup]);
+
+  // Scroll to bottom when new messages arrive
+  useEffect(() => {
+    chatEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  }, [chatMessages]);
+
+  const loadChatMessages = async (groupId) => {
+    try {
+      const messages = await getGroupMessages(groupId);
+      setChatMessages(messages);
+    } catch (error) {
+      console.error("Error loading chat messages:", error);
+    }
+  };
+
+  const handleMediaSelect = (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    const isImage = file.type.startsWith("image/");
+    const isVideo = file.type.startsWith("video/");
+
+    if (!isImage && !isVideo) {
+      toast.error(language === "te" ? "చెల్లని ఫైల్ రకం" : "Invalid file type");
+      return;
+    }
+
+    if (file.size > 10 * 1024 * 1024) { // 10MB limit
+      toast.error(language === "te" ? "ఫైల్ చాలా పెద్దది (గరిష్ట 10MB)" : "File too large (max 10MB)");
+      return;
+    }
+
+    setMediaType(isImage ? "image" : "video");
+    const reader = new FileReader();
+    reader.onloadend = () => {
+      setMediaPreview(reader.result);
+      // For demo, use the data URL directly. In production, upload to Cloudinary
+      if (isImage) {
+        setNewPost(prev => ({ ...prev, image_url: reader.result }));
+      } else {
+        setNewPost(prev => ({ ...prev, video_url: reader.result }));
+      }
+    };
+    reader.readAsDataURL(file);
+  };
+
+  const clearMedia = () => {
+    setMediaPreview(null);
+    setMediaType(null);
+    setNewPost(prev => ({ ...prev, image_url: "", video_url: "" }));
+    if (fileInputRef.current) fileInputRef.current.value = "";
+  };
 
   const createPost = async () => {
     if (!newPost.content.trim()) {
