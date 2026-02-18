@@ -31,6 +31,10 @@ class GroupInvite(BaseModel):
 @router.post("/post")
 async def create_post(post: CreatePost, user: dict = Depends(get_current_user)):
     """Create a new wall post"""
+    # Require at least content or media
+    if not post.content.strip() and not post.image_url and not post.video_url:
+        raise HTTPException(status_code=400, detail="Content or media is required")
+    
     new_post = {
         "id": generate_id(),
         "user_id": user["id"],
@@ -38,6 +42,7 @@ async def create_post(post: CreatePost, user: dict = Depends(get_current_user)):
         "user_colony": user.get("colony"),
         "content": post.content,
         "image_url": post.image_url,
+        "video_url": post.video_url,
         "visibility": post.visibility,
         "colony": post.colony or user.get("colony"),
         "likes": [],
