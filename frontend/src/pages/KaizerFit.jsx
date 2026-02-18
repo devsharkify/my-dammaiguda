@@ -768,8 +768,8 @@ export default function KaizerFit() {
                       {entry.colony && <p className="text-xs text-text-muted">{entry.colony}</p>}
                     </div>
                     <div className="text-right">
-                      <p className="font-bold text-primary">{entry.total.toLocaleString()}</p>
-                      <p className="text-xs text-text-muted">{entry.days_active} {language === "te" ? "రోజులు" : "days"}</p>
+                      <p className="font-bold text-primary">{(entry.total_steps || entry.total || 0).toLocaleString()}</p>
+                      <p className="text-xs text-text-muted">{entry.days_active || 0} {language === "te" ? "రోజులు" : "days"}</p>
                     </div>
                   </CardContent>
                 </Card>
