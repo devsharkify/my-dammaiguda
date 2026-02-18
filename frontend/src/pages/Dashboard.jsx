@@ -76,11 +76,11 @@ export default function Dashboard() {
       color: "bg-pink-500 text-white"
     },
     {
-      icon: <Heart className="h-6 w-6" />,
-      title: language === "te" ? "ప్రయోజనాలు" : "Benefits",
-      description: language === "te" ? "ఉచిత ఆరోగ్య సేవలు" : "Free health services",
-      link: "/benefits",
-      color: "bg-emerald-500 text-white"
+      icon: <Newspaper className="h-6 w-6" />,
+      title: language === "te" ? "వార్తలు" : "News",
+      description: language === "te" ? "స్థానిక వార్తలు చదవండి" : "Read local news",
+      link: "/news",
+      color: "bg-indigo-500 text-white"
     }
   ];
 
