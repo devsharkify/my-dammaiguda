@@ -1,54 +1,6 @@
-<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="1" failures="16" skipped="0" tests="18" time="4.868" timestamp="2026-02-18T21:51:38.707135+00:00" hostname="agent-env-2e476011-e268-4b2f-9d53-40016bc9e096"><testcase classname="backend.tests.test_live_activity.TestAuth" name="test_auth_works" time="0.306"><error message="failed on setup with &quot;AssertionError: Failed to request OTP: {&quot;detail&quot;:&quot;Not Found&quot;}&#10;assert 404 == 200&#10; +  where 404 = &lt;Response [404]&gt;.status_code&quot;">backend/tests/test_live_activity.py:26: in auth_token
-    assert response.status_code == 200, f"Failed to request OTP: {response.text}"
-E   AssertionError: Failed to request OTP: {"detail":"Not Found"}
-E   assert 404 == 200
-E    +  where 404 = &lt;Response [404]&gt;.status_code</error></testcase><testcase classname="backend.tests.test_live_activity.TestLiveActivityStart" name="test_start_running_activity" time="0.388"><failure message="AssertionError: Failed to start activity: {&quot;detail&quot;:&quot;Invalid token&quot;}&#10;assert 401 == 200&#10; +  where 401 = &lt;Response [401]&gt;.status_code">backend/tests/test_live_activity.py:63: in test_start_running_activity
-    assert response.status_code == 200, f"Failed to start activity: {response.text}"
-E   AssertionError: Failed to start activity: {"detail":"Invalid token"}
-E   assert 401 == 200
-E    +  where 401 = &lt;Response [401]&gt;.status_code</failure></testcase><testcase classname="backend.tests.test_live_activity.TestLiveActivityStart" name="test_start_walking_activity" time="0.148"><failure message="assert 401 == 200&#10; +  where 401 = &lt;Response [401]&gt;.status_code">backend/tests/test_live_activity.py:86: in test_start_walking_activity
-    assert response.status_code == 200
-E   assert 401 == 200
-E    +  where 401 = &lt;Response [401]&gt;.status_code</failure></testcase><testcase classname="backend.tests.test_live_activity.TestLiveActivityStart" name="test_start_yoga_activity" time="0.104"><failure message="assert 401 == 200&#10; +  where 401 = &lt;Response [401]&gt;.status_code">backend/tests/test_live_activity.py:102: in test_start_yoga_activity
-    assert response.status_code == 200
-E   assert 401 == 200
-E    +  where 401 = &lt;Response [401]&gt;.status_code</failure></testcase><testcase classname="backend.tests.test_live_activity.TestLiveActivityStart" name="test_start_cycling_activity" time="0.125"><failure message="assert 401 == 200&#10; +  where 401 = &lt;Response [401]&gt;.status_code">backend/tests/test_live_activity.py:118: in test_start_cycling_activity
-    assert response.status_code == 200
-E   assert 401 == 200
-E    +  where 401 = &lt;Response [401]&gt;.status_code</failure></testcase><testcase classname="backend.tests.test_live_activity.TestLiveActivityStart" name="test_start_invalid_activity_type" time="0.163"><failure message="assert 401 == 400&#10; +  where 401 = &lt;Response [401]&gt;.status_code">backend/tests/test_live_activity.py:134: in test_start_invalid_activity_type
-    assert response.status_code == 400
-E   assert 401 == 400
-E    +  where 401 = &lt;Response [401]&gt;.status_code</failure></testcase><testcase classname="backend.tests.test_live_activity.TestLiveActivityStart" name="test_start_activity_with_targets" time="0.142"><failure message="assert 401 == 200&#10; +  where 401 = &lt;Response [401]&gt;.status_code">backend/tests/test_live_activity.py:147: in test_start_activity_with_targets
-    assert response.status_code == 200
-E   assert 401 == 200
-E    +  where 401 = &lt;Response [401]&gt;.status_code</failure></testcase><testcase classname="backend.tests.test_live_activity.TestLiveActivityUpdate" name="test_update_activity_stats" time="0.467"><failure message="KeyError: 'session'">backend/tests/test_live_activity.py:177: in test_update_activity_stats
-    session_id = start_response.json()["session"]["id"]
-                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-E   KeyError: 'session'</failure></testcase><testcase classname="backend.tests.test_live_activity.TestLiveActivityUpdate" name="test_update_with_gps_points" time="0.121"><failure message="KeyError: 'session'">backend/tests/test_live_activity.py:205: in test_update_with_gps_points
-    session_id = start_response.json()["session"]["id"]
-                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-E   KeyError: 'session'</failure></testcase><testcase classname="backend.tests.test_live_activity.TestLiveActivityUpdate" name="test_update_invalid_session" time="0.140"><failure message="assert 401 == 404&#10; +  where 401 = &lt;Response [401]&gt;.status_code">backend/tests/test_live_activity.py:232: in test_update_invalid_session
-    assert response.status_code == 404
-E   assert 401 == 404
-E    +  where 401 = &lt;Response [401]&gt;.status_code</failure></testcase><testcase classname="backend.tests.test_live_activity.TestLiveActivityEnd" name="test_end_activity_and_save" time="0.579"><failure message="KeyError: 'session'">backend/tests/test_live_activity.py:254: in test_end_activity_and_save
-    session_id = start_response.json()["session"]["id"]
-                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-E   KeyError: 'session'</failure></testcase><testcase classname="backend.tests.test_live_activity.TestLiveActivityEnd" name="test_end_activity_with_gps_route" time="0.129"><failure message="KeyError: 'session'">backend/tests/test_live_activity.py:289: in test_end_activity_with_gps_route
-    session_id = start_response.json()["session"]["id"]
-                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-E   KeyError: 'session'</failure></testcase><testcase classname="backend.tests.test_live_activity.TestLiveActivityEnd" name="test_end_invalid_session" time="0.133"><failure message="assert 401 == 404&#10; +  where 401 = &lt;Response [401]&gt;.status_code">backend/tests/test_live_activity.py:318: in test_end_invalid_session
-    assert response.status_code == 404
-E   assert 401 == 404
-E    +  where 401 = &lt;Response [401]&gt;.status_code</failure></testcase><testcase classname="backend.tests.test_live_activity.TestLiveActivityActive" name="test_get_active_session" time="0.447"><failure message="KeyError: 'session'">backend/tests/test_live_activity.py:340: in test_get_active_session
-    session_id = start_response.json()["session"]["id"]
-                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-E   KeyError: 'session'</failure></testcase><testcase classname="backend.tests.test_live_activity.TestLiveActivityActive" name="test_no_active_session" time="0.124"><failure message="assert 401 == 200&#10; +  where 401 = &lt;Response [401]&gt;.status_code">backend/tests/test_live_activity.py:363: in test_no_active_session
-    assert response.status_code == 200
-E   assert 401 == 200
-E    +  where 401 = &lt;Response [401]&gt;.status_code</failure></testcase><testcase classname="backend.tests.test_live_activity.TestLiveActivityCancel" name="test_cancel_activity" time="0.517"><failure message="KeyError: 'session'">backend/tests/test_live_activity.py:388: in test_cancel_activity
-    session_id = start_response.json()["session"]["id"]
-                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-E   KeyError: 'session'</failure></testcase><testcase classname="backend.tests.test_live_activity.TestLiveActivityHistory" name="test_get_live_activity_history" time="0.414"><failure message="assert 401 == 200&#10; +  where 401 = &lt;Response [401]&gt;.status_code">backend/tests/test_live_activity.py:422: in test_get_live_activity_history
-    assert response.status_code == 200
-E   assert 401 == 200
-E    +  where 401 = &lt;Response [401]&gt;.status_code</failure></testcase><testcase classname="backend.tests.test_live_activity.TestActivityTypes" name="test_get_activity_types" time="0.145" /></testsuite></testsuites>
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="1" skipped="0" tests="18" time="7.161" timestamp="2026-02-18T21:52:08.614005+00:00" hostname="agent-env-2e476011-e268-4b2f-9d53-40016bc9e096"><testcase classname="backend.tests.test_live_activity.TestAuth" name="test_auth_works" time="0.315" /><testcase classname="backend.tests.test_live_activity.TestLiveActivityStart" name="test_start_running_activity" time="0.700" /><testcase classname="backend.tests.test_live_activity.TestLiveActivityStart" name="test_start_walking_activity" time="0.312" /><testcase classname="backend.tests.test_live_activity.TestLiveActivityStart" name="test_start_yoga_activity" time="0.316" /><testcase classname="backend.tests.test_live_activity.TestLiveActivityStart" name="test_start_cycling_activity" time="0.267" /><testcase classname="backend.tests.test_live_activity.TestLiveActivityStart" name="test_start_invalid_activity_type" time="0.116" /><testcase classname="backend.tests.test_live_activity.TestLiveActivityStart" name="test_start_activity_with_targets" time="0.266" /><testcase classname="backend.tests.test_live_activity.TestLiveActivityUpdate" name="test_update_activity_stats" time="0.680" /><testcase classname="backend.tests.test_live_activity.TestLiveActivityUpdate" name="test_update_with_gps_points" time="0.444" /><testcase classname="backend.tests.test_live_activity.TestLiveActivityUpdate" name="test_update_invalid_session" time="0.172" /><testcase classname="backend.tests.test_live_activity.TestLiveActivityEnd" name="test_end_activity_and_save" time="0.672" /><testcase classname="backend.tests.test_live_activity.TestLiveActivityEnd" name="test_end_activity_with_gps_route" time="0.345" /><testcase classname="backend.tests.test_live_activity.TestLiveActivityEnd" name="test_end_invalid_session" time="0.206" /><testcase classname="backend.tests.test_live_activity.TestLiveActivityActive" name="test_get_active_session" time="0.742"><failure message="AssertionError: assert '359b9eee-a07...-969936b03235' == 'df9d20cf-13f...-90db40d4bc66'&#10;  &#10;  - df9d20cf-13f3-40b8-9674-90db40d4bc66&#10;  + 359b9eee-a07a-423f-964a-969936b03235">backend/tests/test_live_activity.py:349: in test_get_active_session
+    assert data["active_session"]["id"] == session_id
+E   AssertionError: assert '359b9eee-a07...-969936b03235' == 'df9d20cf-13f...-90db40d4bc66'
+E     
+E     - df9d20cf-13f3-40b8-9674-90db40d4bc66
+E     + 359b9eee-a07a-423f-964a-969936b03235</failure></testcase><testcase classname="backend.tests.test_live_activity.TestLiveActivityActive" name="test_no_active_session" time="0.145" /><testcase classname="backend.tests.test_live_activity.TestLiveActivityCancel" name="test_cancel_activity" time="0.704" /><testcase classname="backend.tests.test_live_activity.TestLiveActivityHistory" name="test_get_live_activity_history" time="0.549" /><testcase classname="backend.tests.test_live_activity.TestActivityTypes" name="test_get_activity_types" time="0.108" /></testsuite></testsuites>
