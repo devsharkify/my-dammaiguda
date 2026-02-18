@@ -180,6 +180,30 @@ class LocationUpdate(BaseModel):
     accuracy: Optional[float] = None
     battery_level: Optional[int] = None
 
+# ============== GEO-FENCING & SOS MODELS ==============
+
+class GeoFence(BaseModel):
+    name: str  # Home, School, Work, etc.
+    latitude: float
+    longitude: float
+    radius_meters: int = 500  # Default 500m radius
+    member_id: str  # Family member this applies to
+
+class SOSContact(BaseModel):
+    name: str
+    phone: str
+    relationship: str
+
+class SOSTrigger(BaseModel):
+    message: Optional[str] = None
+    latitude: Optional[float] = None
+    longitude: Optional[float] = None
+
+# ============== NEWS MODELS ==============
+
+class NewsCategory(BaseModel):
+    category: str  # local, city, state, national, international, sports, entertainment, tech, health, business
+
 # ============== AI CHAT MODELS ==============
 
 class ChatMessage(BaseModel):
