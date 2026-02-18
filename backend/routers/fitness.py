@@ -860,3 +860,108 @@ async def get_sleep_history(days: int = 7, user: dict = Depends(get_current_user
     
     return {"records": records, "count": len(records)}
 
+
+# ============== WEIGHT TRACKING ==============
+
+@router.post("/weight")
+async def log_weight(entry: WeightEntry, user: dict = Depends(get_current_user)):
+    """Log a weight entry"""
+    today = datetime.now(timezone.utc).strftime("%Y-%m-%d")
+    
+    weight_record = {
+        "id": generate_id(),
+        "user_id": user["id"],
+        "weight_kg": entry.weight_kg,
+        "notes": entry.notes,
+        "date": today,
+        "created_at": now_iso()
+    }
+    
+    await db.weight_logs.insert_one(weight_record)
+    weight_record.pop("_id", None)
+    
+    # Update user's current weight in health profile
+    await db.users.update_one(
+        {"id": user["id"]},
+        {"$set": {"health_profile.weight_kg": entry.weight_kg}}
+    )
+    
+    return {"success": True, "entry": weight_record}
+
+@router.get("/weight/history")
+async def get_weight_history(days: int = 90, user: dict = Depends(get_current_user)):
+    """Get weight history for the past N days"""
+    cutoff = (datetime.now(timezone.utc) - timedelta(days=days)).strftime("%Y-%m-%d")
+    
+    records = await db.weight_logs.find(
+        {"user_id": user["id"], "date": {"$gte": cutoff}},
+        {"_id": 0}
+    ).sort("date", 1).to_list(365)
+    
+    # Get goal weight from user profile
+    user_data = await db.users.find_one({"id": user["id"]}, {"_id": 0, "health_profile": 1})
+    goal_weight = user_data.get("health_profile", {}).get("goal_weight_kg")
+    current_weight = user_data.get("health_profile", {}).get("weight_kg")
+    
+    return {
+        "records": records,
+        "count": len(records),
+        "current_weight": current_weight,
+        "goal_weight": goal_weight
+    }
+
+@router.post("/weight/goal")
+async def set_goal_weight(goal: GoalWeight, user: dict = Depends(get_current_user)):
+    """Set weight goal"""
+    await db.users.update_one(
+        {"id": user["id"]},
+        {"$set": {"health_profile.goal_weight_kg": goal.target_weight_kg}}
+    )
+    
+    return {"success": True, "goal_weight_kg": goal.target_weight_kg}
+
+@router.get("/weight/stats")
+async def get_weight_stats(user: dict = Depends(get_current_user)):
+    """Get weight statistics"""
+    # Get all weight logs
+    records = await db.weight_logs.find(
+        {"user_id": user["id"]},
+        {"_id": 0, "weight_kg": 1, "date": 1}
+    ).sort("date", 1).to_list(365)
+    
+    if not records:
+        return {
+            "current_weight": None,
+            "starting_weight": None,
+            "lowest_weight": None,
+            "highest_weight": None,
+            "total_change": None,
+            "goal_weight": None,
+            "progress_to_goal": None
+        }
+    
+    user_data = await db.users.find_one({"id": user["id"]}, {"_id": 0, "health_profile": 1})
+    goal_weight = user_data.get("health_profile", {}).get("goal_weight_kg")
+    
+    weights = [r["weight_kg"] for r in records]
+    current = weights[-1] if weights else None
+    starting = weights[0] if weights else None
+    
+    progress = None
+    if goal_weight and starting and current:
+        total_to_lose = abs(starting - goal_weight)
+        lost_so_far = abs(starting - current)
+        if total_to_lose > 0:
+            progress = min(100, int((lost_so_far / total_to_lose) * 100))
+    
+    return {
+        "current_weight": current,
+        "starting_weight": starting,
+        "lowest_weight": min(weights) if weights else None,
+        "highest_weight": max(weights) if weights else None,
+        "total_change": round(current - starting, 1) if current and starting else None,
+        "goal_weight": goal_weight,
+        "progress_to_goal": progress,
+        "total_entries": len(records)
+    }
+
