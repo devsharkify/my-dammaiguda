@@ -50,13 +50,14 @@ app.include_router(doctor_router, prefix="/api")
 app.include_router(chat_router, prefix="/api")
 app.include_router(wall_router, prefix="/api")
 app.include_router(issues_router, prefix="/api")
+app.include_router(notifications_router, prefix="/api")
 
 # Health check endpoint
 @app.get("/api/health")
 async def health_check():
     return {
         "status": "healthy",
-        "version": "2.3.0",
+        "version": "2.5.0",
         "service": "My Dammaiguda API"
     }
 
@@ -66,7 +67,7 @@ async def root():
     return {
         "message": "Welcome to My Dammaiguda API",
         "docs": "/docs",
-        "version": "2.3.0"
+        "version": "2.5.0"
     }
 
 # Additional static endpoints for backwards compatibility
