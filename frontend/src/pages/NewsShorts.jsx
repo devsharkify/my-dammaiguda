@@ -284,7 +284,7 @@ export default function NewsShorts() {
             <div className="absolute inset-0 flex items-center justify-center bg-gradient-to-br from-gray-800 to-gray-900">
               <Loader2 className="h-10 w-10 animate-spin text-white" />
             </div>
-          ) : news.length === 0 ? (
+          ) : mergedFeed.length === 0 ? (
             <div className="absolute inset-0 flex flex-col items-center justify-center bg-gradient-to-br from-gray-800 to-gray-900 text-white">
               <Newspaper className="h-16 w-16 opacity-50 mb-4" />
               <p className="text-lg">{language === "te" ? "వార్తలు లేవు" : "No news available"}</p>
@@ -293,7 +293,7 @@ export default function NewsShorts() {
                 {language === "te" ? "రిఫ్రెష్" : "Refresh"}
               </Button>
             </div>
-          ) : currentArticle ? (
+          ) : currentItem ? (
             <div
               className={`absolute inset-0 transition-transform duration-300 ease-out ${
                 swipeDirection === 'up' ? '-translate-y-full' :
@@ -303,68 +303,121 @@ export default function NewsShorts() {
                 transform: !isAnimating && touchDeltaY ? `translateY(${-touchDeltaY * 0.3}px)` : undefined
               }}
             >
-              {/* Background Image or Gradient */}
-              <div className={`absolute inset-0 bg-gradient-to-br ${config.gradient}`}>
-                {currentArticle.image && (
-                  <img
-                    src={currentArticle.image}
-                    alt=""
-                    className="absolute inset-0 w-full h-full object-cover opacity-30"
-                  />
-                )}
-                <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/50 to-transparent" />
-              </div>
-
-              {/* Content */}
-              <div className="absolute inset-0 flex flex-col justify-end p-5 text-white">
-                {/* Category Badge - No Source */}
-                <Badge className={`w-fit mb-3 bg-white/20 backdrop-blur-sm text-white border-0`}>
-                  {CATEGORY_CONFIG[activeCategory]?.icon}
-                  <span className="ml-1">{getCategoryLabel()}</span>
-                </Badge>
-
-                {/* Title */}
-                <h2 className="text-xl font-bold leading-tight mb-3">
-                  {getTitle(currentArticle)}
-                </h2>
-
-                {/* Summary */}
-                <p className="text-white/80 text-sm leading-relaxed mb-4 line-clamp-4">
-                  {getSummary(currentArticle)}
-                </p>
-
-                {/* Actions */}
-                <div className="flex items-center gap-3">
-                  <Button
-                    size="sm"
-                    variant="ghost"
-                    className="text-white hover:bg-white/20"
-                    onClick={() => shareArticle(currentArticle)}
-                  >
-                    <Share2 className="h-4 w-4 mr-1" />
-                    {language === "te" ? "షేర్" : "Share"}
-                  </Button>
-                  {currentArticle.link && currentArticle.link !== "#" && (
-                    <a
-                      href={currentArticle.link}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="text-sm text-white/70 hover:text-white underline"
-                    >
-                      {language === "te" ? "మరింత చదవండి" : "Read more"}
-                    </a>
+              {/* Check if it's an Ad */}
+              {currentItem.isAd ? (
+                // AD CARD
+                <div className="absolute inset-0 bg-gradient-to-br from-purple-600 to-pink-600">
+                  {currentItem.media_url && (
+                    currentItem.ad_type === 'video' ? (
+                      <video
+                        src={currentItem.media_url}
+                        autoPlay
+                        muted
+                        loop
+                        playsInline
+                        className="absolute inset-0 w-full h-full object-cover"
+                      />
+                    ) : (
+                      <img
+                        src={currentItem.media_url}
+                        alt=""
+                        className="absolute inset-0 w-full h-full object-cover"
+                      />
+                    )
                   )}
-                </div>
-
-                {/* Pinned indicator */}
-                {currentArticle.is_pinned && (
-                  <div className="absolute top-4 right-4">
-                    <Badge className="bg-yellow-500 text-black text-xs">
-                      {language === "te" ? "ప్రధాన" : "Featured"}
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-transparent" />
+                  
+                  {/* Ad Content */}
+                  <div className="absolute inset-0 flex flex-col justify-end p-5 text-white">
+                    <Badge className="w-fit mb-3 bg-yellow-500/90 text-black border-0">
+                      <Megaphone className="h-3 w-3 mr-1" />
+                      {language === "te" ? "ప్రచారం" : "Sponsored"}
                     </Badge>
+                    
+                    <h2 className="text-xl font-bold leading-tight mb-4">
+                      {getTitle(currentItem)}
+                    </h2>
+                    
+                    {currentItem.click_url && (
+                      <a
+                        href={currentItem.click_url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="inline-flex items-center gap-2 px-4 py-2 bg-white text-black rounded-full font-semibold text-sm w-fit"
+                      >
+                        {getCTA(currentItem) || (language === "te" ? "మరింత తెలుసుకోండి" : "Learn More")}
+                        <ExternalLink className="h-4 w-4" />
+                      </a>
+                    )}
                   </div>
-                )}
-              </div>
+                </div>
+              ) : (
+                // NEWS ARTICLE CARD
+                <>
+                  {/* Background Image or Gradient */}
+                  <div className={`absolute inset-0 bg-gradient-to-br ${config?.gradient || "from-gray-700 to-gray-800"}`}>
+                    {currentItem.image && (
+                      <img
+                        src={currentItem.image}
+                        alt=""
+                        className="absolute inset-0 w-full h-full object-cover opacity-30"
+                      />
+                    )}
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/50 to-transparent" />
+                  </div>
+
+                  {/* Content */}
+                  <div className="absolute inset-0 flex flex-col justify-end p-5 text-white">
+                    {/* Category Badge - No Source */}
+                    <Badge className={`w-fit mb-3 bg-white/20 backdrop-blur-sm text-white border-0`}>
+                      {CATEGORY_CONFIG[activeCategory]?.icon}
+                      <span className="ml-1">{getCategoryLabel()}</span>
+                    </Badge>
+
+                    {/* Title */}
+                    <h2 className="text-xl font-bold leading-tight mb-3">
+                      {getTitle(currentItem)}
+                    </h2>
+
+                    {/* Summary */}
+                    <p className="text-white/80 text-sm leading-relaxed mb-4 line-clamp-4">
+                      {getSummary(currentItem)}
+                    </p>
+
+                    {/* Actions */}
+                    <div className="flex items-center gap-3">
+                      <Button
+                        size="sm"
+                        variant="ghost"
+                        className="text-white hover:bg-white/20"
+                        onClick={() => shareArticle(currentItem)}
+                      >
+                        <Share2 className="h-4 w-4 mr-1" />
+                        {language === "te" ? "షేర్" : "Share"}
+                      </Button>
+                      {currentItem.link && currentItem.link !== "#" && (
+                        <a
+                          href={currentItem.link}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="text-sm text-white/70 hover:text-white underline"
+                        >
+                          {language === "te" ? "మరింత చదవండి" : "Read more"}
+                        </a>
+                      )}
+                    </div>
+
+                    {/* Pinned indicator */}
+                    {currentItem.is_pinned && (
+                      <div className="absolute top-4 right-4">
+                        <Badge className="bg-yellow-500 text-black text-xs">
+                          {language === "te" ? "ప్రధాన" : "Featured"}
+                        </Badge>
+                      </div>
+                    )}
+                  </div>
+                </>
+              )}
 
               {/* Swipe Hint */}
               <div className="absolute top-4 left-1/2 -translate-x-1/2 flex flex-col items-center text-white/50 animate-bounce">
