@@ -507,7 +507,7 @@ async def psychologist_chat(msg: PsychologistMessage, user: dict = Depends(get_c
             try:
                 import json
                 assessment = json.loads(assessment_response)
-            except:
+            except (json.JSONDecodeError, ValueError):
                 assessment = {"note": "Assessment unavailable"}
         
         return {
