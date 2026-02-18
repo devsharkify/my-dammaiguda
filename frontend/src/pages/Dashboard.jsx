@@ -9,7 +9,6 @@ import { Badge } from "../components/ui/badge";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "../components/ui/dialog";
 import { toast } from "sonner";
 import Layout from "../components/Layout";
-import AQIWidget from "../components/AQIWidget";
 import {
   AlertTriangle,
   Activity,
@@ -25,10 +24,15 @@ import {
   Type,
   X,
   Eye,
-  ChevronLeft,
   Loader2,
   Trash2,
-  Clock
+  Clock,
+  Wind,
+  Trash,
+  Bot,
+  UserCircle,
+  Play,
+  Send
 } from "lucide-react";
 
 const API = `${process.env.REACT_APP_BACKEND_URL}/api`;
@@ -50,6 +54,7 @@ export default function Dashboard() {
   const [storyProgress, setStoryProgress] = useState(0);
   const [showViewers, setShowViewers] = useState(false);
   const [viewers, setViewers] = useState([]);
+  const [storyAds, setStoryAds] = useState([]);
   
   // Story creation
   const [storyType, setStoryType] = useState("text");
@@ -62,6 +67,15 @@ export default function Dashboard() {
 
   // Groups state
   const [myGroups, setMyGroups] = useState([]);
+  
+  // AQI data
+  const [aqiData, setAqiData] = useState(null);
+  
+  // Floating AI Chat
+  const [showAiChat, setShowAiChat] = useState(false);
+  const [aiMessage, setAiMessage] = useState("");
+  const [aiResponse, setAiResponse] = useState("");
+  const [aiLoading, setAiLoading] = useState(false);
 
   const headers = { Authorization: `Bearer ${token}` };
 
@@ -79,16 +93,20 @@ export default function Dashboard() {
 
   const fetchDashboardData = async () => {
     try {
-      const [issuesRes, storiesRes, groupsRes] = await Promise.all([
+      const [issuesRes, storiesRes, groupsRes, aqiRes, adsRes] = await Promise.all([
         axios.get(`${API}/issues?limit=3`).catch(() => ({ data: { issues: [] } })),
         axios.get(`${API}/stories/feed`, { headers }).catch(() => ({ data: { feed: [], my_stories: null } })),
-        axios.get(`${API}/wall/groups`, { headers }).catch(() => ({ data: [] }))
+        axios.get(`${API}/wall/groups`, { headers }).catch(() => ({ data: [] })),
+        axios.get(`${API}/aqi/current`).catch(() => ({ data: null })),
+        axios.get(`${API}/stories/ads/stories`, { headers }).catch(() => ({ data: { ads: [] } }))
       ]);
       
       setRecentIssues(issuesRes.data?.issues || issuesRes.data || []);
       setStoriesFeed(storiesRes.data?.feed || []);
       setMyStories(storiesRes.data?.my_stories);
       setMyGroups(groupsRes.data || []);
+      setAqiData(aqiRes.data);
+      setStoryAds(adsRes.data?.ads || []);
     } catch (error) {
       console.error("Error fetching dashboard data:", error);
     } finally {
@@ -154,7 +172,6 @@ export default function Dashboard() {
     setStoryProgress(0);
     setShowStoryViewer(true);
 
-    // Mark first story as viewed
     if (storyUser.stories[0] && !storyUser.stories[0].viewed_by_me) {
       await axios.post(`${API}/stories/view`, { story_id: storyUser.stories[0].id }, { headers }).catch(() => {});
     }
@@ -166,7 +183,7 @@ export default function Dashboard() {
     if (storyTimerRef.current) clearInterval(storyTimerRef.current);
     
     setStoryProgress(0);
-    const duration = 5000; // 5 seconds per story
+    const duration = 5000;
     const interval = 50;
     let progress = 0;
 
@@ -188,7 +205,6 @@ export default function Dashboard() {
       setCurrentStoryIndex(nextIndex);
       setStoryProgress(0);
       
-      // Mark as viewed
       const nextStory = currentStoryUser.stories[nextIndex];
       if (!nextStory.viewed_by_me) {
         await axios.post(`${API}/stories/view`, { story_id: nextStory.id }, { headers }).catch(() => {});
@@ -235,33 +251,36 @@ export default function Dashboard() {
       toast.error("Failed to delete story");
     }
   };
-
-  const quickActions = [
-    {
-      icon: <AlertTriangle className="h-5 w-5" />,
-      title: language === "te" ? "సమస్య" : "Report",
-      link: "/report",
-      color: "from-orange-500 to-red-500"
-    },
-    {
-      icon: <Activity className="h-5 w-5" />,
-      title: language === "te" ? "ఫిట్" : "Fit",
-      link: "/fitness",
-      color: "from-green-500 to-emerald-500"
-    },
-    {
-      icon: <Heart className="h-5 w-5" />,
-      title: language === "te" ? "డాక్టర్" : "Doctor",
-      link: "/doctor",
-      color: "from-pink-500 to-rose-500"
-    },
-    {
-      icon: <Newspaper className="h-5 w-5" />,
-      title: language === "te" ? "వార్తలు" : "News",
-      link: "/news",
-      color: "from-blue-500 to-indigo-500"
+  
+  // Quick AI Chat
+  const sendAiMessage = async () => {
+    if (!aiMessage.trim()) return;
+    
+    setAiLoading(true);
+    try {
+      const response = await axios.post(`${API}/chat/message`, {
+        message: aiMessage,
+        assistant_type: "general"
+      }, { headers });
+      
+      setAiResponse(response.data.response);
+      setAiMessage("");
+    } catch (error) {
+      toast.error("Failed to get AI response");
+    } finally {
+      setAiLoading(false);
     }
-  ];
+  };
+
+  // Get AQI color
+  const getAqiColor = (aqi) => {
+    if (!aqi) return "bg-gray-100 text-gray-600";
+    if (aqi <= 50) return "bg-green-100 text-green-700";
+    if (aqi <= 100) return "bg-yellow-100 text-yellow-700";
+    if (aqi <= 150) return "bg-orange-100 text-orange-700";
+    if (aqi <= 200) return "bg-red-100 text-red-700";
+    return "bg-purple-100 text-purple-700";
+  };
 
   if (loading) {
     return (
@@ -277,7 +296,7 @@ export default function Dashboard() {
 
   return (
     <Layout>
-      <div className="space-y-4" data-testid="dashboard">
+      <div className="space-y-3 pb-20" data-testid="dashboard">
         {/* Stories Bar */}
         <div className="flex gap-3 overflow-x-auto pb-2 scrollbar-hide">
           {/* Add Story Button */}
@@ -287,163 +306,206 @@ export default function Dashboard() {
             data-testid="add-story-btn"
           >
             <div className="relative">
-              <div className="h-16 w-16 rounded-full bg-gradient-to-br from-gray-100 to-gray-200 flex items-center justify-center border-2 border-dashed border-gray-300">
+              <div className="h-14 w-14 rounded-full bg-gradient-to-br from-gray-100 to-gray-200 flex items-center justify-center border-2 border-dashed border-gray-300">
                 {myStories ? (
-                  <div className="h-14 w-14 rounded-full bg-gradient-to-br from-primary to-secondary flex items-center justify-center text-white text-lg font-bold">
+                  <div className="h-12 w-12 rounded-full bg-gradient-to-br from-primary to-secondary flex items-center justify-center text-white text-sm font-bold">
                     {user?.name?.[0]?.toUpperCase() || "?"}
                   </div>
                 ) : (
-                  <Plus className="h-6 w-6 text-gray-500" />
+                  <Plus className="h-5 w-5 text-gray-500" />
                 )}
               </div>
-              <div className="absolute -bottom-1 -right-1 h-6 w-6 bg-primary rounded-full flex items-center justify-center border-2 border-white">
-                <Plus className="h-3 w-3 text-white" />
+              <div className="absolute -bottom-1 -right-1 h-5 w-5 bg-primary rounded-full flex items-center justify-center border-2 border-white">
+                <Plus className="h-2.5 w-2.5 text-white" />
               </div>
             </div>
-            <span className="text-[10px] mt-1 text-text-muted">
+            <span className="text-[9px] mt-1 text-text-muted">
               {language === "te" ? "స్టోరీ" : "Story"}
             </span>
           </button>
 
-          {/* My Stories (if any) */}
+          {/* My Stories */}
           {myStories && (
             <button
               onClick={() => openStoryViewer(myStories)}
               className="flex flex-col items-center flex-shrink-0"
             >
-              <div className={`h-16 w-16 rounded-full p-[3px] ${myStories.has_unseen ? "bg-gradient-to-br from-primary via-secondary to-pink-500" : "bg-gray-300"}`}>
+              <div className={`h-14 w-14 rounded-full p-[2px] ${myStories.has_unseen ? "bg-gradient-to-br from-primary via-secondary to-pink-500" : "bg-gray-300"}`}>
                 <div className="h-full w-full rounded-full bg-white p-[2px]">
-                  <div className="h-full w-full rounded-full bg-gradient-to-br from-primary to-secondary flex items-center justify-center text-white font-bold">
+                  <div className="h-full w-full rounded-full bg-gradient-to-br from-primary to-secondary flex items-center justify-center text-white font-bold text-sm">
                     {user?.name?.[0]?.toUpperCase() || "?"}
                   </div>
                 </div>
               </div>
-              <span className="text-[10px] mt-1 text-text-muted truncate max-w-[60px]">
+              <span className="text-[9px] mt-1 text-text-muted truncate max-w-[50px]">
                 {language === "te" ? "మీరు" : "You"}
               </span>
             </button>
           )}
 
-          {/* Other Users' Stories */}
+          {/* Other Stories */}
           {storiesFeed.map((storyUser) => (
             <button
               key={storyUser.user_id}
               onClick={() => openStoryViewer(storyUser)}
               className="flex flex-col items-center flex-shrink-0"
             >
-              <div className={`h-16 w-16 rounded-full p-[3px] ${storyUser.has_unseen ? "bg-gradient-to-br from-primary via-secondary to-pink-500" : "bg-gray-300"}`}>
+              <div className={`h-14 w-14 rounded-full p-[2px] ${storyUser.has_unseen ? "bg-gradient-to-br from-primary via-secondary to-pink-500" : "bg-gray-300"}`}>
                 <div className="h-full w-full rounded-full bg-white p-[2px]">
-                  <div className="h-full w-full rounded-full bg-gradient-to-br from-cyan-400 to-blue-500 flex items-center justify-center text-white font-bold text-sm">
+                  <div className="h-full w-full rounded-full bg-gradient-to-br from-cyan-400 to-blue-500 flex items-center justify-center text-white font-bold text-xs">
                     {storyUser.user_name?.[0]?.toUpperCase() || "?"}
                   </div>
                 </div>
               </div>
-              <span className="text-[10px] mt-1 text-text-muted truncate max-w-[60px]">
+              <span className="text-[9px] mt-1 text-text-muted truncate max-w-[50px]">
                 {storyUser.user_name?.split(" ")[0]}
               </span>
             </button>
           ))}
         </div>
 
-        {/* Quick Actions - Compact */}
+        {/* Quick Actions Row 1 - Main Features */}
         <div className="grid grid-cols-4 gap-2">
-          {quickActions.map((action, index) => (
-            <Link key={index} to={action.link}>
-              <div className={`h-16 rounded-xl bg-gradient-to-br ${action.color} flex flex-col items-center justify-center text-white shadow-md active:scale-95 transition-transform`}>
-                {action.icon}
-                <span className="text-[10px] mt-1 font-medium">{action.title}</span>
-              </div>
-            </Link>
-          ))}
+          <Link to="/report">
+            <div className="h-14 rounded-xl bg-gradient-to-br from-orange-500 to-red-500 flex flex-col items-center justify-center text-white shadow-md active:scale-95 transition-transform">
+              <AlertTriangle className="h-5 w-5" />
+              <span className="text-[9px] mt-0.5 font-medium">{language === "te" ? "సమస్య" : "Report"}</span>
+            </div>
+          </Link>
+          <Link to="/fitness">
+            <div className="h-14 rounded-xl bg-gradient-to-br from-green-500 to-emerald-500 flex flex-col items-center justify-center text-white shadow-md active:scale-95 transition-transform">
+              <Activity className="h-5 w-5" />
+              <span className="text-[9px] mt-0.5 font-medium">{language === "te" ? "ఫిట్" : "Fit"}</span>
+            </div>
+          </Link>
+          <Link to="/doctor">
+            <div className="h-14 rounded-xl bg-gradient-to-br from-pink-500 to-rose-500 flex flex-col items-center justify-center text-white shadow-md active:scale-95 transition-transform">
+              <Heart className="h-5 w-5" />
+              <span className="text-[9px] mt-0.5 font-medium">{language === "te" ? "డాక్టర్" : "Doctor"}</span>
+            </div>
+          </Link>
+          <Link to="/news">
+            <div className="h-14 rounded-xl bg-gradient-to-br from-blue-500 to-indigo-500 flex flex-col items-center justify-center text-white shadow-md active:scale-95 transition-transform">
+              <Newspaper className="h-5 w-5" />
+              <span className="text-[9px] mt-0.5 font-medium">{language === "te" ? "వార్తలు" : "News"}</span>
+            </div>
+          </Link>
         </div>
+
+        {/* Quick Actions Row 2 - New Features */}
+        <div className="grid grid-cols-4 gap-2">
+          <Link to="/family">
+            <div className="h-14 rounded-xl bg-gradient-to-br from-purple-500 to-violet-500 flex flex-col items-center justify-center text-white shadow-md active:scale-95 transition-transform">
+              <Users className="h-5 w-5" />
+              <span className="text-[9px] mt-0.5 font-medium">{language === "te" ? "కుటుంబం" : "Family"}</span>
+            </div>
+          </Link>
+          <Link to="/chat">
+            <div className="h-14 rounded-xl bg-gradient-to-br from-cyan-500 to-teal-500 flex flex-col items-center justify-center text-white shadow-md active:scale-95 transition-transform">
+              <Bot className="h-5 w-5" />
+              <span className="text-[9px] mt-0.5 font-medium">{language === "te" ? "AI చాట్" : "AI Chat"}</span>
+            </div>
+          </Link>
+          <Link to="/dump-yard">
+            <div className="h-14 rounded-xl bg-gradient-to-br from-amber-500 to-orange-500 flex flex-col items-center justify-center text-white shadow-md active:scale-95 transition-transform">
+              <Trash className="h-5 w-5" />
+              <span className="text-[9px] mt-0.5 font-medium">{language === "te" ? "డంప్" : "Dump"}</span>
+            </div>
+          </Link>
+          <Link to="/wall">
+            <div className="h-14 rounded-xl bg-gradient-to-br from-indigo-500 to-purple-500 flex flex-col items-center justify-center text-white shadow-md active:scale-95 transition-transform">
+              <MessageSquare className="h-5 w-5" />
+              <span className="text-[9px] mt-0.5 font-medium">{language === "te" ? "వాల్" : "Wall"}</span>
+            </div>
+          </Link>
+        </div>
+
+        {/* AQI Widget - Compact */}
+        {aqiData && (
+          <Link to="/aqi">
+            <Card className="border-border/50 overflow-hidden">
+              <CardContent className="p-3 flex items-center justify-between">
+                <div className="flex items-center gap-3">
+                  <div className={`h-10 w-10 rounded-lg ${getAqiColor(aqiData.dammaiguda?.aqi)} flex items-center justify-center`}>
+                    <Wind className="h-5 w-5" />
+                  </div>
+                  <div>
+                    <p className="text-xs text-muted-foreground">{language === "te" ? "వాయు నాణ్యత" : "Air Quality"}</p>
+                    <p className="font-bold text-lg">{aqiData.dammaiguda?.aqi || "—"}</p>
+                  </div>
+                </div>
+                <div className="text-right">
+                  <Badge className={getAqiColor(aqiData.dammaiguda?.aqi)}>
+                    {aqiData.dammaiguda?.category || "Loading"}
+                  </Badge>
+                  <p className="text-[10px] text-muted-foreground mt-1">Dammaiguda</p>
+                </div>
+              </CardContent>
+            </Card>
+          </Link>
+        )}
 
         {/* Groups Quick Access */}
         <Card className="border-border/50">
           <CardContent className="p-3">
-            <div className="flex items-center justify-between mb-3">
-              <h3 className="font-semibold text-sm flex items-center gap-2">
-                <Users className="h-4 w-4 text-primary" />
+            <div className="flex items-center justify-between mb-2">
+              <h3 className="font-semibold text-xs flex items-center gap-1.5">
+                <Users className="h-3.5 w-3.5 text-primary" />
                 {language === "te" ? "గ్రూప్‌లు" : "Groups"}
               </h3>
-              <Link to="/wall" className="text-xs text-primary flex items-center">
-                {language === "te" ? "అన్నీ చూడు" : "See all"}
+              <Link to="/wall" className="text-[10px] text-primary flex items-center">
+                {language === "te" ? "అన్నీ" : "All"}
                 <ChevronRight className="h-3 w-3" />
               </Link>
             </div>
             
             {myGroups.length === 0 ? (
               <Link to="/wall">
-                <div className="flex items-center gap-3 p-3 bg-muted/50 rounded-lg">
-                  <div className="h-10 w-10 rounded-full bg-gradient-to-br from-purple-400 to-pink-500 flex items-center justify-center text-white">
-                    <Plus className="h-5 w-5" />
+                <div className="flex items-center gap-2 p-2 bg-muted/50 rounded-lg">
+                  <div className="h-8 w-8 rounded-full bg-gradient-to-br from-purple-400 to-pink-500 flex items-center justify-center text-white">
+                    <Plus className="h-4 w-4" />
                   </div>
                   <div>
-                    <p className="text-sm font-medium">{language === "te" ? "గ్రూప్‌లో చేరండి" : "Join a Group"}</p>
-                    <p className="text-xs text-muted-foreground">{language === "te" ? "కమ్యూనిటీతో కనెక్ట్ అవండి" : "Connect with community"}</p>
+                    <p className="text-xs font-medium">{language === "te" ? "గ్రూప్‌లో చేరండి" : "Join a Group"}</p>
+                    <p className="text-[10px] text-muted-foreground">{language === "te" ? "కమ్యూనిటీతో కనెక్ట్" : "Connect with community"}</p>
                   </div>
                 </div>
               </Link>
             ) : (
-              <div className="flex gap-2 overflow-x-auto pb-1">
-                {myGroups.slice(0, 4).map((group) => (
+              <div className="flex gap-2 overflow-x-auto">
+                {myGroups.slice(0, 5).map((group) => (
                   <Link key={group.id} to="/wall" className="flex-shrink-0">
-                    <div className="h-12 w-12 rounded-full bg-gradient-to-br from-purple-400 to-pink-500 flex items-center justify-center text-white font-bold text-sm">
+                    <div className="h-10 w-10 rounded-full bg-gradient-to-br from-purple-400 to-pink-500 flex items-center justify-center text-white font-bold text-xs">
                       {group.name?.[0]?.toUpperCase()}
                     </div>
-                    <p className="text-[10px] text-center mt-1 truncate max-w-[48px]">{group.name?.split(" ")[0]}</p>
                   </Link>
                 ))}
                 <Link to="/wall" className="flex-shrink-0">
-                  <div className="h-12 w-12 rounded-full bg-muted flex items-center justify-center">
-                    <Plus className="h-5 w-5 text-muted-foreground" />
+                  <div className="h-10 w-10 rounded-full bg-muted flex items-center justify-center">
+                    <Plus className="h-4 w-4 text-muted-foreground" />
                   </div>
-                  <p className="text-[10px] text-center mt-1 text-muted-foreground">{language === "te" ? "మరిన్ని" : "More"}</p>
                 </Link>
               </div>
             )}
           </CardContent>
         </Card>
 
-        {/* Citizen Wall Quick Access */}
-        <Link to="/wall">
-          <Card className="border-border/50 hover:shadow-md transition-shadow bg-gradient-to-r from-indigo-50 to-purple-50">
-            <CardContent className="p-4 flex items-center justify-between">
-              <div className="flex items-center gap-3">
-                <div className="h-12 w-12 rounded-xl bg-gradient-to-br from-indigo-500 to-purple-500 flex items-center justify-center text-white">
-                  <MessageSquare className="h-6 w-6" />
-                </div>
-                <div>
-                  <h3 className="font-semibold">{language === "te" ? "సిటిజన్ వాల్" : "Citizen Wall"}</h3>
-                  <p className="text-xs text-muted-foreground">{language === "te" ? "పోస్ట్‌లు, గ్రూప్‌లు & చాట్" : "Posts, Groups & Chat"}</p>
-                </div>
-              </div>
-              <ChevronRight className="h-5 w-5 text-muted-foreground" />
-            </CardContent>
-          </Card>
-        </Link>
-
-        {/* AQI Widget */}
-        <AQIWidget onViewFullReport={() => navigate("/aqi")} />
-
-        {/* Recent Issues */}
+        {/* Recent Issues - Compact */}
         {recentIssues.length > 0 && (
           <Card className="border-border/50">
-            <CardContent className="p-4">
-              <div className="flex items-center justify-between mb-3">
-                <h3 className="font-semibold text-sm">{language === "te" ? "ఇటీవలి సమస్యలు" : "Recent Issues"}</h3>
-                <Link to="/issues" className="text-xs text-primary">{language === "te" ? "అన్నీ" : "All"}</Link>
+            <CardContent className="p-3">
+              <div className="flex items-center justify-between mb-2">
+                <h3 className="font-semibold text-xs">{language === "te" ? "ఇటీవలి సమస్యలు" : "Recent Issues"}</h3>
+                <Link to="/issues" className="text-[10px] text-primary">{language === "te" ? "అన్నీ" : "All"}</Link>
               </div>
-              <div className="space-y-2">
-                {recentIssues.slice(0, 3).map((issue) => (
-                  <div key={issue.id} className="flex items-center gap-3 p-2 bg-muted/30 rounded-lg">
-                    <div className="h-8 w-8 rounded-lg bg-orange-100 flex items-center justify-center">
-                      <AlertTriangle className="h-4 w-4 text-orange-600" />
+              <div className="space-y-1.5">
+                {recentIssues.slice(0, 2).map((issue) => (
+                  <div key={issue.id} className="flex items-center gap-2 p-1.5 bg-muted/30 rounded-lg">
+                    <div className="h-7 w-7 rounded-lg bg-orange-100 flex items-center justify-center">
+                      <AlertTriangle className="h-3.5 w-3.5 text-orange-600" />
                     </div>
-                    <div className="flex-1 min-w-0">
-                      <p className="text-sm font-medium truncate">{issue.description?.substring(0, 40)}...</p>
-                      <p className="text-xs text-muted-foreground">{issue.category}</p>
-                    </div>
-                    <Badge variant="outline" className="text-[10px]">{issue.status}</Badge>
+                    <p className="text-xs flex-1 truncate">{issue.description?.substring(0, 35)}...</p>
+                    <Badge variant="outline" className="text-[9px] h-5">{issue.status}</Badge>
                   </div>
                 ))}
               </div>
@@ -452,24 +514,87 @@ export default function Dashboard() {
         )}
       </div>
 
+      {/* Floating AI Chat Button */}
+      <button
+        onClick={() => setShowAiChat(true)}
+        className="fixed bottom-20 right-4 h-14 w-14 rounded-full bg-gradient-to-br from-cyan-500 to-teal-500 text-white shadow-lg flex items-center justify-center active:scale-95 transition-transform z-40"
+        data-testid="floating-ai-btn"
+      >
+        <Bot className="h-6 w-6" />
+      </button>
+
+      {/* Quick AI Chat Dialog */}
+      <Dialog open={showAiChat} onOpenChange={setShowAiChat}>
+        <DialogContent className="max-w-md max-h-[70vh] p-0 overflow-hidden">
+          <div className="p-3 bg-gradient-to-r from-cyan-500 to-teal-500 text-white">
+            <DialogTitle className="flex items-center gap-2 text-base">
+              <Bot className="h-5 w-5" />
+              {language === "te" ? "AI సహాయకుడు" : "AI Assistant"}
+            </DialogTitle>
+          </div>
+          <div className="p-4 space-y-3">
+            {aiResponse && (
+              <div className="p-3 bg-muted/50 rounded-lg">
+                <p className="text-sm whitespace-pre-wrap">{aiResponse}</p>
+              </div>
+            )}
+            <div className="flex gap-2">
+              <input
+                type="text"
+                value={aiMessage}
+                onChange={(e) => setAiMessage(e.target.value)}
+                onKeyPress={(e) => e.key === "Enter" && sendAiMessage()}
+                placeholder={language === "te" ? "మీ ప్రశ్న అడగండి..." : "Ask your question..."}
+                className="flex-1 px-3 py-2 border rounded-lg text-sm"
+                disabled={aiLoading}
+              />
+              <Button onClick={sendAiMessage} disabled={aiLoading} size="sm">
+                {aiLoading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Send className="h-4 w-4" />}
+              </Button>
+            </div>
+            <div className="flex flex-wrap gap-2">
+              {[
+                { en: "Weather today?", te: "ఈ రోజు వాతావరణం?" },
+                { en: "Health tips", te: "ఆరోగ్య చిట్కాలు" },
+                { en: "Local news", te: "స్థానిక వార్తలు" }
+              ].map((prompt, idx) => (
+                <Button
+                  key={idx}
+                  variant="outline"
+                  size="sm"
+                  className="text-xs h-7"
+                  onClick={() => setAiMessage(language === "te" ? prompt.te : prompt.en)}
+                >
+                  {language === "te" ? prompt.te : prompt.en}
+                </Button>
+              ))}
+            </div>
+            <Link to="/chat" className="block">
+              <Button variant="ghost" size="sm" className="w-full text-xs">
+                {language === "te" ? "పూర్తి చాట్ తెరవండి" : "Open Full Chat"} →
+              </Button>
+            </Link>
+          </div>
+        </DialogContent>
+      </Dialog>
+
       {/* Create Story Dialog */}
       <Dialog open={showCreateStory} onOpenChange={setShowCreateStory}>
         <DialogContent className="max-w-md p-0 overflow-hidden">
-          <div className="p-4 bg-gradient-to-r from-primary to-secondary text-white">
-            <DialogTitle className="flex items-center gap-2">
+          <div className="p-3 bg-gradient-to-r from-primary to-secondary text-white">
+            <DialogTitle className="flex items-center gap-2 text-base">
               <Camera className="h-5 w-5" />
               {language === "te" ? "స్టోరీ సృష్టించండి" : "Create Story"}
             </DialogTitle>
           </div>
           
-          <div className="p-4 space-y-4">
-            {/* Story Type Selection */}
+          <div className="p-4 space-y-3">
             <div className="flex gap-2">
               <Button
                 variant={storyType === "text" ? "default" : "outline"}
                 size="sm"
                 onClick={() => { setStoryType("text"); setStoryMedia(null); }}
-                className="flex-1"
+                className="flex-1 h-9"
               >
                 <Type className="h-4 w-4 mr-1" />
                 {language === "te" ? "టెక్స్ట్" : "Text"}
@@ -478,7 +603,7 @@ export default function Dashboard() {
                 variant={storyType === "image" ? "default" : "outline"}
                 size="sm"
                 onClick={() => fileInputRef.current?.click()}
-                className="flex-1"
+                className="flex-1 h-9"
               >
                 <Camera className="h-4 w-4 mr-1" />
                 {language === "te" ? "ఫోటో" : "Photo"}
@@ -487,7 +612,7 @@ export default function Dashboard() {
                 variant={storyType === "video" ? "default" : "outline"}
                 size="sm"
                 onClick={() => fileInputRef.current?.click()}
-                className="flex-1"
+                className="flex-1 h-9"
               >
                 <Video className="h-4 w-4 mr-1" />
                 {language === "te" ? "వీడియో" : "Video"}
@@ -502,9 +627,8 @@ export default function Dashboard() {
               className="hidden"
             />
 
-            {/* Preview */}
             <div 
-              className="aspect-[9/16] max-h-[300px] rounded-xl overflow-hidden flex items-center justify-center"
+              className="aspect-[9/16] max-h-[250px] rounded-xl overflow-hidden flex items-center justify-center"
               style={{ backgroundColor: storyType === "text" ? storyBgColor : "#000" }}
             >
               {storyType === "text" ? (
@@ -512,8 +636,7 @@ export default function Dashboard() {
                   value={storyText}
                   onChange={(e) => setStoryText(e.target.value)}
                   placeholder={language === "te" ? "మీ స్టోరీ టైప్ చేయండి..." : "Type your story..."}
-                  className="w-full h-full bg-transparent text-white text-center text-lg p-4 resize-none placeholder:text-white/50 focus:outline-none"
-                  style={{ minHeight: "200px" }}
+                  className="w-full h-full bg-transparent text-white text-center text-base p-4 resize-none placeholder:text-white/50 focus:outline-none"
                 />
               ) : storyMedia ? (
                 storyType === "image" ? (
@@ -523,35 +646,23 @@ export default function Dashboard() {
                 )
               ) : (
                 <div className="text-white/50 text-center">
-                  <Camera className="h-12 w-12 mx-auto mb-2" />
-                  <p>{language === "te" ? "మీడియా ఎంచుకోండి" : "Select media"}</p>
+                  <Camera className="h-10 w-10 mx-auto mb-2" />
+                  <p className="text-sm">{language === "te" ? "మీడియా ఎంచుకోండి" : "Select media"}</p>
                 </div>
               )}
             </div>
 
-            {/* Background Colors (for text stories) */}
             {storyType === "text" && (
-              <div className="flex gap-2 justify-center">
+              <div className="flex gap-1.5 justify-center">
                 {bgColors.map((color) => (
                   <button
                     key={color}
                     onClick={() => setStoryBgColor(color)}
-                    className={`h-8 w-8 rounded-full ${storyBgColor === color ? "ring-2 ring-offset-2 ring-primary" : ""}`}
+                    className={`h-7 w-7 rounded-full ${storyBgColor === color ? "ring-2 ring-offset-2 ring-primary" : ""}`}
                     style={{ backgroundColor: color }}
                   />
                 ))}
               </div>
-            )}
-
-            {/* Caption for media stories */}
-            {storyType !== "text" && storyMedia && (
-              <input
-                type="text"
-                value={storyText}
-                onChange={(e) => setStoryText(e.target.value)}
-                placeholder={language === "te" ? "క్యాప్షన్ జోడించండి..." : "Add caption..."}
-                className="w-full p-2 border rounded-lg"
-              />
             )}
 
             <Button
@@ -569,7 +680,6 @@ export default function Dashboard() {
       {/* Story Viewer */}
       {showStoryViewer && currentStoryUser && currentStory && (
         <div className="fixed inset-0 bg-black z-50 flex flex-col">
-          {/* Progress Bars */}
           <div className="flex gap-1 p-2 pt-4">
             {currentStoryUser.stories.map((_, idx) => (
               <div key={idx} className="flex-1 h-1 bg-white/30 rounded-full overflow-hidden">
@@ -583,7 +693,6 @@ export default function Dashboard() {
             ))}
           </div>
 
-          {/* Header */}
           <div className="flex items-center justify-between p-3">
             <div className="flex items-center gap-3">
               <div className="h-10 w-10 rounded-full bg-gradient-to-br from-primary to-secondary flex items-center justify-center text-white font-bold">
@@ -600,16 +709,10 @@ export default function Dashboard() {
             <div className="flex items-center gap-2">
               {currentStoryUser.user_id === user?.id && (
                 <>
-                  <button
-                    onClick={() => fetchViewers(currentStory.id)}
-                    className="text-white/80 hover:text-white p-2"
-                  >
+                  <button onClick={() => fetchViewers(currentStory.id)} className="text-white/80 hover:text-white p-2">
                     <Eye className="h-5 w-5" />
                   </button>
-                  <button
-                    onClick={() => deleteStory(currentStory.id)}
-                    className="text-white/80 hover:text-red-400 p-2"
-                  >
+                  <button onClick={() => deleteStory(currentStory.id)} className="text-white/80 hover:text-red-400 p-2">
                     <Trash2 className="h-5 w-5" />
                   </button>
                 </>
@@ -620,25 +723,13 @@ export default function Dashboard() {
             </div>
           </div>
 
-          {/* Story Content */}
           <div className="flex-1 relative">
-            {/* Navigation areas */}
-            <button
-              onClick={goToPrevStory}
-              className="absolute left-0 top-0 bottom-0 w-1/3 z-10"
-            />
-            <button
-              onClick={goToNextStory}
-              className="absolute right-0 top-0 bottom-0 w-1/3 z-10"
-            />
+            <button onClick={goToPrevStory} className="absolute left-0 top-0 bottom-0 w-1/3 z-10" />
+            <button onClick={goToNextStory} className="absolute right-0 top-0 bottom-0 w-1/3 z-10" />
 
-            {/* Content */}
             <div className="absolute inset-0 flex items-center justify-center">
               {currentStory.content_type === "text" ? (
-                <div
-                  className="w-full h-full flex items-center justify-center p-8"
-                  style={{ backgroundColor: currentStory.background_color }}
-                >
+                <div className="w-full h-full flex items-center justify-center p-8" style={{ backgroundColor: currentStory.background_color }}>
                   <p className="text-white text-xl text-center font-medium">{currentStory.text}</p>
                 </div>
               ) : currentStory.content_type === "image" ? (
@@ -647,22 +738,11 @@ export default function Dashboard() {
                 <video src={currentStory.media_url} autoPlay className="max-h-full max-w-full" />
               )}
             </div>
-
-            {/* Caption overlay */}
-            {currentStory.text && currentStory.content_type !== "text" && (
-              <div className="absolute bottom-20 left-0 right-0 p-4">
-                <p className="text-white text-center text-shadow">{currentStory.text}</p>
-              </div>
-            )}
           </div>
 
-          {/* View count (for own stories) */}
           {currentStoryUser.user_id === user?.id && (
             <div className="p-4">
-              <button
-                onClick={() => fetchViewers(currentStory.id)}
-                className="flex items-center gap-2 text-white/80"
-              >
+              <button onClick={() => fetchViewers(currentStory.id)} className="flex items-center gap-2 text-white/80">
                 <Eye className="h-4 w-4" />
                 <span className="text-sm">{currentStory.view_count || 0} {language === "te" ? "వ్యూలు" : "views"}</span>
               </button>
