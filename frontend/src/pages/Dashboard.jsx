@@ -611,51 +611,140 @@ export default function Dashboard() {
           </div>
         </div>
 
-        {/* Groups Quick Access */}
-        <Card className="border-border/50">
-          <CardContent className="p-3">
-            <div className="flex items-center justify-between mb-2">
-              <h3 className="font-semibold text-sm flex items-center gap-1.5">
-                <Users className="h-4 w-4 text-primary" />
-                {language === "te" ? "గ్రూప్‌లు" : "Groups"}
-              </h3>
-              <Link to="/wall" className="text-xs text-primary flex items-center">
-                {language === "te" ? "అన్నీ" : "All"}
-                <ChevronRight className="h-3 w-3" />
-              </Link>
-            </div>
-            
-            {myGroups.length === 0 ? (
-              <Link to="/wall">
-                <div className="flex items-center gap-3 p-2 bg-muted/50 rounded-lg">
-                  <div className="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center text-primary">
-                    <Plus className="h-5 w-5" />
-                  </div>
-                  <div>
-                    <p className="text-sm font-medium">{language === "te" ? "గ్రూప్‌లో చేరండి" : "Join a Group"}</p>
-                    <p className="text-xs text-muted-foreground">{language === "te" ? "కమ్యూనిటీతో కనెక్ట్" : "Connect with community"}</p>
-                  </div>
-                </div>
-              </Link>
-            ) : (
-              <div className="flex gap-2 overflow-x-auto">
-                {myGroups.slice(0, 5).map((group) => (
-                  <Link key={group.id} to="/wall" className="flex-shrink-0">
-                    <div className="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center text-primary font-bold text-sm">
-                      {group.name?.[0]?.toUpperCase()}
+        {/* Discount Vouchers Widget */}
+        <div data-testid="vouchers-section">
+          <div className="flex items-center justify-between mb-3">
+            <h3 className="font-semibold text-base flex items-center gap-2">
+              <Ticket className="h-5 w-5 text-green-600" />
+              {language === "te" ? "డిస్కౌంట్ వౌచర్లు" : "Discount Vouchers"}
+            </h3>
+            <Link to="/vouchers" className="text-xs text-primary flex items-center">
+              {language === "te" ? "అన్నీ" : "All"}
+              <ChevronRight className="h-3.5 w-3.5" />
+            </Link>
+          </div>
+          <div className="flex gap-3 overflow-x-auto pb-2 scrollbar-hide -mx-4 px-4">
+            <div className="flex-shrink-0 w-44">
+              <Card className="border-green-200 bg-green-50 overflow-hidden">
+                <CardContent className="p-3">
+                  <div className="flex items-center gap-2 mb-2">
+                    <div className="h-8 w-8 rounded-lg bg-green-500 flex items-center justify-center">
+                      <span className="text-white font-bold text-sm">20%</span>
                     </div>
-                  </Link>
-                ))}
-                <Link to="/wall" className="flex-shrink-0">
-                  <div className="h-10 w-10 rounded-full bg-muted flex items-center justify-center">
-                    <Plus className="h-4 w-4 text-muted-foreground" />
+                    <span className="text-xs font-medium text-green-700">
+                      {language === "te" ? "మెడికల్" : "Medical"}
+                    </span>
                   </div>
-                </Link>
+                  <p className="text-sm font-semibold text-green-800">
+                    {language === "te" ? "ఔషధాల తగ్గింపు" : "Medicine Discount"}
+                  </p>
+                  <p className="text-[10px] text-green-600 mt-1">Apollo Pharmacy</p>
+                </CardContent>
+              </Card>
+            </div>
+            <div className="flex-shrink-0 w-44">
+              <Card className="border-blue-200 bg-blue-50 overflow-hidden">
+                <CardContent className="p-3">
+                  <div className="flex items-center gap-2 mb-2">
+                    <div className="h-8 w-8 rounded-lg bg-blue-500 flex items-center justify-center">
+                      <span className="text-white font-bold text-sm">15%</span>
+                    </div>
+                    <span className="text-xs font-medium text-blue-700">
+                      {language === "te" ? "గ్రోసరీ" : "Grocery"}
+                    </span>
+                  </div>
+                  <p className="text-sm font-semibold text-blue-800">
+                    {language === "te" ? "కిరాణా తగ్గింపు" : "Grocery Discount"}
+                  </p>
+                  <p className="text-[10px] text-blue-600 mt-1">More Supermarket</p>
+                </CardContent>
+              </Card>
+            </div>
+            <div className="flex-shrink-0 w-44">
+              <Card className="border-purple-200 bg-purple-50 overflow-hidden">
+                <CardContent className="p-3">
+                  <div className="flex items-center gap-2 mb-2">
+                    <div className="h-8 w-8 rounded-lg bg-purple-500 flex items-center justify-center">
+                      <span className="text-white font-bold text-sm">₹50</span>
+                    </div>
+                    <span className="text-xs font-medium text-purple-700">
+                      {language === "te" ? "రవాణా" : "Transport"}
+                    </span>
+                  </div>
+                  <p className="text-sm font-semibold text-purple-800">
+                    {language === "te" ? "బస్ పాస్ తగ్గింపు" : "Bus Pass Off"}
+                  </p>
+                  <p className="text-[10px] text-purple-600 mt-1">TSRTC</p>
+                </CardContent>
+              </Card>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Floating AI Chat Button */}
+      <button
+        onClick={() => setShowAiChat(true)}
+        className="fixed bottom-20 right-4 h-14 w-14 rounded-full bg-gradient-to-br from-cyan-500 to-teal-500 text-white shadow-lg flex items-center justify-center active:scale-95 transition-transform z-40"
+        data-testid="floating-ai-btn"
+      >
+        <Bot className="h-6 w-6" />
+      </button>
+
+      {/* Quick AI Chat Dialog */}
+      <Dialog open={showAiChat} onOpenChange={setShowAiChat}>
+        <DialogContent className="max-w-md max-h-[70vh] p-0 overflow-hidden">
+          <div className="p-3 bg-gradient-to-r from-cyan-500 to-teal-500 text-white">
+            <DialogTitle className="flex items-center gap-2 text-base">
+              <Bot className="h-5 w-5" />
+              {language === "te" ? "AI సహాయకుడు" : "AI Assistant"}
+            </DialogTitle>
+          </div>
+          <div className="p-4 space-y-3">
+            {aiResponse && (
+              <div className="p-3 bg-muted/50 rounded-lg">
+                <p className="text-sm whitespace-pre-wrap">{aiResponse}</p>
               </div>
             )}
-          </CardContent>
-        </Card>
-      </div>
+            <div className="flex gap-2">
+              <input
+                type="text"
+                value={aiMessage}
+                onChange={(e) => setAiMessage(e.target.value)}
+                onKeyPress={(e) => e.key === "Enter" && sendAiMessage()}
+                placeholder={language === "te" ? "మీ ప్రశ్న అడగండి..." : "Ask your question..."}
+                className="flex-1 px-3 py-2 border rounded-lg text-sm"
+                disabled={aiLoading}
+              />
+              <Button onClick={sendAiMessage} disabled={aiLoading} size="sm">
+                {aiLoading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Send className="h-4 w-4" />}
+              </Button>
+            </div>
+            <div className="flex flex-wrap gap-2">
+              {[
+                { en: "Weather today?", te: "ఈ రోజు వాతావరణం?" },
+                { en: "Health tips", te: "ఆరోగ్య చిట్కాలు" },
+                { en: "Local news", te: "స్థానిక వార్తలు" }
+              ].map((prompt, idx) => (
+                <Button
+                  key={idx}
+                  variant="outline"
+                  size="sm"
+                  className="text-xs h-7"
+                  onClick={() => setAiMessage(language === "te" ? prompt.te : prompt.en)}
+                >
+                  {language === "te" ? prompt.te : prompt.en}
+                </Button>
+              ))}
+            </div>
+            <Link to="/chat" className="block">
+              <Button variant="ghost" size="sm" className="w-full text-xs">
+                {language === "te" ? "పూర్తి చాట్ తెరవండి" : "Open Full Chat"} →
+              </Button>
+            </Link>
+          </div>
+        </DialogContent>
+      </Dialog>
 
       {/* Create Story Dialog */}
       <Dialog open={showCreateStory} onOpenChange={setShowCreateStory}>
