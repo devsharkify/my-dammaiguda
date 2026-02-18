@@ -255,26 +255,6 @@ export default function Dashboard() {
       toast.error("Failed to delete story");
     }
   };
-  
-  // Quick AI Chat
-  const sendAiMessage = async () => {
-    if (!aiMessage.trim()) return;
-    
-    setAiLoading(true);
-    try {
-      const response = await axios.post(`${API}/chat/message`, {
-        message: aiMessage,
-        assistant_type: "general"
-      }, { headers });
-      
-      setAiResponse(response.data.response);
-      setAiMessage("");
-    } catch (error) {
-      toast.error("Failed to get AI response");
-    } finally {
-      setAiLoading(false);
-    }
-  };
 
   // Get AQI color
   const getAqiColor = (aqi) => {
