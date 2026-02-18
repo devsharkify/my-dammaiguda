@@ -441,13 +441,13 @@ export default function NewsShorts() {
               <ChevronUp className="h-5 w-5" />
             </Button>
             <span className="text-sm text-muted-foreground font-mono">
-              {news.length > 0 ? `${currentIndex + 1}/${news.length}` : "0/0"}
+              {mergedFeed.length > 0 ? `${currentIndex + 1}/${mergedFeed.length}` : "0/0"}
             </span>
             <Button
               size="sm"
               variant="ghost"
               onClick={goToNext}
-              disabled={currentIndex >= news.length - 1 || isAnimating}
+              disabled={currentIndex >= mergedFeed.length - 1 || isAnimating}
               className="h-8 w-8 p-0"
             >
               <ChevronDown className="h-5 w-5" />
@@ -468,15 +468,15 @@ export default function NewsShorts() {
 
         {/* Progress Dots */}
         <div className="flex justify-center gap-1 py-2">
-          {news.slice(Math.max(0, currentIndex - 3), Math.min(news.length, currentIndex + 4)).map((_, idx) => {
+          {mergedFeed.slice(Math.max(0, currentIndex - 3), Math.min(mergedFeed.length, currentIndex + 4)).map((item, idx) => {
             const actualIndex = Math.max(0, currentIndex - 3) + idx;
             return (
               <div
                 key={actualIndex}
                 className={`h-1.5 rounded-full transition-all ${
                   actualIndex === currentIndex
-                    ? "w-6 bg-primary"
-                    : "w-1.5 bg-muted-foreground/30"
+                    ? item.isAd ? "w-6 bg-yellow-500" : "w-6 bg-primary"
+                    : item.isAd ? "w-1.5 bg-yellow-500/30" : "w-1.5 bg-muted-foreground/30"
                 }`}
               />
             );
