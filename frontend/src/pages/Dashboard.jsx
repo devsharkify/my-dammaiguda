@@ -421,15 +421,151 @@ export default function Dashboard() {
           </Link>
         )}
 
+        {/* Wall Widget - Medium Sized */}
+        <Card className="border-border/50 overflow-hidden" data-testid="wall-widget">
+          <CardContent className="p-0">
+            <div className="p-3 bg-primary/5 border-b border-border/30">
+              <div className="flex items-center justify-between">
+                <h3 className="font-semibold text-sm flex items-center gap-2">
+                  <PenSquare className="h-4 w-4 text-primary" />
+                  {language === "te" ? "సిటిజన్ వాల్" : "Citizen Wall"}
+                </h3>
+                <Link to="/wall" className="text-xs text-primary flex items-center">
+                  {language === "te" ? "అన్నీ చూడండి" : "View All"}
+                  <ChevronRight className="h-3.5 w-3.5" />
+                </Link>
+              </div>
+            </div>
+            {latestWallPost ? (
+              <Link to="/wall" className="block p-4">
+                <div className="flex items-start gap-3">
+                  <div className="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center text-primary font-bold flex-shrink-0">
+                    {latestWallPost.user_name?.[0]?.toUpperCase() || "?"}
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center gap-2 mb-1">
+                      <p className="font-medium text-sm">{latestWallPost.user_name}</p>
+                      <span className="text-xs text-muted-foreground">
+                        {latestWallPost.created_at ? new Date(latestWallPost.created_at).toLocaleDateString() : ""}
+                      </span>
+                    </div>
+                    <p className="text-sm text-muted-foreground line-clamp-2">
+                      {latestWallPost.content?.substring(0, 100)}...
+                    </p>
+                    {latestWallPost.media_url && (
+                      <div className="mt-2 h-24 rounded-lg bg-muted overflow-hidden">
+                        <img src={latestWallPost.media_url} alt="" className="w-full h-full object-cover" />
+                      </div>
+                    )}
+                  </div>
+                </div>
+              </Link>
+            ) : (
+              <Link to="/wall" className="block p-4">
+                <div className="text-center py-4">
+                  <MessageSquare className="h-8 w-8 mx-auto text-muted-foreground/50 mb-2" />
+                  <p className="text-sm text-muted-foreground">
+                    {language === "te" ? "కమ్యూనిటీలో చేరండి" : "Join the community"}
+                  </p>
+                  <p className="text-xs text-muted-foreground mt-1">
+                    {language === "te" ? "మీ పొరుగువారితో కనెక్ట్ అవ్వండి" : "Connect with your neighbors"}
+                  </p>
+                </div>
+              </Link>
+            )}
+          </CardContent>
+        </Card>
+
+        {/* Citizen Benefits Slider */}
+        <div data-testid="benefits-section">
+          <div className="flex items-center justify-between mb-3">
+            <h3 className="font-semibold text-base flex items-center gap-2">
+              <Gift className="h-5 w-5 text-primary" />
+              {language === "te" ? "పౌర ప్రయోజనాలు" : "Citizen Benefits"}
+            </h3>
+            <Link to="/benefits" className="text-xs text-primary flex items-center">
+              {language === "te" ? "అన్నీ" : "All"}
+              <ChevronRight className="h-3.5 w-3.5" />
+            </Link>
+          </div>
+          <div className="flex gap-3 overflow-x-auto pb-2 scrollbar-hide -mx-4 px-4">
+            {/* Static benefit cards */}
+            <Link to="/benefits" className="flex-shrink-0 w-56">
+              <div className="h-32 rounded-xl overflow-hidden relative shadow-md">
+                <img 
+                  src="https://images.unsplash.com/photo-1579684385127-1ef15d508118?w=400&h=200&fit=crop" 
+                  alt="Senior Pension" 
+                  className="w-full h-full object-cover"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent" />
+                <div className="absolute bottom-0 left-0 right-0 p-3">
+                  <p className="text-white font-semibold text-sm">
+                    {language === "te" ? "వృద్ధాప్య పెన్షన్" : "Senior Pension Scheme"}
+                  </p>
+                  <p className="text-white/80 text-xs">₹2,500/month</p>
+                </div>
+              </div>
+            </Link>
+            <Link to="/benefits" className="flex-shrink-0 w-56">
+              <div className="h-32 rounded-xl overflow-hidden relative shadow-md">
+                <img 
+                  src="https://images.unsplash.com/photo-1576091160550-2173dba999ef?w=400&h=200&fit=crop" 
+                  alt="Health Camp" 
+                  className="w-full h-full object-cover"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent" />
+                <div className="absolute bottom-0 left-0 right-0 p-3">
+                  <p className="text-white font-semibold text-sm">
+                    {language === "te" ? "ఉచిత ఆరోగ్య క్యాంప్" : "Free Health Camp"}
+                  </p>
+                  <p className="text-white/80 text-xs">{language === "te" ? "ప్రతి ఆదివారం" : "Every Sunday"}</p>
+                </div>
+              </div>
+            </Link>
+            <Link to="/benefits" className="flex-shrink-0 w-56">
+              <div className="h-32 rounded-xl overflow-hidden relative shadow-md">
+                <img 
+                  src="https://images.unsplash.com/photo-1503676260728-1c00da094a0b?w=400&h=200&fit=crop" 
+                  alt="Education" 
+                  className="w-full h-full object-cover"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent" />
+                <div className="absolute bottom-0 left-0 right-0 p-3">
+                  <p className="text-white font-semibold text-sm">
+                    {language === "te" ? "విద్యా స్కాలర్‌షిప్" : "Education Scholarship"}
+                  </p>
+                  <p className="text-white/80 text-xs">₹15,000/year</p>
+                </div>
+              </div>
+            </Link>
+            <Link to="/benefits" className="flex-shrink-0 w-56">
+              <div className="h-32 rounded-xl overflow-hidden relative shadow-md">
+                <img 
+                  src="https://images.unsplash.com/photo-1582213782179-e0d53f98f2ca?w=400&h=200&fit=crop" 
+                  alt="Ration" 
+                  className="w-full h-full object-cover"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent" />
+                <div className="absolute bottom-0 left-0 right-0 p-3">
+                  <p className="text-white font-semibold text-sm">
+                    {language === "te" ? "రేషన్ కార్డు" : "Ration Card Benefits"}
+                  </p>
+                  <p className="text-white/80 text-xs">{language === "te" ? "ఉచిత బియ్యం" : "Free Rice"}</p>
+                </div>
+              </div>
+            </Link>
+          </div>
+        </div>
+
         {/* Groups Quick Access */}
         <Card className="border-border/50">
           <CardContent className="p-3">
             <div className="flex items-center justify-between mb-2">
-              <h3 className="font-semibold text-xs flex items-center gap-1.5">
-                <Users className="h-3.5 w-3.5 text-primary" />
+              <h3 className="font-semibold text-sm flex items-center gap-1.5">
+                <Users className="h-4 w-4 text-primary" />
                 {language === "te" ? "గ్రూప్‌లు" : "Groups"}
               </h3>
-              <Link to="/wall" className="text-[10px] text-primary flex items-center">
+              <Link to="/wall" className="text-xs text-primary flex items-center">
                 {language === "te" ? "అన్నీ" : "All"}
                 <ChevronRight className="h-3 w-3" />
               </Link>
@@ -437,13 +573,13 @@ export default function Dashboard() {
             
             {myGroups.length === 0 ? (
               <Link to="/wall">
-                <div className="flex items-center gap-2 p-2 bg-muted/50 rounded-lg">
-                  <div className="h-8 w-8 rounded-full bg-gradient-to-br from-purple-400 to-pink-500 flex items-center justify-center text-white">
-                    <Plus className="h-4 w-4" />
+                <div className="flex items-center gap-3 p-2 bg-muted/50 rounded-lg">
+                  <div className="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center text-primary">
+                    <Plus className="h-5 w-5" />
                   </div>
                   <div>
-                    <p className="text-xs font-medium">{language === "te" ? "గ్రూప్‌లో చేరండి" : "Join a Group"}</p>
-                    <p className="text-[10px] text-muted-foreground">{language === "te" ? "కమ్యూనిటీతో కనెక్ట్" : "Connect with community"}</p>
+                    <p className="text-sm font-medium">{language === "te" ? "గ్రూప్‌లో చేరండి" : "Join a Group"}</p>
+                    <p className="text-xs text-muted-foreground">{language === "te" ? "కమ్యూనిటీతో కనెక్ట్" : "Connect with community"}</p>
                   </div>
                 </div>
               </Link>
@@ -451,7 +587,7 @@ export default function Dashboard() {
               <div className="flex gap-2 overflow-x-auto">
                 {myGroups.slice(0, 5).map((group) => (
                   <Link key={group.id} to="/wall" className="flex-shrink-0">
-                    <div className="h-10 w-10 rounded-full bg-gradient-to-br from-purple-400 to-pink-500 flex items-center justify-center text-white font-bold text-xs">
+                    <div className="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center text-primary font-bold text-sm">
                       {group.name?.[0]?.toUpperCase()}
                     </div>
                   </Link>
@@ -465,29 +601,6 @@ export default function Dashboard() {
             )}
           </CardContent>
         </Card>
-
-        {/* Recent Issues - Compact */}
-        {recentIssues.length > 0 && (
-          <Card className="border-border/50">
-            <CardContent className="p-3">
-              <div className="flex items-center justify-between mb-2">
-                <h3 className="font-semibold text-xs">{language === "te" ? "ఇటీవలి సమస్యలు" : "Recent Issues"}</h3>
-                <Link to="/issues" className="text-[10px] text-primary">{language === "te" ? "అన్నీ" : "All"}</Link>
-              </div>
-              <div className="space-y-1.5">
-                {recentIssues.slice(0, 2).map((issue) => (
-                  <div key={issue.id} className="flex items-center gap-2 p-1.5 bg-muted/30 rounded-lg">
-                    <div className="h-7 w-7 rounded-lg bg-orange-100 flex items-center justify-center">
-                      <AlertTriangle className="h-3.5 w-3.5 text-orange-600" />
-                    </div>
-                    <p className="text-xs flex-1 truncate">{issue.description?.substring(0, 35)}...</p>
-                    <Badge variant="outline" className="text-[9px] h-5">{issue.status}</Badge>
-                  </div>
-                ))}
-              </div>
-            </CardContent>
-          </Card>
-        )}
       </div>
 
       {/* Floating AI Chat Button */}
