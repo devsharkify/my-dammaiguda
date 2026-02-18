@@ -21,12 +21,13 @@ from routers.doctor import router as doctor_router
 from routers.chat import router as chat_router
 from routers.wall import router as wall_router
 from routers.issues import router as issues_router
+from routers.notifications import router as notifications_router
 
 # Create FastAPI app
 app = FastAPI(
     title="My Dammaiguda API",
     description="Civic Engagement Platform for Dammaiguda Ward",
-    version="2.3.0"
+    version="2.5.0"
 )
 
 # CORS middleware
