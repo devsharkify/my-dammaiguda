@@ -165,7 +165,7 @@ export default function NewsShorts() {
   };
 
   const goToNext = useCallback(() => {
-    if (currentIndex < news.length - 1 && !isAnimating) {
+    if (currentIndex < mergedFeed.length - 1 && !isAnimating) {
       setIsAnimating(true);
       setSwipeDirection('up');
       setTimeout(() => {
@@ -174,7 +174,7 @@ export default function NewsShorts() {
         setIsAnimating(false);
       }, 300);
     }
-  }, [currentIndex, news.length, isAnimating]);
+  }, [currentIndex, mergedFeed.length, isAnimating]);
 
   const goToPrev = useCallback(() => {
     if (currentIndex > 0 && !isAnimating) {
