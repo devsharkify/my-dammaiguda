@@ -1,0 +1,50 @@
+{
+  "short_name": "My Dammaiguda",
+  "name": "My Dammaiguda - Civic Engagement Platform",
+  "description": "Civic engagement platform for Dammaiguda ward - Report issues, track fitness, access benefits",
+  "icons": [
+    {
+      "src": "favicon.ico",
+      "sizes": "64x64 32x32 24x24 16x16",
+      "type": "image/x-icon"
+    },
+    {
+      "src": "logo192.png",
+      "type": "image/png",
+      "sizes": "192x192",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "logo512.png",
+      "type": "image/png",
+      "sizes": "512x512",
+      "purpose": "any maskable"
+    }
+  ],
+  "start_url": ".",
+  "display": "standalone",
+  "theme_color": "#0F766E",
+  "background_color": "#F8F9FA",
+  "orientation": "portrait",
+  "scope": "/",
+  "lang": "te",
+  "dir": "ltr",
+  "categories": ["government", "utilities", "lifestyle"],
+  "screenshots": [],
+  "shortcuts": [
+    {
+      "name": "Report Issue",
+      "short_name": "Report",
+      "description": "Report a civic issue",
+      "url": "/report",
+      "icons": [{ "src": "logo192.png", "sizes": "192x192" }]
+    },
+    {
+      "name": "Kaizer Fit",
+      "short_name": "Fitness",
+      "description": "Track your fitness",
+      "url": "/fitness",
+      "icons": [{ "src": "logo192.png", "sizes": "192x192" }]
+    }
+  ]
+}
