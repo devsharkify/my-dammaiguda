@@ -309,3 +309,312 @@ async def sync_wearable_data(sync_data: WearableSync, user: dict = Depends(get_c
     await update_daily_fitness_summary(user["id"], sync_data.sync_date)
     
     return {"success": True, "synced_activities": synced_count}
+
+# ============== SMART DEVICE INTEGRATION ==============
+
+class PhoneSensorData(BaseModel):
+    steps: int
+    distance_meters: Optional[float] = None
+    calories: Optional[int] = None
+    active_minutes: Optional[int] = None
+    floors_climbed: Optional[int] = None
+    timestamp: str
+    source: str = "phone_pedometer"  # phone_pedometer, health_kit, google_fit
+
+class SmartWatchData(BaseModel):
+    device_brand: str  # apple, samsung, fitbit, garmin, mi, amazfit
+    device_model: Optional[str] = None
+    steps: int
+    heart_rate_current: Optional[int] = None
+    heart_rate_resting: Optional[int] = None
+    heart_rate_min: Optional[int] = None
+    heart_rate_max: Optional[int] = None
+    calories_total: Optional[int] = None
+    calories_active: Optional[int] = None
+    distance_meters: Optional[float] = None
+    active_minutes: Optional[int] = None
+    sleep_data: Optional[dict] = None
+    blood_oxygen: Optional[float] = None
+    stress_level: Optional[int] = None
+    sync_timestamp: str
+
+class DeviceConnection(BaseModel):
+    device_type: str  # phone, smartwatch
+    device_brand: Optional[str] = None
+    device_id: Optional[str] = None
+    device_name: Optional[str] = None
+    permissions: List[str] = []  # steps, heart_rate, sleep, etc.
+
+@router.post("/sync/phone-sensors")
+async def sync_phone_sensor_data(data: PhoneSensorData, user: dict = Depends(get_current_user)):
+    """Sync step data from phone's built-in sensors (pedometer, accelerometer)"""
+    today = datetime.now(timezone.utc).strftime("%Y-%m-%d")
+    
+    # Calculate estimated calories if not provided
+    weight = user.get("health_profile", {}).get("weight_kg", 70)
+    estimated_calories = data.calories or int(data.steps * 0.04 * (weight / 70))
+    
+    # Log as walking activity
+    activity = {
+        "id": generate_id(),
+        "user_id": user["id"],
+        "activity_type": "walking",
+        "duration_minutes": data.active_minutes or int(data.steps / 100),  # Estimate ~100 steps/min
+        "distance_km": (data.distance_meters or data.steps * 0.75) / 1000,  # ~0.75m per step
+        "calories_burned": estimated_calories,
+        "steps": data.steps,
+        "floors_climbed": data.floors_climbed,
+        "source": data.source,
+        "date": today,
+        "synced_at": data.timestamp,
+        "created_at": now_iso()
+    }
+    
+    # Check for duplicate sync (same source, same day)
+    existing = await db.activities.find_one({
+        "user_id": user["id"],
+        "date": today,
+        "source": data.source
+    })
+    
+    if existing:
+        # Update existing record
+        await db.activities.update_one(
+            {"id": existing["id"]},
+            {"$set": {
+                "steps": data.steps,
+                "distance_km": activity["distance_km"],
+                "calories_burned": estimated_calories,
+                "floors_climbed": data.floors_climbed,
+                "synced_at": data.timestamp,
+                "updated_at": now_iso()
+            }}
+        )
+        activity["id"] = existing["id"]
+        activity["action"] = "updated"
+    else:
+        await db.activities.insert_one(activity)
+        activity.pop("_id", None)
+        activity["action"] = "created"
+    
+    # Update daily summary
+    summary = await update_daily_fitness_summary(user["id"], today)
+    
+    return {
+        "success": True,
+        "activity": activity,
+        "daily_summary": summary
+    }
+
+@router.post("/sync/smartwatch")
+async def sync_smartwatch_data(data: SmartWatchData, user: dict = Depends(get_current_user)):
+    """Sync comprehensive health data from smartwatch"""
+    today = datetime.now(timezone.utc).strftime("%Y-%m-%d")
+    
+    # Store heart rate data
+    if data.heart_rate_current:
+        heart_rate_record = {
+            "id": generate_id(),
+            "user_id": user["id"],
+            "date": today,
+            "device_brand": data.device_brand,
+            "current": data.heart_rate_current,
+            "resting": data.heart_rate_resting,
+            "min": data.heart_rate_min,
+            "max": data.heart_rate_max,
+            "recorded_at": data.sync_timestamp,
+            "created_at": now_iso()
+        }
+        await db.heart_rate_logs.insert_one(heart_rate_record)
+    
+    # Store blood oxygen if available
+    if data.blood_oxygen:
+        spo2_record = {
+            "id": generate_id(),
+            "user_id": user["id"],
+            "date": today,
+            "spo2": data.blood_oxygen,
+            "device_brand": data.device_brand,
+            "recorded_at": data.sync_timestamp,
+            "created_at": now_iso()
+        }
+        await db.spo2_logs.insert_one(spo2_record)
+    
+    # Store stress level if available
+    if data.stress_level:
+        stress_record = {
+            "id": generate_id(),
+            "user_id": user["id"],
+            "date": today,
+            "stress_level": data.stress_level,
+            "device_brand": data.device_brand,
+            "recorded_at": data.sync_timestamp,
+            "created_at": now_iso()
+        }
+        await db.stress_logs.insert_one(stress_record)
+    
+    # Store sleep data if available
+    if data.sleep_data:
+        sleep_record = {
+            "id": generate_id(),
+            "user_id": user["id"],
+            "date": today,
+            "device_brand": data.device_brand,
+            "duration_hours": data.sleep_data.get("duration_hours"),
+            "deep_sleep_mins": data.sleep_data.get("deep_sleep_mins"),
+            "light_sleep_mins": data.sleep_data.get("light_sleep_mins"),
+            "rem_sleep_mins": data.sleep_data.get("rem_sleep_mins"),
+            "awake_mins": data.sleep_data.get("awake_mins"),
+            "sleep_score": data.sleep_data.get("score"),
+            "recorded_at": data.sync_timestamp,
+            "created_at": now_iso()
+        }
+        await db.sleep_logs.insert_one(sleep_record)
+    
+    # Log activity from smartwatch
+    weight = user.get("health_profile", {}).get("weight_kg", 70)
+    estimated_calories = data.calories_total or int(data.steps * 0.04 * (weight / 70))
+    
+    activity = {
+        "id": generate_id(),
+        "user_id": user["id"],
+        "activity_type": "walking",
+        "duration_minutes": data.active_minutes or int(data.steps / 100),
+        "distance_km": (data.distance_meters or data.steps * 0.75) / 1000,
+        "calories_burned": estimated_calories,
+        "steps": data.steps,
+        "heart_rate_avg": data.heart_rate_current,
+        "heart_rate_max": data.heart_rate_max,
+        "source": f"smartwatch_{data.device_brand}",
+        "device_model": data.device_model,
+        "date": today,
+        "synced_at": data.sync_timestamp,
+        "created_at": now_iso()
+    }
+    
+    # Check for duplicate
+    existing = await db.activities.find_one({
+        "user_id": user["id"],
+        "date": today,
+        "source": f"smartwatch_{data.device_brand}"
+    })
+    
+    if existing:
+        await db.activities.update_one(
+            {"id": existing["id"]},
+            {"$set": {
+                "steps": data.steps,
+                "distance_km": activity["distance_km"],
+                "calories_burned": estimated_calories,
+                "heart_rate_avg": data.heart_rate_current,
+                "heart_rate_max": data.heart_rate_max,
+                "synced_at": data.sync_timestamp,
+                "updated_at": now_iso()
+            }}
+        )
+    else:
+        await db.activities.insert_one(activity)
+    
+    # Update daily summary
+    summary = await update_daily_fitness_summary(user["id"], today)
+    
+    return {
+        "success": True,
+        "synced_data": {
+            "steps": data.steps,
+            "heart_rate": data.heart_rate_current,
+            "blood_oxygen": data.blood_oxygen,
+            "stress_level": data.stress_level,
+            "sleep": data.sleep_data is not None
+        },
+        "daily_summary": summary
+    }
+
+@router.post("/devices/connect")
+async def connect_device(device: DeviceConnection, user: dict = Depends(get_current_user)):
+    """Register a connected device for the user"""
+    connected_device = {
+        "id": generate_id(),
+        "user_id": user["id"],
+        "device_type": device.device_type,
+        "device_brand": device.device_brand,
+        "device_id": device.device_id,
+        "device_name": device.device_name,
+        "permissions": device.permissions,
+        "connected_at": now_iso(),
+        "last_sync": None,
+        "is_active": True
+    }
+    
+    # Check if already connected
+    existing = await db.connected_devices.find_one({
+        "user_id": user["id"],
+        "device_type": device.device_type,
+        "device_brand": device.device_brand
+    })
+    
+    if existing:
+        await db.connected_devices.update_one(
+            {"id": existing["id"]},
+            {"$set": {
+                "device_id": device.device_id,
+                "device_name": device.device_name,
+                "permissions": device.permissions,
+                "is_active": True,
+                "updated_at": now_iso()
+            }}
+        )
+        return {"success": True, "message": "Device updated", "device_id": existing["id"]}
+    
+    await db.connected_devices.insert_one(connected_device)
+    connected_device.pop("_id", None)
+    
+    return {"success": True, "message": "Device connected", "device": connected_device}
+
+@router.get("/devices")
+async def get_connected_devices(user: dict = Depends(get_current_user)):
+    """Get user's connected devices"""
+    devices = await db.connected_devices.find(
+        {"user_id": user["id"], "is_active": True},
+        {"_id": 0}
+    ).to_list(20)
+    
+    return {"devices": devices, "count": len(devices)}
+
+@router.delete("/devices/{device_id}")
+async def disconnect_device(device_id: str, user: dict = Depends(get_current_user)):
+    """Disconnect a device"""
+    result = await db.connected_devices.update_one(
+        {"id": device_id, "user_id": user["id"]},
+        {"$set": {"is_active": False, "disconnected_at": now_iso()}}
+    )
+    
+    if result.modified_count == 0:
+        raise HTTPException(status_code=404, detail="Device not found")
+    
+    return {"success": True, "message": "Device disconnected"}
+
+@router.get("/health-data/heart-rate")
+async def get_heart_rate_history(days: int = 7, user: dict = Depends(get_current_user)):
+    """Get heart rate history from smart devices"""
+    cutoff = (datetime.now(timezone.utc) - timedelta(days=days)).strftime("%Y-%m-%d")
+    
+    records = await db.heart_rate_logs.find(
+        {"user_id": user["id"], "date": {"$gte": cutoff}},
+        {"_id": 0}
+    ).sort("created_at", -1).to_list(100)
+    
+    return {"records": records, "count": len(records)}
+
+@router.get("/health-data/sleep")
+async def get_sleep_history(days: int = 7, user: dict = Depends(get_current_user)):
+    """Get sleep history from smart devices"""
+    cutoff = (datetime.now(timezone.utc) - timedelta(days=days)).strftime("%Y-%m-%d")
+    
+    records = await db.sleep_logs.find(
+        {"user_id": user["id"], "date": {"$gte": cutoff}},
+        {"_id": 0}
+    ).sort("date", -1).to_list(30)
+    
+    return {"records": records, "count": len(records)}
+
