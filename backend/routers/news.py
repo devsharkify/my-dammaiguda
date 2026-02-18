@@ -405,7 +405,7 @@ async def get_news_by_category(
 ):
     """Get news for a category with optional AI rephrasing"""
     if category not in NEWS_CATEGORIES:
-        raise HTTPException(status_code=400, detail=f"Invalid category")
+        raise HTTPException(status_code=400, detail="Invalid category")
     
     all_news = []
     
