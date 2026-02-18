@@ -9,8 +9,9 @@ router = APIRouter(prefix="/wall", tags=["Citizen Wall"])
 # ============== MODELS ==============
 
 class CreatePost(BaseModel):
-    content: str
+    content: str = ""
     image_url: Optional[str] = None
+    video_url: Optional[str] = None
     visibility: str = "public"  # public, colony
     colony: Optional[str] = None
 
