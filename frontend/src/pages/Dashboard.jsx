@@ -452,30 +452,28 @@ export default function Dashboard() {
           </Link>
         </div>
 
-        {/* AQI Widget - Compact */}
-        {aqiData && (
-          <Link to="/aqi">
-            <Card className="border-border/50 overflow-hidden">
-              <CardContent className="p-3 flex items-center justify-between">
-                <div className="flex items-center gap-3">
-                  <div className={`h-10 w-10 rounded-lg ${getAqiColor(aqiData.dammaiguda?.aqi)} flex items-center justify-center`}>
-                    <Wind className="h-5 w-5" />
-                  </div>
-                  <div>
-                    <p className="text-xs text-muted-foreground">{language === "te" ? "వాయు నాణ్యత" : "Air Quality"}</p>
-                    <p className="font-bold text-lg">{aqiData.dammaiguda?.aqi || "—"}</p>
-                  </div>
+        {/* AQI Widget - Always Show */}
+        <Link to="/aqi">
+          <Card className="border-border/50 overflow-hidden">
+            <CardContent className="p-3 flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <div className={`h-10 w-10 rounded-lg ${getAqiColor(aqiData?.dammaiguda?.aqi)} flex items-center justify-center`}>
+                  <Wind className="h-5 w-5" />
                 </div>
-                <div className="text-right">
-                  <Badge className={getAqiColor(aqiData.dammaiguda?.aqi)}>
-                    {aqiData.dammaiguda?.category || "Loading"}
-                  </Badge>
-                  <p className="text-[10px] text-muted-foreground mt-1">Dammaiguda</p>
+                <div>
+                  <p className="text-xs text-muted-foreground">{language === "te" ? "వాయు నాణ్యత" : "Air Quality"}</p>
+                  <p className="font-bold text-lg">{aqiData?.dammaiguda?.aqi || "—"}</p>
                 </div>
-              </CardContent>
-            </Card>
-          </Link>
-        )}
+              </div>
+              <div className="text-right">
+                <Badge className={getAqiColor(aqiData?.dammaiguda?.aqi)}>
+                  {aqiData?.dammaiguda?.category || "Loading"}
+                </Badge>
+                <p className="text-[10px] text-muted-foreground mt-1">Dammaiguda</p>
+              </div>
+            </CardContent>
+          </Card>
+        </Link>
 
         {/* Wall Widget - Medium Sized */}
         <Card className="border-border/50 overflow-hidden" data-testid="wall-widget">
