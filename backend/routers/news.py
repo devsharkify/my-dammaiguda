@@ -1,5 +1,5 @@
-"""News Router - Multi-source news aggregation with admin push"""
-from fastapi import APIRouter, HTTPException, Depends, Query
+"""News Router - Multi-source news aggregation with AI rephrasing and admin push"""
+from fastapi import APIRouter, HTTPException, Depends, Query, BackgroundTasks
 from pydantic import BaseModel
 from typing import Optional, List, Dict
 from datetime import datetime, timezone
@@ -8,9 +8,53 @@ from bs4 import BeautifulSoup
 import logging
 import time
 import re
+import os
+import asyncio
+from dotenv import load_dotenv
 from .utils import db, generate_id, now_iso, get_current_user
 
+load_dotenv()
+
 router = APIRouter(prefix="/news", tags=["News"])
+
+# ============== AI REPHRASING SETUP ==============
+EMERGENT_LLM_KEY = os.environ.get("EMERGENT_LLM_KEY")
+
+async def rephrase_with_ai(title: str, summary: str) -> Dict:
+    """Use AI to rephrase news article for originality"""
+    if not EMERGENT_LLM_KEY:
+        return {"title": title, "summary": summary}
+    
+    try:
+        from emergentintegrations.llm.chat import LlmChat, UserMessage
+        
+        chat = LlmChat(
+            api_key=EMERGENT_LLM_KEY,
+            session_id=f"news_rephrase_{int(time.time())}",
+            system_message="You are a professional news editor. Rephrase the given news title and summary to be original while preserving all key facts. Keep it concise and professional. Output format: TITLE: [rephrased title]\nSUMMARY: [rephrased summary in 2-3 sentences]"
+        ).with_model("openai", "gpt-4o-mini")
+        
+        user_message = UserMessage(
+            text=f"Rephrase this news:\nTitle: {title}\nSummary: {summary}"
+        )
+        
+        response = await chat.send_message(user_message)
+        
+        # Parse response
+        lines = response.strip().split('\n')
+        rephrased_title = title
+        rephrased_summary = summary
+        
+        for line in lines:
+            if line.startswith("TITLE:"):
+                rephrased_title = line.replace("TITLE:", "").strip()
+            elif line.startswith("SUMMARY:"):
+                rephrased_summary = line.replace("SUMMARY:", "").strip()
+        
+        return {"title": rephrased_title, "summary": rephrased_summary}
+    except Exception as e:
+        logging.error(f"AI rephrase error: {str(e)}")
+        return {"title": title, "summary": summary}
 
 # ============== NEWS SOURCES CONFIG ==============
 
@@ -27,24 +71,28 @@ NEWS_CATEGORIES = {
     "business": {"en": "Business", "te": "వ్యాపారం"}
 }
 
-# Multiple RSS sources for better coverage
+# Enhanced RSS sources with more reliable feeds
 RSS_FEEDS = {
     "local": [
         "https://www.thehansindia.com/feeds/telangana.xml",
+        "https://telanganatoday.com/feed",
         "https://www.deccanchronicle.com/rss_feed/?rss_section=nation"
     ],
     "city": [
         "https://www.thehansindia.com/feeds/telangana.xml",
-        "https://www.deccanchronicle.com/rss_feed/?rss_section=nation"
+        "https://telanganatoday.com/feed",
+        "https://www.siasat.com/feed/"
     ],
     "state": [
         "https://www.thehansindia.com/feeds/telangana.xml",
-        "https://telanganatoday.com/feed"
+        "https://telanganatoday.com/feed",
+        "https://www.siasat.com/feed/"
     ],
     "national": [
         "https://www.thehindu.com/news/national/feeder/default.rss",
         "https://timesofindia.indiatimes.com/rssfeeds/296589292.cms",
-        "https://www.deccanchronicle.com/rss_feed/?rss_section=nation"
+        "https://www.deccanchronicle.com/rss_feed/?rss_section=nation",
+        "https://www.siasat.com/feed/"
     ],
     "international": [
         "https://www.thehindu.com/news/international/feeder/default.rss",
@@ -52,11 +100,13 @@ RSS_FEEDS = {
     ],
     "sports": [
         "https://www.thehindu.com/sport/feeder/default.rss",
-        "https://timesofindia.indiatimes.com/rssfeeds/4719148.cms"
+        "https://timesofindia.indiatimes.com/rssfeeds/4719148.cms",
+        "https://www.siasat.com/sports/feed/"
     ],
     "entertainment": [
         "https://www.thehindu.com/entertainment/feeder/default.rss",
-        "https://timesofindia.indiatimes.com/rssfeeds/1081479906.cms"
+        "https://timesofindia.indiatimes.com/rssfeeds/1081479906.cms",
+        "https://www.siasat.com/entertainment/feed/"
     ],
     "tech": [
         "https://www.thehindu.com/sci-tech/technology/feeder/default.rss",
@@ -72,13 +122,13 @@ RSS_FEEDS = {
     ]
 }
 
-# Telugu news sources
-TELUGU_SOURCES = [
-    {"name": "Eenadu", "url": "https://www.eenadu.net/"},
-    {"name": "Sakshi", "url": "https://www.sakshi.com/"},
-    {"name": "TV9 Telugu", "url": "https://tv9telugu.com/"},
-    {"name": "ETV Bharat", "url": "https://www.etvbharat.com/telugu/"}
-]
+# Telugu news sources for web scraping
+TELUGU_SOURCES = {
+    "eenadu": {"name": "Eenadu", "url": "https://www.eenadu.net/telangana", "selector": ".news-item"},
+    "sakshi": {"name": "Sakshi", "url": "https://www.sakshi.com/telugu/telangana", "selector": ".story-card"},
+    "tv9": {"name": "TV9 Telugu", "url": "https://tv9telugu.com/telangana", "selector": ".news-card"},
+    "siasat": {"name": "Siasat", "url": "https://www.siasat.com/", "selector": "article"}
+}
 
 # ============== MODELS ==============
 
@@ -93,16 +143,28 @@ class AdminNewsPush(BaseModel):
     is_pinned: bool = True
     priority: int = 1  # 1=highest
 
+class AdminNewsUpdate(BaseModel):
+    title: Optional[str] = None
+    title_te: Optional[str] = None
+    summary: Optional[str] = None
+    summary_te: Optional[str] = None
+    is_pinned: Optional[bool] = None
+    priority: Optional[int] = None
+    is_active: Optional[bool] = None
+
 # ============== HELPER FUNCTIONS ==============
 
-async def scrape_rss_feed(url: str, category: str, limit: int = 10) -> List[Dict]:
-    """Scrape news from RSS feed"""
+async def scrape_rss_feed(url: str, category: str, limit: int = 10, use_ai: bool = False) -> List[Dict]:
+    """Scrape news from RSS feed with optional AI rephrasing"""
     news_items = []
     
     try:
         async with httpx.AsyncClient() as client:
-            headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36'}
-            response = await client.get(url, headers=headers, timeout=15.0, follow_redirects=True)
+            headers = {
+                'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+                'Accept': 'application/rss+xml, application/xml, text/xml, */*'
+            }
+            response = await client.get(url, headers=headers, timeout=20.0, follow_redirects=True)
             
             if response.status_code == 200:
                 soup = BeautifulSoup(response.text, 'lxml-xml')
@@ -114,17 +176,24 @@ async def scrape_rss_feed(url: str, category: str, limit: int = 10) -> List[Dict
                     description = item.find('description')
                     pub_date = item.find('pubDate')
                     
-                    # Extract image
+                    # Extract image from various possible locations
                     image = None
                     media = item.find('media:content') or item.find('enclosure') or item.find('media:thumbnail')
                     if media and media.get('url'):
                         image = media.get('url')
                     
+                    # Try to extract image from description HTML
+                    if not image and description:
+                        desc_soup = BeautifulSoup(description.text, 'html.parser')
+                        img_tag = desc_soup.find('img')
+                        if img_tag and img_tag.get('src'):
+                            image = img_tag.get('src')
+                    
                     # Clean description
                     desc_text = ""
                     if description:
                         desc_soup = BeautifulSoup(description.text, 'html.parser')
-                        desc_text = desc_soup.get_text()[:300]
+                        desc_text = desc_soup.get_text()[:400].strip()
                     
                     # Determine source from URL
                     source = "News Feed"
@@ -138,11 +207,26 @@ async def scrape_rss_feed(url: str, category: str, limit: int = 10) -> List[Dict
                         source = "The Hans India"
                     elif "telangana" in url.lower():
                         source = "Telangana Today"
+                    elif "siasat" in url:
+                        source = "Siasat"
+                    elif "tv9" in url:
+                        source = "TV9"
+                    elif "eenadu" in url:
+                        source = "Eenadu"
+                    
+                    title_text = title.text.strip() if title else "No title"
+                    summary_text = desc_text or "Read more..."
+                    
+                    # Apply AI rephrasing if enabled
+                    if use_ai and EMERGENT_LLM_KEY and idx < 5:  # Limit AI calls to first 5 items
+                        rephrased = await rephrase_with_ai(title_text, summary_text)
+                        title_text = rephrased["title"]
+                        summary_text = rephrased["summary"]
                     
                     news_items.append({
-                        "id": f"{category}_{idx}_{int(time.time())}",
-                        "title": title.text.strip() if title else "No title",
-                        "summary": desc_text,
+                        "id": f"{category}_{idx}_{int(time.time())}_{hash(title_text) % 10000}",
+                        "title": title_text,
+                        "summary": summary_text,
                         "link": link.text.strip() if link else "",
                         "image": image,
                         "category": category,
@@ -151,15 +235,87 @@ async def scrape_rss_feed(url: str, category: str, limit: int = 10) -> List[Dict
                         "published_at": pub_date.text if pub_date else datetime.now(timezone.utc).isoformat(),
                         "source": source,
                         "is_admin_pushed": False,
-                        "is_pinned": False
+                        "is_pinned": False,
+                        "is_ai_rephrased": use_ai
                     })
     except Exception as e:
         logging.error(f"RSS scrape error for {url}: {str(e)}")
     
     return news_items
 
+async def scrape_website(source_key: str, category: str = "local", limit: int = 5) -> List[Dict]:
+    """Scrape Telugu news websites directly"""
+    news_items = []
+    source = TELUGU_SOURCES.get(source_key)
+    
+    if not source:
+        return news_items
+    
+    try:
+        async with httpx.AsyncClient() as client:
+            headers = {
+                'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36',
+                'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
+                'Accept-Language': 'en-US,en;q=0.5,te;q=0.3'
+            }
+            response = await client.get(source["url"], headers=headers, timeout=15.0, follow_redirects=True)
+            
+            if response.status_code == 200:
+                soup = BeautifulSoup(response.text, 'html.parser')
+                
+                # Generic news item extraction
+                articles = soup.find_all(['article', 'div'], class_=lambda x: x and any(
+                    term in str(x).lower() for term in ['news', 'story', 'article', 'post', 'card']
+                ))[:limit]
+                
+                for idx, article in enumerate(articles):
+                    # Extract title
+                    title_elem = article.find(['h1', 'h2', 'h3', 'h4', 'a'])
+                    title = title_elem.get_text().strip() if title_elem else ""
+                    
+                    # Extract link
+                    link_elem = article.find('a', href=True)
+                    link = link_elem['href'] if link_elem else ""
+                    if link and not link.startswith('http'):
+                        link = source["url"].rstrip('/') + '/' + link.lstrip('/')
+                    
+                    # Extract image
+                    img_elem = article.find('img', src=True)
+                    image = img_elem['src'] if img_elem else None
+                    if image and not image.startswith('http'):
+                        image = source["url"].rstrip('/') + '/' + image.lstrip('/')
+                    
+                    # Extract summary
+                    summary_elem = article.find(['p', 'span', 'div'], class_=lambda x: x and any(
+                        term in str(x).lower() for term in ['desc', 'summary', 'excerpt', 'text']
+                    ))
+                    summary = summary_elem.get_text().strip()[:300] if summary_elem else ""
+                    
+                    if title and len(title) > 10:
+                        news_items.append({
+                            "id": f"{source_key}_{idx}_{int(time.time())}",
+                            "title": title,
+                            "title_te": title,  # Already in Telugu
+                            "summary": summary or title[:100],
+                            "summary_te": summary or title[:100],
+                            "link": link,
+                            "image": image,
+                            "category": category,
+                            "category_label": NEWS_CATEGORIES.get(category, {}).get("en", category),
+                            "category_label_te": NEWS_CATEGORIES.get(category, {}).get("te", category),
+                            "published_at": datetime.now(timezone.utc).isoformat(),
+                            "source": source["name"],
+                            "is_admin_pushed": False,
+                            "is_pinned": False,
+                            "is_telugu_source": True
+                        })
+    except Exception as e:
+        logging.error(f"Website scrape error for {source_key}: {str(e)}")
+    
+    return news_items
+
 def generate_placeholder_news(category: str, limit: int = 10) -> List[Dict]:
-    """Generate placeholder news"""
+    """Generate placeholder news when scraping fails"""
     placeholder_news = {
         "local": [
             {"title": "Dammaiguda Road Development Project Announced", "title_te": "దమ్మాయిగూడ రోడ్ అభివృద్ధి ప్రాజెక్ట్ ప్రకటన"},
@@ -242,8 +398,12 @@ async def get_news_categories():
     return NEWS_CATEGORIES
 
 @router.get("/{category}")
-async def get_news_by_category(category: str, limit: int = 20):
-    """Get news for a category"""
+async def get_news_by_category(
+    category: str, 
+    limit: int = 20,
+    use_ai: bool = Query(False, description="Use AI to rephrase articles")
+):
+    """Get news for a category with optional AI rephrasing"""
     if category not in NEWS_CATEGORIES:
         raise HTTPException(status_code=400, detail=f"Invalid category")
     
@@ -259,29 +419,56 @@ async def get_news_by_category(category: str, limit: int = 20):
         news["is_admin_pushed"] = True
         all_news.append(news)
     
-    # Then scrape from RSS feeds
+    # Scrape from RSS feeds concurrently
     feeds = RSS_FEEDS.get(category, [])
-    for feed_url in feeds:
-        scraped = await scrape_rss_feed(feed_url, category, limit=limit // len(feeds) if feeds else limit)
-        all_news.extend(scraped)
+    if feeds:
+        tasks = [scrape_rss_feed(feed_url, category, limit=limit // len(feeds), use_ai=use_ai) for feed_url in feeds]
+        results = await asyncio.gather(*tasks, return_exceptions=True)
+        
+        for result in results:
+            if isinstance(result, list):
+                all_news.extend(result)
+    
+    # Try Telugu sources for local/state/city news
+    if category in ["local", "city", "state"]:
+        for source_key in ["siasat", "eenadu"]:
+            telugu_news = await scrape_website(source_key, category, limit=3)
+            all_news.extend(telugu_news)
     
     # If no news found, use placeholders
     if len(all_news) <= len(pinned_news):
         all_news.extend(generate_placeholder_news(category, limit))
     
+    # Remove duplicates based on title similarity
+    seen_titles = set()
+    unique_news = []
+    for news in all_news:
+        title_key = news.get("title", "")[:50].lower()
+        if title_key not in seen_titles:
+            seen_titles.add(title_key)
+            unique_news.append(news)
+    
     # Sort: pinned first, then by date
-    all_news.sort(key=lambda x: (not x.get("is_pinned", False), not x.get("is_admin_pushed", False), x.get("published_at", "")), reverse=True)
+    unique_news.sort(key=lambda x: (
+        not x.get("is_pinned", False), 
+        not x.get("is_admin_pushed", False), 
+        x.get("published_at", "")
+    ), reverse=True)
     
     return {
         "category": category,
         "category_info": NEWS_CATEGORIES[category],
-        "news": all_news[:limit],
-        "count": len(all_news[:limit]),
+        "news": unique_news[:limit],
+        "count": len(unique_news[:limit]),
+        "ai_enabled": use_ai,
         "fetched_at": now_iso()
     }
 
 @router.get("/feed/all")
-async def get_all_news(limit: int = 5):
+async def get_all_news(
+    limit: int = 5,
+    use_ai: bool = Query(False, description="Use AI to rephrase articles")
+):
     """Get mixed news from all categories"""
     all_news = []
     
@@ -295,16 +482,34 @@ async def get_all_news(limit: int = 5):
         news["is_admin_pushed"] = True
         all_news.append(news)
     
-    for category in ["local", "city", "national", "sports", "entertainment"]:
+    # Fetch from main categories concurrently
+    categories_to_fetch = ["local", "city", "national", "sports", "entertainment"]
+    tasks = []
+    
+    for category in categories_to_fetch:
         feeds = RSS_FEEDS.get(category, [])
         if feeds:
-            news = await scrape_rss_feed(feeds[0], category, limit)
-            all_news.extend(news)
+            tasks.append(scrape_rss_feed(feeds[0], category, limit, use_ai=use_ai))
     
-    all_news.sort(key=lambda x: (not x.get("is_pinned", False), x.get("published_at", "")), reverse=True)
+    results = await asyncio.gather(*tasks, return_exceptions=True)
+    
+    for result in results:
+        if isinstance(result, list):
+            all_news.extend(result)
+    
+    # Remove duplicates
+    seen_titles = set()
+    unique_news = []
+    for news in all_news:
+        title_key = news.get("title", "")[:50].lower()
+        if title_key not in seen_titles:
+            seen_titles.add(title_key)
+            unique_news.append(news)
+    
+    unique_news.sort(key=lambda x: (not x.get("is_pinned", False), x.get("published_at", "")), reverse=True)
     
     return {
-        "news": all_news[:limit * 6],
+        "news": unique_news[:limit * 6],
         "categories": list(NEWS_CATEGORIES.keys()),
         "fetched_at": now_iso()
     }
@@ -313,7 +518,7 @@ async def get_all_news(limit: int = 5):
 
 @router.post("/admin/push")
 async def admin_push_news(news: AdminNewsPush, user: dict = Depends(get_current_user)):
-    """Admin: Push a news article"""
+    """Admin: Push/create a news article"""
     if user.get("role") != "admin":
         raise HTTPException(status_code=403, detail="Admin access required")
     
@@ -357,18 +562,38 @@ async def get_admin_pushed_news(user: dict = Depends(get_current_user)):
     return news
 
 @router.put("/admin/news/{news_id}")
-async def update_admin_news(news_id: str, updates: dict, user: dict = Depends(get_current_user)):
-    """Admin: Update pushed news"""
+async def update_admin_news(news_id: str, updates: AdminNewsUpdate, user: dict = Depends(get_current_user)):
+    """Admin: Update pushed news article"""
     if user.get("role") != "admin":
         raise HTTPException(status_code=403, detail="Admin access required")
     
-    allowed_fields = ["title", "title_te", "summary", "summary_te", "is_pinned", "priority", "is_active"]
-    update_data = {k: v for k, v in updates.items() if k in allowed_fields}
+    update_data = {k: v for k, v in updates.dict().items() if v is not None}
     
     if update_data:
+        update_data["updated_at"] = now_iso()
+        update_data["updated_by"] = user["id"]
         await db.admin_news.update_one({"id": news_id}, {"$set": update_data})
     
-    return {"success": True, "message": "News updated"}
+    updated = await db.admin_news.find_one({"id": news_id}, {"_id": 0})
+    return {"success": True, "news": updated}
+
+@router.post("/admin/news/{news_id}/pin")
+async def toggle_pin_news(news_id: str, user: dict = Depends(get_current_user)):
+    """Admin: Toggle pin status for a news article"""
+    if user.get("role") != "admin":
+        raise HTTPException(status_code=403, detail="Admin access required")
+    
+    news = await db.admin_news.find_one({"id": news_id})
+    if not news:
+        raise HTTPException(status_code=404, detail="News not found")
+    
+    new_pinned = not news.get("is_pinned", False)
+    await db.admin_news.update_one(
+        {"id": news_id}, 
+        {"$set": {"is_pinned": new_pinned, "updated_at": now_iso()}}
+    )
+    
+    return {"success": True, "is_pinned": new_pinned}
 
 @router.delete("/admin/news/{news_id}")
 async def delete_admin_news(news_id: str, user: dict = Depends(get_current_user)):
@@ -376,13 +601,20 @@ async def delete_admin_news(news_id: str, user: dict = Depends(get_current_user)
     if user.get("role") != "admin":
         raise HTTPException(status_code=403, detail="Admin access required")
     
-    await db.admin_news.delete_one({"id": news_id})
+    result = await db.admin_news.delete_one({"id": news_id})
     
-    return {"success": True, "message": "News deleted"}
+    return {"success": True, "deleted": result.deleted_count > 0}
 
-@router.post("/save")
+# ============== USER ROUTES ==============
+
+@router.post("/save/{article_id}")
 async def save_news_article(article_id: str, user: dict = Depends(get_current_user)):
-    """Save a news article"""
+    """Save a news article for later"""
+    # Check if already saved
+    existing = await db.saved_news.find_one({"user_id": user["id"], "article_id": article_id})
+    if existing:
+        return {"success": True, "message": "Already saved"}
+    
     saved = {
         "id": generate_id(),
         "user_id": user["id"],
@@ -393,11 +625,17 @@ async def save_news_article(article_id: str, user: dict = Depends(get_current_us
     await db.saved_news.insert_one(saved)
     return {"success": True, "message": "Article saved"}
 
-@router.get("/saved")
+@router.delete("/save/{article_id}")
+async def unsave_news_article(article_id: str, user: dict = Depends(get_current_user)):
+    """Remove a saved news article"""
+    await db.saved_news.delete_one({"user_id": user["id"], "article_id": article_id})
+    return {"success": True, "message": "Article removed"}
+
+@router.get("/saved/list")
 async def get_saved_news(user: dict = Depends(get_current_user)):
-    """Get saved articles"""
+    """Get user's saved articles"""
     saved = await db.saved_news.find(
         {"user_id": user["id"]}, {"_id": 0}
     ).sort("saved_at", -1).to_list(100)
     
-    return saved
+    return {"saved": saved, "count": len(saved)}
