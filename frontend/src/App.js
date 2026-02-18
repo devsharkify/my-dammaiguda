@@ -22,6 +22,7 @@ import Profile from "./pages/Profile";
 import MyFamily from "./pages/MyFamily";
 import AQIReport from "./pages/AQIReport";
 import NewsShorts from "./pages/NewsShorts";
+import CitizenWall from "./pages/CitizenWall";
 
 import "./App.css";
 
