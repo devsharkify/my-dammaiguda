@@ -344,6 +344,197 @@ async def scrape_aqi_in(url: str) -> dict:
             "error": str(e)
         }
 
+# ============== GEO-FENCING HELPERS ==============
+
+import math
+
+def haversine_distance(lat1: float, lon1: float, lat2: float, lon2: float) -> float:
+    """Calculate distance between two GPS coordinates in meters"""
+    R = 6371000  # Earth's radius in meters
+    phi1, phi2 = math.radians(lat1), math.radians(lat2)
+    delta_phi = math.radians(lat2 - lat1)
+    delta_lambda = math.radians(lon2 - lon1)
+    
+    a = math.sin(delta_phi/2)**2 + math.cos(phi1) * math.cos(phi2) * math.sin(delta_lambda/2)**2
+    c = 2 * math.atan2(math.sqrt(a), math.sqrt(1-a))
+    
+    return R * c
+
+def is_inside_geofence(lat: float, lon: float, fence_lat: float, fence_lon: float, radius: int) -> bool:
+    """Check if a point is inside a circular geofence"""
+    distance = haversine_distance(lat, lon, fence_lat, fence_lon)
+    return distance <= radius
+
+# ============== NEWS SCRAPING HELPERS ==============
+
+NEWS_SOURCES = {
+    "local": [
+        {"name": "Dammaiguda Updates", "url": "https://www.thehansindia.com/telangana", "region": "dammaiguda"},
+        {"name": "Secunderabad News", "url": "https://www.thehansindia.com/telangana", "region": "secunderabad"}
+    ],
+    "city": [
+        {"name": "Hyderabad News", "url": "https://www.thehansindia.com/telangana/hyderabad", "region": "hyderabad"}
+    ],
+    "state": [
+        {"name": "Telangana Today", "url": "https://telanganatoday.com/", "region": "telangana"}
+    ],
+    "national": [
+        {"name": "India News", "url": "https://www.thehindu.com/news/national/", "region": "india"}
+    ],
+    "international": [
+        {"name": "World News", "url": "https://www.thehindu.com/news/international/", "region": "world"}
+    ]
+}
+
+NEWS_CATEGORIES = {
+    "local": {"en": "Local - Dammaiguda", "te": "స్థానిక - దమ్మాయిగూడ"},
+    "city": {"en": "City - Hyderabad", "te": "నగరం - హైదరాబాద్"},
+    "state": {"en": "State - Telangana", "te": "రాష్ట్రం - తెలంగాణ"},
+    "national": {"en": "National - India", "te": "జాతీయ - భారతదేశం"},
+    "international": {"en": "International", "te": "అంతర్జాతీయ"},
+    "sports": {"en": "Sports", "te": "క్రీడలు"},
+    "entertainment": {"en": "Entertainment", "te": "వినోదం"},
+    "tech": {"en": "Technology", "te": "టెక్నాలజీ"},
+    "health": {"en": "Health", "te": "ఆరోగ్యం"},
+    "business": {"en": "Business", "te": "వ్యాపారం"}
+}
+
+async def scrape_news_from_rss(category: str = "national", limit: int = 20) -> List[Dict]:
+    """Scrape news from various RSS feeds and websites"""
+    news_items = []
+    
+    # RSS Feed URLs by category
+    rss_feeds = {
+        "local": "https://www.thehansindia.com/feeds/telangana.xml",
+        "city": "https://www.thehansindia.com/feeds/telangana.xml",
+        "state": "https://www.thehansindia.com/feeds/telangana.xml",
+        "national": "https://www.thehindu.com/news/national/feeder/default.rss",
+        "international": "https://www.thehindu.com/news/international/feeder/default.rss",
+        "sports": "https://www.thehindu.com/sport/feeder/default.rss",
+        "entertainment": "https://www.thehindu.com/entertainment/feeder/default.rss",
+        "tech": "https://www.thehindu.com/sci-tech/technology/feeder/default.rss",
+        "health": "https://www.thehindu.com/sci-tech/health/feeder/default.rss",
+        "business": "https://www.thehindu.com/business/feeder/default.rss"
+    }
+    
+    feed_url = rss_feeds.get(category, rss_feeds["national"])
+    
+    try:
+        async with httpx.AsyncClient() as client:
+            headers = {
+                'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36'
+            }
+            response = await client.get(feed_url, headers=headers, timeout=15.0, follow_redirects=True)
+            
+            if response.status_code == 200:
+                soup = BeautifulSoup(response.text, 'lxml-xml')
+                items = soup.find_all('item')[:limit]
+                
+                for idx, item in enumerate(items):
+                    title = item.find('title')
+                    link = item.find('link')
+                    description = item.find('description')
+                    pub_date = item.find('pubDate')
+                    
+                    # Extract image if available
+                    image = None
+                    media_content = item.find('media:content') or item.find('enclosure')
+                    if media_content and media_content.get('url'):
+                        image = media_content.get('url')
+                    
+                    news_items.append({
+                        "id": f"{category}_{idx}_{int(time.time())}",
+                        "title": title.text.strip() if title else "No title",
+                        "summary": description.text.strip()[:200] if description else "",
+                        "link": link.text.strip() if link else "",
+                        "image": image,
+                        "category": category,
+                        "category_label": NEWS_CATEGORIES.get(category, {}).get("en", category),
+                        "category_label_te": NEWS_CATEGORIES.get(category, {}).get("te", category),
+                        "published_at": pub_date.text if pub_date else datetime.now(timezone.utc).isoformat(),
+                        "source": "News Feed"
+                    })
+    except Exception as e:
+        logging.error(f"News scrape error for {category}: {str(e)}")
+        # Return placeholder news if scraping fails
+        news_items = generate_placeholder_news(category, limit)
+    
+    return news_items
+
+def generate_placeholder_news(category: str, limit: int = 10) -> List[Dict]:
+    """Generate placeholder news for demo/fallback"""
+    placeholder_news = {
+        "local": [
+            {"title": "Dammaiguda Road Development Project Announced", "title_te": "దమ్మాయిగూడ రోడ్ అభివృద్ధి ప్రాజెక్ట్ ప్రకటన"},
+            {"title": "New Health Center Opens in Dammaiguda", "title_te": "దమ్మాయిగూడలో కొత్త ఆరోగ్య కేంద్రం ప్రారంభం"},
+            {"title": "Community Clean-up Drive This Weekend", "title_te": "ఈ వారాంతంలో కమ్యూనిటీ క్లీన్-అప్ డ్రైవ్"},
+            {"title": "Ward Meeting Scheduled for Next Month", "title_te": "వచ్చే నెలలో వార్డు సమావేశం నిర్ణయం"},
+            {"title": "Dump Yard Remediation Update", "title_te": "డంప్ యార్డ్ పరిష్కార నవీకరణ"}
+        ],
+        "city": [
+            {"title": "Metro Expansion to Reach Secunderabad East", "title_te": "మెట్రో విస్తరణ సికింద్రాబాద్ తూర్పుకు చేరుకుంటుంది"},
+            {"title": "Hyderabad Ranks in Top 10 IT Cities Globally", "title_te": "హైదరాబాద్ గ్లోబల్ టాప్ 10 IT నగరాల్లో"},
+            {"title": "New Flyover Construction Begins at Uppal", "title_te": "ఉప్పల్‌లో కొత్త ఫ్లైఓవర్ నిర్మాణం ప్రారంభం"},
+            {"title": "GHMC Launches Green Initiative Program", "title_te": "GHMC గ్రీన్ ఇనిషియేటివ్ ప్రోగ్రామ్ ప్రారంభం"}
+        ],
+        "state": [
+            {"title": "Telangana Government Announces New Welfare Schemes", "title_te": "తెలంగాణ ప్రభుత్వం కొత్త సంక్షేమ పథకాలు ప్రకటన"},
+            {"title": "State Budget Session to Begin Next Week", "title_te": "రాష్ట్ర బడ్జెట్ సెషన్ వచ్చే వారం ప్రారంభం"},
+            {"title": "Irrigation Projects Progress Update", "title_te": "నీటిపారుదల ప్రాజెక్టుల పురోగతి నవీకరణ"}
+        ],
+        "national": [
+            {"title": "Parliament Session Highlights Key Bills", "title_te": "పార్లమెంట్ సెషన్‌లో కీలక బిల్లులు హైలైట్"},
+            {"title": "Economy Shows Strong Growth Indicators", "title_te": "ఆర్థిక వ్యవస్థ బలమైన వృద్ధి సూచికలు"},
+            {"title": "Digital India Initiative Reaches New Milestone", "title_te": "డిజిటల్ ఇండియా కొత్త మైలురాయి చేరింది"}
+        ],
+        "international": [
+            {"title": "Global Climate Summit Outcomes Announced", "title_te": "గ్లోబల్ క్లైమేట్ సమ్మిట్ ఫలితాలు ప్రకటన"},
+            {"title": "Tech Giants Report Quarterly Earnings", "title_te": "టెక్ దిగ్గజాలు త్రైమాసిక ఆదాయాలు నివేదిక"}
+        ],
+        "sports": [
+            {"title": "IPL Auction: Hyderabad Team Makes Big Signings", "title_te": "IPL వేలం: హైదరాబాద్ టీమ్ పెద్ద సైనింగ్‌లు"},
+            {"title": "Indian Cricket Team Prepares for World Cup", "title_te": "భారత క్రికెట్ టీమ్ ప్రపంచ కప్‌కు సిద్ధం"}
+        ],
+        "entertainment": [
+            {"title": "Tollywood Blockbuster Breaks Records", "title_te": "టాలీవుడ్ బ్లాక్‌బస్టర్ రికార్డులు బద్దలు"},
+            {"title": "Music Festival Announced in Hyderabad", "title_te": "హైదరాబాద్‌లో సంగీత ఉత్సవం ప్రకటన"}
+        ],
+        "tech": [
+            {"title": "AI Startups in Hyderabad Raise Major Funding", "title_te": "హైదరాబాద్ AI స్టార్టప్‌లు పెద్ద ఫండింగ్"},
+            {"title": "5G Network Expansion Across Telangana", "title_te": "తెలంగాణ అంతటా 5G నెట్‌వర్క్ విస్తరణ"}
+        ],
+        "health": [
+            {"title": "New Vaccination Drive Announced for Children", "title_te": "పిల్లలకు కొత్త వ్యాక్సినేషన్ డ్రైవ్ ప్రకటన"},
+            {"title": "Health Ministry Issues Air Quality Advisory", "title_te": "ఆరోగ్య మంత్రిత్వ శాఖ వాయు నాణ్యత సలహా"}
+        ],
+        "business": [
+            {"title": "Stock Markets Show Positive Trends", "title_te": "స్టాక్ మార్కెట్లు సానుకూల ధోరణులు"},
+            {"title": "New Industrial Corridor Proposed for Telangana", "title_te": "తెలంగాణకు కొత్త పారిశ్రామిక కారిడార్ ప్రతిపాదన"}
+        ]
+    }
+    
+    items = placeholder_news.get(category, placeholder_news["national"])
+    result = []
+    
+    for idx, item in enumerate(items[:limit]):
+        result.append({
+            "id": f"{category}_{idx}_{int(time.time())}",
+            "title": item["title"],
+            "title_te": item.get("title_te", item["title"]),
+            "summary": f"Latest updates on {item['title'].lower()}...",
+            "summary_te": f"{item.get('title_te', item['title'])} గురించి తాజా నవీకరణలు...",
+            "link": "#",
+            "image": None,
+            "category": category,
+            "category_label": NEWS_CATEGORIES.get(category, {}).get("en", category),
+            "category_label_te": NEWS_CATEGORIES.get(category, {}).get("te", category),
+            "published_at": datetime.now(timezone.utc).isoformat(),
+            "source": "My Dammaiguda News",
+            "is_placeholder": True
+        })
+    
+    return result
+
 # Calorie calculation helpers
 ACTIVITY_MET_VALUES = {
     "walking": 3.5,
