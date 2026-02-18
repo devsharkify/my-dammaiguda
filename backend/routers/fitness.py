@@ -58,6 +58,13 @@ class LiveActivityEnd(BaseModel):
     total_steps: Optional[int] = None
     avg_heart_rate: Optional[int] = None
     max_heart_rate: Optional[int] = None
+
+class WeightEntry(BaseModel):
+    weight_kg: float
+    notes: Optional[str] = None
+
+class GoalWeight(BaseModel):
+    target_weight_kg: float
     avg_speed_kmh: Optional[float] = None
     avg_pace_min_per_km: Optional[float] = None
     route_polyline: Optional[str] = None
