@@ -462,7 +462,11 @@ async def scrape_news_from_rss(category: str = "national", limit: int = 20) -> L
     except Exception as e:
         logging.error(f"News scrape error for {category}: {str(e)}")
         # Return placeholder news if scraping fails
-        news_items = generate_placeholder_news(category, limit)
+        return generate_placeholder_news(category, limit)
+    
+    # If still empty after successful fetch, use placeholders
+    if not news_items:
+        return generate_placeholder_news(category, limit)
     
     return news_items
 
