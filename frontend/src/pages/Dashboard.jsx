@@ -368,58 +368,30 @@ export default function Dashboard() {
           ))}
         </div>
 
-        {/* Quick Actions Row 1 - Main Features */}
-        <div className="grid grid-cols-4 gap-2">
-          <Link to="/report">
-            <div className="h-14 rounded-xl bg-gradient-to-br from-orange-500 to-red-500 flex flex-col items-center justify-center text-white shadow-md active:scale-95 transition-transform">
-              <AlertTriangle className="h-5 w-5" />
-              <span className="text-[9px] mt-0.5 font-medium">{language === "te" ? "సమస్య" : "Report"}</span>
+        {/* Quick Actions - Single Row */}
+        <div className="grid grid-cols-4 gap-3">
+          <Link to="/report" data-testid="quick-action-report">
+            <div className="h-16 rounded-xl bg-red-50 flex flex-col items-center justify-center shadow-sm active:scale-95 transition-transform border border-red-100">
+              <AlertTriangle className="h-6 w-6 text-red-600" />
+              <span className="text-[10px] mt-1 font-medium text-red-700">{language === "te" ? "సమస్య" : "Report"}</span>
             </div>
           </Link>
-          <Link to="/fitness">
-            <div className="h-14 rounded-xl bg-gradient-to-br from-green-500 to-emerald-500 flex flex-col items-center justify-center text-white shadow-md active:scale-95 transition-transform">
-              <Activity className="h-5 w-5" />
-              <span className="text-[9px] mt-0.5 font-medium">{language === "te" ? "ఫిట్" : "Fit"}</span>
+          <Link to="/fitness" data-testid="quick-action-fit">
+            <div className="h-16 rounded-xl bg-blue-50 flex flex-col items-center justify-center shadow-sm active:scale-95 transition-transform border border-blue-100">
+              <Activity className="h-6 w-6 text-blue-600" />
+              <span className="text-[10px] mt-1 font-medium text-blue-700">{language === "te" ? "ఫిట్" : "Fit"}</span>
             </div>
           </Link>
-          <Link to="/doctor">
-            <div className="h-14 rounded-xl bg-gradient-to-br from-pink-500 to-rose-500 flex flex-col items-center justify-center text-white shadow-md active:scale-95 transition-transform">
-              <Heart className="h-5 w-5" />
-              <span className="text-[9px] mt-0.5 font-medium">{language === "te" ? "డాక్టర్" : "Doctor"}</span>
+          <Link to="/doctor" data-testid="quick-action-doctor">
+            <div className="h-16 rounded-xl bg-teal-50 flex flex-col items-center justify-center shadow-sm active:scale-95 transition-transform border border-teal-100">
+              <Stethoscope className="h-6 w-6 text-teal-600" />
+              <span className="text-[10px] mt-1 font-medium text-teal-700">{language === "te" ? "డాక్టర్" : "Doctor"}</span>
             </div>
           </Link>
-          <Link to="/news">
-            <div className="h-14 rounded-xl bg-gradient-to-br from-blue-500 to-indigo-500 flex flex-col items-center justify-center text-white shadow-md active:scale-95 transition-transform">
-              <Newspaper className="h-5 w-5" />
-              <span className="text-[9px] mt-0.5 font-medium">{language === "te" ? "వార్తలు" : "News"}</span>
-            </div>
-          </Link>
-        </div>
-
-        {/* Quick Actions Row 2 - New Features */}
-        <div className="grid grid-cols-4 gap-2">
-          <Link to="/family">
-            <div className="h-14 rounded-xl bg-gradient-to-br from-purple-500 to-violet-500 flex flex-col items-center justify-center text-white shadow-md active:scale-95 transition-transform">
-              <Users className="h-5 w-5" />
-              <span className="text-[9px] mt-0.5 font-medium">{language === "te" ? "కుటుంబం" : "Family"}</span>
-            </div>
-          </Link>
-          <Link to="/chat">
-            <div className="h-14 rounded-xl bg-gradient-to-br from-cyan-500 to-teal-500 flex flex-col items-center justify-center text-white shadow-md active:scale-95 transition-transform">
-              <Bot className="h-5 w-5" />
-              <span className="text-[9px] mt-0.5 font-medium">{language === "te" ? "AI చాట్" : "AI Chat"}</span>
-            </div>
-          </Link>
-          <Link to="/dump-yard">
-            <div className="h-14 rounded-xl bg-gradient-to-br from-amber-500 to-orange-500 flex flex-col items-center justify-center text-white shadow-md active:scale-95 transition-transform">
-              <Trash className="h-5 w-5" />
-              <span className="text-[9px] mt-0.5 font-medium">{language === "te" ? "డంప్" : "Dump"}</span>
-            </div>
-          </Link>
-          <Link to="/wall">
-            <div className="h-14 rounded-xl bg-gradient-to-br from-indigo-500 to-purple-500 flex flex-col items-center justify-center text-white shadow-md active:scale-95 transition-transform">
-              <MessageSquare className="h-5 w-5" />
-              <span className="text-[9px] mt-0.5 font-medium">{language === "te" ? "వాల్" : "Wall"}</span>
+          <Link to="/news" data-testid="quick-action-news">
+            <div className="h-16 rounded-xl bg-orange-50 flex flex-col items-center justify-center shadow-sm active:scale-95 transition-transform border border-orange-100">
+              <Newspaper className="h-6 w-6 text-orange-600" />
+              <span className="text-[10px] mt-1 font-medium text-orange-700">{language === "te" ? "వార్తలు" : "News"}</span>
             </div>
           </Link>
         </div>
