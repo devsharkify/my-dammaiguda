@@ -8,6 +8,8 @@ import { Input } from "../components/ui/input";
 import { Progress } from "../components/ui/progress";
 import { Badge } from "../components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "../components/ui/tabs";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../components/ui/select";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "../components/ui/dialog";
 import { toast } from "sonner";
 import Layout from "../components/Layout";
 import {
@@ -21,19 +23,44 @@ import {
   Clock,
   Plus,
   Medal,
-  ChevronRight
+  Bike,
+  PersonStanding,
+  Flame,
+  Heart,
+  Timer,
+  MapPin,
+  Zap,
+  Award,
+  Calendar
 } from "lucide-react";
 
 const API = `${process.env.REACT_APP_BACKEND_URL}/api`;
 
+const ACTIVITY_TYPES = [
+  { value: "walking", label: { en: "Walking", te: "నడక" }, icon: <Footprints className="h-5 w-5" />, color: "bg-green-100 text-green-600" },
+  { value: "running", label: { en: "Running", te: "పరుగు" }, icon: <PersonStanding className="h-5 w-5" />, color: "bg-orange-100 text-orange-600" },
+  { value: "cycling", label: { en: "Cycling", te: "సైక్లింగ్" }, icon: <Bike className="h-5 w-5" />, color: "bg-blue-100 text-blue-600" },
+  { value: "yoga", label: { en: "Yoga", te: "యోగా" }, icon: <Heart className="h-5 w-5" />, color: "bg-purple-100 text-purple-600" },
+  { value: "gym", label: { en: "Gym", te: "జిమ్" }, icon: <Zap className="h-5 w-5" />, color: "bg-red-100 text-red-600" },
+  { value: "swimming", label: { en: "Swimming", te: "ఈత" }, icon: <Activity className="h-5 w-5" />, color: "bg-cyan-100 text-cyan-600" },
+  { value: "sports", label: { en: "Sports", te: "క్రీడలు" }, icon: <Trophy className="h-5 w-5" />, color: "bg-yellow-100 text-yellow-600" },
+  { value: "dancing", label: { en: "Dancing", te: "నృత్యం" }, icon: <Activity className="h-5 w-5" />, color: "bg-pink-100 text-pink-600" }
+];
+
 export default function KaizerFit() {
   const { language } = useLanguage();
   const { user } = useAuth();
-  const [myStats, setMyStats] = useState(null);
+  const [dashboard, setDashboard] = useState(null);
   const [leaderboard, setLeaderboard] = useState([]);
-  const [wardStats, setWardStats] = useState(null);
   const [challenges, setChallenges] = useState([]);
+  const [activities, setActivities] = useState([]);
   const [loading, setLoading] = useState(true);
+  
+  // Activity logging
+  const [showActivityDialog, setShowActivityDialog] = useState(false);
+  const [activityType, setActivityType] = useState("walking");
+  const [duration, setDuration] = useState("");
+  const [distance, setDistance] = useState("");
   const [steps, setSteps] = useState("");
   const [logLoading, setLogLoading] = useState(false);
 
@@ -43,17 +70,17 @@ export default function KaizerFit() {
 
   const fetchData = async () => {
     try {
-      const [statsRes, leaderRes, wardRes, challengesRes] = await Promise.all([
-        axios.get(`${API}/fitness/my-stats?days=7`).catch(() => ({ data: null })),
+      const [dashRes, leaderRes, challengesRes, activitiesRes] = await Promise.all([
+        axios.get(`${API}/fitness/dashboard`).catch(() => ({ data: null })),
         axios.get(`${API}/fitness/leaderboard`).catch(() => ({ data: [] })),
-        axios.get(`${API}/fitness/ward-stats`).catch(() => ({ data: null })),
-        axios.get(`${API}/challenges`).catch(() => ({ data: [] }))
+        axios.get(`${API}/fitness/challenges`).catch(() => ({ data: [] })),
+        axios.get(`${API}/fitness/activities?days=7`).catch(() => ({ data: [] }))
       ]);
       
-      setMyStats(statsRes.data);
+      setDashboard(dashRes.data);
       setLeaderboard(leaderRes.data);
-      setWardStats(wardRes.data);
       setChallenges(challengesRes.data);
+      setActivities(activitiesRes.data);
     } catch (error) {
       console.error("Error fetching fitness data:", error);
     } finally {
@@ -61,25 +88,30 @@ export default function KaizerFit() {
     }
   };
 
-  const logSteps = async () => {
-    if (!steps || parseInt(steps) <= 0) {
-      toast.error(language === "te" ? "చెల్లుబాటు అయ్యే అడుగులు నమోదు చేయండి" : "Enter valid steps");
+  const logActivity = async () => {
+    if (!duration || parseInt(duration) <= 0) {
+      toast.error(language === "te" ? "సమయం నమోదు చేయండి" : "Enter duration");
       return;
     }
 
     setLogLoading(true);
     try {
-      const today = new Date().toISOString().split("T")[0];
-      await axios.post(`${API}/fitness/log`, {
-        steps: parseInt(steps),
-        date: today
+      await axios.post(`${API}/fitness/activity`, {
+        activity_type: activityType,
+        duration_minutes: parseInt(duration),
+        distance_km: distance ? parseFloat(distance) : null,
+        steps: steps ? parseInt(steps) : null,
+        source: "manual"
       });
       
-      toast.success(language === "te" ? "అడుగులు నమోదు చేయబడ్డాయి!" : "Steps logged!");
+      toast.success(language === "te" ? "యాక్టివిటీ నమోదు చేయబడింది!" : "Activity logged!");
+      setShowActivityDialog(false);
+      setDuration("");
+      setDistance("");
       setSteps("");
       fetchData();
     } catch (error) {
-      toast.error(error.response?.data?.detail || "Failed to log steps");
+      toast.error(error.response?.data?.detail || "Failed to log activity");
     } finally {
       setLogLoading(false);
     }
@@ -87,15 +119,14 @@ export default function KaizerFit() {
 
   const joinChallenge = async (challengeId) => {
     try {
-      await axios.post(`${API}/challenges/${challengeId}/join`);
+      await axios.post(`${API}/fitness/challenges/${challengeId}/join`);
       toast.success(language === "te" ? "ఛాలెంజ్‌లో చేరారు!" : "Joined challenge!");
       fetchData();
     } catch (error) {
-      toast.error(error.response?.data?.detail || "Failed to join challenge");
+      toast.error(error.response?.data?.detail || "Failed to join");
     }
   };
 
-  // Calculate fitness score color
   const getScoreColor = (score) => {
     if (score >= 80) return "text-green-500";
     if (score >= 50) return "text-yellow-500";
@@ -112,10 +143,12 @@ export default function KaizerFit() {
     );
   }
 
+  const today = dashboard?.today || { total_steps: 0, total_calories: 0, fitness_score: 0 };
+
   return (
     <Layout showBackButton title={language === "te" ? "కైజర్ ఫిట్" : "Kaizer Fit"}>
-      <div className="space-y-6" data-testid="kaizer-fit">
-        {/* Header Stats */}
+      <div className="space-y-6" data-testid="kaizer-fit-expanded">
+        {/* Stats Header */}
         <Card className="bg-gradient-to-br from-primary to-teal-600 text-white border-0">
           <CardContent className="p-6">
             <div className="flex items-center justify-between mb-4">
@@ -125,10 +158,10 @@ export default function KaizerFit() {
                 </div>
                 <div>
                   <p className="text-white/80 text-sm">
-                    {language === "te" ? "ఈ వారం" : "This Week"}
+                    {language === "te" ? "ఈ రోజు" : "Today"}
                   </p>
                   <p className="text-3xl font-bold">
-                    {myStats?.total_steps?.toLocaleString() || 0}
+                    {today.total_steps?.toLocaleString() || 0}
                   </p>
                   <p className="text-white/80 text-sm">
                     {language === "te" ? "అడుగులు" : "steps"}
@@ -136,8 +169,8 @@ export default function KaizerFit() {
                 </div>
               </div>
               <div className="text-right">
-                <p className={`text-4xl font-bold ${getScoreColor(myStats?.average_score || 0)}`}>
-                  {myStats?.average_score || 0}
+                <p className={`text-4xl font-bold ${getScoreColor(today.fitness_score || 0)}`}>
+                  {today.fitness_score || 0}
                 </p>
                 <p className="text-white/80 text-sm">
                   {language === "te" ? "ఫిట్‌నెస్ స్కోర్" : "Fitness Score"}
@@ -145,49 +178,121 @@ export default function KaizerFit() {
               </div>
             </div>
             
-            <div className="space-y-1">
-              <div className="flex justify-between text-sm text-white/80">
-                <span>{language === "te" ? "వారపు లక్ష్యం (70,000)" : "Weekly Goal (70,000)"}</span>
-                <span>{Math.min(100, Math.round((myStats?.total_steps || 0) / 70000 * 100))}%</span>
+            {/* Quick Stats */}
+            <div className="grid grid-cols-3 gap-3">
+              <div className="bg-white/10 rounded-lg p-3 text-center">
+                <Flame className="h-5 w-5 mx-auto mb-1" />
+                <p className="font-bold">{today.total_calories || 0}</p>
+                <p className="text-xs text-white/70">{language === "te" ? "కేలరీలు" : "Calories"}</p>
               </div>
-              <Progress 
-                value={Math.min(100, Math.round((myStats?.total_steps || 0) / 70000 * 100))} 
-                className="h-2 bg-white/20"
-              />
+              <div className="bg-white/10 rounded-lg p-3 text-center">
+                <Award className="h-5 w-5 mx-auto mb-1" />
+                <p className="font-bold">{dashboard?.streak?.current || 0}</p>
+                <p className="text-xs text-white/70">{language === "te" ? "స్ట్రీక్" : "Streak"}</p>
+              </div>
+              <div className="bg-white/10 rounded-lg p-3 text-center">
+                <Timer className="h-5 w-5 mx-auto mb-1" />
+                <p className="font-bold">{today.total_duration_minutes || 0}</p>
+                <p className="text-xs text-white/70">{language === "te" ? "నిమిషాలు" : "Minutes"}</p>
+              </div>
             </div>
           </CardContent>
         </Card>
 
-        {/* Log Steps */}
-        <Card className="border-border/50">
-          <CardContent className="p-4">
-            <h3 className="font-semibold text-text-primary mb-3">
-              {language === "te" ? "ఈ రోజు అడుగులు నమోదు చేయండి" : "Log Today's Steps"}
-            </h3>
-            <div className="flex gap-2">
-              <Input
-                type="number"
-                placeholder={language === "te" ? "అడుగులు" : "Steps"}
-                value={steps}
-                onChange={(e) => setSteps(e.target.value)}
-                className="h-12"
-                data-testid="steps-input"
-              />
-              <Button
-                onClick={logSteps}
-                disabled={logLoading}
-                className="h-12 px-6 bg-primary text-white rounded-full"
-                data-testid="log-steps-btn"
-              >
-                {logLoading ? (
-                  <span className="animate-spin">⏳</span>
-                ) : (
-                  <Plus className="h-5 w-5" />
+        {/* Log Activity Button */}
+        <Dialog open={showActivityDialog} onOpenChange={setShowActivityDialog}>
+          <DialogTrigger asChild>
+            <Button 
+              className="w-full h-14 bg-secondary text-white rounded-xl text-lg"
+              data-testid="log-activity-btn"
+            >
+              <Plus className="h-6 w-6 mr-2" />
+              {language === "te" ? "యాక్టివిటీ నమోదు చేయండి" : "Log Activity"}
+            </Button>
+          </DialogTrigger>
+          <DialogContent className="max-w-md">
+            <DialogHeader>
+              <DialogTitle>
+                {language === "te" ? "యాక్టివిటీ నమోదు" : "Log Activity"}
+              </DialogTitle>
+            </DialogHeader>
+            <div className="space-y-4 mt-4">
+              {/* Activity Type Selection */}
+              <div className="grid grid-cols-4 gap-2">
+                {ACTIVITY_TYPES.map((type) => (
+                  <button
+                    key={type.value}
+                    onClick={() => setActivityType(type.value)}
+                    className={`p-3 rounded-lg flex flex-col items-center gap-1 transition-all ${
+                      activityType === type.value 
+                        ? `${type.color} ring-2 ring-primary`
+                        : "bg-muted hover:bg-muted/80"
+                    }`}
+                    data-testid={`activity-type-${type.value}`}
+                  >
+                    {type.icon}
+                    <span className="text-xs">{type.label[language]}</span>
+                  </button>
+                ))}
+              </div>
+
+              <div className="space-y-3">
+                <div>
+                  <label className="text-sm font-medium">
+                    {language === "te" ? "సమయం (నిమిషాలు)" : "Duration (minutes)"} *
+                  </label>
+                  <Input
+                    type="number"
+                    value={duration}
+                    onChange={(e) => setDuration(e.target.value)}
+                    placeholder="30"
+                    className="h-12 mt-1"
+                    data-testid="duration-input"
+                  />
+                </div>
+                
+                {["walking", "running", "cycling"].includes(activityType) && (
+                  <>
+                    <div>
+                      <label className="text-sm font-medium">
+                        {language === "te" ? "దూరం (కి.మీ.)" : "Distance (km)"}
+                      </label>
+                      <Input
+                        type="number"
+                        step="0.1"
+                        value={distance}
+                        onChange={(e) => setDistance(e.target.value)}
+                        placeholder="5.0"
+                        className="h-12 mt-1"
+                      />
+                    </div>
+                    <div>
+                      <label className="text-sm font-medium">
+                        {language === "te" ? "అడుగులు" : "Steps"}
+                      </label>
+                      <Input
+                        type="number"
+                        value={steps}
+                        onChange={(e) => setSteps(e.target.value)}
+                        placeholder="5000"
+                        className="h-12 mt-1"
+                      />
+                    </div>
+                  </>
                 )}
+              </div>
+
+              <Button
+                onClick={logActivity}
+                disabled={logLoading}
+                className="w-full h-12 bg-primary text-white rounded-full"
+                data-testid="submit-activity-btn"
+              >
+                {logLoading ? "..." : (language === "te" ? "నమోదు చేయండి" : "Log Activity")}
               </Button>
             </div>
-          </CardContent>
-        </Card>
+          </DialogContent>
+        </Dialog>
 
         {/* Pollution Alert */}
         <Card className="bg-orange-50 border-orange-200">
@@ -200,41 +305,77 @@ export default function KaizerFit() {
               <p className="text-sm text-orange-700 mt-1">
                 {language === "te"
                   ? "డంప్ యార్డ్ దగ్గర బయటి వ్యాయామం నివారించండి. ఉదయం 6-7 మధ్య వ్యాయామం చేయడం మంచిది."
-                  : "Avoid outdoor exercise near dump yard. Best time for exercise is 6-7 AM."}
+                  : "Avoid outdoor exercise near dump yard. Best time: 6-7 AM."}
               </p>
             </div>
           </CardContent>
         </Card>
 
-        <Tabs defaultValue="leaderboard" className="w-full">
-          <TabsList className="grid w-full grid-cols-3 h-12">
-            <TabsTrigger value="leaderboard" className="text-sm">
+        <Tabs defaultValue="activities" className="w-full">
+          <TabsList className="grid w-full grid-cols-4 h-12">
+            <TabsTrigger value="activities" className="text-xs">
+              {language === "te" ? "యాక్టివిటీ" : "Activity"}
+            </TabsTrigger>
+            <TabsTrigger value="leaderboard" className="text-xs">
               {language === "te" ? "టాప్ 10" : "Top 10"}
             </TabsTrigger>
-            <TabsTrigger value="challenges" className="text-sm">
-              {language === "te" ? "ఛాలెంజ్‌లు" : "Challenges"}
+            <TabsTrigger value="challenges" className="text-xs">
+              {language === "te" ? "ఛాలెంజ్" : "Challenge"}
             </TabsTrigger>
-            <TabsTrigger value="ward" className="text-sm">
-              {language === "te" ? "వార్డు" : "Ward"}
+            <TabsTrigger value="stats" className="text-xs">
+              {language === "te" ? "గణాంకాలు" : "Stats"}
             </TabsTrigger>
           </TabsList>
+
+          {/* Activities Tab */}
+          <TabsContent value="activities" className="mt-4 space-y-3">
+            {activities.length === 0 ? (
+              <div className="text-center py-8">
+                <Activity className="h-12 w-12 mx-auto mb-3 text-muted-foreground/50" />
+                <p className="text-text-muted">
+                  {language === "te" ? "యాక్టివిటీలు ఇంకా లేవు" : "No activities yet"}
+                </p>
+              </div>
+            ) : (
+              activities.slice(0, 10).map((activity) => {
+                const actType = ACTIVITY_TYPES.find(t => t.value === activity.activity_type);
+                return (
+                  <Card key={activity.id} className="border-border/50">
+                    <CardContent className="p-4 flex items-center gap-4">
+                      <div className={`h-12 w-12 rounded-xl ${actType?.color || "bg-gray-100"} flex items-center justify-center`}>
+                        {actType?.icon || <Activity className="h-5 w-5" />}
+                      </div>
+                      <div className="flex-1">
+                        <p className="font-semibold text-text-primary">
+                          {actType?.label[language] || activity.activity_type}
+                        </p>
+                        <div className="flex items-center gap-3 text-xs text-text-muted mt-1">
+                          <span><Timer className="h-3 w-3 inline mr-1" />{activity.duration_minutes} min</span>
+                          {activity.distance_km && <span><MapPin className="h-3 w-3 inline mr-1" />{activity.distance_km} km</span>}
+                          {activity.steps && <span><Footprints className="h-3 w-3 inline mr-1" />{activity.steps}</span>}
+                        </div>
+                      </div>
+                      <div className="text-right">
+                        <p className="font-bold text-secondary">{activity.calories_burned}</p>
+                        <p className="text-xs text-text-muted">{language === "te" ? "కేలరీలు" : "cal"}</p>
+                      </div>
+                    </CardContent>
+                  </Card>
+                );
+              })
+            )}
+          </TabsContent>
 
           {/* Leaderboard Tab */}
           <TabsContent value="leaderboard" className="mt-4 space-y-3">
             {leaderboard.length === 0 ? (
               <div className="text-center py-8">
                 <Trophy className="h-12 w-12 mx-auto mb-3 text-muted-foreground/50" />
-                <p className="text-text-muted">
-                  {language === "te" ? "లీడర్‌బోర్డ్ ఇంకా లేదు" : "No leaderboard data yet"}
-                </p>
+                <p className="text-text-muted">{language === "te" ? "లీడర్‌బోర్డ్ ఇంకా లేదు" : "No leaderboard data"}</p>
               </div>
             ) : (
               leaderboard.map((entry, idx) => (
-                <Card 
-                  key={idx} 
-                  className={`border-border/50 ${idx < 3 ? "bg-gradient-to-r from-amber-50 to-white" : ""}`}
-                  data-testid={`leaderboard-${idx}`}
-                >
+                <Card key={idx} className={`border-border/50 ${idx < 3 ? "bg-gradient-to-r from-amber-50 to-white" : ""}`}>
                   <CardContent className="p-4 flex items-center gap-4">
                     <div className={`h-10 w-10 rounded-full flex items-center justify-center font-bold ${
                       idx === 0 ? "bg-yellow-400 text-yellow-900" :
@@ -246,17 +387,11 @@ export default function KaizerFit() {
                     </div>
                     <div className="flex-1">
                       <p className="font-semibold text-text-primary">{entry.name}</p>
-                      {entry.colony && (
-                        <p className="text-xs text-text-muted">{entry.colony}</p>
-                      )}
+                      {entry.colony && <p className="text-xs text-text-muted">{entry.colony}</p>}
                     </div>
                     <div className="text-right">
-                      <p className="font-bold text-primary">
-                        {entry.total_steps.toLocaleString()}
-                      </p>
-                      <p className="text-xs text-text-muted">
-                        {entry.days_active} {language === "te" ? "రోజులు" : "days"}
-                      </p>
+                      <p className="font-bold text-primary">{entry.total.toLocaleString()}</p>
+                      <p className="text-xs text-text-muted">{entry.days_active} {language === "te" ? "రోజులు" : "days"}</p>
                     </div>
                   </CardContent>
                 </Card>
@@ -269,13 +404,11 @@ export default function KaizerFit() {
             {challenges.length === 0 ? (
               <div className="text-center py-8">
                 <Target className="h-12 w-12 mx-auto mb-3 text-muted-foreground/50" />
-                <p className="text-text-muted">
-                  {language === "te" ? "ఛాలెంజ్‌లు ఇంకా లేవు" : "No challenges yet"}
-                </p>
+                <p className="text-text-muted">{language === "te" ? "ఛాలెంజ్‌లు ఇంకా లేవు" : "No challenges yet"}</p>
               </div>
             ) : (
               challenges.map((challenge) => (
-                <Card key={challenge.id} className="border-border/50" data-testid={`challenge-${challenge.id}`}>
+                <Card key={challenge.id} className="border-border/50">
                   <CardContent className="p-4">
                     <div className="flex items-start justify-between">
                       <div>
@@ -293,13 +426,12 @@ export default function KaizerFit() {
                     <div className="flex items-center justify-between mt-4">
                       <div className="flex items-center gap-2 text-sm text-text-muted">
                         <Target className="h-4 w-4" />
-                        {challenge.target_steps.toLocaleString()} {language === "te" ? "అడుగులు" : "steps"}
+                        {challenge.target_steps?.toLocaleString()} {language === "te" ? "అడుగులు" : "steps"}
                       </div>
                       <Button
                         size="sm"
                         onClick={() => joinChallenge(challenge.id)}
                         className="bg-secondary text-white rounded-full"
-                        data-testid={`join-challenge-${challenge.id}`}
                       >
                         {language === "te" ? "చేరండి" : "Join"}
                       </Button>
@@ -310,53 +442,77 @@ export default function KaizerFit() {
             )}
           </TabsContent>
 
-          {/* Ward Stats Tab */}
-          <TabsContent value="ward" className="mt-4 space-y-3">
+          {/* Stats Tab */}
+          <TabsContent value="stats" className="mt-4 space-y-4">
+            {/* Monthly Stats */}
             <Card className="border-border/50">
-              <CardContent className="p-6">
-                <h3 className="font-semibold text-text-primary mb-4 text-center">
-                  {language === "te" ? "దమ్మాయిగూడ వార్డు గణాంకాలు" : "Dammaiguda Ward Statistics"}
-                </h3>
-                
-                <div className="grid grid-cols-3 gap-4 text-center">
-                  <div>
-                    <div className="h-14 w-14 mx-auto rounded-full bg-primary/10 flex items-center justify-center mb-2">
-                      <Users className="h-6 w-6 text-primary" />
-                    </div>
+              <CardHeader className="pb-2">
+                <CardTitle className="text-lg flex items-center gap-2">
+                  <Calendar className="h-5 w-5 text-primary" />
+                  {language === "te" ? "నెలవారీ గణాంకాలు" : "Monthly Stats"}
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="text-center p-3 bg-muted/50 rounded-lg">
                     <p className="text-2xl font-bold text-primary">
-                      {wardStats?.participants || 0}
+                      {dashboard?.monthly_stats?.total_steps?.toLocaleString() || 0}
                     </p>
-                    <p className="text-xs text-text-muted">
-                      {language === "te" ? "భాగస్వాములు" : "Participants"}
-                    </p>
+                    <p className="text-xs text-text-muted">{language === "te" ? "మొత్తం అడుగులు" : "Total Steps"}</p>
                   </div>
-                  
-                  <div>
-                    <div className="h-14 w-14 mx-auto rounded-full bg-emerald-100 flex items-center justify-center mb-2">
-                      <Footprints className="h-6 w-6 text-emerald-600" />
-                    </div>
-                    <p className="text-2xl font-bold text-emerald-600">
-                      {wardStats?.total_steps?.toLocaleString() || 0}
+                  <div className="text-center p-3 bg-muted/50 rounded-lg">
+                    <p className="text-2xl font-bold text-secondary">
+                      {dashboard?.monthly_stats?.total_calories?.toLocaleString() || 0}
                     </p>
-                    <p className="text-xs text-text-muted">
-                      {language === "te" ? "మొత్తం అడుగులు" : "Total Steps"}
-                    </p>
+                    <p className="text-xs text-text-muted">{language === "te" ? "కేలరీలు కాల్చారు" : "Calories Burned"}</p>
                   </div>
-                  
-                  <div>
-                    <div className="h-14 w-14 mx-auto rounded-full bg-blue-100 flex items-center justify-center mb-2">
-                      <TrendingUp className="h-6 w-6 text-blue-600" />
-                    </div>
+                  <div className="text-center p-3 bg-muted/50 rounded-lg">
                     <p className="text-2xl font-bold text-blue-600">
-                      {wardStats?.average_steps_per_person?.toLocaleString() || 0}
+                      {dashboard?.monthly_stats?.total_distance_km || 0} km
                     </p>
-                    <p className="text-xs text-text-muted">
-                      {language === "te" ? "సగటు అడుగులు" : "Avg Steps"}
+                    <p className="text-xs text-text-muted">{language === "te" ? "దూరం" : "Distance"}</p>
+                  </div>
+                  <div className="text-center p-3 bg-muted/50 rounded-lg">
+                    <p className="text-2xl font-bold text-emerald-600">
+                      {dashboard?.monthly_stats?.total_activities || 0}
                     </p>
+                    <p className="text-xs text-text-muted">{language === "te" ? "యాక్టివిటీలు" : "Activities"}</p>
                   </div>
                 </div>
               </CardContent>
             </Card>
+
+            {/* Activity Breakdown */}
+            {dashboard?.activity_breakdown && Object.keys(dashboard.activity_breakdown).length > 0 && (
+              <Card className="border-border/50">
+                <CardHeader className="pb-2">
+                  <CardTitle className="text-lg">
+                    {language === "te" ? "యాక్టివిటీ విభజన" : "Activity Breakdown"}
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-3">
+                    {Object.entries(dashboard.activity_breakdown).map(([type, data]) => {
+                      const actType = ACTIVITY_TYPES.find(t => t.value === type);
+                      return (
+                        <div key={type} className="flex items-center gap-3">
+                          <div className={`h-8 w-8 rounded ${actType?.color || "bg-gray-100"} flex items-center justify-center`}>
+                            {actType?.icon || <Activity className="h-4 w-4" />}
+                          </div>
+                          <div className="flex-1">
+                            <p className="text-sm font-medium">{actType?.label[language] || type}</p>
+                          </div>
+                          <div className="text-right text-sm">
+                            <span className="font-medium">{data.count}</span>
+                            <span className="text-text-muted"> | {data.calories} cal</span>
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </CardContent>
+              </Card>
+            )}
           </TabsContent>
         </Tabs>
       </div>
