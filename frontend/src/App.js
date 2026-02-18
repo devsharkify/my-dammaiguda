@@ -11,6 +11,8 @@ import IssueFeed from "./pages/IssueFeed";
 import ReportIssue from "./pages/ReportIssue";
 import DumpYardInfo from "./pages/DumpYardInfo";
 import KaizerFit from "./pages/KaizerFit";
+import KaizerDoctor from "./pages/KaizerDoctor";
+import AIChat from "./pages/AIChat";
 import CitizenBenefits from "./pages/CitizenBenefits";
 import Expenditure from "./pages/Expenditure";
 import Polls from "./pages/Polls";
