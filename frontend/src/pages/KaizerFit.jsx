@@ -419,6 +419,16 @@ export default function KaizerFit() {
           </CardContent>
         </Card>
 
+        {/* Start Live Activity Button */}
+        <Button
+          onClick={() => setShowLiveActivityDialog(true)}
+          className="w-full h-16 bg-gradient-to-r from-primary via-teal-500 to-emerald-500 text-white rounded-2xl text-lg font-bold shadow-xl hover:shadow-2xl transition-all"
+          data-testid="start-live-activity-btn"
+        >
+          <Play className="h-6 w-6 mr-3" />
+          {language === "te" ? "లైవ్ యాక్టివిటీ ప్రారంభించండి" : "Start Live Activity"}
+        </Button>
+
         {/* Quick Action Buttons */}
         <div className="grid grid-cols-2 gap-3">
           <Dialog open={showActivityDialog} onOpenChange={setShowActivityDialog}>
