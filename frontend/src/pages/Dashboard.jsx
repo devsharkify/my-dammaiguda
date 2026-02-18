@@ -71,11 +71,11 @@ export default function Dashboard() {
   // AQI data
   const [aqiData, setAqiData] = useState(null);
   
-  // Floating AI Chat
-  const [showAiChat, setShowAiChat] = useState(false);
-  const [aiMessage, setAiMessage] = useState("");
-  const [aiResponse, setAiResponse] = useState("");
-  const [aiLoading, setAiLoading] = useState(false);
+  // Wall posts for widget
+  const [latestWallPost, setLatestWallPost] = useState(null);
+  
+  // Benefits data
+  const [benefits, setBenefits] = useState([]);
 
   const headers = { Authorization: `Bearer ${token}` };
 
