@@ -326,33 +326,62 @@ export default function LiveActivity() {
 
       {/* Map Section - Show for GPS activities */}
       {config.tracksGPS && (
-        <div className="h-48 bg-slate-100 relative overflow-hidden">
-          <APIProvider apiKey={process.env.REACT_APP_GOOGLE_MAPS_KEY || "demo"}>
-            <Map
-              defaultZoom={16}
-              center={mapCenter}
-              mapId="live-activity-map"
-              disableDefaultUI={true}
-              gestureHandling="greedy"
-              style={{ width: "100%", height: "100%" }}
-            >
-              {currentPosition && (
-                <AdvancedMarker position={currentPosition}>
-                  <div className={`h-6 w-6 rounded-full bg-gradient-to-br ${config.color} border-2 border-white shadow-lg flex items-center justify-center`}>
-                    <div className="h-2 w-2 rounded-full bg-white" />
-                  </div>
-                </AdvancedMarker>
+        <div className="h-48 bg-gradient-to-br from-slate-100 to-slate-200 relative overflow-hidden">
+          {process.env.REACT_APP_GOOGLE_MAPS_KEY ? (
+            <APIProvider apiKey={process.env.REACT_APP_GOOGLE_MAPS_KEY}>
+              <Map
+                defaultZoom={16}
+                center={mapCenter}
+                mapId="live-activity-map"
+                disableDefaultUI={true}
+                gestureHandling="greedy"
+                style={{ width: "100%", height: "100%" }}
+              >
+                {currentPosition && (
+                  <AdvancedMarker position={currentPosition}>
+                    <div className={`h-6 w-6 rounded-full bg-gradient-to-br ${config.color} border-2 border-white shadow-lg flex items-center justify-center`}>
+                      <div className="h-2 w-2 rounded-full bg-white" />
+                    </div>
+                  </AdvancedMarker>
+                )}
+                <RoutePolyline path={routePath} color="#3B82F6" />
+              </Map>
+            </APIProvider>
+          ) : (
+            /* Placeholder map when no API key */
+            <div className="w-full h-full flex flex-col items-center justify-center text-center p-4">
+              <div className={`h-12 w-12 rounded-full bg-gradient-to-br ${config.color} flex items-center justify-center mb-2`}>
+                <Navigation className="h-6 w-6 text-white" />
+              </div>
+              <p className="text-sm font-medium text-slate-700">
+                {language === "te" ? "GPS ట్రాకింగ్ సక్రియం" : "GPS Tracking Active"}
+              </p>
+              <p className="text-xs text-slate-500 mt-1">
+                {currentPosition 
+                  ? `${currentPosition.lat.toFixed(4)}, ${currentPosition.lng.toFixed(4)}`
+                  : (language === "te" ? "స్థానం పొందుతోంది..." : "Getting location...")}
+              </p>
+              {routePath.length > 0 && (
+                <div className="mt-2 flex gap-2">
+                  <Badge variant="secondary" className="text-xs">
+                    {routePath.length} {language === "te" ? "పాయింట్లు" : "points"}
+                  </Badge>
+                  <Badge variant="secondary" className="text-xs">
+                    {formatDistance(distance)}
+                  </Badge>
+                </div>
               )}
-              <RoutePolyline path={routePath} color="#3B82F6" />
-            </Map>
-          </APIProvider>
+            </div>
+          )}
           
           {/* Overlay stats */}
-          <div className="absolute bottom-2 left-2 right-2 flex gap-2">
-            <Badge className="bg-black/70 text-white border-0 text-xs">
-              {routePath.length} {language === "te" ? "పాయింట్లు" : "points"}
-            </Badge>
-          </div>
+          {process.env.REACT_APP_GOOGLE_MAPS_KEY && (
+            <div className="absolute bottom-2 left-2 right-2 flex gap-2">
+              <Badge className="bg-black/70 text-white border-0 text-xs">
+                {routePath.length} {language === "te" ? "పాయింట్లు" : "points"}
+              </Badge>
+            </div>
+          )}
         </div>
       )}
 
