@@ -31,7 +31,8 @@ import {
   Bell,
   Moon,
   Sun,
-  Gift
+  Gift,
+  Phone
 } from "lucide-react";
 import { useState } from "react";
 
