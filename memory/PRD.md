@@ -22,47 +22,57 @@ Build a production-ready, mobile-first civic engagement platform "My Dammaiguda"
 
 ## What's Been Implemented (Feb 19, 2026)
 
-### Comprehensive Admin Panel (Latest)
-- **Overview Tab**:
-  - Stats cards with colored borders (Total Users, Pending Issues, Fitness Users, Courses)
-  - Quick Actions: Add Gift, Post News, Add Voucher, Bulk Points
-  - Issues by Category section (Garbage, Water, etc.)
-- **Users Tab**: User list with roles, Adjust Points button
-- **Issues Tab**: Issue cards with status update dialog (Action Taken, Filed with Authority, Resolved by Authority, Resolved by Us, Issue Not Found, Closed)
-- **Education Tab**: Course management (create, edit, publish)
-- **Shop Tab**:
-  - Products grid with point types (normal, privilege, both)
-  - Add/Edit/Delete products
-  - Orders management with status updates
-  - Individual and bulk privilege points assignment
-- **News Tab**: CRUD for admin-pushed news articles
-- **Vouchers Tab**: CRUD for discount vouchers with auto-generated codes
-- **Templates Tab**: Status templates management
+### P1 Features - Latest Session
 
-### Two-Tier Points System
-- **Normal Points**: Earned through activities, fitness, admin credits
-- **Privilege Points**: Exclusively assigned by admin
-- Products can require normal, privilege, or both point types
+#### 1. Enhanced Device Sync (Smartwatch Integration)
+- **Two-tab Interface**: Devices | Activity
+- **Devices Tab**:
+  - 6 device types: Apple Watch, Fitbit, Samsung Galaxy Watch, Noise/boAt, Google Fit, Mi Band/Amazfit
+  - Sync Status card with connected devices count and Auto Sync toggle
+  - Bluetooth availability indicator
+  - Connected devices list with disconnect option
+  - Device cards with gradient icons and connection status
+- **Activity Tab**:
+  - **Live Heart Rate Card**: Real-time BPM display with pulse animation and heartbeat line
+  - **Today's Summary**: Steps, Calories, Active Minutes with progress bars
+  - **Stats Grid**: Distance, Sleep hours, Average heart rate
+  - **Weekly Progress**: 7-day bar chart with total steps and trend indicator
+- **Backend Endpoints**:
+  - `GET /api/fitness/today-stats` - Daily activity summary
+  - `GET /api/fitness/weekly-summary` - 7-day activity data
+  - `GET /api/fitness/devices` - Connected devices
+  - `POST /api/fitness/devices/connect` - Connect device
+  - `DELETE /api/fitness/devices/{id}` - Disconnect device
+  - `POST /api/fitness/sync-all` - Sync all devices
 
-### Dashboard Reorganization
-- AQI Widget (Dammaiguda large, Hyderabad small)
-- Dump Yard quick info card
-- Citizen Wall widget
-- 9 Quick Action boxes
-- Benefits slider
+#### 2. Status Templates with Drag-and-Drop Editor
+- **Template Gallery**:
+  - Category filters: All, Festivals, Birthday, Events, Greetings
+  - 4 sample templates with category badges
+- **Editor Dialog** with 3 tabs:
+  - **Preview Tab**: Simple photo upload and name input
+  - **Photo Tab**:
+    - Upload/change photo button
+    - Size slider (60-180px)
+    - Position nudge controls (arrow buttons)
+    - Drag-and-drop on preview
+  - **Name Tab**:
+    - Name input field
+    - Font size slider (14-36px)
+    - Color picker (6 color options)
+    - Position nudge controls
+    - Drag-and-drop on preview
+- **Generation**: Canvas-based image creation with download and share options
+- **CORS Fix**: Using picsum.photos for CORS-enabled sample images
 
-### Bottom Navigation
-- Home, Education, NEWS (center bulge), Benefits, Helpline
-
-### Other Features Implemented
-- Discount Vouchers System
-- Status Templates Editor (canvas-based image generation)
-- News Shorts Feed
-- Certificate OpenGraph meta tags
-- Automatic Fitness Points Rewards
-- Family Module Course Progress
-- "My Issues" tab for users
-- Enhanced admin status options for issues
+### Previous Session - Admin Panel
+- Comprehensive Admin Panel with 8 tabs (Overview, Users, Issues, Edu, Shop, News, Vouchers, Templates)
+- Two-tier points system (Normal + Privilege)
+- Dashboard reorganization (AQI, Dump Yard, Citizen Wall, Quick Actions)
+- Enhanced issue statuses
+- Discount vouchers system
+- News Shorts feed
+- Automatic fitness points rewards
 
 ---
 
@@ -72,37 +82,29 @@ Build a production-ready, mobile-first civic engagement platform "My Dammaiguda"
 ```
 /app/frontend/src/
 ├── components/
-│   ├── Layout.jsx (PhonePe-style bottom nav, dark mode)
-│   └── PageTransition.jsx (framer-motion animations)
+│   ├── Layout.jsx (PhonePe-style bottom nav)
+│   └── ui/ (Shadcn components)
 ├── context/
 │   ├── AuthContext.jsx
-│   ├── LanguageContext.jsx (default: 'en')
-│   └── ThemeContext.jsx (dark/light mode)
+│   ├── LanguageContext.jsx
+│   └── ThemeContext.jsx
 ├── pages/
-│   ├── AdminDashboard.jsx (Comprehensive admin panel - 8 tabs)
-│   ├── Dashboard.jsx (Quick actions grid, AQI widgets)
-│   ├── GiftShop.jsx (Dual wallet, products with point types)
-│   ├── DumpYardInfo.jsx (Zones, Risks, Updates tabs)
-│   ├── IssueFeed.jsx (All Issues + My Issues tabs)
-│   ├── CitizenBenefits.jsx (Benefits + Vouchers)
-│   ├── Helpline.jsx (Emergency numbers)
-│   ├── StatusTemplates.jsx (Canvas-based editor)
-│   ├── NewsFeed.jsx (Shorts-style news)
+│   ├── DeviceSync.jsx (Enhanced - Devices/Activity tabs)
+│   ├── StatusTemplates.jsx (Enhanced - Drag-drop editor)
+│   ├── AdminDashboard.jsx (8 tabs)
+│   ├── Dashboard.jsx
+│   ├── GiftShop.jsx
 │   └── ...
 ```
 
 ### Backend (FastAPI)
 ```
 /app/backend/
-├── server.py (main app, admin endpoints, dumpyard data)
+├── server.py
 └── routers/
-    ├── auth.py (OTP auth - MOCKED)
-    ├── shop.py (two-tier points, wallet, products, orders)
-    ├── news.py (news feed, admin CRUD)
-    ├── vouchers.py (discount vouchers)
-    ├── templates.py (status templates)
-    ├── education.py (courses, lessons, certificates)
-    ├── fitness.py (activities, points rewards)
+    ├── fitness.py (Enhanced - today-stats, weekly-summary)
+    ├── templates.py
+    ├── shop.py
     └── ...
 ```
 
@@ -110,38 +112,18 @@ Build a production-ready, mobile-first civic engagement platform "My Dammaiguda"
 
 ## Key API Endpoints
 
+### Fitness (New/Enhanced)
+- `GET /api/fitness/today-stats` - Daily summary (steps, calories, distance, activeMinutes, sleepHours, heartRateAvg)
+- `GET /api/fitness/weekly-summary` - 7-day data with steps per day
+- `GET /api/fitness/devices` - Connected devices with last sync time
+- `POST /api/fitness/devices/connect` - Connect new device
+- `DELETE /api/fitness/devices/{id}` - Disconnect device
+- `POST /api/fitness/sync-all` - Sync all connected devices
+- `POST /api/fitness/sync` - Sync health data from Bluetooth
+
 ### Admin
 - `GET /api/admin/stats` - Dashboard statistics
-- `GET /api/admin/users` - All users list
-- `GET /api/admin/issues-heatmap` - Issues by colony
-
-### Shop (Two-Tier Points)
-- `GET /api/shop/wallet` - User wallet (balance + privilege_balance)
-- `GET /api/shop/admin/products` - All products
-- `POST /api/shop/admin/products` - Create product
-- `PUT /api/shop/admin/products/{id}` - Update product
-- `DELETE /api/shop/admin/products/{id}` - Delete product
-- `GET /api/shop/admin/orders` - All orders
-- `PUT /api/shop/admin/orders/{id}` - Update order status
-- `POST /api/shop/admin/points/adjust` - Adjust user points
-- `POST /api/shop/admin/points/bulk-privilege` - Bulk privilege assignment
-
-### News
-- `GET /api/news/admin/all` - All admin-pushed news
-- `POST /api/news/admin/create` - Create news
-- `PUT /api/news/admin/news/{id}` - Update news
-- `DELETE /api/news/admin/news/{id}` - Delete news
-
-### Vouchers
-- `GET /api/vouchers/admin/all` - All vouchers
-- `POST /api/vouchers/admin/create` - Create voucher
-- `PUT /api/vouchers/admin/{id}` - Update voucher
-- `DELETE /api/vouchers/admin/{id}` - Delete voucher
-
-### Templates
-- `GET /api/templates/admin/all` - All templates
-- `POST /api/templates/admin/create` - Create template
-- `DELETE /api/templates/admin/{id}` - Delete template
+- Full CRUD for Shop, News, Vouchers, Templates
 
 ---
 
@@ -157,43 +139,57 @@ Build a production-ready, mobile-first civic engagement platform "My Dammaiguda"
 - **OTP Authentication**: Uses static code `123456` (Twilio integration needed)
 - **Media Uploads**: Not connected to cloud storage (Cloudinary integration needed)
 
+### Simulated
+- **Device Connections**: Devices connect to DB but no real sync with external APIs
+- **Heart Rate Data**: Simulated with random values 60-100 bpm when devices connected
+
+---
+
+## Test Reports
+- `/app/test_reports/iteration_22.json` - P1 features (Device Sync, Status Templates)
+- `/app/test_reports/iteration_21.json` - Admin Panel comprehensive testing
+- `/app/backend/tests/test_device_sync_templates.py` - Backend pytest
+
 ---
 
 ## Upcoming Tasks
 
-### P1 - Near Term
-- Smartwatch Native Integration (requires third-party aggregator or native app)
-- Template Editor enhancement (drag-and-drop positioning)
+### P1 - Remaining
+- None (completed)
 
 ### P2 - Future
 - Instructor Portal for course management
 - Student Progress Leaderboard
 - WebSocket Real-time Chat
-
----
-
-## Test Reports
-- `/app/test_reports/iteration_21.json` - Admin Panel comprehensive testing (100% pass rate)
-- `/app/backend/tests/test_admin_panel.py` - Backend pytest for admin endpoints
+- Real OTP integration (Twilio)
+- Real media uploads (Cloudinary)
+- Third-party fitness data aggregator integration (Google Fit API, Apple HealthKit)
 
 ---
 
 ## Change Log
 
-### Feb 19, 2026 (Latest Session)
-- **Comprehensive Admin Panel completed**: 8 tabs fully functional
-- **Backend API fixes**: Added missing endpoint aliases (/api/news/admin/all, /api/news/admin/create, PUT /api/education/courses/{id})
-- **Overview enhancements**: Quick Actions, Issues by Category sections
-- **UI improvements**: Colored stat card borders, improved tab styling
-- **Testing**: 100% backend pass rate, all frontend tabs verified
+### Feb 19, 2026 (Current Session)
+- **Device Sync Enhancement**:
+  - Added Devices/Activity tab navigation
+  - Live heart rate card with pulse animation
+  - Today's summary with progress bars
+  - Weekly progress bar chart
+  - New backend endpoints for stats
+- **Status Templates Enhancement**:
+  - Drag-and-drop positioning for photo and name
+  - Photo tab with size slider and nudge controls
+  - Name tab with font size, color picker, nudge controls
+  - Fixed CORS issue with sample template images
+- **Admin Panel completed** (previous session):
+  - 8 fully functional tabs
+  - 100% backend test pass rate
 
 ### Previous Sessions
-- Two-tier points system (Normal + Privilege)
+- Two-tier points system
 - Dashboard reorganization
 - Bottom navigation redesign
-- Issues enhancement (My Issues tab, admin statuses)
-- Discount Vouchers system
-- Status Templates with canvas editor
+- Issues enhancement
+- Discount vouchers
 - News Shorts feed
-- Certificate OpenGraph tags
 - Automatic fitness points rewards
