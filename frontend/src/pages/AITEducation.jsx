@@ -54,13 +54,14 @@ export default function AITEducation() {
   const headers = { Authorization: `Bearer ${token}` };
 
   const categoryIcons = {
-    k12: <School className="h-5 w-5" />,
-    college: <GraduationCap className="h-5 w-5" />,
     professional: <Briefcase className="h-5 w-5" />,
     skill: <Wrench className="h-5 w-5" />,
     language: <Languages className="h-5 w-5" />,
     tech: <Laptop className="h-5 w-5" />
   };
+
+  // Filter out disabled categories
+  const enabledCategories = ["professional", "skill", "language", "tech"];
 
   useEffect(() => {
     fetchData();
