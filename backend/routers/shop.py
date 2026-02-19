@@ -563,17 +563,42 @@ async def admin_update_order_status(order_id: str, update: OrderStatusUpdate, us
     if result.matched_count == 0:
         raise HTTPException(status_code=404, detail="Order not found")
     
-    # If rejected, refund points
+    # If rejected, refund points (both types if applicable)
     if update.status == "rejected":
         order = await db.gift_orders.find_one({"id": order_id})
         if order:
-            await add_points_transaction(
-                order["user_id"],
-                order["points_spent"],
-                "admin_credit",
-                f"Refund for rejected order: {order['product_name']}",
-                order_id
-            )
+            # Refund normal points
+            normal_spent = order.get("normal_points_spent", order.get("points_spent", 0))
+            if normal_spent > 0:
+                await add_points_transaction(
+                    order["user_id"],
+                    normal_spent,
+                    "admin_credit",
+                    f"Refund for rejected order: {order['product_name']}",
+                    order_id,
+                    "normal"
+                )
+                await db.wallets.update_one(
+                    {"user_id": order["user_id"]},
+                    {"$inc": {"balance": normal_spent}}
+                )
+            
+            # Refund privilege points
+            privilege_spent = order.get("privilege_points_spent", 0)
+            if privilege_spent > 0:
+                await add_points_transaction(
+                    order["user_id"],
+                    privilege_spent,
+                    "admin_credit",
+                    f"Refund for rejected order: {order['product_name']} (Privilege)",
+                    order_id,
+                    "privilege"
+                )
+                await db.wallets.update_one(
+                    {"user_id": order["user_id"]},
+                    {"$inc": {"privilege_balance": privilege_spent}}
+                )
+            
             # Restore stock
             await db.gift_products.update_one(
                 {"id": order["product_id"]},
