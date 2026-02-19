@@ -207,10 +207,17 @@ export default function GiftShop() {
                   <Wallet className="h-4 w-4" />
                   {language === "te" ? "మీ పాయింట్లు" : "Your Points"}
                 </p>
-                <p className="text-4xl font-bold mt-1">{wallet?.balance?.toLocaleString() || 0}</p>
-                <p className="text-amber-100 text-xs mt-1">
-                  {language === "te" ? "మొత్తం సంపాదించినవి" : "Total Earned"}: {wallet?.total_earned?.toLocaleString() || 0}
-                </p>
+                <div className="flex items-baseline gap-3 mt-1">
+                  <div>
+                    <p className="text-3xl font-bold">{wallet?.balance?.toLocaleString() || 0}</p>
+                    <p className="text-amber-100 text-[10px]">{language === "te" ? "సాధారణ" : "Normal"}</p>
+                  </div>
+                  <div className="text-amber-200">|</div>
+                  <div>
+                    <p className="text-2xl font-bold text-amber-100">{wallet?.privilege_balance?.toLocaleString() || 0}</p>
+                    <p className="text-amber-100 text-[10px]">{language === "te" ? "ప్రివిలేజ్" : "Privilege"}</p>
+                  </div>
+                </div>
               </div>
               <div className="h-16 w-16 rounded-full bg-white/20 flex items-center justify-center">
                 <Coins className="h-8 w-8" />
