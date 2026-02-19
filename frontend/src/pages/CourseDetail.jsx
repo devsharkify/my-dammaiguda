@@ -305,7 +305,7 @@ export default function CourseDetail() {
           </div>
           <div className="bg-muted rounded-lg p-2 text-center">
             <Star className="h-4 w-4 mx-auto text-yellow-500" />
-            <p className="text-xs mt-1 font-medium">4.8</p>
+            <p className="text-xs mt-1 font-medium">{reviewStats?.average_rating || course.average_rating || "—"}</p>
           </div>
         </div>
 
