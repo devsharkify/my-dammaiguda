@@ -932,64 +932,185 @@ export default function KaizerDoctor() {
         )}
 
         {/* Tabs for Detailed Views */}
-        <Tabs defaultValue="nutrition" className="w-full">
+        <Tabs defaultValue="medicines" className="w-full">
           <TabsList className="grid w-full grid-cols-4 h-12 bg-muted/50 p-1 rounded-xl">
-            <TabsTrigger value="nutrition" className="text-xs rounded-lg data-[state=active]:bg-white data-[state=active]:shadow-sm">
-              <Utensils className="h-4 w-4 mr-1" />
-              {language === "te" ? "పోషణ" : "Nutrition"}
+            <TabsTrigger value="medicines" className="text-xs rounded-lg data-[state=active]:bg-white data-[state=active]:shadow-sm">
+              <Pill className="h-4 w-4 mr-1" />
+              {language === "te" ? "మందులు" : "Medicines"}
             </TabsTrigger>
-            <TabsTrigger value="vitals" className="text-xs rounded-lg data-[state=active]:bg-white data-[state=active]:shadow-sm">
-              <HeartPulse className="h-4 w-4 mr-1" />
-              {language === "te" ? "వైటల్స్" : "Vitals"}
+            <TabsTrigger value="symptoms" className="text-xs rounded-lg data-[state=active]:bg-white data-[state=active]:shadow-sm">
+              <Stethoscope className="h-4 w-4 mr-1" />
+              {language === "te" ? "లక్షణాలు" : "Symptoms"}
             </TabsTrigger>
             <TabsTrigger value="mind" className="text-xs rounded-lg data-[state=active]:bg-white data-[state=active]:shadow-sm" data-testid="mind-tab">
               <Brain className="h-4 w-4 mr-1" />
               {language === "te" ? "మైండ్" : "Mind"}
             </TabsTrigger>
-            <TabsTrigger value="plans" className="text-xs rounded-lg data-[state=active]:bg-white data-[state=active]:shadow-sm">
-              <Target className="h-4 w-4 mr-1" />
-              {language === "te" ? "ప్రణాళికలు" : "Plans"}
+            <TabsTrigger value="vitals" className="text-xs rounded-lg data-[state=active]:bg-white data-[state=active]:shadow-sm">
+              <HeartPulse className="h-4 w-4 mr-1" />
+              {language === "te" ? "వైటల్స్" : "Vitals"}
             </TabsTrigger>
           </TabsList>
 
-          {/* Nutrition Tab */}
-          <TabsContent value="nutrition" className="mt-4 space-y-4">
+          {/* Medicines Tab - Medicine Lookup */}
+          <TabsContent value="medicines" className="mt-4 space-y-4">
             <Card className="border-border/50 overflow-hidden">
-              <CardHeader className="pb-2 bg-gradient-to-r from-orange-50 to-red-50">
+              <CardHeader className="pb-2 bg-gradient-to-r from-teal-50 to-cyan-50">
                 <CardTitle className="text-lg flex items-center gap-2">
-                  <Utensils className="h-5 w-5 text-orange-500" />
-                  {language === "te" ? "ఈ రోజు పోషణ" : "Today's Nutrition"}
+                  <Pill className="h-5 w-5 text-teal-600" />
+                  {language === "te" ? "మందుల వివరాలు చూడండి" : "Medicine Information Lookup"}
                 </CardTitle>
               </CardHeader>
               <CardContent className="p-4">
-                <div className="space-y-4">
-                  <div>
-                    <div className="flex justify-between text-sm mb-1">
-                      <span className="font-medium">{language === "te" ? "కేలరీలు" : "Calories"}</span>
-                      <span className="font-bold text-orange-600">{caloriesConsumed} / {caloriesGoal}</span>
-                    </div>
-                    <div className="h-3 bg-orange-100 rounded-full overflow-hidden">
-                      <div 
-                        className="h-full bg-gradient-to-r from-orange-400 to-red-500 rounded-full transition-all duration-500"
-                        style={{ width: `${caloriesProgress}%` }}
-                      />
+                <div className="relative mb-4">
+                  <Search className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+                  <Input
+                    placeholder={language === "te" ? "మందు పేరు లేదా బ్రాండ్ వెతకండి..." : "Search medicine name or brand..."}
+                    value={medicineSearch}
+                    onChange={(e) => setMedicineSearch(e.target.value)}
+                    className="pl-10 h-12"
+                    data-testid="medicine-search"
+                  />
+                </div>
+                
+                {filteredMedicines.length > 0 ? (
+                  <div className="space-y-2 max-h-80 overflow-y-auto">
+                    {filteredMedicines.map((med, idx) => (
+                      <button
+                        key={idx}
+                        onClick={() => {
+                          setSelectedMedicine(med);
+                          setShowMedicineDialog(true);
+                        }}
+                        className="w-full p-3 rounded-xl bg-gradient-to-r from-teal-50 to-cyan-50 hover:from-teal-100 hover:to-cyan-100 text-left flex items-center justify-between border border-teal-100"
+                        data-testid={`medicine-${med.name}`}
+                      >
+                        <div>
+                          <p className="font-semibold text-teal-800">
+                            {language === "te" ? med.name_te : med.name}
+                          </p>
+                          <p className="text-xs text-teal-600">
+                            {med.brand_names.slice(0, 3).join(", ")}
+                          </p>
+                        </div>
+                        <div className="text-right">
+                          <Badge className={med.otc ? "bg-green-100 text-green-700" : "bg-orange-100 text-orange-700"}>
+                            {med.otc ? (language === "te" ? "OTC" : "OTC") : (language === "te" ? "Rx" : "Prescription")}
+                          </Badge>
+                          <p className="text-[10px] text-teal-600 mt-1">
+                            {language === "te" ? med.category_te : med.category}
+                          </p>
+                        </div>
+                      </button>
+                    ))}
+                  </div>
+                ) : medicineSearch.length >= 2 ? (
+                  <div className="text-center py-8">
+                    <Pill className="h-12 w-12 mx-auto text-muted-foreground/30 mb-2" />
+                    <p className="text-muted-foreground text-sm">
+                      {language === "te" ? "మందు కనుగొనబడలేదు" : "No medicine found"}
+                    </p>
+                  </div>
+                ) : (
+                  <div className="text-center py-4">
+                    <p className="text-muted-foreground text-sm">
+                      {language === "te" ? "మందు పేరు టైప్ చేయండి (కనీసం 2 అక్షరాలు)" : "Type medicine name (min 2 characters)"}
+                    </p>
+                    
+                    {/* Popular Medicines */}
+                    <div className="mt-4">
+                      <p className="text-xs font-medium text-muted-foreground mb-2">
+                        {language === "te" ? "ప్రసిద్ధ మందులు:" : "Popular Medicines:"}
+                      </p>
+                      <div className="flex flex-wrap gap-2 justify-center">
+                        {["Paracetamol", "Ibuprofen", "Cetirizine", "Omeprazole"].map(med => (
+                          <Button 
+                            key={med}
+                            variant="outline" 
+                            size="sm"
+                            onClick={() => setMedicineSearch(med)}
+                            className="text-xs"
+                          >
+                            {med}
+                          </Button>
+                        ))}
+                      </div>
                     </div>
                   </div>
-                  
-                  <div className="grid grid-cols-3 gap-3 text-center">
-                    <div className="p-3 bg-gradient-to-br from-blue-50 to-cyan-50 rounded-xl">
-                      <p className="text-2xl font-bold text-blue-600">{nutritionSummary?.average_protein || 0}g</p>
-                      <p className="text-xs text-text-muted">{language === "te" ? "ప్రోటీన్" : "Protein"}</p>
-                    </div>
-                    <div className="p-3 bg-gradient-to-br from-orange-50 to-amber-50 rounded-xl">
-                      <p className="text-2xl font-bold text-orange-600">{nutritionSummary?.average_calories || 0}</p>
-                      <p className="text-xs text-text-muted">{language === "te" ? "సగటు కేల్" : "Avg Cal"}</p>
-                    </div>
-                    <div className="p-3 bg-gradient-to-br from-cyan-50 to-blue-50 rounded-xl">
-                      <p className="text-2xl font-bold text-cyan-600">{waterGlasses * 250}ml</p>
-                      <p className="text-xs text-text-muted">{language === "te" ? "నీరు" : "Water"}</p>
-                    </div>
-                  </div>
+                )}
+              </CardContent>
+            </Card>
+            
+            {/* Important Notice */}
+            <Card className="border-amber-200 bg-amber-50">
+              <CardContent className="p-3 flex items-start gap-2">
+                <AlertTriangle className="h-5 w-5 text-amber-600 flex-shrink-0 mt-0.5" />
+                <div className="text-xs text-amber-800">
+                  <p className="font-semibold">{language === "te" ? "ముఖ్యమైన గమనిక:" : "Important Notice:"}</p>
+                  <p>
+                    {language === "te" 
+                      ? "ఈ సమాచారం విద్యా ప్రయోజనాల కోసం మాత్రమే. మందులు తీసుకునే ముందు వైద్యుడిని సంప్రదించండి." 
+                      : "This information is for educational purposes only. Always consult a doctor before taking any medicine."}
+                  </p>
+                </div>
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          {/* Symptoms Tab - Symptom Checker */}
+          <TabsContent value="symptoms" className="mt-4 space-y-4">
+            <Card className="border-border/50 overflow-hidden">
+              <CardHeader className="pb-2 bg-gradient-to-r from-blue-50 to-indigo-50">
+                <CardTitle className="text-lg flex items-center gap-2">
+                  <Stethoscope className="h-5 w-5 text-blue-600" />
+                  {language === "te" ? "లక్షణాల తనిఖీ" : "Symptom Checker"}
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="p-4">
+                <p className="text-sm text-muted-foreground mb-4">
+                  {language === "te" 
+                    ? "సాధారణ లక్షణాల గురించి సమాచారం పొందండి:" 
+                    : "Get information about common symptoms:"}
+                </p>
+                
+                <div className="grid grid-cols-2 gap-3">
+                  {Object.entries(SYMPTOM_CHECKER).map(([key, symptom]) => (
+                    <button
+                      key={key}
+                      onClick={() => {
+                        setSelectedSymptom({ key, ...symptom });
+                        setShowSymptomDialog(true);
+                      }}
+                      className="p-4 rounded-xl bg-gradient-to-br from-blue-50 to-indigo-50 hover:from-blue-100 hover:to-indigo-100 text-center border border-blue-100 transition-all"
+                      data-testid={`symptom-${key}`}
+                    >
+                      {key === "fever" && <Thermometer className="h-8 w-8 mx-auto mb-2 text-red-500" />}
+                      {key === "headache" && <Brain className="h-8 w-8 mx-auto mb-2 text-purple-500" />}
+                      {key === "cough" && <Activity className="h-8 w-8 mx-auto mb-2 text-blue-500" />}
+                      {key === "stomach_pain" && <AlertCircle className="h-8 w-8 mx-auto mb-2 text-orange-500" />}
+                      <p className="font-semibold text-sm">
+                        {language === "te" ? symptom.name.te : symptom.name.en}
+                      </p>
+                    </button>
+                  ))}
+                </div>
+              </CardContent>
+            </Card>
+            
+            {/* Emergency Numbers */}
+            <Card className="border-red-200 bg-red-50">
+              <CardContent className="p-4">
+                <h3 className="font-semibold text-red-700 flex items-center gap-2 mb-3">
+                  <Phone className="h-4 w-4" />
+                  {language === "te" ? "అత్యవసర నంబర్లు" : "Emergency Numbers"}
+                </h3>
+                <div className="grid grid-cols-2 gap-2 text-sm">
+                  <a href="tel:108" className="p-2 bg-white rounded-lg flex items-center gap-2 text-red-700 font-medium">
+                    <Phone className="h-4 w-4" /> 108 - {language === "te" ? "అంబులెన్స్" : "Ambulance"}
+                  </a>
+                  <a href="tel:104" className="p-2 bg-white rounded-lg flex items-center gap-2 text-red-700 font-medium">
+                    <Phone className="h-4 w-4" /> 104 - {language === "te" ? "ఆరోగ్య" : "Health"}
+                  </a>
                 </div>
               </CardContent>
             </Card>
