@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import { useLanguage } from "../context/LanguageContext";
 import { useAuth } from "../context/AuthContext";
 import axios from "axios";
@@ -7,7 +7,7 @@ import { Button } from "../components/ui/button";
 import { Input } from "../components/ui/input";
 import { Label } from "../components/ui/label";
 import { Badge } from "../components/ui/badge";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "../components/ui/tabs";
+import { Slider } from "../components/ui/slider";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "../components/ui/dialog";
 import { toast } from "sonner";
 import Layout from "../components/Layout";
@@ -24,7 +24,17 @@ import {
   PartyPopper,
   Calendar,
   MessageCircle,
-  Star
+  Star,
+  Move,
+  ZoomIn,
+  ZoomOut,
+  RotateCcw,
+  Palette,
+  ChevronUp,
+  ChevronDown,
+  ChevronLeft,
+  ChevronRight,
+  GripVertical
 } from "lucide-react";
 
 const API = `${process.env.REACT_APP_BACKEND_URL}/api`;
@@ -43,7 +53,18 @@ export default function StatusTemplates() {
   const [generatedImage, setGeneratedImage] = useState(null);
   const [categoryFilter, setCategoryFilter] = useState("all");
   
+  // Drag-and-drop state
+  const [photoPosition, setPhotoPosition] = useState({ x: 150, y: 100 });
+  const [photoSize, setPhotoSize] = useState(120);
+  const [namePosition, setNamePosition] = useState({ x: 210, y: 280 });
+  const [fontSize, setFontSize] = useState(24);
+  const [textColor, setTextColor] = useState("#ffffff");
+  const [isDraggingPhoto, setIsDraggingPhoto] = useState(false);
+  const [isDraggingName, setIsDraggingName] = useState(false);
+  const [editMode, setEditMode] = useState("preview"); // preview, photo, name
+  
   const canvasRef = useRef(null);
+  const previewRef = useRef(null);
   const fileInputRef = useRef(null);
 
   useEffect(() => {
@@ -74,6 +95,26 @@ export default function StatusTemplates() {
       thumbnail_url: "https://images.unsplash.com/photo-1558636508-e0db3814bd1d?w=200",
       photo_position: { x: 150, y: 80, width: 100, height: 100, shape: "circle" },
       name_position: { x: 200, y: 240, fontSize: 20, color: "#333333", align: "center" }
+    },
+    {
+      id: "sample-3",
+      title: "Diwali Greetings",
+      title_te: "దీపావళి శుభాకాంక్షలు",
+      category: "festival",
+      background_url: "https://images.unsplash.com/photo-1605810230434-7631ac76ec81?w=800",
+      thumbnail_url: "https://images.unsplash.com/photo-1605810230434-7631ac76ec81?w=200",
+      photo_position: { x: 160, y: 120, width: 100, height: 100, shape: "circle" },
+      name_position: { x: 210, y: 300, fontSize: 22, color: "#FFD700", align: "center" }
+    },
+    {
+      id: "sample-4",
+      title: "Thank You",
+      title_te: "ధన్యవాదాలు",
+      category: "greeting",
+      background_url: "https://images.unsplash.com/photo-1518199266791-5375a83190b7?w=800",
+      thumbnail_url: "https://images.unsplash.com/photo-1518199266791-5375a83190b7?w=200",
+      photo_position: { x: 155, y: 90, width: 110, height: 110, shape: "circle" },
+      name_position: { x: 210, y: 260, fontSize: 20, color: "#ffffff", align: "center" }
     }
   ];
 
@@ -86,11 +127,9 @@ export default function StatusTemplates() {
       }
       const response = await axios.get(url);
       const apiTemplates = response.data?.templates || [];
-      // Use sample templates if API returns empty array
       setTemplates(apiTemplates.length > 0 ? apiTemplates : sampleTemplates);
     } catch (error) {
       console.error("Error fetching templates:", error);
-      // Add sample templates if API fails
       setTemplates(sampleTemplates);
     } finally {
       setLoading(false);
@@ -115,6 +154,85 @@ export default function StatusTemplates() {
     setSelectedTemplate(template);
     setShowEditor(true);
     setGeneratedImage(null);
+    setEditMode("preview");
+    
+    // Initialize positions from template
+    if (template.photo_position) {
+      setPhotoPosition({ x: template.photo_position.x, y: template.photo_position.y });
+      setPhotoSize(template.photo_position.width || 120);
+    }
+    if (template.name_position) {
+      setNamePosition({ x: template.name_position.x, y: template.name_position.y });
+      setFontSize(template.name_position.fontSize || 24);
+      setTextColor(template.name_position.color || "#ffffff");
+    }
+  };
+
+  // Handle touch/mouse drag for photo
+  const handlePhotoDragStart = (e) => {
+    if (editMode !== "photo") return;
+    e.preventDefault();
+    setIsDraggingPhoto(true);
+  };
+
+  const handleNameDragStart = (e) => {
+    if (editMode !== "name") return;
+    e.preventDefault();
+    setIsDraggingName(true);
+  };
+
+  const handleDragMove = useCallback((e) => {
+    if (!previewRef.current) return;
+    
+    const rect = previewRef.current.getBoundingClientRect();
+    const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+    const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+    
+    const x = Math.max(0, Math.min(420, ((clientX - rect.left) / rect.width) * 420));
+    const y = Math.max(0, Math.min(420, ((clientY - rect.top) / rect.height) * 420));
+    
+    if (isDraggingPhoto) {
+      setPhotoPosition({ x: x - photoSize/2, y: y - photoSize/2 });
+    }
+    if (isDraggingName) {
+      setNamePosition({ x, y });
+    }
+  }, [isDraggingPhoto, isDraggingName, photoSize]);
+
+  const handleDragEnd = () => {
+    setIsDraggingPhoto(false);
+    setIsDraggingName(false);
+  };
+
+  useEffect(() => {
+    if (isDraggingPhoto || isDraggingName) {
+      window.addEventListener('mousemove', handleDragMove);
+      window.addEventListener('mouseup', handleDragEnd);
+      window.addEventListener('touchmove', handleDragMove);
+      window.addEventListener('touchend', handleDragEnd);
+      
+      return () => {
+        window.removeEventListener('mousemove', handleDragMove);
+        window.removeEventListener('mouseup', handleDragEnd);
+        window.removeEventListener('touchmove', handleDragMove);
+        window.removeEventListener('touchend', handleDragEnd);
+      };
+    }
+  }, [isDraggingPhoto, isDraggingName, handleDragMove]);
+
+  // Nudge functions
+  const nudgePhoto = (dx, dy) => {
+    setPhotoPosition(prev => ({
+      x: Math.max(0, Math.min(380, prev.x + dx)),
+      y: Math.max(0, Math.min(380, prev.y + dy))
+    }));
+  };
+
+  const nudgeName = (dx, dy) => {
+    setNamePosition(prev => ({
+      x: Math.max(0, Math.min(420, prev.x + dx)),
+      y: Math.max(20, Math.min(400, prev.y + dy))
+    }));
   };
 
   const generateStatus = async () => {
@@ -125,11 +243,9 @@ export default function StatusTemplates() {
 
     setGenerating(true);
     try {
-      // Create canvas-based image
       const canvas = canvasRef.current;
       const ctx = canvas.getContext('2d');
       
-      // Set canvas size
       canvas.width = 420;
       canvas.height = 420;
       
@@ -155,18 +271,16 @@ export default function StatusTemplates() {
           photoImg.onload = resolve;
         });
         
-        const pos = selectedTemplate.photo_position;
-        
         // Draw circular photo
         ctx.save();
         ctx.beginPath();
-        const centerX = pos.x + pos.width / 2;
-        const centerY = pos.y + pos.height / 2;
-        const radius = Math.min(pos.width, pos.height) / 2;
+        const centerX = photoPosition.x + photoSize / 2;
+        const centerY = photoPosition.y + photoSize / 2;
+        const radius = photoSize / 2;
         ctx.arc(centerX, centerY, radius, 0, Math.PI * 2);
         ctx.closePath();
         ctx.clip();
-        ctx.drawImage(photoImg, pos.x, pos.y, pos.width, pos.height);
+        ctx.drawImage(photoImg, photoPosition.x, photoPosition.y, photoSize, photoSize);
         ctx.restore();
         
         // Add border
@@ -177,16 +291,21 @@ export default function StatusTemplates() {
         ctx.stroke();
       }
       
-      // Draw name
-      const namePos = selectedTemplate.name_position;
-      ctx.fillStyle = namePos.color || "#ffffff";
-      ctx.font = `bold ${namePos.fontSize || 24}px Arial`;
-      ctx.textAlign = namePos.align || "center";
-      ctx.fillText(displayName, namePos.x, namePos.y);
+      // Draw name with shadow
+      ctx.shadowColor = 'rgba(0, 0, 0, 0.5)';
+      ctx.shadowBlur = 4;
+      ctx.shadowOffsetX = 2;
+      ctx.shadowOffsetY = 2;
+      ctx.fillStyle = textColor;
+      ctx.font = `bold ${fontSize}px Arial`;
+      ctx.textAlign = "center";
+      ctx.fillText(displayName, namePosition.x, namePosition.y);
+      ctx.shadowColor = 'transparent';
       
       // Convert to image URL
       const dataUrl = canvas.toDataURL("image/png");
       setGeneratedImage(dataUrl);
+      setEditMode("preview");
       
       // Record usage if logged in
       if (token) {
@@ -237,7 +356,6 @@ export default function StatusTemplates() {
           text: `Created with My Dammaiguda App`
         });
       } else {
-        // Fallback - download
         downloadImage();
         toast.info(language === "te" ? "డౌన్‌లోడ్ చేసి షేర్ చేయండి" : "Download and share manually");
       }
@@ -245,6 +363,21 @@ export default function StatusTemplates() {
       console.error("Share error:", error);
       downloadImage();
     }
+  };
+
+  const resetPositions = () => {
+    if (selectedTemplate) {
+      if (selectedTemplate.photo_position) {
+        setPhotoPosition({ x: selectedTemplate.photo_position.x, y: selectedTemplate.photo_position.y });
+        setPhotoSize(selectedTemplate.photo_position.width || 120);
+      }
+      if (selectedTemplate.name_position) {
+        setNamePosition({ x: selectedTemplate.name_position.x, y: selectedTemplate.name_position.y });
+        setFontSize(selectedTemplate.name_position.fontSize || 24);
+        setTextColor(selectedTemplate.name_position.color || "#ffffff");
+      }
+    }
+    toast.success(language === "te" ? "రీసెట్ అయింది" : "Reset to default");
   };
 
   const getCategoryIcon = (category) => {
@@ -264,6 +397,8 @@ export default function StatusTemplates() {
     { value: "event", label: language === "te" ? "ఈవెంట్స్" : "Events" },
     { value: "greeting", label: language === "te" ? "శుభాకాంక్షలు" : "Greetings" }
   ];
+
+  const colorOptions = ["#ffffff", "#FFD700", "#FF6B6B", "#4ECDC4", "#333333", "#FF69B4"];
 
   return (
     <Layout showBackButton title={language === "te" ? "స్టేటస్ టెంప్లేట్లు" : "Status Templates"}>
@@ -344,101 +479,333 @@ export default function StatusTemplates() {
 
         {/* Editor Dialog */}
         <Dialog open={showEditor} onOpenChange={setShowEditor}>
-          <DialogContent className="max-w-md max-h-[90vh] overflow-y-auto">
+          <DialogContent className="max-w-md max-h-[90vh] overflow-y-auto p-4">
             {selectedTemplate && (
               <>
                 <DialogHeader>
-                  <DialogTitle>
-                    {language === "te" ? "స్టేటస్ క్రియేట్ చేయండి" : "Create Status"}
+                  <DialogTitle className="flex items-center justify-between">
+                    <span>{language === "te" ? "స్టేటస్ క్రియేట్ చేయండి" : "Create Status"}</span>
+                    {!generatedImage && (
+                      <Button variant="ghost" size="sm" onClick={resetPositions}>
+                        <RotateCcw className="h-4 w-4" />
+                      </Button>
+                    )}
                   </DialogTitle>
                 </DialogHeader>
 
-                <div className="space-y-4 mt-4">
-                  {/* Preview */}
-                  <div className="aspect-square rounded-xl overflow-hidden bg-muted relative">
+                <div className="space-y-4 mt-2">
+                  {/* Interactive Preview */}
+                  <div 
+                    ref={previewRef}
+                    className="aspect-square rounded-xl overflow-hidden bg-muted relative touch-none"
+                    onMouseMove={handleDragMove}
+                    onTouchMove={handleDragMove}
+                  >
                     {generatedImage ? (
                       <img src={generatedImage} alt="Generated" className="w-full h-full object-cover" />
                     ) : (
-                      <img
-                        src={selectedTemplate.background_url}
-                        alt={selectedTemplate.title}
-                        className="w-full h-full object-cover"
-                      />
-                    )}
-                    {!generatedImage && (
-                      <div className="absolute inset-0 flex items-center justify-center bg-black/20">
-                        <p className="text-white text-sm bg-black/50 px-4 py-2 rounded-full">
-                          {language === "te" ? "ప్రివ్యూ" : "Preview"}
-                        </p>
-                      </div>
-                    )}
-                  </div>
-
-                  {/* Photo Upload */}
-                  <div>
-                    <Label className="text-sm font-medium mb-2 block">
-                      {language === "te" ? "మీ ఫోటో (ఐచ్ఛికం)" : "Your Photo (Optional)"}
-                    </Label>
-                    <div className="flex items-center gap-3">
-                      <div
-                        className="h-16 w-16 rounded-full bg-muted flex items-center justify-center overflow-hidden cursor-pointer border-2 border-dashed border-muted-foreground/30"
-                        onClick={() => fileInputRef.current?.click()}
-                      >
-                        {userPhotoPreview ? (
-                          <img src={userPhotoPreview} alt="User" className="w-full h-full object-cover" />
-                        ) : (
-                          <Camera className="h-6 w-6 text-muted-foreground" />
-                        )}
-                      </div>
-                      <div className="flex-1">
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          onClick={() => fileInputRef.current?.click()}
-                        >
-                          <Camera className="h-4 w-4 mr-2" />
-                          {userPhotoPreview 
-                            ? (language === "te" ? "మార్చండి" : "Change") 
-                            : (language === "te" ? "ఫోటో అప్‌లోడ్" : "Upload Photo")}
-                        </Button>
-                        {userPhotoPreview && (
-                          <Button
-                            variant="ghost"
-                            size="sm"
-                            className="ml-2 text-destructive"
-                            onClick={() => { setUserPhoto(null); setUserPhotoPreview(null); }}
+                      <>
+                        <img
+                          src={selectedTemplate.background_url}
+                          alt={selectedTemplate.title}
+                          className="w-full h-full object-cover"
+                        />
+                        
+                        {/* Draggable Photo Placeholder */}
+                        {(userPhotoPreview || editMode === "photo") && (
+                          <div
+                            className={`absolute rounded-full overflow-hidden border-4 border-white shadow-lg cursor-move transition-transform ${
+                              editMode === "photo" ? 'ring-4 ring-primary ring-offset-2' : ''
+                            } ${isDraggingPhoto ? 'scale-105' : ''}`}
+                            style={{
+                              left: `${(photoPosition.x / 420) * 100}%`,
+                              top: `${(photoPosition.y / 420) * 100}%`,
+                              width: `${(photoSize / 420) * 100}%`,
+                              height: `${(photoSize / 420) * 100}%`,
+                            }}
+                            onMouseDown={handlePhotoDragStart}
+                            onTouchStart={handlePhotoDragStart}
                           >
-                            <X className="h-4 w-4" />
-                          </Button>
+                            {userPhotoPreview ? (
+                              <img src={userPhotoPreview} alt="User" className="w-full h-full object-cover" />
+                            ) : (
+                              <div className="w-full h-full bg-muted flex items-center justify-center">
+                                <Camera className="h-6 w-6 text-muted-foreground" />
+                              </div>
+                            )}
+                            {editMode === "photo" && (
+                              <div className="absolute inset-0 bg-primary/20 flex items-center justify-center">
+                                <Move className="h-6 w-6 text-white" />
+                              </div>
+                            )}
+                          </div>
                         )}
-                      </div>
-                    </div>
-                    <input
-                      ref={fileInputRef}
-                      type="file"
-                      accept="image/*"
-                      className="hidden"
-                      onChange={handlePhotoUpload}
-                    />
+                        
+                        {/* Draggable Name */}
+                        <div
+                          className={`absolute cursor-move whitespace-nowrap transition-transform ${
+                            editMode === "name" ? 'ring-2 ring-primary rounded px-2 bg-black/20' : ''
+                          } ${isDraggingName ? 'scale-105' : ''}`}
+                          style={{
+                            left: `${(namePosition.x / 420) * 100}%`,
+                            top: `${(namePosition.y / 420) * 100}%`,
+                            transform: 'translateX(-50%)',
+                            color: textColor,
+                            fontSize: `${fontSize * 0.8}px`,
+                            fontWeight: 'bold',
+                            textShadow: '2px 2px 4px rgba(0,0,0,0.5)'
+                          }}
+                          onMouseDown={handleNameDragStart}
+                          onTouchStart={handleNameDragStart}
+                        >
+                          {displayName || (language === "te" ? "మీ పేరు" : "Your Name")}
+                          {editMode === "name" && (
+                            <GripVertical className="inline-block ml-1 h-4 w-4" />
+                          )}
+                        </div>
+                      </>
+                    )}
                   </div>
 
-                  {/* Name Input */}
-                  <div>
-                    <Label className="text-sm font-medium mb-2 block">
-                      {language === "te" ? "మీ పేరు *" : "Your Name *"}
-                    </Label>
-                    <Input
-                      value={displayName}
-                      onChange={(e) => setDisplayName(e.target.value)}
-                      placeholder={language === "te" ? "మీ పేరు ఎంటర్ చేయండి" : "Enter your name"}
-                      className="h-12"
-                    />
-                  </div>
+                  {!generatedImage && (
+                    <>
+                      {/* Edit Mode Tabs */}
+                      <div className="flex gap-2 p-1 bg-muted rounded-lg">
+                        <Button 
+                          variant={editMode === "preview" ? "default" : "ghost"} 
+                          size="sm" 
+                          className="flex-1 text-xs"
+                          onClick={() => setEditMode("preview")}
+                        >
+                          <ImageIcon className="h-3.5 w-3.5 mr-1" />
+                          Preview
+                        </Button>
+                        <Button 
+                          variant={editMode === "photo" ? "default" : "ghost"} 
+                          size="sm" 
+                          className="flex-1 text-xs"
+                          onClick={() => setEditMode("photo")}
+                        >
+                          <Camera className="h-3.5 w-3.5 mr-1" />
+                          Photo
+                        </Button>
+                        <Button 
+                          variant={editMode === "name" ? "default" : "ghost"} 
+                          size="sm" 
+                          className="flex-1 text-xs"
+                          onClick={() => setEditMode("name")}
+                        >
+                          <Type className="h-3.5 w-3.5 mr-1" />
+                          Name
+                        </Button>
+                      </div>
+
+                      {/* Photo Controls */}
+                      {editMode === "photo" && (
+                        <Card className="border-primary/50 bg-primary/5">
+                          <CardContent className="p-3 space-y-3">
+                            <div className="flex items-center justify-between">
+                              <Label className="text-xs font-medium">
+                                {language === "te" ? "ఫోటో అప్‌లోడ్" : "Upload Photo"}
+                              </Label>
+                              <Button
+                                variant="outline"
+                                size="sm"
+                                onClick={() => fileInputRef.current?.click()}
+                              >
+                                <Camera className="h-3.5 w-3.5 mr-1" />
+                                {userPhotoPreview ? "Change" : "Upload"}
+                              </Button>
+                            </div>
+                            
+                            {/* Size Control */}
+                            <div className="space-y-2">
+                              <div className="flex items-center justify-between">
+                                <Label className="text-xs">{language === "te" ? "సైజు" : "Size"}</Label>
+                                <span className="text-xs text-muted-foreground">{photoSize}px</span>
+                              </div>
+                              <div className="flex items-center gap-2">
+                                <ZoomOut className="h-4 w-4 text-muted-foreground" />
+                                <Slider
+                                  value={[photoSize]}
+                                  onValueChange={(v) => setPhotoSize(v[0])}
+                                  min={60}
+                                  max={180}
+                                  step={10}
+                                  className="flex-1"
+                                />
+                                <ZoomIn className="h-4 w-4 text-muted-foreground" />
+                              </div>
+                            </div>
+
+                            {/* Position Controls */}
+                            <div className="space-y-2">
+                              <Label className="text-xs">{language === "te" ? "పొజిషన్" : "Position"}</Label>
+                              <div className="flex items-center justify-center gap-1">
+                                <div className="grid grid-cols-3 gap-1">
+                                  <div />
+                                  <Button variant="outline" size="sm" className="h-8 w-8 p-0" onClick={() => nudgePhoto(0, -10)}>
+                                    <ChevronUp className="h-4 w-4" />
+                                  </Button>
+                                  <div />
+                                  <Button variant="outline" size="sm" className="h-8 w-8 p-0" onClick={() => nudgePhoto(-10, 0)}>
+                                    <ChevronLeft className="h-4 w-4" />
+                                  </Button>
+                                  <div className="h-8 w-8 rounded border flex items-center justify-center bg-muted">
+                                    <Move className="h-4 w-4 text-muted-foreground" />
+                                  </div>
+                                  <Button variant="outline" size="sm" className="h-8 w-8 p-0" onClick={() => nudgePhoto(10, 0)}>
+                                    <ChevronRight className="h-4 w-4" />
+                                  </Button>
+                                  <div />
+                                  <Button variant="outline" size="sm" className="h-8 w-8 p-0" onClick={() => nudgePhoto(0, 10)}>
+                                    <ChevronDown className="h-4 w-4" />
+                                  </Button>
+                                  <div />
+                                </div>
+                              </div>
+                              <p className="text-[10px] text-muted-foreground text-center">
+                                {language === "te" ? "లేదా ఫోటోను డ్రాగ్ చేయండి" : "Or drag photo directly"}
+                              </p>
+                            </div>
+                          </CardContent>
+                        </Card>
+                      )}
+
+                      {/* Name Controls */}
+                      {editMode === "name" && (
+                        <Card className="border-primary/50 bg-primary/5">
+                          <CardContent className="p-3 space-y-3">
+                            <div>
+                              <Label className="text-xs font-medium mb-1.5 block">
+                                {language === "te" ? "మీ పేరు" : "Your Name"}
+                              </Label>
+                              <Input
+                                value={displayName}
+                                onChange={(e) => setDisplayName(e.target.value)}
+                                placeholder={language === "te" ? "మీ పేరు ఎంటర్ చేయండి" : "Enter your name"}
+                                className="h-10"
+                              />
+                            </div>
+                            
+                            {/* Font Size */}
+                            <div className="space-y-2">
+                              <div className="flex items-center justify-between">
+                                <Label className="text-xs">{language === "te" ? "ఫాంట్ సైజు" : "Font Size"}</Label>
+                                <span className="text-xs text-muted-foreground">{fontSize}px</span>
+                              </div>
+                              <Slider
+                                value={[fontSize]}
+                                onValueChange={(v) => setFontSize(v[0])}
+                                min={14}
+                                max={36}
+                                step={2}
+                              />
+                            </div>
+
+                            {/* Color Picker */}
+                            <div className="space-y-2">
+                              <Label className="text-xs flex items-center gap-1">
+                                <Palette className="h-3.5 w-3.5" />
+                                {language === "te" ? "రంగు" : "Color"}
+                              </Label>
+                              <div className="flex gap-2 flex-wrap">
+                                {colorOptions.map((color) => (
+                                  <button
+                                    key={color}
+                                    className={`h-8 w-8 rounded-full border-2 transition-transform ${
+                                      textColor === color ? 'border-primary scale-110' : 'border-muted'
+                                    }`}
+                                    style={{ backgroundColor: color }}
+                                    onClick={() => setTextColor(color)}
+                                  />
+                                ))}
+                              </div>
+                            </div>
+
+                            {/* Position Controls */}
+                            <div className="space-y-2">
+                              <Label className="text-xs">{language === "te" ? "పొజిషన్" : "Position"}</Label>
+                              <div className="flex items-center justify-center gap-1">
+                                <div className="grid grid-cols-3 gap-1">
+                                  <div />
+                                  <Button variant="outline" size="sm" className="h-8 w-8 p-0" onClick={() => nudgeName(0, -10)}>
+                                    <ChevronUp className="h-4 w-4" />
+                                  </Button>
+                                  <div />
+                                  <Button variant="outline" size="sm" className="h-8 w-8 p-0" onClick={() => nudgeName(-10, 0)}>
+                                    <ChevronLeft className="h-4 w-4" />
+                                  </Button>
+                                  <div className="h-8 w-8 rounded border flex items-center justify-center bg-muted">
+                                    <Type className="h-4 w-4 text-muted-foreground" />
+                                  </div>
+                                  <Button variant="outline" size="sm" className="h-8 w-8 p-0" onClick={() => nudgeName(10, 0)}>
+                                    <ChevronRight className="h-4 w-4" />
+                                  </Button>
+                                  <div />
+                                  <Button variant="outline" size="sm" className="h-8 w-8 p-0" onClick={() => nudgeName(0, 10)}>
+                                    <ChevronDown className="h-4 w-4" />
+                                  </Button>
+                                  <div />
+                                </div>
+                              </div>
+                              <p className="text-[10px] text-muted-foreground text-center">
+                                {language === "te" ? "లేదా టెక్స్ట్‌ను డ్రాగ్ చేయండి" : "Or drag text directly"}
+                              </p>
+                            </div>
+                          </CardContent>
+                        </Card>
+                      )}
+
+                      {/* Preview Mode - Simple Photo/Name Input */}
+                      {editMode === "preview" && (
+                        <div className="space-y-3">
+                          <div className="flex items-center gap-3">
+                            <div
+                              className="h-14 w-14 rounded-full bg-muted flex items-center justify-center overflow-hidden cursor-pointer border-2 border-dashed border-muted-foreground/30"
+                              onClick={() => fileInputRef.current?.click()}
+                            >
+                              {userPhotoPreview ? (
+                                <img src={userPhotoPreview} alt="User" className="w-full h-full object-cover" />
+                              ) : (
+                                <Camera className="h-5 w-5 text-muted-foreground" />
+                              )}
+                            </div>
+                            <div className="flex-1">
+                              <Input
+                                value={displayName}
+                                onChange={(e) => setDisplayName(e.target.value)}
+                                placeholder={language === "te" ? "మీ పేరు" : "Your name"}
+                                className="h-10"
+                              />
+                            </div>
+                          </div>
+                          <p className="text-xs text-muted-foreground text-center">
+                            {language === "te" 
+                              ? "ఫోటో మరియు టెక్స్ట్ పొజిషన్ మార్చడానికి ట్యాబ్‌లను ఉపయోగించండి" 
+                              : "Use Photo/Name tabs to adjust positions"}
+                          </p>
+                        </div>
+                      )}
+                    </>
+                  )}
+
+                  <input
+                    ref={fileInputRef}
+                    type="file"
+                    accept="image/*"
+                    className="hidden"
+                    onChange={handlePhotoUpload}
+                  />
                 </div>
 
                 <DialogFooter className="flex gap-2 mt-4">
                   {generatedImage ? (
                     <>
+                      <Button variant="outline" className="flex-1" onClick={() => setGeneratedImage(null)}>
+                        <RotateCcw className="h-4 w-4 mr-2" />
+                        {language === "te" ? "మార్చండి" : "Edit"}
+                      </Button>
                       <Button variant="outline" className="flex-1" onClick={downloadImage}>
                         <Download className="h-4 w-4 mr-2" />
                         {language === "te" ? "డౌన్‌లోడ్" : "Download"}
@@ -452,7 +819,7 @@ export default function StatusTemplates() {
                     <Button
                       className="w-full"
                       onClick={generateStatus}
-                      disabled={generating}
+                      disabled={generating || !displayName.trim()}
                     >
                       {generating ? (
                         <Loader2 className="h-4 w-4 mr-2 animate-spin" />
