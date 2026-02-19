@@ -600,23 +600,29 @@ export default function Dashboard() {
         </Card>
 
         {/* Quick Actions - 9 boxes (3x3 grid) */}
-        <div className="grid grid-cols-3 gap-3">
+        <div className="grid grid-cols-3 gap-2.5">
           <Link to="/report" data-testid="quick-action-report">
-            <div className="h-16 rounded-xl bg-red-50 flex flex-col items-center justify-center shadow-sm active:scale-95 transition-transform border border-red-100">
-              <AlertTriangle className="h-6 w-6 text-red-600" />
-              <span className="text-[10px] mt-1 font-medium text-red-700">{language === "te" ? "రిపోర్ట్" : "Report"}</span>
+            <div className="h-20 rounded-2xl bg-red-50 flex flex-col items-center justify-center shadow-sm active:scale-95 transition-all border border-red-100 hover:bg-red-100">
+              <div className="h-10 w-10 rounded-xl bg-red-100 flex items-center justify-center mb-1">
+                <AlertTriangle className="h-5 w-5 text-red-600" />
+              </div>
+              <span className="text-[11px] font-semibold text-red-700">{language === "te" ? "రిపోర్ట్" : "Report"}</span>
             </div>
           </Link>
           <Link to="/issues" data-testid="quick-action-issues">
-            <div className="h-16 rounded-xl bg-orange-50 flex flex-col items-center justify-center shadow-sm active:scale-95 transition-transform border border-orange-100">
-              <FileText className="h-6 w-6 text-orange-600" />
-              <span className="text-[10px] mt-1 font-medium text-orange-700">{language === "te" ? "సమస్యలు" : "Issues"}</span>
+            <div className="h-20 rounded-2xl bg-orange-50 flex flex-col items-center justify-center shadow-sm active:scale-95 transition-all border border-orange-100 hover:bg-orange-100">
+              <div className="h-10 w-10 rounded-xl bg-orange-100 flex items-center justify-center mb-1">
+                <FileText className="h-5 w-5 text-orange-600" />
+              </div>
+              <span className="text-[11px] font-semibold text-orange-700">{language === "te" ? "సమస్యలు" : "Issues"}</span>
             </div>
           </Link>
           <Link to="/benefits" data-testid="quick-action-benefits">
-            <div className="h-16 rounded-xl bg-green-50 flex flex-col items-center justify-center shadow-sm active:scale-95 transition-transform border border-green-100">
-              <Heart className="h-6 w-6 text-green-600" />
-              <span className="text-[10px] mt-1 font-medium text-green-700">{language === "te" ? "ప్రయోజనాలు" : "Benefits"}</span>
+            <div className="h-20 rounded-2xl bg-green-50 flex flex-col items-center justify-center shadow-sm active:scale-95 transition-all border border-green-100 hover:bg-green-100">
+              <div className="h-10 w-10 rounded-xl bg-green-100 flex items-center justify-center mb-1">
+                <Heart className="h-5 w-5 text-green-600" />
+              </div>
+              <span className="text-[11px] font-semibold text-green-700">{language === "te" ? "సహాయాలు" : "Benefits"}</span>
             </div>
           </Link>
         </div>
