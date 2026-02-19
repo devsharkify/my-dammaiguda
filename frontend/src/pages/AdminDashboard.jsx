@@ -1805,6 +1805,188 @@ export default function AdminDashboard() {
             </DialogFooter>
           </DialogContent>
         </Dialog>
+
+        {/* ============== CMS DIALOGS ============== */}
+
+        {/* Dump Yard Config Dialog */}
+        <Dialog open={showDumpyardDialog} onOpenChange={setShowDumpyardDialog}>
+          <DialogContent className="max-w-md max-h-[80vh] overflow-y-auto">
+            <DialogHeader>
+              <DialogTitle className="flex items-center gap-2">
+                <MapPin className="h-5 w-5 text-red-500" />
+                Edit Dump Yard Statistics
+              </DialogTitle>
+            </DialogHeader>
+            <div className="space-y-4">
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <Label>Daily Waste (tons/day) *</Label>
+                  <Input type="number" value={dumpyardConfig.daily_waste_tons} onChange={(e) => setDumpyardConfig({...dumpyardConfig, daily_waste_tons: parseFloat(e.target.value) || 0})} />
+                </div>
+                <div>
+                  <Label>Area (acres)</Label>
+                  <Input type="number" value={dumpyardConfig.area_acres} onChange={(e) => setDumpyardConfig({...dumpyardConfig, area_acres: parseFloat(e.target.value) || 0})} />
+                </div>
+              </div>
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <Label>Red Zone (km)</Label>
+                  <Input type="number" step="0.1" value={dumpyardConfig.red_zone_km} onChange={(e) => setDumpyardConfig({...dumpyardConfig, red_zone_km: parseFloat(e.target.value) || 0})} />
+                </div>
+                <div>
+                  <Label>Status</Label>
+                  <Select value={dumpyardConfig.status} onValueChange={(v) => setDumpyardConfig({...dumpyardConfig, status: v})}>
+                    <SelectTrigger><SelectValue /></SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="Active">Active</SelectItem>
+                      <SelectItem value="Under Review">Under Review</SelectItem>
+                      <SelectItem value="Closed">Closed</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
+              <div>
+                <Label>Historical Data / Note</Label>
+                <Textarea 
+                  value={dumpyardConfig.historical_data || ""} 
+                  onChange={(e) => setDumpyardConfig({...dumpyardConfig, historical_data: e.target.value})} 
+                  rows={3}
+                  placeholder="e.g., Till 2025: 5500 tons/day. IIT-B recommends: 19000 tons/day"
+                />
+              </div>
+              <div>
+                <Label>Health Risks (one per line)</Label>
+                <Textarea 
+                  value={(dumpyardConfig.health_risks || []).join("\n")} 
+                  onChange={(e) => setDumpyardConfig({...dumpyardConfig, health_risks: e.target.value.split("\n").filter(Boolean)})} 
+                  rows={3}
+                  placeholder="Respiratory issues&#10;Groundwater contamination&#10;..."
+                />
+              </div>
+              <div>
+                <Label>Affected Groups (one per line)</Label>
+                <Textarea 
+                  value={(dumpyardConfig.affected_groups || []).join("\n")} 
+                  onChange={(e) => setDumpyardConfig({...dumpyardConfig, affected_groups: e.target.value.split("\n").filter(Boolean)})} 
+                  rows={3}
+                  placeholder="Children (High Risk)&#10;Elderly (High Risk)&#10;..."
+                />
+              </div>
+            </div>
+            <DialogFooter>
+              <Button variant="outline" onClick={() => setShowDumpyardDialog(false)}>Cancel</Button>
+              <Button onClick={saveDumpyardConfig} disabled={saving}>
+                {saving && <Loader2 className="h-4 w-4 mr-2 animate-spin" />}
+                Save
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
+
+        {/* Banner Dialog */}
+        <Dialog open={showBannerDialog} onOpenChange={setShowBannerDialog}>
+          <DialogContent className="max-w-md max-h-[80vh] overflow-y-auto">
+            <DialogHeader>
+              <DialogTitle>{editingBanner ? "Edit Banner" : "Add Banner"}</DialogTitle>
+            </DialogHeader>
+            <div className="space-y-4">
+              <div>
+                <Label>Title *</Label>
+                <Input value={bannerForm.title} onChange={(e) => setBannerForm({...bannerForm, title: e.target.value})} />
+              </div>
+              <div>
+                <Label>Subtitle</Label>
+                <Input value={bannerForm.subtitle} onChange={(e) => setBannerForm({...bannerForm, subtitle: e.target.value})} />
+              </div>
+              <div>
+                <Label>Image URL *</Label>
+                <Input value={bannerForm.image_url} onChange={(e) => setBannerForm({...bannerForm, image_url: e.target.value})} placeholder="https://..." />
+              </div>
+              {bannerForm.image_url && (
+                <div className="aspect-video rounded-lg overflow-hidden bg-muted">
+                  <img src={bannerForm.image_url} alt="Preview" className="w-full h-full object-cover" />
+                </div>
+              )}
+              <div>
+                <Label>Link URL (optional)</Label>
+                <Input value={bannerForm.link_url} onChange={(e) => setBannerForm({...bannerForm, link_url: e.target.value})} placeholder="/education" />
+              </div>
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <Label>Order</Label>
+                  <Input type="number" value={bannerForm.order} onChange={(e) => setBannerForm({...bannerForm, order: parseInt(e.target.value) || 0})} />
+                </div>
+                <div className="flex items-center gap-2 pt-6">
+                  <Switch checked={bannerForm.is_active} onCheckedChange={(v) => setBannerForm({...bannerForm, is_active: v})} />
+                  <Label>Active</Label>
+                </div>
+              </div>
+            </div>
+            <DialogFooter>
+              <Button variant="outline" onClick={() => setShowBannerDialog(false)}>Cancel</Button>
+              <Button onClick={saveBanner} disabled={saving}>
+                {saving && <Loader2 className="h-4 w-4 mr-2 animate-spin" />}
+                {editingBanner ? "Update" : "Create"}
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
+
+        {/* Benefit Dialog */}
+        <Dialog open={showBenefitDialog} onOpenChange={setShowBenefitDialog}>
+          <DialogContent className="max-w-md max-h-[80vh] overflow-y-auto">
+            <DialogHeader>
+              <DialogTitle>{editingBenefit ? "Edit Benefit" : "Add Benefit"}</DialogTitle>
+            </DialogHeader>
+            <div className="space-y-4">
+              <div>
+                <Label>Title *</Label>
+                <Input value={benefitForm.title} onChange={(e) => setBenefitForm({...benefitForm, title: e.target.value})} />
+              </div>
+              <div>
+                <Label>Description</Label>
+                <Textarea value={benefitForm.description} onChange={(e) => setBenefitForm({...benefitForm, description: e.target.value})} rows={2} />
+              </div>
+              <div>
+                <Label>Image URL *</Label>
+                <Input value={benefitForm.image_url} onChange={(e) => setBenefitForm({...benefitForm, image_url: e.target.value})} placeholder="https://..." />
+              </div>
+              {benefitForm.image_url && (
+                <div className="h-32 rounded-lg overflow-hidden bg-muted">
+                  <img src={benefitForm.image_url} alt="Preview" className="w-full h-full object-cover" />
+                </div>
+              )}
+              <div>
+                <Label>Category</Label>
+                <Select value={benefitForm.category} onValueChange={(v) => setBenefitForm({...benefitForm, category: v})}>
+                  <SelectTrigger><SelectValue /></SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="government">Government</SelectItem>
+                    <SelectItem value="health">Health</SelectItem>
+                    <SelectItem value="education">Education</SelectItem>
+                    <SelectItem value="finance">Finance</SelectItem>
+                    <SelectItem value="other">Other</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              <div>
+                <Label>Link URL (optional)</Label>
+                <Input value={benefitForm.link_url} onChange={(e) => setBenefitForm({...benefitForm, link_url: e.target.value})} placeholder="/benefits/ration" />
+              </div>
+              <div className="flex items-center gap-2">
+                <Switch checked={benefitForm.is_active} onCheckedChange={(v) => setBenefitForm({...benefitForm, is_active: v})} />
+                <Label>Active</Label>
+              </div>
+            </div>
+            <DialogFooter>
+              <Button variant="outline" onClick={() => setShowBenefitDialog(false)}>Cancel</Button>
+              <Button onClick={saveBenefit} disabled={saving}>
+                {saving && <Loader2 className="h-4 w-4 mr-2 animate-spin" />}
+                {editingBenefit ? "Update" : "Create"}
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
       </div>
     </Layout>
   );
