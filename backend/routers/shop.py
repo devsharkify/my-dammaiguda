@@ -304,7 +304,7 @@ async def get_categories(user: dict = Depends(get_current_user)):
 
 @router.post("/claim")
 async def claim_gift(request: ClaimGiftRequest, user: dict = Depends(get_current_user)):
-    """Claim a gift using points"""
+    """Claim a gift using points (supports normal, privilege, or both)"""
     # Get product
     product = await db.gift_products.find_one({"id": request.product_id, "is_active": True}, {"_id": 0})
     if not product:
@@ -313,10 +313,27 @@ async def claim_gift(request: ClaimGiftRequest, user: dict = Depends(get_current
     if product["stock_quantity"] <= 0:
         raise HTTPException(status_code=400, detail="Product out of stock")
     
-    # Check user's balance
+    # Check user's balance based on point_type
     wallet = await db.wallets.find_one({"user_id": user["id"]})
-    if not wallet or wallet.get("balance", 0) < product["points_required"]:
-        raise HTTPException(status_code=400, detail="Insufficient points")
+    user_normal = wallet.get("balance", 0) if wallet else 0
+    user_privilege = wallet.get("privilege_balance", 0) if wallet else 0
+    
+    point_type = product.get("point_type", "normal")
+    normal_required = product.get("points_required", 0)
+    privilege_required = product.get("privilege_points_required", 0)
+    delivery_fee = product.get("delivery_fee", 0)
+    
+    if point_type == "normal":
+        if user_normal < normal_required:
+            raise HTTPException(status_code=400, detail=f"Insufficient normal points. Need {normal_required}, have {user_normal}")
+    elif point_type == "privilege":
+        if user_privilege < privilege_required:
+            raise HTTPException(status_code=400, detail=f"Insufficient privilege points. Need {privilege_required}, have {user_privilege}")
+    else:  # both
+        if user_normal < normal_required:
+            raise HTTPException(status_code=400, detail=f"Insufficient normal points. Need {normal_required}, have {user_normal}")
+        if user_privilege < privilege_required:
+            raise HTTPException(status_code=400, detail=f"Insufficient privilege points. Need {privilege_required}, have {user_privilege}")
     
     # Create order
     order = {
@@ -328,7 +345,11 @@ async def claim_gift(request: ClaimGiftRequest, user: dict = Depends(get_current
         "product_name": product["name"],
         "product_image": product.get("image_url", ""),
         "mrp": product["mrp"],
-        "points_spent": product["points_required"],
+        "point_type": point_type,
+        "normal_points_spent": normal_required if point_type in ["normal", "both"] else 0,
+        "privilege_points_spent": privilege_required if point_type in ["privilege", "both"] else 0,
+        "points_spent": normal_required,  # Legacy field for backward compatibility
+        "delivery_fee": delivery_fee,
         "delivery_address": request.delivery_address.dict(),
         "status": "pending",  # pending, approved, rejected, shipped, delivered
         "admin_notes": None,
@@ -337,20 +358,34 @@ async def claim_gift(request: ClaimGiftRequest, user: dict = Depends(get_current
         "updated_at": now_iso()
     }
     
-    # Deduct points
-    await add_points_transaction(
-        user["id"], 
-        product["points_required"], 
-        "spent", 
-        f"Claimed gift: {product['name']}", 
-        order["id"]
-    )
+    # Deduct points based on type
+    if point_type in ["normal", "both"]:
+        await add_points_transaction(
+            user["id"], 
+            normal_required, 
+            "spent", 
+            f"Claimed gift: {product['name']}", 
+            order["id"],
+            "normal"
+        )
+        await db.wallets.update_one(
+            {"user_id": user["id"]},
+            {"$inc": {"balance": -normal_required}}
+        )
     
-    # Update wallet balance
-    await db.wallets.update_one(
-        {"user_id": user["id"]},
-        {"$inc": {"balance": -product["points_required"]}}
-    )
+    if point_type in ["privilege", "both"]:
+        await add_points_transaction(
+            user["id"], 
+            privilege_required, 
+            "spent", 
+            f"Claimed gift: {product['name']} (Privilege)", 
+            order["id"],
+            "privilege"
+        )
+        await db.wallets.update_one(
+            {"user_id": user["id"]},
+            {"$inc": {"privilege_balance": -privilege_required}}
+        )
     
     # Reduce stock
     await db.gift_products.update_one(
