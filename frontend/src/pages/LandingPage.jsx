@@ -195,7 +195,7 @@ export default function LandingPage() {
       </section>
 
       {/* Quick Links Section */}
-      <section className="py-16 dark:bg-gray-900">
+      <section className="py-16">
         <div className="max-w-7xl mx-auto px-4">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
             <Link 
