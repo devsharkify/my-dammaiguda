@@ -541,6 +541,7 @@ async def admin_get_orders(
     }
 
 @router.put("/admin/orders/{order_id}/status")
+@router.put("/admin/orders/{order_id}")
 async def admin_update_order_status(order_id: str, update: OrderStatusUpdate, user: dict = Depends(get_current_user)):
     """Admin: Update order status"""
     if user.get("role") != "admin":
