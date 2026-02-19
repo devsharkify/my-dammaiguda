@@ -140,6 +140,25 @@ export default function AdminDashboard() {
     name_position: { x: 210, y: 280, fontSize: 24, color: "#ffffff" }
   });
   
+  // Content Management (CMS)
+  const [banners, setBanners] = useState([]);
+  const [benefits, setBenefits] = useState([]);
+  const [dumpyardConfig, setDumpyardConfig] = useState({
+    daily_waste_tons: 1200, area_acres: 350, red_zone_km: 2, status: "Active",
+    historical_data: "", health_risks: [], affected_groups: []
+  });
+  const [showBannerDialog, setShowBannerDialog] = useState(false);
+  const [editingBanner, setEditingBanner] = useState(null);
+  const [bannerForm, setBannerForm] = useState({
+    title: "", subtitle: "", image_url: "", link_url: "", is_active: true, order: 0
+  });
+  const [showBenefitDialog, setShowBenefitDialog] = useState(false);
+  const [editingBenefit, setEditingBenefit] = useState(null);
+  const [benefitForm, setBenefitForm] = useState({
+    title: "", description: "", image_url: "", category: "government", link_url: "", is_active: true
+  });
+  const [showDumpyardDialog, setShowDumpyardDialog] = useState(false);
+  
   const [saving, setSaving] = useState(false);
   const headers = { Authorization: `Bearer ${token}` };
 
