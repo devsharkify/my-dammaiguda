@@ -36,6 +36,7 @@ const ageRanges = [
 export default function AuthPage() {
   const { t, language, toggleLanguage } = useLanguage();
   const { sendOTP, verifyOTP } = useAuth();
+  const navigate = useNavigate();
   
   const [step, setStep] = useState(1); // 1: phone, 2: otp, 3: register (new user)
   const [phone, setPhone] = useState("");
