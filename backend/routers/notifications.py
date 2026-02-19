@@ -293,6 +293,26 @@ async def get_notification_history(limit: int = 50, user: dict = Depends(get_cur
     
     return {"notifications": notifications, "count": len(notifications)}
 
+@router.post("/test")
+async def send_test_notification(user: dict = Depends(get_current_user)):
+    """Send a test push notification to the current user"""
+    payload = {
+        "title": "🔔 Test Notification",
+        "title_te": "🔔 టెస్ట్ నోటిఫికేషన్",
+        "body": "Push notifications are working correctly!",
+        "body_te": "పుష్ నోటిఫికేషన్లు సరిగ్గా పని చేస్తున్నాయి!",
+        "category": "test",
+        "priority": "normal",
+        "timestamp": now_iso()
+    }
+    
+    result = await notify_user(user["id"], "community", payload)
+    
+    if result:
+        return {"success": True, "message": "Test notification sent"}
+    else:
+        return {"success": False, "message": "No active subscriptions found or notification failed"}
+
 # ============== ADMIN ROUTES ==============
 
 @router.post("/admin/broadcast")
