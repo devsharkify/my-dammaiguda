@@ -1082,74 +1082,7 @@ BADGES = {
     }
 }
 
-# ============== DEVICE MANAGEMENT ==============
-
-class DeviceConnect(BaseModel):
-    device_type: str
-    device_name: str
-    bluetooth_id: Optional[str] = None
-
-@router.get("/devices")
-async def get_connected_devices(user: dict = Depends(get_current_user)):
-    """Get user's connected fitness devices"""
-    devices = await db.fitness_devices.find(
-        {"user_id": user["id"], "status": "connected"},
-        {"_id": 0}
-    ).to_list(10)
-    
-    # Get last sync time
-    last_sync = await db.device_syncs.find_one(
-        {"user_id": user["id"]},
-        {"_id": 0, "synced_at": 1},
-        sort=[("synced_at", -1)]
-    )
-    
-    return {
-        "devices": devices,
-        "last_sync": last_sync.get("synced_at") if last_sync else None
-    }
-
-@router.post("/devices/connect")
-async def connect_device(device: DeviceConnect, user: dict = Depends(get_current_user)):
-    """Connect a fitness device"""
-    # Check if device already connected
-    existing = await db.fitness_devices.find_one({
-        "user_id": user["id"],
-        "device_type": device.device_type,
-        "status": "connected"
-    })
-    
-    if existing:
-        return {"message": "Device already connected", "device": {k: v for k, v in existing.items() if k != "_id"}}
-    
-    device_doc = {
-        "id": generate_id(),
-        "user_id": user["id"],
-        "device_type": device.device_type,
-        "device_name": device.device_name,
-        "bluetooth_id": device.bluetooth_id,
-        "status": "connected",
-        "connected_at": now_iso(),
-        "last_synced_at": None
-    }
-    
-    await db.fitness_devices.insert_one(device_doc)
-    device_doc.pop("_id", None)
-    
-    return {"message": "Device connected", "device": device_doc}
-
-@router.delete("/devices/{device_id}")
-async def disconnect_device(device_id: str, user: dict = Depends(get_current_user)):
-    """Disconnect a fitness device"""
-    result = await db.fitness_devices.update_one(
-        {"id": device_id, "user_id": user["id"]},
-        {"$set": {"status": "disconnected", "disconnected_at": now_iso()}}
-    )
-    
-    if result.matched_count == 0:
-        raise HTTPException(status_code=404, detail="Device not found")
-    
-    return {"message": "Device disconnected"}
+# ============== SYNC ALL DEVICES ==============
 
 @router.post("/sync-all")
 async def sync_all_devices(user: dict = Depends(get_current_user)):
