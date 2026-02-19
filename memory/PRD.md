@@ -152,6 +152,7 @@ Build a production-ready, mobile-first civic engagement platform "My Dammaiguda"
 ---
 
 ## Test Reports
+- `/app/test_reports/iteration_24.json` - CMS Integration & AQI Web Crawl testing
 - `/app/test_reports/iteration_23.json` - Instructor Portal & Leaderboard testing
 - `/app/test_reports/iteration_22.json` - P1 features testing
 
