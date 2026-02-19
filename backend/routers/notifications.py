@@ -164,6 +164,13 @@ async def broadcast_notification(notification_type: str, payload: dict, exclude_
 
 # ============== ROUTES ==============
 
+@router.get("/vapid-public-key")
+async def get_vapid_public_key():
+    """Get the VAPID public key for push notification subscription"""
+    if not VAPID_PUBLIC_KEY:
+        raise HTTPException(status_code=503, detail="Push notifications not configured")
+    return {"public_key": VAPID_PUBLIC_KEY}
+
 @router.post("/subscribe")
 async def subscribe_push(subscription: PushSubscription, user: dict = Depends(get_current_user)):
     """Subscribe to push notifications"""
