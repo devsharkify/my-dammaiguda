@@ -27,6 +27,9 @@ import AQIReport from "./pages/AQIReport";
 import NewsShorts from "./pages/NewsShorts";
 import CitizenWall from "./pages/CitizenWall";
 import LiveActivity from "./pages/LiveActivity";
+import AITEducation from "./pages/AITEducation";
+import CourseDetail from "./pages/CourseDetail";
+import Certificate from "./pages/Certificate";
 
 import "./App.css";
 
