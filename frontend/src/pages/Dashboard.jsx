@@ -286,14 +286,21 @@ export default function Dashboard() {
     }
   };
 
-  // Get AQI color
+  // Get AQI color and status
+  const getAqiInfo = (aqi) => {
+    if (!aqi) return { bg: "bg-gray-100", text: "text-gray-600", status: "Loading", status_te: "లోడ్ అవుతోంది" };
+    if (aqi <= 50) return { bg: "bg-green-100", text: "text-green-700", status: "Good", status_te: "మంచి" };
+    if (aqi <= 100) return { bg: "bg-yellow-100", text: "text-yellow-700", status: "Moderate", status_te: "మధ్యస్థం" };
+    if (aqi <= 150) return { bg: "bg-orange-100", text: "text-orange-700", status: "Poor", status_te: "చెడు" };
+    if (aqi <= 200) return { bg: "bg-red-100", text: "text-red-700", status: "Unhealthy", status_te: "అనారోగ్యకరమైన" };
+    if (aqi <= 300) return { bg: "bg-purple-100", text: "text-purple-700", status: "Very Unhealthy", status_te: "చాలా అనారోగ్యకరమైన" };
+    return { bg: "bg-rose-100", text: "text-rose-800", status: "Hazardous", status_te: "ప్రమాదకరమైన" };
+  };
+  
+  // Legacy function for backward compatibility
   const getAqiColor = (aqi) => {
-    if (!aqi) return "bg-gray-100 text-gray-600";
-    if (aqi <= 50) return "bg-green-100 text-green-700";
-    if (aqi <= 100) return "bg-yellow-100 text-yellow-700";
-    if (aqi <= 150) return "bg-orange-100 text-orange-700";
-    if (aqi <= 200) return "bg-red-100 text-red-700";
-    return "bg-purple-100 text-purple-700";
+    const info = getAqiInfo(aqi);
+    return `${info.bg} ${info.text}`;
   };
 
   if (loading) {
