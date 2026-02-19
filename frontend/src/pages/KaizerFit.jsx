@@ -626,6 +626,87 @@ export default function KaizerFit() {
           </div>
         </DialogContent>
       </Dialog>
+
+      {/* All Badges Dialog */}
+      <Dialog open={showBadgesDialog} onOpenChange={setShowBadgesDialog}>
+        <DialogContent className="max-w-sm rounded-2xl max-h-[80vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <Award className="h-5 w-5 text-primary" />
+              {language === "te" ? "బ్యాడ్జిలు" : "Badges"}
+              <Badge variant="secondary" className="ml-auto">
+                {badges.filter(b => b.earned).length}/{badges.length}
+              </Badge>
+            </DialogTitle>
+          </DialogHeader>
+          <div className="space-y-3 pt-2">
+            {badges.map((badge) => (
+              <div 
+                key={badge.id}
+                className={`p-3 rounded-xl flex items-center gap-3 transition-all ${
+                  badge.earned 
+                    ? `bg-gradient-to-r ${badge.color} text-white shadow-lg` 
+                    : "bg-muted/50 opacity-60"
+                }`}
+              >
+                <div className={`h-12 w-12 rounded-xl flex items-center justify-center text-2xl ${
+                  badge.earned ? "bg-white/20" : "bg-muted"
+                }`}>
+                  {badge.icon}
+                </div>
+                <div className="flex-1">
+                  <p className={`font-semibold ${badge.earned ? "" : "text-muted-foreground"}`}>
+                    {language === "te" ? badge.name_te : badge.name}
+                  </p>
+                  <p className={`text-xs ${badge.earned ? "text-white/80" : "text-muted-foreground"}`}>
+                    {language === "te" ? badge.description_te : badge.description}
+                  </p>
+                </div>
+                {badge.earned && (
+                  <div className="text-2xl">✅</div>
+                )}
+              </div>
+            ))}
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* New Badge Celebration Dialog */}
+      <Dialog open={showNewBadgeDialog} onOpenChange={setShowNewBadgeDialog}>
+        <DialogContent className="max-w-xs rounded-2xl text-center">
+          <div className="py-4">
+            <div className="text-6xl mb-4 animate-bounce">🎉</div>
+            <h2 className="text-xl font-bold mb-2">
+              {language === "te" ? "అభినందనలు!" : "Congratulations!"}
+            </h2>
+            <p className="text-muted-foreground mb-4">
+              {language === "te" ? "మీరు కొత్త బ్యాడ్జి(లు) సంపాదించారు!" : "You've earned new badge(s)!"}
+            </p>
+            <div className="space-y-3">
+              {newBadges.map((badge) => (
+                <div 
+                  key={badge.id}
+                  className={`p-4 rounded-xl bg-gradient-to-r ${badge.color} text-white shadow-lg`}
+                >
+                  <div className="text-4xl mb-2">{badge.icon}</div>
+                  <p className="font-bold">
+                    {language === "te" ? badge.name_te : badge.name}
+                  </p>
+                  <p className="text-xs text-white/80 mt-1">
+                    {language === "te" ? badge.description_te : badge.description}
+                  </p>
+                </div>
+              ))}
+            </div>
+            <Button
+              onClick={() => setShowNewBadgeDialog(false)}
+              className="mt-4 w-full"
+            >
+              {language === "te" ? "అద్భుతం!" : "Awesome!"}
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
     </Layout>
   );
 }
