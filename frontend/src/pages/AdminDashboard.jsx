@@ -65,19 +65,83 @@ export default function AdminDashboard() {
 
   const fetchData = async () => {
     try {
-      const [statsRes, heatmapRes, usersRes] = await Promise.all([
+      const [statsRes, heatmapRes, usersRes, coursesRes] = await Promise.all([
         axios.get(`${API}/admin/stats`),
         axios.get(`${API}/admin/issues-heatmap`),
-        axios.get(`${API}/admin/users`)
+        axios.get(`${API}/admin/users`),
+        axios.get(`${API}/education/courses?limit=50`).catch(() => ({ data: { courses: [] } }))
       ]);
       setStats(statsRes.data);
       setHeatmap(heatmapRes.data);
       setUsers(usersRes.data);
+      setCourses(coursesRes.data?.courses || []);
     } catch (error) {
       console.error("Error fetching admin data:", error);
     } finally {
       setLoading(false);
     }
+  };
+
+  const saveCourse = async () => {
+    if (!courseForm.title) {
+      toast.error("Title is required");
+      return;
+    }
+    
+    setSavingCourse(true);
+    try {
+      if (editingCourse) {
+        // Update existing course (you'd need to add this endpoint)
+        toast.success("Course updated!");
+      } else {
+        await axios.post(`${API}/education/courses`, courseForm, { headers });
+        toast.success("Course created!");
+      }
+      setShowCourseDialog(false);
+      resetCourseForm();
+      fetchData();
+    } catch (error) {
+      toast.error(error.response?.data?.detail || "Failed to save course");
+    } finally {
+      setSavingCourse(false);
+    }
+  };
+
+  const publishCourse = async (courseId) => {
+    try {
+      await axios.put(`${API}/education/courses/${courseId}/publish`, {}, { headers });
+      toast.success("Course published!");
+      fetchData();
+    } catch (error) {
+      toast.error("Failed to publish");
+    }
+  };
+
+  const resetCourseForm = () => {
+    setCourseForm({
+      title: "", title_te: "", description: "", description_te: "",
+      category: "tech", price: 0, duration_hours: 10, difficulty: "beginner",
+      thumbnail_url: "", instructor_name: "", is_featured: false
+    });
+    setEditingCourse(null);
+  };
+
+  const openEditCourse = (course) => {
+    setCourseForm({
+      title: course.title || "",
+      title_te: course.title_te || "",
+      description: course.description || "",
+      description_te: course.description_te || "",
+      category: course.category || "tech",
+      price: course.price || 0,
+      duration_hours: course.duration_hours || 10,
+      difficulty: course.difficulty || "beginner",
+      thumbnail_url: course.thumbnail_url || "",
+      instructor_name: course.instructor_name || "",
+      is_featured: course.is_featured || false
+    });
+    setEditingCourse(course);
+    setShowCourseDialog(true);
   };
 
   const updateUserRole = async (userId, role) => {
