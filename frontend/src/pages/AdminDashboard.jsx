@@ -86,16 +86,21 @@ export default function AdminDashboard() {
 
   const fetchData = async () => {
     try {
-      const [statsRes, heatmapRes, usersRes, coursesRes] = await Promise.all([
+      const [statsRes, heatmapRes, usersRes, coursesRes, productsRes, ordersRes] = await Promise.all([
         axios.get(`${API}/admin/stats`),
         axios.get(`${API}/admin/issues-heatmap`),
         axios.get(`${API}/admin/users`),
-        axios.get(`${API}/education/courses?limit=50`).catch(() => ({ data: { courses: [] } }))
+        axios.get(`${API}/education/courses?limit=50`).catch(() => ({ data: { courses: [] } })),
+        axios.get(`${API}/shop/admin/products?include_inactive=true`, { headers }).catch(() => ({ data: { products: [] } })),
+        axios.get(`${API}/shop/admin/orders`, { headers }).catch(() => ({ data: { orders: [], stats: {} } }))
       ]);
       setStats(statsRes.data);
       setHeatmap(heatmapRes.data);
       setUsers(usersRes.data);
       setCourses(coursesRes.data?.courses || []);
+      setGiftProducts(productsRes.data?.products || []);
+      setGiftOrders(ordersRes.data?.orders || []);
+      setOrderStats(ordersRes.data?.stats || {});
     } catch (error) {
       console.error("Error fetching admin data:", error);
     } finally {
