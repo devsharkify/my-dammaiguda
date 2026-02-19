@@ -181,6 +181,9 @@ Build a production-ready, mobile-first civic engagement platform "My Dammaiguda"
   - Back button visibility improved with white/transparent background
   - Header scroll effect: gradient to solid dark (gray-900) on scroll
   - AQI widget headline changed to "Air Quality (Pollution)"
+  - **Fixed KaizerFit button spacing**: Added 20px gap between fitness buttons and smartwatch card
+  - **Dark mode improvements**: Better text visibility and color contrast
+  - **Landing page Telugu**: Contextually appropriate Telugu translations (not literal)
 - **Education Module Updates**:
   - Disabled K-12 and College categories
   - Added "Professional Job" category
@@ -188,7 +191,13 @@ Build a production-ready, mobile-first civic engagement platform "My Dammaiguda"
   - Payment dialog with PhonePe QR code
   - "Apply for Scholarship" link to Benefits page
   - Admin can add additional courses via Admin Panel → Education tab
-- **Testing**: 100% pass rate (iteration_24: CMS/AQI, iteration_25: UI changes)
+- **WebSocket Real-Time Chat**:
+  - New `/live-chat` page with chat rooms
+  - 3 default rooms: General Chat, Announcements, Health & Fitness
+  - Real-time messaging with WebSocket
+  - Typing indicators, reactions, message history
+  - Fallback to REST API when WebSocket unavailable
+- **Testing**: 100% pass rate (iteration_24-26)
 
 ### Feb 19, 2026 - Session 1
 - **Instructor Portal**: Complete course management for instructors/admins
