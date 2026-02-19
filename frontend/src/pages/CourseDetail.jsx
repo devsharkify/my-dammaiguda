@@ -138,11 +138,33 @@ export default function CourseDetail() {
   };
 
   const enrollCourse = async () => {
+    // For paid courses, show payment dialog
+    if (course.price > 0) {
+      setShowPaymentDialog(true);
+      return;
+    }
+    
+    // For free courses, enroll directly
     setEnrolling(true);
     try {
       await axios.post(`${API}/education/enroll`, { course_id: courseId }, { headers });
       toast.success(language === "te" ? "కోర్సులో విజయవంతంగా చేరారు!" : "Enrolled successfully!");
       setIsEnrolled(true);
+      fetchCourseData();
+    } catch (error) {
+      toast.error("Failed to enroll");
+    } finally {
+      setEnrolling(false);
+    }
+  };
+
+  const handlePaymentConfirm = async () => {
+    setEnrolling(true);
+    try {
+      await axios.post(`${API}/education/enroll`, { course_id: courseId }, { headers });
+      toast.success(language === "te" ? "చెల్లింపు విజయవంతం! కోర్సులో చేరారు!" : "Payment successful! Enrolled!");
+      setIsEnrolled(true);
+      setShowPaymentDialog(false);
       fetchCourseData();
     } catch (error) {
       toast.error("Failed to enroll");
