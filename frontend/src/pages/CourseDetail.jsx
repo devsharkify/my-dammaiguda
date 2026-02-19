@@ -493,8 +493,170 @@ export default function CourseDetail() {
               </div>
             )}
           </TabsContent>
+
+          {/* Reviews Tab */}
+          <TabsContent value="reviews" className="mt-4 space-y-4">
+            {/* Rating Summary */}
+            {reviewStats && (
+              <Card className="border-border/50">
+                <CardContent className="p-4">
+                  <div className="flex items-center gap-4">
+                    <div className="text-center">
+                      <p className="text-4xl font-bold text-primary">
+                        {reviewStats.average_rating || "—"}
+                      </p>
+                      <div className="flex justify-center mt-1">
+                        {[1,2,3,4,5].map(star => (
+                          <Star 
+                            key={star} 
+                            className={`h-3 w-3 ${star <= Math.round(reviewStats.average_rating) ? "text-yellow-500 fill-yellow-500" : "text-gray-300"}`} 
+                          />
+                        ))}
+                      </div>
+                      <p className="text-xs text-muted-foreground mt-1">
+                        {reviewStats.total_reviews} {language === "te" ? "రివ్యూలు" : "reviews"}
+                      </p>
+                    </div>
+                    <div className="flex-1 space-y-1">
+                      {[5,4,3,2,1].map(rating => (
+                        <div key={rating} className="flex items-center gap-2">
+                          <span className="text-xs w-3">{rating}</span>
+                          <Progress 
+                            value={reviewStats.total_reviews > 0 
+                              ? (reviewStats.rating_breakdown[rating] / reviewStats.total_reviews) * 100 
+                              : 0} 
+                            className="h-1.5 flex-1" 
+                          />
+                          <span className="text-xs text-muted-foreground w-6">
+                            {reviewStats.rating_breakdown[rating] || 0}
+                          </span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            )}
+
+            {/* Write Review Button */}
+            {isEnrolled && (
+              <Button onClick={() => setShowReviewDialog(true)} className="w-full">
+                <Edit className="h-4 w-4 mr-2" />
+                {language === "te" ? "రివ్యూ రాయండి" : "Write a Review"}
+              </Button>
+            )}
+
+            {/* Reviews List */}
+            <div className="space-y-3">
+              {reviews.map((review) => (
+                <Card key={review.id} className="border-border/50">
+                  <CardContent className="p-4">
+                    <div className="flex items-start justify-between">
+                      <div>
+                        <p className="font-medium text-sm">{review.user_name}</p>
+                        <div className="flex items-center gap-1 mt-1">
+                          {[1,2,3,4,5].map(star => (
+                            <Star 
+                              key={star} 
+                              className={`h-3 w-3 ${star <= review.rating ? "text-yellow-500 fill-yellow-500" : "text-gray-300"}`} 
+                            />
+                          ))}
+                        </div>
+                      </div>
+                      <span className="text-xs text-muted-foreground">
+                        {new Date(review.created_at).toLocaleDateString()}
+                      </span>
+                    </div>
+                    
+                    {review.review_text && (
+                      <p className="text-sm text-muted-foreground mt-2">
+                        {review.review_text}
+                      </p>
+                    )}
+                    
+                    <div className="flex items-center gap-2 mt-3">
+                      <Button 
+                        size="sm" 
+                        variant="ghost" 
+                        className="h-7 text-xs"
+                        onClick={() => markHelpful(review.id)}
+                      >
+                        <ThumbsUp className="h-3 w-3 mr-1" />
+                        {language === "te" ? "ఉపయోగకరం" : "Helpful"} ({review.helpful_count || 0})
+                      </Button>
+                    </div>
+                  </CardContent>
+                </Card>
+              ))}
+              
+              {reviews.length === 0 && (
+                <div className="text-center py-8">
+                  <MessageSquare className="h-10 w-10 mx-auto text-muted-foreground/50 mb-2" />
+                  <p className="text-sm text-muted-foreground">
+                    {language === "te" ? "రివ్యూలు లేవు" : "No reviews yet"}
+                  </p>
+                  {isEnrolled && (
+                    <p className="text-xs text-muted-foreground mt-1">
+                      {language === "te" ? "మొదటి రివ్యూ రాయండి!" : "Be the first to review!"}
+                    </p>
+                  )}
+                </div>
+              )}
+            </div>
+          </TabsContent>
         </Tabs>
       </div>
+
+      {/* Review Dialog */}
+      <Dialog open={showReviewDialog} onOpenChange={setShowReviewDialog}>
+        <DialogContent className="max-w-md">
+          <DialogHeader>
+            <DialogTitle>
+              {language === "te" ? "మీ రివ్యూ రాయండి" : "Write Your Review"}
+            </DialogTitle>
+          </DialogHeader>
+          
+          <div className="space-y-4">
+            <div>
+              <Label>{language === "te" ? "రేటింగ్" : "Rating"}</Label>
+              <div className="flex gap-2 mt-2">
+                {[1,2,3,4,5].map(star => (
+                  <button
+                    key={star}
+                    onClick={() => setMyRating(star)}
+                    className="p-1 hover:scale-110 transition-transform"
+                  >
+                    <Star 
+                      className={`h-8 w-8 ${star <= myRating ? "text-yellow-500 fill-yellow-500" : "text-gray-300"}`} 
+                    />
+                  </button>
+                ))}
+              </div>
+            </div>
+            
+            <div>
+              <Label>{language === "te" ? "మీ రివ్యూ (ఐచ్ఛికం)" : "Your Review (Optional)"}</Label>
+              <Textarea
+                value={myReviewText}
+                onChange={(e) => setMyReviewText(e.target.value)}
+                placeholder={language === "te" ? "మీ అనుభవాన్ని షేర్ చేయండి..." : "Share your experience..."}
+                rows={4}
+                className="mt-2"
+              />
+            </div>
+          </div>
+          
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setShowReviewDialog(false)}>
+              {language === "te" ? "రద్దు చేయి" : "Cancel"}
+            </Button>
+            <Button onClick={submitReview} disabled={submittingReview}>
+              {submittingReview && <Loader2 className="h-4 w-4 mr-2 animate-spin" />}
+              {language === "te" ? "సమర్పించు" : "Submit"}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
 
       {/* Lesson Viewer Dialog */}
       <Dialog open={!!activeLesson} onOpenChange={() => setActiveLesson(null)}>
