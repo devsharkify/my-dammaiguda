@@ -545,9 +545,9 @@ export default function Dashboard() {
         </div>
 
         {/* Wall Widget - Medium Sized */}
-        <Card className="border-border/50 overflow-hidden" data-testid="wall-widget">
+        <Card className="bg-white rounded-2xl border border-gray-200/60 shadow-sm overflow-hidden" data-testid="wall-widget">
           <CardContent className="p-0">
-            <div className="p-3 bg-primary/5 border-b border-border/30">
+            <div className="p-4 bg-primary/5 border-b border-gray-100">
               <div className="flex items-center justify-between">
                 <h3 className="font-semibold text-sm flex items-center gap-2">
                   <PenSquare className="h-4 w-4 text-primary" />
