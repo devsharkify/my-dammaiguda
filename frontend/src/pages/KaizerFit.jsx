@@ -116,6 +116,7 @@ export default function KaizerFit() {
       setHasProfile(res.data.has_profile);
       if (!res.data.has_profile) {
         setShowOnboarding(true);
+        setLoading(false);
       } else {
         fetchAllData();
       }
