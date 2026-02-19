@@ -2,6 +2,9 @@ import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { Toaster } from "./components/ui/sonner";
 import { LanguageProvider } from "./context/LanguageContext";
 import { AuthProvider, useAuth } from "./context/AuthContext";
+import { OfflineBanner } from "./components/OfflineBanner";
+import { useServiceWorker } from "./hooks/useOffline";
+import { useEffect } from "react";
 
 // Pages
 import LandingPage from "./pages/LandingPage";
