@@ -40,9 +40,10 @@ export default function IssueFeed() {
       if (statusFilter !== "all") url += `&status=${statusFilter}`;
       
       const response = await axios.get(url);
-      setIssues(response.data);
+      setIssues(response.data?.issues || []);
     } catch (error) {
       console.error("Error fetching issues:", error);
+      setIssues([]);
     } finally {
       setLoading(false);
     }
