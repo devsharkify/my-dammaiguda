@@ -1,7 +1,6 @@
 import { Link, useLocation } from "react-router-dom";
 import { useLanguage } from "../context/LanguageContext";
 import { useAuth } from "../context/AuthContext";
-import { useTheme } from "../context/ThemeContext";
 import { Button } from "../components/ui/button";
 import { motion, AnimatePresence } from "framer-motion";
 import {
@@ -29,12 +28,10 @@ import {
   GraduationCap,
   Search,
   Bell,
-  Moon,
-  Sun,
   Gift,
   Phone
 } from "lucide-react";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 
 export default function Layout({ children, title, showBackButton = false }) {
   const { t, language, toggleLanguage } = useLanguage();
