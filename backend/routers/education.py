@@ -1093,7 +1093,6 @@ async def get_course_analytics(course_id: str, user: dict = Depends(get_current_
         })
     
     # Enrollment over time (last 30 days)
-    from datetime import timedelta
     enrollment_trend = []
     for i in range(30):
         date = datetime.now(timezone.utc) - timedelta(days=29-i)
