@@ -1,6 +1,6 @@
 /* eslint-disable no-restricted-globals */
 
-const CACHE_NAME = 'my-dammaiguda-v1';
+const CACHE_NAME = 'my-dammaiguda-v2';
 const STATIC_ASSETS = [
   '/',
   '/index.html',
@@ -46,6 +46,81 @@ self.addEventListener('activate', (event) => {
     })
   );
   self.clients.claim();
+});
+
+// Push notification event - handle incoming push notifications
+self.addEventListener('push', (event) => {
+  console.log('[SW] Push notification received');
+  
+  let data = {};
+  if (event.data) {
+    try {
+      data = event.data.json();
+    } catch (e) {
+      data = { title: 'My Dammaiguda', body: event.data.text() };
+    }
+  }
+  
+  const title = data.title || 'My Dammaiguda';
+  const options = {
+    body: data.body || 'మీకు కొత్త నోటిఫికేషన్ వచ్చింది',
+    icon: '/logo192.png',
+    badge: '/logo192.png',
+    vibrate: [100, 50, 100],
+    data: data.data || {},
+    tag: data.category || 'default',
+    renotify: true,
+    actions: [
+      { action: 'open', title: 'తెరవండి' },
+      { action: 'close', title: 'మూసివేయండి' }
+    ]
+  };
+  
+  event.waitUntil(
+    self.registration.showNotification(title, options)
+  );
+});
+
+// Notification click event - handle notification interactions
+self.addEventListener('notificationclick', (event) => {
+  console.log('[SW] Notification clicked:', event.action);
+  event.notification.close();
+  
+  if (event.action === 'close') {
+    return;
+  }
+  
+  // Determine which page to open based on notification data
+  const data = event.notification.data || {};
+  let targetUrl = '/dashboard';
+  
+  if (data.category === 'sos') {
+    targetUrl = '/family';
+  } else if (data.category === 'news') {
+    targetUrl = '/news';
+  } else if (data.category === 'community') {
+    targetUrl = '/wall';
+  } else if (data.category === 'health') {
+    targetUrl = '/fitness';
+  } else if (data.category === 'geofence') {
+    targetUrl = '/family';
+  }
+  
+  event.waitUntil(
+    clients.matchAll({ type: 'window', includeUncontrolled: true }).then((clientList) => {
+      // If app is already open, focus it
+      for (const client of clientList) {
+        if (client.url.includes(self.location.origin) && 'focus' in client) {
+          client.navigate(targetUrl);
+          return client.focus();
+        }
+      }
+      // Otherwise open new window
+      if (clients.openWindow) {
+        return clients.openWindow(targetUrl);
+      }
+    })
+  );
 });
 
 // Fetch event - serve from cache, fallback to network
