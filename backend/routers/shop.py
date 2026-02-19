@@ -72,7 +72,7 @@ async def get_wallet(user: dict = Depends(get_current_user)):
     if not wallet:
         # Create wallet if doesn't exist
         wallet = {
-            "id": generate_id("wallet"),
+            "id": generate_id(),
             "user_id": user["id"],
             "balance": 0,
             "total_earned": 0,
@@ -119,7 +119,7 @@ async def get_transactions(
 async def add_points_transaction(user_id: str, points: int, trans_type: str, description: str, reference_id: str = None):
     """Helper to add points transaction and update wallet"""
     transaction = {
-        "id": generate_id("txn"),
+        "id": generate_id(),
         "user_id": user_id,
         "points": points,
         "transaction_type": trans_type,
@@ -133,7 +133,7 @@ async def add_points_transaction(user_id: str, points: int, trans_type: str, des
     wallet = await db.wallets.find_one({"user_id": user_id})
     if not wallet:
         wallet = {
-            "id": generate_id("wallet"),
+            "id": generate_id(),
             "user_id": user_id,
             "balance": 0,
             "total_earned": 0,
@@ -247,7 +247,7 @@ async def claim_gift(request: ClaimGiftRequest, user: dict = Depends(get_current
     
     # Create order
     order = {
-        "id": generate_id("order"),
+        "id": generate_id(),
         "user_id": user["id"],
         "user_name": user.get("name", ""),
         "user_phone": user.get("phone", ""),
@@ -356,7 +356,7 @@ async def admin_create_product(product: GiftProduct, user: dict = Depends(get_cu
         raise HTTPException(status_code=403, detail="Admin access required")
     
     new_product = {
-        "id": generate_id("gift"),
+        "id": generate_id(),
         **product.dict(),
         "created_at": now_iso(),
         "updated_at": now_iso()
