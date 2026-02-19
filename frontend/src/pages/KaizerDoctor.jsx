@@ -1292,43 +1292,190 @@ export default function KaizerDoctor() {
               </CardContent>
             </Card>
           </TabsContent>
-
-          {/* Diet Plans Tab */}
-          <TabsContent value="plans" className="mt-4 space-y-3">
-            {dietPlans.length === 0 ? (
-              <div className="text-center py-8">
-                <Target className="h-12 w-12 mx-auto mb-3 text-muted-foreground/50" />
-                <p className="text-text-muted">{language === "te" ? "ప్రణాళికలు లేవు" : "No plans available"}</p>
-              </div>
-            ) : (
-              dietPlans.map((plan) => (
-                <Card key={plan.id} className="border-border/50 hover:shadow-md transition-shadow">
-                  <CardContent className="p-4">
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center gap-3">
-                        <div className="h-12 w-12 rounded-xl bg-gradient-to-br from-emerald-400 to-teal-500 flex items-center justify-center text-white">
-                          <Target className="h-6 w-6" />
-                        </div>
-                        <div>
-                          <h3 className="font-semibold">{language === "te" ? plan.name_te : plan.name}</h3>
-                          <p className="text-sm text-muted-foreground mt-1 line-clamp-1">
-                            {language === "te" ? plan.description_te : plan.description}
-                          </p>
-                        </div>
-                      </div>
-                      <div className="text-right">
-                        <Badge className="bg-emerald-100 text-emerald-700">
-                          {plan.calories_target} cal
-                        </Badge>
-                        <ChevronRight className="h-5 w-5 text-muted-foreground mt-2" />
-                      </div>
-                    </div>
-                  </CardContent>
-                </Card>
-              ))
-            )}
-          </TabsContent>
         </Tabs>
+
+        {/* Medicine Detail Dialog */}
+        <Dialog open={showMedicineDialog} onOpenChange={setShowMedicineDialog}>
+          <DialogContent className="max-w-md max-h-[90vh] overflow-y-auto">
+            {selectedMedicine && (
+              <>
+                <DialogHeader>
+                  <DialogTitle className="flex items-center gap-2">
+                    <Pill className="h-5 w-5 text-teal-600" />
+                    {language === "te" ? selectedMedicine.name_te : selectedMedicine.name}
+                  </DialogTitle>
+                </DialogHeader>
+                
+                <div className="space-y-4 mt-4">
+                  {/* Brand Names */}
+                  <div>
+                    <h4 className="text-xs font-semibold text-muted-foreground mb-1">
+                      {language === "te" ? "బ్రాండ్ పేర్లు" : "Brand Names"}
+                    </h4>
+                    <div className="flex flex-wrap gap-1">
+                      {selectedMedicine.brand_names.map((brand, idx) => (
+                        <Badge key={idx} variant="secondary" className="text-xs">{brand}</Badge>
+                      ))}
+                    </div>
+                  </div>
+                  
+                  {/* Category & OTC Status */}
+                  <div className="flex items-center gap-2">
+                    <Badge className={selectedMedicine.otc ? "bg-green-100 text-green-700" : "bg-orange-100 text-orange-700"}>
+                      {selectedMedicine.otc 
+                        ? (language === "te" ? "ప్రిస్క్రిప్షన్ అవసరం లేదు" : "OTC - No prescription needed")
+                        : (language === "te" ? "ప్రిస్క్రిప్షన్ అవసరం" : "Prescription Required")}
+                    </Badge>
+                  </div>
+                  
+                  {/* Uses */}
+                  <div className="bg-teal-50 rounded-lg p-3">
+                    <h4 className="text-xs font-semibold text-teal-700 flex items-center gap-1 mb-2">
+                      <CheckCircle className="h-3 w-3" />
+                      {language === "te" ? "ఉపయోగాలు" : "Uses"}
+                    </h4>
+                    <div className="flex flex-wrap gap-1">
+                      {(language === "te" ? selectedMedicine.uses_te : selectedMedicine.uses).map((use, idx) => (
+                        <Badge key={idx} className="bg-teal-100 text-teal-700 text-xs">{use}</Badge>
+                      ))}
+                    </div>
+                  </div>
+                  
+                  {/* Dosage */}
+                  <div className="bg-blue-50 rounded-lg p-3">
+                    <h4 className="text-xs font-semibold text-blue-700 flex items-center gap-1 mb-1">
+                      <Clock className="h-3 w-3" />
+                      {language === "te" ? "మోతాదు" : "Dosage"}
+                    </h4>
+                    <p className="text-sm text-blue-800">
+                      {language === "te" ? selectedMedicine.dosage_te : selectedMedicine.dosage}
+                    </p>
+                  </div>
+                  
+                  {/* Side Effects */}
+                  <div className="bg-orange-50 rounded-lg p-3">
+                    <h4 className="text-xs font-semibold text-orange-700 flex items-center gap-1 mb-2">
+                      <AlertCircle className="h-3 w-3" />
+                      {language === "te" ? "దుష్ప్రభావాలు" : "Side Effects"}
+                    </h4>
+                    <ul className="text-xs text-orange-800 space-y-0.5">
+                      {(language === "te" ? selectedMedicine.side_effects_te : selectedMedicine.side_effects).map((effect, idx) => (
+                        <li key={idx}>• {effect}</li>
+                      ))}
+                    </ul>
+                  </div>
+                  
+                  {/* Warnings */}
+                  <div className="bg-red-50 rounded-lg p-3">
+                    <h4 className="text-xs font-semibold text-red-700 flex items-center gap-1 mb-2">
+                      <AlertTriangle className="h-3 w-3" />
+                      {language === "te" ? "హెచ్చరికలు" : "Warnings"}
+                    </h4>
+                    <ul className="text-xs text-red-800 space-y-0.5">
+                      {(language === "te" ? selectedMedicine.warnings_te : selectedMedicine.warnings).map((warning, idx) => (
+                        <li key={idx}>• {warning}</li>
+                      ))}
+                    </ul>
+                  </div>
+                  
+                  {/* Drug Interactions */}
+                  <div className="bg-purple-50 rounded-lg p-3">
+                    <h4 className="text-xs font-semibold text-purple-700 flex items-center gap-1 mb-2">
+                      <XCircle className="h-3 w-3" />
+                      {language === "te" ? "ఇతర మందులతో సంబంధం" : "Drug Interactions"}
+                    </h4>
+                    <div className="flex flex-wrap gap-1">
+                      {selectedMedicine.interactions.map((interaction, idx) => (
+                        <Badge key={idx} className="bg-purple-100 text-purple-700 text-xs">{interaction}</Badge>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              </>
+            )}
+          </DialogContent>
+        </Dialog>
+
+        {/* Symptom Detail Dialog */}
+        <Dialog open={showSymptomDialog} onOpenChange={setShowSymptomDialog}>
+          <DialogContent className="max-w-md max-h-[90vh] overflow-y-auto">
+            {selectedSymptom && (
+              <>
+                <DialogHeader>
+                  <DialogTitle className="flex items-center gap-2">
+                    <Stethoscope className="h-5 w-5 text-blue-600" />
+                    {language === "te" ? selectedSymptom.name.te : selectedSymptom.name.en}
+                  </DialogTitle>
+                </DialogHeader>
+                
+                <div className="space-y-4 mt-4">
+                  {/* Common Causes */}
+                  <div className="bg-blue-50 rounded-lg p-3">
+                    <h4 className="text-xs font-semibold text-blue-700 flex items-center gap-1 mb-2">
+                      <Info className="h-3 w-3" />
+                      {language === "te" ? "సాధారణ కారణాలు" : "Common Causes"}
+                    </h4>
+                    <ul className="text-xs text-blue-800 space-y-0.5">
+                      {(language === "te" ? selectedSymptom.common_causes_te : selectedSymptom.common_causes).map((cause, idx) => (
+                        <li key={idx}>• {cause}</li>
+                      ))}
+                    </ul>
+                  </div>
+                  
+                  {/* OTC Medicines */}
+                  <div className="bg-teal-50 rounded-lg p-3">
+                    <h4 className="text-xs font-semibold text-teal-700 flex items-center gap-1 mb-2">
+                      <Pill className="h-3 w-3" />
+                      {language === "te" ? "OTC మందులు" : "OTC Medicines"}
+                    </h4>
+                    <div className="flex flex-wrap gap-1">
+                      {selectedSymptom.otc_medicines.map((med, idx) => (
+                        <Button 
+                          key={idx}
+                          variant="outline"
+                          size="sm"
+                          className="text-xs h-7"
+                          onClick={() => {
+                            setShowSymptomDialog(false);
+                            setMedicineSearch(med);
+                          }}
+                        >
+                          {med}
+                        </Button>
+                      ))}
+                    </div>
+                  </div>
+                  
+                  {/* Home Remedies */}
+                  <div className="bg-green-50 rounded-lg p-3">
+                    <h4 className="text-xs font-semibold text-green-700 flex items-center gap-1 mb-2">
+                      <CheckCircle className="h-3 w-3" />
+                      {language === "te" ? "ఇంటి నివారణలు" : "Home Remedies"}
+                    </h4>
+                    <ul className="text-xs text-green-800 space-y-0.5">
+                      {selectedSymptom.home_remedies.map((remedy, idx) => (
+                        <li key={idx}>• {remedy}</li>
+                      ))}
+                    </ul>
+                  </div>
+                  
+                  {/* When to See Doctor */}
+                  <div className="bg-red-50 rounded-lg p-3">
+                    <h4 className="text-xs font-semibold text-red-700 flex items-center gap-1 mb-2">
+                      <AlertTriangle className="h-3 w-3" />
+                      {language === "te" ? "వైద్యుడిని ఎప్పుడు చూడాలి" : "When to See a Doctor"}
+                    </h4>
+                    <ul className="text-xs text-red-800 space-y-0.5">
+                      {selectedSymptom.when_to_see_doctor.map((reason, idx) => (
+                        <li key={idx}>• {reason}</li>
+                      ))}
+                    </ul>
+                  </div>
+                </div>
+              </>
+            )}
+          </DialogContent>
+        </Dialog>
       </div>
     </Layout>
   );
