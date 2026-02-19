@@ -38,7 +38,23 @@ import {
   Package,
   Coins,
   Truck,
-  Star
+  Star,
+  Newspaper,
+  Ticket,
+  Image as ImageIcon,
+  Settings,
+  FileText,
+  RefreshCw,
+  Search,
+  Filter,
+  Download,
+  Phone,
+  Calendar,
+  X,
+  Check,
+  ChevronRight,
+  Send,
+  Copy
 } from "lucide-react";
 
 const API = `${process.env.REACT_APP_BACKEND_URL}/api`;
@@ -46,12 +62,26 @@ const API = `${process.env.REACT_APP_BACKEND_URL}/api`;
 export default function AdminDashboard() {
   const { language } = useLanguage();
   const { user, token } = useAuth();
-  const [stats, setStats] = useState(null);
-  const [heatmap, setHeatmap] = useState([]);
-  const [users, setUsers] = useState([]);
+  const [activeTab, setActiveTab] = useState("overview");
   const [loading, setLoading] = useState(true);
+  const [refreshing, setRefreshing] = useState(false);
   
-  // Education state
+  // Overview stats
+  const [stats, setStats] = useState({});
+  const [heatmap, setHeatmap] = useState([]);
+  
+  // Users
+  const [users, setUsers] = useState([]);
+  const [selectedUser, setSelectedUser] = useState(null);
+  const [showUserDialog, setShowUserDialog] = useState(false);
+  
+  // Issues
+  const [issues, setIssues] = useState([]);
+  const [selectedIssue, setSelectedIssue] = useState(null);
+  const [showIssueDialog, setShowIssueDialog] = useState(false);
+  const [issueStatusForm, setIssueStatusForm] = useState({ status: "", notes: "" });
+  
+  // Education
   const [courses, setCourses] = useState([]);
   const [showCourseDialog, setShowCourseDialog] = useState(false);
   const [editingCourse, setEditingCourse] = useState(null);
@@ -60,12 +90,10 @@ export default function AdminDashboard() {
     category: "tech", price: 0, duration_hours: 10, difficulty: "beginner",
     thumbnail_url: "", instructor_name: "", is_featured: false
   });
-  const [savingCourse, setSavingCourse] = useState(false);
   
-  // Gift Shop state
+  // Gift Shop
   const [giftProducts, setGiftProducts] = useState([]);
   const [giftOrders, setGiftOrders] = useState([]);
-  const [orderStats, setOrderStats] = useState({});
   const [showProductDialog, setShowProductDialog] = useState(false);
   const [editingProduct, setEditingProduct] = useState(null);
   const [productForm, setProductForm] = useState({
@@ -74,70 +102,156 @@ export default function AdminDashboard() {
     privilege_points_required: 0, point_type: "normal",
     delivery_fee: 0, stock_quantity: 10, is_active: true
   });
-  const [savingProduct, setSavingProduct] = useState(false);
   const [showPointsDialog, setShowPointsDialog] = useState(false);
   const [pointsForm, setPointsForm] = useState({
-    user_id: "", phone: "", points: 0, reason: "", point_type: "normal"
+    user_id: "", points: 0, reason: "", point_type: "normal"
   });
   const [showBulkPrivilegeDialog, setShowBulkPrivilegeDialog] = useState(false);
   const [bulkPrivilegeForm, setBulkPrivilegeForm] = useState({
     selectAll: false, user_ids: [], points: 0, reason: ""
   });
-  const [bulkPrivilegeLoading, setBulkPrivilegeLoading] = useState(false);
   
+  // News
+  const [news, setNews] = useState([]);
+  const [showNewsDialog, setShowNewsDialog] = useState(false);
+  const [editingNews, setEditingNews] = useState(null);
+  const [newsForm, setNewsForm] = useState({
+    title: "", title_te: "", content: "", content_te: "",
+    category: "local", image_url: "", is_pinned: false, is_breaking: false
+  });
+  
+  // Vouchers
+  const [vouchers, setVouchers] = useState([]);
+  const [showVoucherDialog, setShowVoucherDialog] = useState(false);
+  const [editingVoucher, setEditingVoucher] = useState(null);
+  const [voucherForm, setVoucherForm] = useState({
+    title: "", title_te: "", description: "", description_te: "",
+    discount_type: "percentage", discount_value: 10, code: "", code_type: "random",
+    partner_name: "", category: "food", terms_conditions: "",
+    min_order_value: 0, max_uses_per_user: 1
+  });
+  
+  // Templates
+  const [templates, setTemplates] = useState([]);
+  const [showTemplateDialog, setShowTemplateDialog] = useState(false);
+  const [templateForm, setTemplateForm] = useState({
+    title: "", title_te: "", category: "festival",
+    background_url: "", photo_position: { x: 150, y: 100, width: 120, height: 120 },
+    name_position: { x: 210, y: 280, fontSize: 24, color: "#ffffff" }
+  });
+  
+  const [saving, setSaving] = useState(false);
   const headers = { Authorization: `Bearer ${token}` };
 
   useEffect(() => {
     fetchData();
-  }, []);
+  }, [activeTab]);
 
   const fetchData = async () => {
     try {
-      // Fetch each endpoint separately to handle partial failures
-      const [statsRes, heatmapRes, usersRes, coursesRes, productsRes, ordersRes] = await Promise.all([
-        axios.get(`${API}/admin/stats`).catch(() => ({ data: {} })),
-        axios.get(`${API}/admin/issues-heatmap`).catch(() => ({ data: {} })),
-        axios.get(`${API}/admin/users`).catch(() => ({ data: [] })),
-        axios.get(`${API}/education/courses?limit=50`).catch(() => ({ data: { courses: [] } })),
-        axios.get(`${API}/shop/admin/products?include_inactive=true`, { headers }).catch(() => ({ data: { products: [] } })),
-        axios.get(`${API}/shop/admin/orders`, { headers }).catch(() => ({ data: { orders: [], stats: {} } }))
-      ]);
-      setStats(statsRes.data || {});
-      setHeatmap(heatmapRes.data || {});
-      setUsers(Array.isArray(usersRes.data) ? usersRes.data : []);
-      setCourses(coursesRes.data?.courses || []);
-      setGiftProducts(productsRes.data?.products || []);
-      setGiftOrders(ordersRes.data?.orders || []);
-      setOrderStats(ordersRes.data?.stats || {});
+      // Fetch based on active tab to reduce load
+      if (activeTab === "overview" || !stats.users) {
+        const [statsRes, heatmapRes, usersRes] = await Promise.all([
+          axios.get(`${API}/admin/stats`).catch(() => ({ data: {} })),
+          axios.get(`${API}/admin/issues-heatmap`).catch(() => ({ data: [] })),
+          axios.get(`${API}/admin/users`).catch(() => ({ data: [] }))
+        ]);
+        setStats(statsRes.data || {});
+        setHeatmap(heatmapRes.data || []);
+        setUsers(Array.isArray(usersRes.data) ? usersRes.data : []);
+      }
+      
+      if (activeTab === "issues") {
+        const res = await axios.get(`${API}/issues?limit=100`);
+        setIssues(res.data?.issues || []);
+      }
+      
+      if (activeTab === "education") {
+        const res = await axios.get(`${API}/education/courses?limit=50`);
+        setCourses(res.data?.courses || []);
+      }
+      
+      if (activeTab === "shop") {
+        const [productsRes, ordersRes] = await Promise.all([
+          axios.get(`${API}/shop/admin/products?include_inactive=true`, { headers }).catch(() => ({ data: { products: [] } })),
+          axios.get(`${API}/shop/admin/orders`, { headers }).catch(() => ({ data: { orders: [] } }))
+        ]);
+        setGiftProducts(productsRes.data?.products || []);
+        setGiftOrders(ordersRes.data?.orders || []);
+      }
+      
+      if (activeTab === "news") {
+        const res = await axios.get(`${API}/news/admin/all`, { headers }).catch(() => ({ data: { news: [] } }));
+        setNews(res.data?.news || []);
+      }
+      
+      if (activeTab === "vouchers") {
+        const res = await axios.get(`${API}/vouchers/admin/all`, { headers }).catch(() => ({ data: { vouchers: [] } }));
+        setVouchers(res.data?.vouchers || []);
+      }
+      
+      if (activeTab === "templates") {
+        const res = await axios.get(`${API}/templates/admin/all`, { headers }).catch(() => ({ data: { templates: [] } }));
+        setTemplates(res.data?.templates || []);
+      }
     } catch (error) {
-      console.error("Error fetching admin data:", error);
+      console.error("Error fetching data:", error);
     } finally {
       setLoading(false);
+      setRefreshing(false);
     }
   };
 
+  const refreshData = () => {
+    setRefreshing(true);
+    fetchData();
+  };
+
+  // ============== ISSUE MANAGEMENT ==============
+  const updateIssueStatus = async () => {
+    if (!selectedIssue || !issueStatusForm.status) return;
+    
+    setSaving(true);
+    try {
+      await axios.put(`${API}/issues/${selectedIssue.id}/status`, {
+        status: issueStatusForm.status,
+        notes: issueStatusForm.notes
+      }, { headers });
+      toast.success("Issue status updated");
+      setShowIssueDialog(false);
+      setSelectedIssue(null);
+      fetchData();
+    } catch (error) {
+      toast.error(error.response?.data?.detail || "Failed to update");
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  // ============== COURSE MANAGEMENT ==============
   const saveCourse = async () => {
     if (!courseForm.title) {
       toast.error("Title is required");
       return;
     }
     
-    setSavingCourse(true);
+    setSaving(true);
     try {
       if (editingCourse) {
-        // Update existing course (you'd need to add this endpoint)
+        await axios.put(`${API}/education/courses/${editingCourse.id}`, courseForm, { headers });
         toast.success("Course updated!");
       } else {
         await axios.post(`${API}/education/courses`, courseForm, { headers });
         toast.success("Course created!");
       }
       setShowCourseDialog(false);
-      resetCourseForm();
+      setEditingCourse(null);
+      setCourseForm({ title: "", title_te: "", description: "", description_te: "", category: "tech", price: 0, duration_hours: 10, difficulty: "beginner", thumbnail_url: "", instructor_name: "", is_featured: false });
       fetchData();
     } catch (error) {
-      toast.error(error.response?.data?.detail || "Failed to save course");
+      toast.error(error.response?.data?.detail || "Failed to save");
     } finally {
-      setSavingCourse(false);
+      setSaving(false);
     }
   };
 
@@ -151,41 +265,14 @@ export default function AdminDashboard() {
     }
   };
 
-  const resetCourseForm = () => {
-    setCourseForm({
-      title: "", title_te: "", description: "", description_te: "",
-      category: "tech", price: 0, duration_hours: 10, difficulty: "beginner",
-      thumbnail_url: "", instructor_name: "", is_featured: false
-    });
-    setEditingCourse(null);
-  };
-
-  const openEditCourse = (course) => {
-    setCourseForm({
-      title: course.title || "",
-      title_te: course.title_te || "",
-      description: course.description || "",
-      description_te: course.description_te || "",
-      category: course.category || "tech",
-      price: course.price || 0,
-      duration_hours: course.duration_hours || 10,
-      difficulty: course.difficulty || "beginner",
-      thumbnail_url: course.thumbnail_url || "",
-      instructor_name: course.instructor_name || "",
-      is_featured: course.is_featured || false
-    });
-    setEditingCourse(course);
-    setShowCourseDialog(true);
-  };
-
-  // Gift Shop functions
+  // ============== PRODUCT MANAGEMENT ==============
   const saveProduct = async () => {
-    if (!productForm.name || !productForm.points_required) {
-      toast.error("Name and points are required");
+    if (!productForm.name) {
+      toast.error("Name is required");
       return;
     }
     
-    setSavingProduct(true);
+    setSaving(true);
     try {
       if (editingProduct) {
         await axios.put(`${API}/shop/admin/products/${editingProduct.id}`, productForm, { headers });
@@ -195,339 +282,482 @@ export default function AdminDashboard() {
         toast.success("Product created!");
       }
       setShowProductDialog(false);
-      resetProductForm();
+      setEditingProduct(null);
+      setProductForm({ name: "", description: "", category: "Fitness", image_url: "", mrp: 0, points_required: 100, privilege_points_required: 0, point_type: "normal", delivery_fee: 0, stock_quantity: 10, is_active: true });
       fetchData();
     } catch (error) {
-      toast.error(error.response?.data?.detail || "Failed to save product");
+      toast.error(error.response?.data?.detail || "Failed to save");
     } finally {
-      setSavingProduct(false);
+      setSaving(false);
     }
   };
 
   const deleteProduct = async (productId) => {
-    if (!window.confirm("Are you sure you want to delete this product?")) return;
+    if (!confirm("Delete this product?")) return;
     try {
       await axios.delete(`${API}/shop/admin/products/${productId}`, { headers });
-      toast.success("Product deleted!");
+      toast.success("Product deleted");
       fetchData();
     } catch (error) {
-      toast.error("Failed to delete product");
+      toast.error("Failed to delete");
     }
-  };
-
-  const resetProductForm = () => {
-    setProductForm({
-      name: "", description: "", category: "Fitness",
-      image_url: "", mrp: 0, points_required: 100,
-      privilege_points_required: 0, point_type: "normal",
-      delivery_fee: 0, stock_quantity: 10, is_active: true
-    });
-    setEditingProduct(null);
-  };
-
-  const openEditProduct = (product) => {
-    setProductForm({
-      name: product.name || "",
-      description: product.description || "",
-      category: product.category || "Fitness",
-      image_url: product.image_url || "",
-      mrp: product.mrp || 0,
-      points_required: product.points_required || 100,
-      privilege_points_required: product.privilege_points_required || 0,
-      point_type: product.point_type || "normal",
-      delivery_fee: product.delivery_fee || 0,
-      stock_quantity: product.stock_quantity || 10,
-      is_active: product.is_active !== false
-    });
-    setEditingProduct(product);
-    setShowProductDialog(true);
   };
 
   const updateOrderStatus = async (orderId, status) => {
     try {
-      await axios.put(`${API}/shop/admin/orders/${orderId}/status`, { status }, { headers });
-      toast.success(`Order ${status}!`);
+      await axios.put(`${API}/shop/admin/orders/${orderId}`, { status }, { headers });
+      toast.success("Order updated");
       fetchData();
     } catch (error) {
-      toast.error("Failed to update order");
+      toast.error("Failed to update");
     }
   };
 
   const adjustUserPoints = async () => {
     if (!pointsForm.user_id || !pointsForm.points || !pointsForm.reason) {
-      toast.error("All fields are required");
+      toast.error("All fields required");
       return;
     }
     
+    setSaving(true);
     try {
       await axios.post(`${API}/shop/admin/points/adjust`, {
         user_id: pointsForm.user_id,
         points: parseInt(pointsForm.points),
         reason: pointsForm.reason,
-        point_type: pointsForm.point_type || "normal"
+        point_type: pointsForm.point_type
       }, { headers });
-      toast.success(`${pointsForm.point_type === "privilege" ? "Privilege " : ""}Points adjusted: ${pointsForm.points > 0 ? '+' : ''}${pointsForm.points}`);
+      toast.success(`Points adjusted: ${pointsForm.points > 0 ? '+' : ''}${pointsForm.points}`);
       setShowPointsDialog(false);
-      setPointsForm({ user_id: "", phone: "", points: 0, reason: "", point_type: "normal" });
+      setPointsForm({ user_id: "", points: 0, reason: "", point_type: "normal" });
     } catch (error) {
-      toast.error(error.response?.data?.detail || "Failed to adjust points");
+      toast.error(error.response?.data?.detail || "Failed");
+    } finally {
+      setSaving(false);
     }
   };
 
   const assignBulkPrivilegePoints = async () => {
     if (!bulkPrivilegeForm.points || !bulkPrivilegeForm.reason) {
-      toast.error("Points and reason are required");
-      return;
-    }
-    if (!bulkPrivilegeForm.selectAll && bulkPrivilegeForm.user_ids.length === 0) {
-      toast.error("Select at least one user or 'All Users'");
+      toast.error("Points and reason required");
       return;
     }
     
-    setBulkPrivilegeLoading(true);
+    setSaving(true);
     try {
       const user_ids = bulkPrivilegeForm.selectAll ? ["ALL"] : bulkPrivilegeForm.user_ids;
-      const response = await axios.post(`${API}/shop/admin/points/bulk-privilege`, {
+      await axios.post(`${API}/shop/admin/points/bulk-privilege`, {
         user_ids,
         points: parseInt(bulkPrivilegeForm.points),
         reason: bulkPrivilegeForm.reason
       }, { headers });
-      toast.success(response.data.message);
+      toast.success("Privilege points assigned!");
       setShowBulkPrivilegeDialog(false);
       setBulkPrivilegeForm({ selectAll: false, user_ids: [], points: 0, reason: "" });
-      fetchData();
     } catch (error) {
-      toast.error(error.response?.data?.detail || "Failed to assign privilege points");
+      toast.error(error.response?.data?.detail || "Failed");
     } finally {
-      setBulkPrivilegeLoading(false);
+      setSaving(false);
     }
   };
 
-  const updateUserRole = async (userId, role) => {
+  // ============== NEWS MANAGEMENT ==============
+  const saveNews = async () => {
+    if (!newsForm.title || !newsForm.content) {
+      toast.error("Title and content required");
+      return;
+    }
+    
+    setSaving(true);
     try {
-      await axios.put(`${API}/admin/users/${userId}/role?role=${role}`);
-      toast.success(language === "te" ? "పాత్ర నవీకరించబడింది" : "Role updated");
+      if (editingNews) {
+        await axios.put(`${API}/news/admin/${editingNews.id}`, newsForm, { headers });
+        toast.success("News updated!");
+      } else {
+        await axios.post(`${API}/news/admin/create`, newsForm, { headers });
+        toast.success("News created!");
+      }
+      setShowNewsDialog(false);
+      setEditingNews(null);
+      setNewsForm({ title: "", title_te: "", content: "", content_te: "", category: "local", image_url: "", is_pinned: false, is_breaking: false });
       fetchData();
     } catch (error) {
-      toast.error(error.response?.data?.detail || "Failed to update role");
+      toast.error(error.response?.data?.detail || "Failed to save");
+    } finally {
+      setSaving(false);
     }
   };
 
-  const categoryLabels = {
-    dump_yard: { en: "Dump Yard", te: "డంప్ యార్డ్" },
-    garbage: { en: "Garbage", te: "చెత్త" },
-    drainage: { en: "Drainage", te: "డ్రైనేజీ" },
-    water: { en: "Water", te: "నీరు" },
-    roads: { en: "Roads", te: "రోడ్లు" },
-    lights: { en: "Lights", te: "దీపాలు" },
-    parks: { en: "Parks", te: "పార్కులు" }
+  const deleteNews = async (newsId) => {
+    if (!confirm("Delete this news?")) return;
+    try {
+      await axios.delete(`${API}/news/admin/${newsId}`, { headers });
+      toast.success("News deleted");
+      fetchData();
+    } catch (error) {
+      toast.error("Failed to delete");
+    }
+  };
+
+  // ============== VOUCHER MANAGEMENT ==============
+  const saveVoucher = async () => {
+    if (!voucherForm.title || !voucherForm.partner_name) {
+      toast.error("Title and partner required");
+      return;
+    }
+    
+    setSaving(true);
+    try {
+      if (editingVoucher) {
+        await axios.put(`${API}/vouchers/admin/${editingVoucher.id}`, voucherForm, { headers });
+        toast.success("Voucher updated!");
+      } else {
+        await axios.post(`${API}/vouchers/admin/create`, voucherForm, { headers });
+        toast.success("Voucher created!");
+      }
+      setShowVoucherDialog(false);
+      setEditingVoucher(null);
+      setVoucherForm({ title: "", title_te: "", description: "", description_te: "", discount_type: "percentage", discount_value: 10, code: "", code_type: "random", partner_name: "", category: "food", terms_conditions: "", min_order_value: 0, max_uses_per_user: 1 });
+      fetchData();
+    } catch (error) {
+      toast.error(error.response?.data?.detail || "Failed to save");
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const deleteVoucher = async (voucherId) => {
+    if (!confirm("Delete this voucher?")) return;
+    try {
+      await axios.delete(`${API}/vouchers/admin/${voucherId}`, { headers });
+      toast.success("Voucher deleted");
+      fetchData();
+    } catch (error) {
+      toast.error("Failed to delete");
+    }
+  };
+
+  // ============== TEMPLATE MANAGEMENT ==============
+  const saveTemplate = async () => {
+    if (!templateForm.title || !templateForm.background_url) {
+      toast.error("Title and background image required");
+      return;
+    }
+    
+    setSaving(true);
+    try {
+      await axios.post(`${API}/templates/admin/create`, templateForm, { headers });
+      toast.success("Template created!");
+      setShowTemplateDialog(false);
+      setTemplateForm({ title: "", title_te: "", category: "festival", background_url: "", photo_position: { x: 150, y: 100, width: 120, height: 120 }, name_position: { x: 210, y: 280, fontSize: 24, color: "#ffffff" } });
+      fetchData();
+    } catch (error) {
+      toast.error(error.response?.data?.detail || "Failed to save");
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const deleteTemplate = async (templateId) => {
+    if (!confirm("Delete this template?")) return;
+    try {
+      await axios.delete(`${API}/templates/admin/${templateId}`, { headers });
+      toast.success("Template deleted");
+      fetchData();
+    } catch (error) {
+      toast.error("Failed to delete");
+    }
+  };
+
+  // ============== HELPER FUNCTIONS ==============
+  const getStatusColor = (status) => {
+    const colors = {
+      reported: "bg-orange-100 text-orange-700",
+      verified: "bg-blue-100 text-blue-700",
+      action_taken: "bg-purple-100 text-purple-700",
+      filed_with_authority: "bg-indigo-100 text-indigo-700",
+      resolved_by_authority: "bg-green-100 text-green-700",
+      resolved_by_us: "bg-emerald-100 text-emerald-700",
+      issue_not_found: "bg-gray-100 text-gray-700",
+      closed: "bg-green-100 text-green-700",
+      pending: "bg-yellow-100 text-yellow-700",
+      approved: "bg-green-100 text-green-700",
+      rejected: "bg-red-100 text-red-700",
+      shipped: "bg-blue-100 text-blue-700",
+      delivered: "bg-green-100 text-green-700"
+    };
+    return colors[status] || "bg-gray-100 text-gray-700";
   };
 
   if (loading) {
     return (
-      <Layout showBackButton title={language === "te" ? "అడ్మిన్ డాష్‌బోర్డ్" : "Admin Dashboard"}>
-        <div className="flex items-center justify-center min-h-[50vh]">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
+      <Layout showBackButton title="Admin Dashboard">
+        <div className="flex items-center justify-center py-20">
+          <Loader2 className="h-8 w-8 animate-spin text-primary" />
         </div>
       </Layout>
     );
   }
 
   return (
-    <Layout showBackButton title={language === "te" ? "అడ్మిన్ డాష్‌బోర్డ్" : "Admin Dashboard"}>
-      <div className="space-y-6" data-testid="admin-dashboard">
-        {/* Stats Grid */}
-        <div className="grid grid-cols-2 gap-3">
-          <Card className="border-border/50">
-            <CardContent className="p-4">
-              <div className="flex items-center gap-3">
-                <div className="h-10 w-10 rounded-lg bg-orange-100 flex items-center justify-center">
-                  <AlertTriangle className="h-5 w-5 text-orange-600" />
-                </div>
-                <div>
-                  <p className="text-2xl font-bold text-text-primary">
-                    {stats?.issues?.total || 0}
-                  </p>
-                  <p className="text-xs text-text-muted">
-                    {language === "te" ? "మొత్తం సమస్యలు" : "Total Issues"}
-                  </p>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-          
-          <Card className="border-border/50">
-            <CardContent className="p-4">
-              <div className="flex items-center gap-3">
-                <div className="h-10 w-10 rounded-lg bg-yellow-100 flex items-center justify-center">
-                  <Clock className="h-5 w-5 text-yellow-600" />
-                </div>
-                <div>
-                  <p className="text-2xl font-bold text-text-primary">
-                    {stats?.issues?.pending || 0}
-                  </p>
-                  <p className="text-xs text-text-muted">
-                    {language === "te" ? "పెండింగ్" : "Pending"}
-                  </p>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-          
-          <Card className="border-border/50">
-            <CardContent className="p-4">
-              <div className="flex items-center gap-3">
-                <div className="h-10 w-10 rounded-lg bg-blue-100 flex items-center justify-center">
-                  <Users className="h-5 w-5 text-blue-600" />
-                </div>
-                <div>
-                  <p className="text-2xl font-bold text-text-primary">
-                    {stats?.users?.total || 0}
-                  </p>
-                  <p className="text-xs text-text-muted">
-                    {language === "te" ? "వినియోగదారులు" : "Users"}
-                  </p>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-          
-          <Card className="border-border/50">
-            <CardContent className="p-4">
-              <div className="flex items-center gap-3">
-                <div className="h-10 w-10 rounded-lg bg-green-100 flex items-center justify-center">
-                  <CheckCircle className="h-5 w-5 text-green-600" />
-                </div>
-                <div>
-                  <p className="text-2xl font-bold text-text-primary">
-                    {stats?.issues?.closed || 0}
-                  </p>
-                  <p className="text-xs text-text-muted">
-                    {language === "te" ? "పరిష్కరించబడింది" : "Resolved"}
-                  </p>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
+    <Layout showBackButton title={language === "te" ? "అడ్మిన్ డ్యాష్‌బోర్డ్" : "Admin Dashboard"}>
+      <div className="space-y-4 pb-20" data-testid="admin-dashboard">
+        {/* Header */}
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <Shield className="h-6 w-6 text-primary" />
+            <span className="font-semibold">Admin Panel</span>
+          </div>
+          <Button variant="outline" size="sm" onClick={refreshData} disabled={refreshing}>
+            <RefreshCw className={`h-4 w-4 mr-1 ${refreshing ? "animate-spin" : ""}`} />
+            Refresh
+          </Button>
         </div>
 
-        <Tabs defaultValue="issues" className="w-full">
-          <TabsList className="grid w-full grid-cols-5 h-12">
-            <TabsTrigger value="issues" className="text-xs">
-              {language === "te" ? "సమస్యలు" : "Issues"}
-            </TabsTrigger>
-            <TabsTrigger value="shop" className="text-xs">
-              {language === "te" ? "షాప్" : "Shop"}
-            </TabsTrigger>
-            <TabsTrigger value="education" className="text-xs">
-              {language === "te" ? "విద్య" : "Education"}
-            </TabsTrigger>
-            <TabsTrigger value="heatmap" className="text-xs">
-              {language === "te" ? "హీట్‌మ్యాప్" : "Heatmap"}
-            </TabsTrigger>
-            <TabsTrigger value="users" className="text-xs">
-              {language === "te" ? "వినియోగదారులు" : "Users"}
-            </TabsTrigger>
-          </TabsList>
+        {/* Tabs */}
+        <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
+          <div className="overflow-x-auto">
+            <TabsList className="inline-flex w-max min-w-full h-11">
+              <TabsTrigger value="overview" className="text-xs px-3">
+                <BarChart3 className="h-3.5 w-3.5 mr-1" />
+                Overview
+              </TabsTrigger>
+              <TabsTrigger value="users" className="text-xs px-3">
+                <Users className="h-3.5 w-3.5 mr-1" />
+                Users
+              </TabsTrigger>
+              <TabsTrigger value="issues" className="text-xs px-3">
+                <AlertTriangle className="h-3.5 w-3.5 mr-1" />
+                Issues
+              </TabsTrigger>
+              <TabsTrigger value="education" className="text-xs px-3">
+                <GraduationCap className="h-3.5 w-3.5 mr-1" />
+                Edu
+              </TabsTrigger>
+              <TabsTrigger value="shop" className="text-xs px-3">
+                <Gift className="h-3.5 w-3.5 mr-1" />
+                Shop
+              </TabsTrigger>
+              <TabsTrigger value="news" className="text-xs px-3">
+                <Newspaper className="h-3.5 w-3.5 mr-1" />
+                News
+              </TabsTrigger>
+              <TabsTrigger value="vouchers" className="text-xs px-3">
+                <Ticket className="h-3.5 w-3.5 mr-1" />
+                Vouchers
+              </TabsTrigger>
+              <TabsTrigger value="templates" className="text-xs px-3">
+                <ImageIcon className="h-3.5 w-3.5 mr-1" />
+                Templates
+              </TabsTrigger>
+            </TabsList>
+          </div>
 
-          {/* Issues Analytics Tab */}
-          <TabsContent value="issues" className="mt-4 space-y-4">
-            <Card className="border-border/50">
-              <CardHeader className="pb-2">
-                <CardTitle className="text-lg">
-                  {language === "te" ? "వర్గం వారీగా సమస్యలు" : "Issues by Category"}
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-3">
-                  {stats?.issues?.by_category && Object.entries(stats.issues.by_category).map(([cat, count]) => {
-                    const total = stats.issues.total || 1;
-                    const percentage = Math.round((count / total) * 100);
-                    return (
-                      <div key={cat}>
-                        <div className="flex justify-between text-sm mb-1">
-                          <span className="font-medium">
-                            {categoryLabels[cat]?.[language] || cat}
-                          </span>
-                          <span className="text-text-muted">{count} ({percentage}%)</span>
-                        </div>
-                        <div className="h-2 bg-muted rounded-full overflow-hidden">
-                          <div 
-                            className="h-full bg-primary rounded-full"
-                            style={{ width: `${percentage}%` }}
-                          />
-                        </div>
-                      </div>
-                    );
-                  })}
-                </div>
-              </CardContent>
-            </Card>
-
-            {/* Quick Stats */}
+          {/* ============== OVERVIEW TAB ============== */}
+          <TabsContent value="overview" className="space-y-4 mt-4">
+            {/* Stats Cards */}
             <div className="grid grid-cols-2 gap-3">
-              <Card className="border-border/50">
-                <CardContent className="p-4 text-center">
-                  <Activity className="h-8 w-8 mx-auto mb-2 text-primary" />
-                  <p className="text-2xl font-bold">{stats?.fitness?.participants || 0}</p>
-                  <p className="text-xs text-text-muted">
-                    {language === "te" ? "ఫిట్‌నెస్ భాగస్వాములు" : "Fitness Participants"}
-                  </p>
+              <Card>
+                <CardContent className="p-4">
+                  <div className="flex items-center gap-3">
+                    <div className="h-10 w-10 rounded-lg bg-blue-100 flex items-center justify-center">
+                      <Users className="h-5 w-5 text-blue-600" />
+                    </div>
+                    <div>
+                      <p className="text-2xl font-bold">{stats.users?.total || users.length}</p>
+                      <p className="text-xs text-muted-foreground">Total Users</p>
+                    </div>
+                  </div>
                 </CardContent>
               </Card>
               
-              <Card className="border-border/50">
-                <CardContent className="p-4 text-center">
-                  <Heart className="h-8 w-8 mx-auto mb-2 text-red-500" />
-                  <p className="text-2xl font-bold">{stats?.benefits?.pending || 0}</p>
-                  <p className="text-xs text-text-muted">
-                    {language === "te" ? "పెండింగ్ దరఖాస్తులు" : "Pending Applications"}
-                  </p>
+              <Card>
+                <CardContent className="p-4">
+                  <div className="flex items-center gap-3">
+                    <div className="h-10 w-10 rounded-lg bg-orange-100 flex items-center justify-center">
+                      <AlertTriangle className="h-5 w-5 text-orange-600" />
+                    </div>
+                    <div>
+                      <p className="text-2xl font-bold">{stats.issues?.pending || 0}</p>
+                      <p className="text-xs text-muted-foreground">Pending Issues</p>
+                    </div>
+                  </div>
                 </CardContent>
               </Card>
+              
+              <Card>
+                <CardContent className="p-4">
+                  <div className="flex items-center gap-3">
+                    <div className="h-10 w-10 rounded-lg bg-green-100 flex items-center justify-center">
+                      <Activity className="h-5 w-5 text-green-600" />
+                    </div>
+                    <div>
+                      <p className="text-2xl font-bold">{stats.fitness?.participants || 0}</p>
+                      <p className="text-xs text-muted-foreground">Fitness Users</p>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+              
+              <Card>
+                <CardContent className="p-4">
+                  <div className="flex items-center gap-3">
+                    <div className="h-10 w-10 rounded-lg bg-purple-100 flex items-center justify-center">
+                      <GraduationCap className="h-5 w-5 text-purple-600" />
+                    </div>
+                    <div>
+                      <p className="text-2xl font-bold">{courses.length}</p>
+                      <p className="text-xs text-muted-foreground">Courses</p>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
+
+            {/* Issues Heatmap */}
+            {Array.isArray(heatmap) && heatmap.length > 0 && (
+              <Card>
+                <CardHeader className="pb-2">
+                  <CardTitle className="text-sm flex items-center gap-2">
+                    <MapPin className="h-4 w-4" />
+                    Issues by Area
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-2">
+                    {heatmap.slice(0, 5).map((item, idx) => (
+                      <div key={idx} className="flex items-center justify-between">
+                        <span className="text-sm">{item._id || "Unknown"}</span>
+                        <Badge variant="secondary">{item.count}</Badge>
+                      </div>
+                    ))}
+                  </div>
+                </CardContent>
+              </Card>
+            )}
+          </TabsContent>
+
+          {/* ============== USERS TAB ============== */}
+          <TabsContent value="users" className="space-y-4 mt-4">
+            <div className="flex items-center justify-between">
+              <h3 className="font-semibold">All Users ({users.length})</h3>
+            </div>
+            
+            <div className="space-y-2">
+              {users.slice(0, 20).map((u) => (
+                <Card key={u.id} className="border-border/50">
+                  <CardContent className="p-3">
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-3">
+                        <div className="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center text-primary font-bold">
+                          {u.name?.[0]?.toUpperCase() || "?"}
+                        </div>
+                        <div>
+                          <p className="font-medium text-sm">{u.name || "No name"}</p>
+                          <p className="text-xs text-muted-foreground">{u.phone}</p>
+                        </div>
+                      </div>
+                      <div className="text-right">
+                        <Badge variant={u.role === "admin" ? "default" : "secondary"} className="text-[10px]">
+                          {u.role || "user"}
+                        </Badge>
+                        <p className="text-[10px] text-muted-foreground mt-1">
+                          {u.created_at ? new Date(u.created_at).toLocaleDateString() : ""}
+                        </p>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              ))}
             </div>
           </TabsContent>
 
-          {/* Gift Shop Management Tab */}
-          <TabsContent value="shop" className="mt-4 space-y-4">
-            {/* Order Stats */}
-            <div className="grid grid-cols-4 gap-2">
-              <Card className="border-amber-200 bg-amber-50 dark:bg-amber-950 dark:border-amber-800">
-                <CardContent className="p-3 text-center">
-                  <Clock className="h-5 w-5 mx-auto mb-1 text-amber-600" />
-                  <p className="text-xl font-bold text-amber-700 dark:text-amber-400">{orderStats?.pending || 0}</p>
-                  <p className="text-[10px] text-amber-600">Pending</p>
-                </CardContent>
-              </Card>
-              <Card className="border-blue-200 bg-blue-50 dark:bg-blue-950 dark:border-blue-800">
-                <CardContent className="p-3 text-center">
-                  <CheckCircle className="h-5 w-5 mx-auto mb-1 text-blue-600" />
-                  <p className="text-xl font-bold text-blue-700 dark:text-blue-400">{orderStats?.approved || 0}</p>
-                  <p className="text-[10px] text-blue-600">Approved</p>
-                </CardContent>
-              </Card>
-              <Card className="border-purple-200 bg-purple-50 dark:bg-purple-950 dark:border-purple-800">
-                <CardContent className="p-3 text-center">
-                  <Truck className="h-5 w-5 mx-auto mb-1 text-purple-600" />
-                  <p className="text-xl font-bold text-purple-700 dark:text-purple-400">{orderStats?.shipped || 0}</p>
-                  <p className="text-[10px] text-purple-600">Shipped</p>
-                </CardContent>
-              </Card>
-              <Card className="border-green-200 bg-green-50 dark:bg-green-950 dark:border-green-800">
-                <CardContent className="p-3 text-center">
-                  <Package className="h-5 w-5 mx-auto mb-1 text-green-600" />
-                  <p className="text-xl font-bold text-green-700 dark:text-green-400">{orderStats?.delivered || 0}</p>
-                  <p className="text-[10px] text-green-600">Delivered</p>
-                </CardContent>
-              </Card>
+          {/* ============== ISSUES TAB ============== */}
+          <TabsContent value="issues" className="space-y-4 mt-4">
+            <div className="flex items-center justify-between">
+              <h3 className="font-semibold">Issues ({issues.length})</h3>
             </div>
+            
+            <div className="space-y-2">
+              {issues.map((issue) => (
+                <Card 
+                  key={issue.id} 
+                  className="border-border/50 cursor-pointer hover:shadow-md transition-shadow"
+                  onClick={() => { setSelectedIssue(issue); setIssueStatusForm({ status: issue.status, notes: "" }); setShowIssueDialog(true); }}
+                >
+                  <CardContent className="p-3">
+                    <div className="flex items-start justify-between">
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center gap-2 mb-1">
+                          <Badge variant="secondary" className="text-[10px]">{issue.category}</Badge>
+                          <Badge className={`text-[10px] ${getStatusColor(issue.status)}`}>{issue.status}</Badge>
+                        </div>
+                        <p className="text-sm line-clamp-2">{issue.description}</p>
+                        <div className="flex items-center gap-2 mt-2 text-xs text-muted-foreground">
+                          <span>{issue.reporter_name}</span>
+                          <span>•</span>
+                          <span>{issue.colony}</span>
+                        </div>
+                      </div>
+                      <ChevronRight className="h-5 w-5 text-muted-foreground flex-shrink-0" />
+                    </div>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+          </TabsContent>
 
+          {/* ============== EDUCATION TAB ============== */}
+          <TabsContent value="education" className="space-y-4 mt-4">
+            <div className="flex items-center justify-between">
+              <h3 className="font-semibold">Courses ({courses.length})</h3>
+              <Button size="sm" onClick={() => { setEditingCourse(null); setShowCourseDialog(true); }}>
+                <Plus className="h-4 w-4 mr-1" />
+                Add Course
+              </Button>
+            </div>
+            
+            <div className="space-y-2">
+              {courses.map((course) => (
+                <Card key={course.id} className="border-border/50">
+                  <CardContent className="p-3">
+                    <div className="flex gap-3">
+                      <img
+                        src={course.thumbnail_url || "https://via.placeholder.com/80?text=Course"}
+                        alt={course.title}
+                        className="h-16 w-16 rounded-lg object-cover flex-shrink-0"
+                      />
+                      <div className="flex-1 min-w-0">
+                        <h4 className="font-medium text-sm line-clamp-1">{course.title}</h4>
+                        <div className="flex items-center gap-2 mt-1">
+                          <Badge variant="secondary" className="text-[10px]">{course.category}</Badge>
+                          <Badge variant={course.is_published ? "default" : "outline"} className="text-[10px]">
+                            {course.is_published ? "Published" : "Draft"}
+                          </Badge>
+                        </div>
+                        <div className="flex items-center gap-2 mt-2">
+                          {!course.is_published && (
+                            <Button size="sm" variant="outline" className="h-7" onClick={() => publishCourse(course.id)}>
+                              Publish
+                            </Button>
+                          )}
+                          <Button size="sm" variant="ghost" className="h-7" onClick={() => { setEditingCourse(course); setCourseForm(course); setShowCourseDialog(true); }}>
+                            <Edit className="h-3 w-3" />
+                          </Button>
+                        </div>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+          </TabsContent>
+
+          {/* ============== SHOP TAB ============== */}
+          <TabsContent value="shop" className="space-y-4 mt-4">
             {/* Products Section */}
             <div className="flex items-center justify-between">
-              <h3 className="font-semibold flex items-center gap-2">
-                <Gift className="h-5 w-5" />
-                {language === "te" ? "ఉత్పత్తులు" : "Products"}
-              </h3>
+              <h3 className="font-semibold">Products ({giftProducts.length})</h3>
               <div className="flex gap-2">
                 <Button size="sm" variant="outline" onClick={() => setShowBulkPrivilegeDialog(true)}>
                   <Star className="h-4 w-4 mr-1" />
@@ -535,53 +765,41 @@ export default function AdminDashboard() {
                 </Button>
                 <Button size="sm" variant="outline" onClick={() => setShowPointsDialog(true)}>
                   <Coins className="h-4 w-4 mr-1" />
-                  Adjust Points
+                  Points
                 </Button>
-                <Button size="sm" onClick={() => { resetProductForm(); setShowProductDialog(true); }}>
+                <Button size="sm" onClick={() => { setEditingProduct(null); setShowProductDialog(true); }}>
                   <Plus className="h-4 w-4 mr-1" />
-                  Add Product
+                  Add
                 </Button>
               </div>
             </div>
             
-            <div className="grid grid-cols-2 gap-3">
+            <div className="grid grid-cols-2 gap-2">
               {giftProducts.map((product) => (
                 <Card key={product.id} className={`border-border/50 ${!product.is_active ? 'opacity-50' : ''}`}>
-                  <CardContent className="p-3">
-                    <div className="flex gap-2">
-                      <img
-                        src={product.image_url || "https://via.placeholder.com/60?text=Gift"}
-                        alt={product.name}
-                        className="w-14 h-14 rounded-lg object-cover"
-                      />
-                      <div className="flex-1 min-w-0">
-                        <h4 className="font-medium text-sm truncate">{product.name}</h4>
-                        <div className="flex flex-wrap items-center gap-1 mt-1">
-                          <Badge variant="outline" className="text-[10px]">
-                            <Coins className="h-2.5 w-2.5 mr-0.5" />
-                            {product.points_required}
-                          </Badge>
-                          {(product.point_type === "privilege" || product.point_type === "both") && (
-                            <Badge className="bg-purple-100 text-purple-700 text-[10px]">
-                              P:{product.privilege_points_required || 0}
-                            </Badge>
-                          )}
-                          {product.delivery_fee > 0 && (
-                            <Badge variant="outline" className="text-[10px]">
-                              ₹{product.delivery_fee}
-                            </Badge>
-                          )}
-                        </div>
-                        <span className="text-[10px] text-muted-foreground">
-                          Stock: {product.stock_quantity} | {product.point_type}
-                        </span>
-                      </div>
+                  <CardContent className="p-2">
+                    <img
+                      src={product.image_url || "https://via.placeholder.com/100?text=Gift"}
+                      alt={product.name}
+                      className="h-20 w-full rounded-lg object-cover mb-2"
+                    />
+                    <h4 className="font-medium text-xs line-clamp-1">{product.name}</h4>
+                    <div className="flex items-center gap-1 mt-1 flex-wrap">
+                      <Badge variant="outline" className="text-[9px]">
+                        <Coins className="h-2.5 w-2.5 mr-0.5" />
+                        {product.points_required}
+                      </Badge>
+                      {product.point_type !== "normal" && (
+                        <Badge className="bg-purple-100 text-purple-700 text-[9px]">
+                          P:{product.privilege_points_required}
+                        </Badge>
+                      )}
                     </div>
                     <div className="flex gap-1 mt-2">
-                      <Button size="sm" variant="ghost" className="h-7 flex-1" onClick={() => openEditProduct(product)}>
-                        <Edit className="h-3 w-3" />
+                      <Button size="sm" variant="ghost" className="h-6 flex-1 text-xs" onClick={() => { setEditingProduct(product); setProductForm(product); setShowProductDialog(true); }}>
+                        Edit
                       </Button>
-                      <Button size="sm" variant="ghost" className="h-7 flex-1 text-destructive" onClick={() => deleteProduct(product.id)}>
+                      <Button size="sm" variant="ghost" className="h-6 text-destructive" onClick={() => deleteProduct(product.id)}>
                         <Trash2 className="h-3 w-3" />
                       </Button>
                     </div>
@@ -591,60 +809,29 @@ export default function AdminDashboard() {
             </div>
 
             {/* Orders Section */}
-            <div className="mt-4">
-              <h3 className="font-semibold flex items-center gap-2 mb-3">
-                <Package className="h-5 w-5" />
-                {language === "te" ? "ఆర్డర్లు" : "Recent Orders"}
-              </h3>
+            <div className="mt-6">
+              <h3 className="font-semibold mb-3">Orders ({giftOrders.length})</h3>
               <div className="space-y-2">
-                {giftOrders.length === 0 ? (
-                  <Card className="border-border/50">
-                    <CardContent className="p-6 text-center text-muted-foreground">
-                      No orders yet
-                    </CardContent>
-                  </Card>
-                ) : giftOrders.slice(0, 10).map((order) => (
+                {giftOrders.slice(0, 10).map((order) => (
                   <Card key={order.id} className="border-border/50">
                     <CardContent className="p-3">
-                      <div className="flex items-center gap-3">
-                        <img
-                          src={order.product_image || "https://via.placeholder.com/40?text=Gift"}
-                          alt={order.product_name}
-                          className="w-10 h-10 rounded-lg object-cover"
-                        />
-                        <div className="flex-1 min-w-0">
-                          <p className="font-medium text-sm truncate">{order.product_name}</p>
-                          <p className="text-xs text-muted-foreground">
-                            {order.user_name || order.user_phone} • {order.points_spent} pts
-                          </p>
+                      <div className="flex items-center justify-between">
+                        <div>
+                          <p className="font-medium text-sm">{order.product_name}</p>
+                          <p className="text-xs text-muted-foreground">{order.user_name} • {order.points_spent} pts</p>
                         </div>
-                        <div className="flex flex-col gap-1">
-                          {order.status === "pending" && (
-                            <div className="flex gap-1">
-                              <Button size="sm" variant="outline" className="h-6 text-xs px-2" onClick={() => updateOrderStatus(order.id, "approved")}>
-                                Approve
-                              </Button>
-                              <Button size="sm" variant="outline" className="h-6 text-xs px-2 text-destructive" onClick={() => updateOrderStatus(order.id, "rejected")}>
-                                Reject
-                              </Button>
-                            </div>
-                          )}
-                          {order.status === "approved" && (
-                            <Button size="sm" variant="outline" className="h-6 text-xs" onClick={() => updateOrderStatus(order.id, "shipped")}>
-                              Mark Shipped
-                            </Button>
-                          )}
-                          {order.status === "shipped" && (
-                            <Button size="sm" variant="outline" className="h-6 text-xs" onClick={() => updateOrderStatus(order.id, "delivered")}>
-                              Mark Delivered
-                            </Button>
-                          )}
-                          {(order.status === "delivered" || order.status === "rejected") && (
-                            <Badge className={order.status === "delivered" ? "bg-green-100 text-green-700" : "bg-red-100 text-red-700"}>
-                              {order.status}
-                            </Badge>
-                          )}
-                        </div>
+                        <Select value={order.status} onValueChange={(v) => updateOrderStatus(order.id, v)}>
+                          <SelectTrigger className="w-28 h-8 text-xs">
+                            <SelectValue />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="pending">Pending</SelectItem>
+                            <SelectItem value="approved">Approved</SelectItem>
+                            <SelectItem value="rejected">Rejected</SelectItem>
+                            <SelectItem value="shipped">Shipped</SelectItem>
+                            <SelectItem value="delivered">Delivered</SelectItem>
+                          </SelectContent>
+                        </Select>
                       </div>
                     </CardContent>
                   </Card>
@@ -653,572 +840,661 @@ export default function AdminDashboard() {
             </div>
           </TabsContent>
 
-          {/* Education Management Tab */}
-          <TabsContent value="education" className="mt-4 space-y-4">
+          {/* ============== NEWS TAB ============== */}
+          <TabsContent value="news" className="space-y-4 mt-4">
             <div className="flex items-center justify-between">
-              <h3 className="font-semibold flex items-center gap-2">
-                <GraduationCap className="h-5 w-5" />
-                {language === "te" ? "కోర్సులు నిర్వహణ" : "Course Management"}
-              </h3>
-              <Button size="sm" onClick={() => { resetCourseForm(); setShowCourseDialog(true); }}>
+              <h3 className="font-semibold">News ({news.length})</h3>
+              <Button size="sm" onClick={() => { setEditingNews(null); setShowNewsDialog(true); }}>
                 <Plus className="h-4 w-4 mr-1" />
-                {language === "te" ? "కోర్సు జోడించు" : "Add Course"}
+                Add News
               </Button>
             </div>
             
-            <div className="space-y-3">
-              {courses.map((course) => (
-                <Card key={course.id} className="border-border/50">
-                  <CardContent className="p-4">
+            <div className="space-y-2">
+              {news.map((item) => (
+                <Card key={item.id} className="border-border/50">
+                  <CardContent className="p-3">
                     <div className="flex gap-3">
-                      <div className="w-16 h-16 rounded-lg overflow-hidden flex-shrink-0">
-                        <img
-                          src={course.thumbnail_url || "https://images.unsplash.com/photo-1516321318423-f06f85e504b3?w=100"}
-                          alt={course.title}
-                          className="w-full h-full object-cover"
-                        />
-                      </div>
-                      <div className="flex-1 min-w-0">
-                        <div className="flex items-start justify-between gap-2">
-                          <h4 className="font-semibold text-sm truncate">{course.title}</h4>
-                          <div className="flex items-center gap-1 flex-shrink-0">
-                            {course.is_published ? (
-                              <Badge className="bg-green-100 text-green-700 text-[10px]">Published</Badge>
-                            ) : (
-                              <Badge className="bg-yellow-100 text-yellow-700 text-[10px]">Draft</Badge>
-                            )}
-                          </div>
-                        </div>
-                        <p className="text-xs text-muted-foreground">{course.instructor_name}</p>
-                        <div className="flex items-center gap-3 mt-2 text-xs text-muted-foreground">
-                          <span>{course.category}</span>
-                          <span>₹{course.price}</span>
-                          <span>{course.enrollment_count || 0} enrolled</span>
-                        </div>
-                      </div>
-                    </div>
-                    <div className="flex gap-2 mt-3 pt-3 border-t">
-                      <Button size="sm" variant="outline" onClick={() => openEditCourse(course)} className="flex-1">
-                        <Edit className="h-3 w-3 mr-1" />
-                        Edit
-                      </Button>
-                      {!course.is_published && (
-                        <Button size="sm" onClick={() => publishCourse(course.id)} className="flex-1">
-                          <Eye className="h-3 w-3 mr-1" />
-                          Publish
-                        </Button>
+                      {item.image_url && (
+                        <img src={item.image_url} alt="" className="h-16 w-16 rounded-lg object-cover flex-shrink-0" />
                       )}
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center gap-2 mb-1">
+                          <Badge variant="secondary" className="text-[10px]">{item.category}</Badge>
+                          {item.is_pinned && <Badge className="bg-amber-100 text-amber-700 text-[10px]">Pinned</Badge>}
+                          {item.is_breaking && <Badge className="bg-red-100 text-red-700 text-[10px]">Breaking</Badge>}
+                        </div>
+                        <h4 className="font-medium text-sm line-clamp-1">{item.title}</h4>
+                        <p className="text-xs text-muted-foreground line-clamp-1">{item.content}</p>
+                        <div className="flex gap-1 mt-2">
+                          <Button size="sm" variant="ghost" className="h-6" onClick={() => { setEditingNews(item); setNewsForm(item); setShowNewsDialog(true); }}>
+                            <Edit className="h-3 w-3" />
+                          </Button>
+                          <Button size="sm" variant="ghost" className="h-6 text-destructive" onClick={() => deleteNews(item.id)}>
+                            <Trash2 className="h-3 w-3" />
+                          </Button>
+                        </div>
+                      </div>
                     </div>
                   </CardContent>
                 </Card>
               ))}
-              
-              {courses.length === 0 && (
-                <div className="text-center py-8">
-                  <BookOpen className="h-10 w-10 mx-auto text-muted-foreground/50 mb-2" />
-                  <p className="text-sm text-muted-foreground">No courses yet</p>
+              {news.length === 0 && (
+                <div className="text-center py-8 text-muted-foreground">
+                  <Newspaper className="h-12 w-12 mx-auto mb-2 opacity-30" />
+                  <p className="text-sm">No news articles yet</p>
                 </div>
               )}
             </div>
           </TabsContent>
 
-          {/* Heatmap Tab */}
-          <TabsContent value="heatmap" className="mt-4 space-y-3">
-            {heatmap.length === 0 ? (
-              <div className="text-center py-12">
-                <MapPin className="h-12 w-12 mx-auto mb-3 text-muted-foreground/50" />
-                <p className="text-text-muted">
-                  {language === "te" ? "డేటా లేదు" : "No data available"}
-                </p>
-              </div>
-            ) : (
-              heatmap.map((item, idx) => (
-                <Card key={idx} className="border-border/50" data-testid={`heatmap-${idx}`}>
-                  <CardContent className="p-4">
+          {/* ============== VOUCHERS TAB ============== */}
+          <TabsContent value="vouchers" className="space-y-4 mt-4">
+            <div className="flex items-center justify-between">
+              <h3 className="font-semibold">Vouchers ({vouchers.length})</h3>
+              <Button size="sm" onClick={() => { setEditingVoucher(null); setShowVoucherDialog(true); }}>
+                <Plus className="h-4 w-4 mr-1" />
+                Add Voucher
+              </Button>
+            </div>
+            
+            <div className="space-y-2">
+              {vouchers.map((voucher) => (
+                <Card key={voucher.id} className="border-border/50">
+                  <CardContent className="p-3">
                     <div className="flex items-center justify-between">
-                      <div className="flex items-center gap-3">
-                        <div className={`h-10 w-10 rounded-lg flex items-center justify-center ${
-                          item.count > 10 ? "bg-red-100 text-red-600" :
-                          item.count > 5 ? "bg-orange-100 text-orange-600" :
-                          "bg-green-100 text-green-600"
-                        }`}>
-                          <MapPin className="h-5 w-5" />
+                      <div>
+                        <div className="flex items-center gap-2 mb-1">
+                          <Badge variant="secondary" className="text-[10px]">{voucher.category}</Badge>
+                          <Badge className={voucher.is_active ? "bg-green-100 text-green-700" : "bg-gray-100 text-gray-700"} style={{fontSize: "10px"}}>
+                            {voucher.is_active ? "Active" : "Inactive"}
+                          </Badge>
                         </div>
-                        <div>
-                          <p className="font-semibold text-text-primary">{item._id}</p>
-                          <p className="text-xs text-text-muted">
-                            {item.count} {language === "te" ? "సమస్యలు" : "issues"}
-                          </p>
+                        <h4 className="font-medium text-sm">{voucher.title}</h4>
+                        <p className="text-xs text-muted-foreground">{voucher.partner_name}</p>
+                        <div className="flex items-center gap-2 mt-1">
+                          <span className="text-sm font-bold text-primary">
+                            {voucher.discount_type === "percentage" ? `${voucher.discount_value}%` : `₹${voucher.discount_value}`} OFF
+                          </span>
+                          <code className="text-xs bg-muted px-2 py-0.5 rounded">{voucher.code}</code>
                         </div>
                       </div>
-                      <Badge className={`${
-                        item.count > 10 ? "bg-red-100 text-red-700" :
-                        item.count > 5 ? "bg-orange-100 text-orange-700" :
-                        "bg-green-100 text-green-700"
-                      }`}>
-                        {item.count > 10 ? (language === "te" ? "అధికం" : "High") :
-                         item.count > 5 ? (language === "te" ? "మధ్యస్థం" : "Medium") :
-                         (language === "te" ? "తక్కువ" : "Low")}
-                      </Badge>
+                      <div className="flex flex-col gap-1">
+                        <Button size="sm" variant="ghost" className="h-7" onClick={() => { setEditingVoucher(voucher); setVoucherForm(voucher); setShowVoucherDialog(true); }}>
+                          <Edit className="h-3 w-3" />
+                        </Button>
+                        <Button size="sm" variant="ghost" className="h-7 text-destructive" onClick={() => deleteVoucher(voucher.id)}>
+                          <Trash2 className="h-3 w-3" />
+                        </Button>
+                      </div>
                     </div>
                   </CardContent>
                 </Card>
-              ))
-            )}
+              ))}
+              {vouchers.length === 0 && (
+                <div className="text-center py-8 text-muted-foreground">
+                  <Ticket className="h-12 w-12 mx-auto mb-2 opacity-30" />
+                  <p className="text-sm">No vouchers yet</p>
+                </div>
+              )}
+            </div>
           </TabsContent>
 
-          {/* Users Tab */}
-          <TabsContent value="users" className="mt-4 space-y-3">
-            {users.slice(0, 20).map((u) => (
-              <Card key={u.id} className="border-border/50" data-testid={`user-${u.id}`}>
-                <CardContent className="p-4">
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <p className="font-semibold text-text-primary">{u.name}</p>
-                      <p className="text-sm text-text-muted">{u.phone}</p>
-                      {u.colony && (
-                        <p className="text-xs text-text-muted flex items-center gap-1 mt-1">
-                          <MapPin className="h-3 w-3" />
-                          {u.colony}
-                        </p>
-                      )}
+          {/* ============== TEMPLATES TAB ============== */}
+          <TabsContent value="templates" className="space-y-4 mt-4">
+            <div className="flex items-center justify-between">
+              <h3 className="font-semibold">Status Templates ({templates.length})</h3>
+              <Button size="sm" onClick={() => setShowTemplateDialog(true)}>
+                <Plus className="h-4 w-4 mr-1" />
+                Add Template
+              </Button>
+            </div>
+            
+            <div className="grid grid-cols-2 gap-2">
+              {templates.map((template) => (
+                <Card key={template.id} className="border-border/50 overflow-hidden">
+                  <div className="aspect-square relative">
+                    <img src={template.background_url || template.thumbnail_url} alt={template.title} className="w-full h-full object-cover" />
+                    <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 to-transparent p-2">
+                      <Badge variant="secondary" className="text-[9px] mb-1">{template.category}</Badge>
+                      <h4 className="text-white text-xs font-medium line-clamp-1">{template.title}</h4>
                     </div>
-                    <Select
-                      value={u.role}
-                      onValueChange={(role) => updateUserRole(u.id, role)}
-                    >
-                      <SelectTrigger className="w-32 h-9" data-testid={`role-select-${u.id}`}>
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="citizen">
-                          {language === "te" ? "పౌరుడు" : "Citizen"}
-                        </SelectItem>
-                        <SelectItem value="volunteer">
-                          {language === "te" ? "వలంటీర్" : "Volunteer"}
-                        </SelectItem>
-                        <SelectItem value="admin">
-                          {language === "te" ? "అడ్మిన్" : "Admin"}
-                        </SelectItem>
-                      </SelectContent>
-                    </Select>
                   </div>
-                </CardContent>
-              </Card>
-            ))}
+                  <CardContent className="p-2">
+                    <div className="flex gap-1">
+                      <Button size="sm" variant="ghost" className="h-6 flex-1 text-xs">
+                        Edit
+                      </Button>
+                      <Button size="sm" variant="ghost" className="h-6 text-destructive" onClick={() => deleteTemplate(template.id)}>
+                        <Trash2 className="h-3 w-3" />
+                      </Button>
+                    </div>
+                  </CardContent>
+                </Card>
+              ))}
+              {templates.length === 0 && (
+                <div className="col-span-2 text-center py-8 text-muted-foreground">
+                  <ImageIcon className="h-12 w-12 mx-auto mb-2 opacity-30" />
+                  <p className="text-sm">No templates yet</p>
+                </div>
+              )}
+            </div>
           </TabsContent>
         </Tabs>
-      </div>
 
-      {/* Course Create/Edit Dialog */}
-      <Dialog open={showCourseDialog} onOpenChange={setShowCourseDialog}>
-        <DialogContent className="max-w-lg max-h-[90vh] overflow-y-auto">
-          <DialogHeader>
-            <DialogTitle>
-              {editingCourse ? "Edit Course" : "Create New Course"}
-            </DialogTitle>
-          </DialogHeader>
-          
-          <div className="space-y-4">
-            <div className="grid grid-cols-2 gap-4">
+        {/* ============== DIALOGS ============== */}
+
+        {/* Issue Status Dialog */}
+        <Dialog open={showIssueDialog} onOpenChange={setShowIssueDialog}>
+          <DialogContent className="max-w-md">
+            <DialogHeader>
+              <DialogTitle>Update Issue Status</DialogTitle>
+            </DialogHeader>
+            {selectedIssue && (
+              <div className="space-y-4">
+                <div className="bg-muted p-3 rounded-lg">
+                  <p className="text-sm font-medium">{selectedIssue.category}</p>
+                  <p className="text-xs text-muted-foreground line-clamp-2">{selectedIssue.description}</p>
+                </div>
+                <div>
+                  <Label>Status</Label>
+                  <Select value={issueStatusForm.status} onValueChange={(v) => setIssueStatusForm({...issueStatusForm, status: v})}>
+                    <SelectTrigger>
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="reported">Reported</SelectItem>
+                      <SelectItem value="verified">Verified</SelectItem>
+                      <SelectItem value="action_taken">Action Taken</SelectItem>
+                      <SelectItem value="filed_with_authority">Filed with Authority</SelectItem>
+                      <SelectItem value="resolved_by_authority">Resolved by Authority</SelectItem>
+                      <SelectItem value="resolved_by_us">Resolved by Us</SelectItem>
+                      <SelectItem value="issue_not_found">Issue Not Found</SelectItem>
+                      <SelectItem value="closed">Closed</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div>
+                  <Label>Notes (optional)</Label>
+                  <Textarea
+                    value={issueStatusForm.notes}
+                    onChange={(e) => setIssueStatusForm({...issueStatusForm, notes: e.target.value})}
+                    placeholder="Add notes about this update..."
+                    rows={2}
+                  />
+                </div>
+              </div>
+            )}
+            <DialogFooter>
+              <Button variant="outline" onClick={() => setShowIssueDialog(false)}>Cancel</Button>
+              <Button onClick={updateIssueStatus} disabled={saving}>
+                {saving && <Loader2 className="h-4 w-4 mr-2 animate-spin" />}
+                Update
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
+
+        {/* Course Dialog */}
+        <Dialog open={showCourseDialog} onOpenChange={setShowCourseDialog}>
+          <DialogContent className="max-w-md max-h-[80vh] overflow-y-auto">
+            <DialogHeader>
+              <DialogTitle>{editingCourse ? "Edit Course" : "Add Course"}</DialogTitle>
+            </DialogHeader>
+            <div className="space-y-4">
               <div>
-                <Label>Title (English)</Label>
-                <Input
-                  value={courseForm.title}
-                  onChange={(e) => setCourseForm({...courseForm, title: e.target.value})}
-                  placeholder="Python Basics"
-                />
+                <Label>Title *</Label>
+                <Input value={courseForm.title} onChange={(e) => setCourseForm({...courseForm, title: e.target.value})} />
               </div>
               <div>
                 <Label>Title (Telugu)</Label>
-                <Input
-                  value={courseForm.title_te}
-                  onChange={(e) => setCourseForm({...courseForm, title_te: e.target.value})}
-                  placeholder="పైథాన్ బేసిక్స్"
-                />
+                <Input value={courseForm.title_te} onChange={(e) => setCourseForm({...courseForm, title_te: e.target.value})} />
+              </div>
+              <div>
+                <Label>Description</Label>
+                <Textarea value={courseForm.description} onChange={(e) => setCourseForm({...courseForm, description: e.target.value})} rows={2} />
+              </div>
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <Label>Category</Label>
+                  <Select value={courseForm.category} onValueChange={(v) => setCourseForm({...courseForm, category: v})}>
+                    <SelectTrigger><SelectValue /></SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="tech">Tech</SelectItem>
+                      <SelectItem value="business">Business</SelectItem>
+                      <SelectItem value="health">Health</SelectItem>
+                      <SelectItem value="arts">Arts</SelectItem>
+                      <SelectItem value="language">Language</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div>
+                  <Label>Difficulty</Label>
+                  <Select value={courseForm.difficulty} onValueChange={(v) => setCourseForm({...courseForm, difficulty: v})}>
+                    <SelectTrigger><SelectValue /></SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="beginner">Beginner</SelectItem>
+                      <SelectItem value="intermediate">Intermediate</SelectItem>
+                      <SelectItem value="advanced">Advanced</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
+              <div>
+                <Label>Thumbnail URL</Label>
+                <Input value={courseForm.thumbnail_url} onChange={(e) => setCourseForm({...courseForm, thumbnail_url: e.target.value})} placeholder="https://..." />
+              </div>
+              <div>
+                <Label>Instructor Name</Label>
+                <Input value={courseForm.instructor_name} onChange={(e) => setCourseForm({...courseForm, instructor_name: e.target.value})} />
+              </div>
+              <div className="flex items-center gap-2">
+                <Switch checked={courseForm.is_featured} onCheckedChange={(v) => setCourseForm({...courseForm, is_featured: v})} />
+                <Label>Featured Course</Label>
               </div>
             </div>
-            
-            <div>
-              <Label>Description</Label>
-              <Textarea
-                value={courseForm.description}
-                onChange={(e) => setCourseForm({...courseForm, description: e.target.value})}
-                placeholder="Course description..."
-                rows={3}
-              />
+            <DialogFooter>
+              <Button variant="outline" onClick={() => setShowCourseDialog(false)}>Cancel</Button>
+              <Button onClick={saveCourse} disabled={saving}>
+                {saving && <Loader2 className="h-4 w-4 mr-2 animate-spin" />}
+                {editingCourse ? "Update" : "Create"}
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
+
+        {/* Product Dialog */}
+        <Dialog open={showProductDialog} onOpenChange={setShowProductDialog}>
+          <DialogContent className="max-w-md max-h-[80vh] overflow-y-auto">
+            <DialogHeader>
+              <DialogTitle>{editingProduct ? "Edit Product" : "Add Product"}</DialogTitle>
+            </DialogHeader>
+            <div className="space-y-4">
+              <div>
+                <Label>Name *</Label>
+                <Input value={productForm.name} onChange={(e) => setProductForm({...productForm, name: e.target.value})} />
+              </div>
+              <div>
+                <Label>Description</Label>
+                <Textarea value={productForm.description} onChange={(e) => setProductForm({...productForm, description: e.target.value})} rows={2} />
+              </div>
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <Label>Category</Label>
+                  <Select value={productForm.category} onValueChange={(v) => setProductForm({...productForm, category: v})}>
+                    <SelectTrigger><SelectValue /></SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="Fitness">Fitness</SelectItem>
+                      <SelectItem value="Electronics">Electronics</SelectItem>
+                      <SelectItem value="Home">Home</SelectItem>
+                      <SelectItem value="Fashion">Fashion</SelectItem>
+                      <SelectItem value="Other">Other</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div>
+                  <Label>MRP (₹)</Label>
+                  <Input type="number" value={productForm.mrp} onChange={(e) => setProductForm({...productForm, mrp: parseInt(e.target.value) || 0})} />
+                </div>
+              </div>
+              <div>
+                <Label>Point Type *</Label>
+                <Select value={productForm.point_type} onValueChange={(v) => setProductForm({...productForm, point_type: v})}>
+                  <SelectTrigger><SelectValue /></SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="normal">Normal Only</SelectItem>
+                    <SelectItem value="privilege">Privilege Only</SelectItem>
+                    <SelectItem value="both">Both Required</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <Label>Normal Points</Label>
+                  <Input type="number" value={productForm.points_required} onChange={(e) => setProductForm({...productForm, points_required: parseInt(e.target.value) || 0})} />
+                </div>
+                <div>
+                  <Label>Privilege Points</Label>
+                  <Input type="number" value={productForm.privilege_points_required} onChange={(e) => setProductForm({...productForm, privilege_points_required: parseInt(e.target.value) || 0})} disabled={productForm.point_type === "normal"} />
+                </div>
+              </div>
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <Label>Delivery Fee (₹)</Label>
+                  <Input type="number" value={productForm.delivery_fee} onChange={(e) => setProductForm({...productForm, delivery_fee: parseInt(e.target.value) || 0})} />
+                </div>
+                <div>
+                  <Label>Stock</Label>
+                  <Input type="number" value={productForm.stock_quantity} onChange={(e) => setProductForm({...productForm, stock_quantity: parseInt(e.target.value) || 0})} />
+                </div>
+              </div>
+              <div>
+                <Label>Image URL</Label>
+                <Input value={productForm.image_url} onChange={(e) => setProductForm({...productForm, image_url: e.target.value})} placeholder="https://..." />
+              </div>
+              <div className="flex items-center gap-2">
+                <Switch checked={productForm.is_active} onCheckedChange={(v) => setProductForm({...productForm, is_active: v})} />
+                <Label>Active</Label>
+              </div>
             </div>
-            
-            <div className="grid grid-cols-2 gap-4">
+            <DialogFooter>
+              <Button variant="outline" onClick={() => setShowProductDialog(false)}>Cancel</Button>
+              <Button onClick={saveProduct} disabled={saving}>
+                {saving && <Loader2 className="h-4 w-4 mr-2 animate-spin" />}
+                {editingProduct ? "Update" : "Create"}
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
+
+        {/* Points Dialog */}
+        <Dialog open={showPointsDialog} onOpenChange={setShowPointsDialog}>
+          <DialogContent className="max-w-sm">
+            <DialogHeader>
+              <DialogTitle>Adjust User Points</DialogTitle>
+            </DialogHeader>
+            <div className="space-y-4">
+              <div>
+                <Label>User</Label>
+                <Select value={pointsForm.user_id} onValueChange={(v) => setPointsForm({...pointsForm, user_id: v})}>
+                  <SelectTrigger><SelectValue placeholder="Select user" /></SelectTrigger>
+                  <SelectContent>
+                    {users.map((u) => (
+                      <SelectItem key={u.id} value={u.id}>{u.name || u.phone}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+              <div>
+                <Label>Point Type</Label>
+                <Select value={pointsForm.point_type} onValueChange={(v) => setPointsForm({...pointsForm, point_type: v})}>
+                  <SelectTrigger><SelectValue /></SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="normal">Normal</SelectItem>
+                    <SelectItem value="privilege">Privilege</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              <div>
+                <Label>Points (+/-)</Label>
+                <Input type="number" value={pointsForm.points} onChange={(e) => setPointsForm({...pointsForm, points: e.target.value})} placeholder="100 or -50" />
+              </div>
+              <div>
+                <Label>Reason *</Label>
+                <Input value={pointsForm.reason} onChange={(e) => setPointsForm({...pointsForm, reason: e.target.value})} placeholder="Bonus for..." />
+              </div>
+            </div>
+            <DialogFooter>
+              <Button variant="outline" onClick={() => setShowPointsDialog(false)}>Cancel</Button>
+              <Button onClick={adjustUserPoints} disabled={saving}>
+                {saving && <Loader2 className="h-4 w-4 mr-2 animate-spin" />}
+                Adjust
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
+
+        {/* Bulk Privilege Dialog */}
+        <Dialog open={showBulkPrivilegeDialog} onOpenChange={setShowBulkPrivilegeDialog}>
+          <DialogContent className="max-w-md max-h-[80vh] overflow-y-auto">
+            <DialogHeader>
+              <DialogTitle className="flex items-center gap-2">
+                <Star className="h-5 w-5 text-purple-500" />
+                Bulk Privilege Points
+              </DialogTitle>
+            </DialogHeader>
+            <div className="space-y-4">
+              <div className="flex items-center gap-2 p-3 bg-purple-50 dark:bg-purple-950 rounded-lg">
+                <input type="checkbox" id="selectAll" checked={bulkPrivilegeForm.selectAll} onChange={(e) => setBulkPrivilegeForm({...bulkPrivilegeForm, selectAll: e.target.checked, user_ids: []})} className="h-4 w-4" />
+                <Label htmlFor="selectAll" className="font-semibold text-purple-700 dark:text-purple-300">Select ALL Users</Label>
+              </div>
+              {!bulkPrivilegeForm.selectAll && (
+                <div>
+                  <Label>Select Users</Label>
+                  <div className="max-h-40 overflow-y-auto border rounded-lg p-2 space-y-1">
+                    {users.map((u) => (
+                      <label key={u.id} className="flex items-center gap-2 p-1 hover:bg-muted rounded cursor-pointer">
+                        <input
+                          type="checkbox"
+                          checked={bulkPrivilegeForm.user_ids.includes(u.id)}
+                          onChange={(e) => {
+                            if (e.target.checked) {
+                              setBulkPrivilegeForm({...bulkPrivilegeForm, user_ids: [...bulkPrivilegeForm.user_ids, u.id]});
+                            } else {
+                              setBulkPrivilegeForm({...bulkPrivilegeForm, user_ids: bulkPrivilegeForm.user_ids.filter(id => id !== u.id)});
+                            }
+                          }}
+                          className="h-4 w-4"
+                        />
+                        <span className="text-sm">{u.name || u.phone}</span>
+                      </label>
+                    ))}
+                  </div>
+                </div>
+              )}
+              <div>
+                <Label>Points *</Label>
+                <Input type="number" value={bulkPrivilegeForm.points} onChange={(e) => setBulkPrivilegeForm({...bulkPrivilegeForm, points: e.target.value})} min="1" />
+              </div>
+              <div>
+                <Label>Reason *</Label>
+                <Input value={bulkPrivilegeForm.reason} onChange={(e) => setBulkPrivilegeForm({...bulkPrivilegeForm, reason: e.target.value})} placeholder="Special reward..." />
+              </div>
+            </div>
+            <DialogFooter>
+              <Button variant="outline" onClick={() => setShowBulkPrivilegeDialog(false)}>Cancel</Button>
+              <Button onClick={assignBulkPrivilegePoints} disabled={saving} className="bg-purple-600 hover:bg-purple-700">
+                {saving && <Loader2 className="h-4 w-4 mr-2 animate-spin" />}
+                Assign
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
+
+        {/* News Dialog */}
+        <Dialog open={showNewsDialog} onOpenChange={setShowNewsDialog}>
+          <DialogContent className="max-w-md max-h-[80vh] overflow-y-auto">
+            <DialogHeader>
+              <DialogTitle>{editingNews ? "Edit News" : "Add News"}</DialogTitle>
+            </DialogHeader>
+            <div className="space-y-4">
+              <div>
+                <Label>Title *</Label>
+                <Input value={newsForm.title} onChange={(e) => setNewsForm({...newsForm, title: e.target.value})} />
+              </div>
+              <div>
+                <Label>Title (Telugu)</Label>
+                <Input value={newsForm.title_te} onChange={(e) => setNewsForm({...newsForm, title_te: e.target.value})} />
+              </div>
+              <div>
+                <Label>Content *</Label>
+                <Textarea value={newsForm.content} onChange={(e) => setNewsForm({...newsForm, content: e.target.value})} rows={3} />
+              </div>
+              <div>
+                <Label>Content (Telugu)</Label>
+                <Textarea value={newsForm.content_te} onChange={(e) => setNewsForm({...newsForm, content_te: e.target.value})} rows={2} />
+              </div>
               <div>
                 <Label>Category</Label>
-                <Select value={courseForm.category} onValueChange={(v) => setCourseForm({...courseForm, category: v})}>
-                  <SelectTrigger>
-                    <SelectValue />
-                  </SelectTrigger>
+                <Select value={newsForm.category} onValueChange={(v) => setNewsForm({...newsForm, category: v})}>
+                  <SelectTrigger><SelectValue /></SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="k12">School (K-12)</SelectItem>
-                    <SelectItem value="college">College</SelectItem>
-                    <SelectItem value="professional">Professional</SelectItem>
-                    <SelectItem value="skill">Skill Development</SelectItem>
-                    <SelectItem value="language">Languages</SelectItem>
-                    <SelectItem value="tech">Technology</SelectItem>
+                    <SelectItem value="local">Local</SelectItem>
+                    <SelectItem value="government">Government</SelectItem>
+                    <SelectItem value="health">Health</SelectItem>
+                    <SelectItem value="education">Education</SelectItem>
+                    <SelectItem value="sports">Sports</SelectItem>
+                    <SelectItem value="events">Events</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
               <div>
-                <Label>Difficulty</Label>
-                <Select value={courseForm.difficulty} onValueChange={(v) => setCourseForm({...courseForm, difficulty: v})}>
-                  <SelectTrigger>
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="beginner">Beginner</SelectItem>
-                    <SelectItem value="intermediate">Intermediate</SelectItem>
-                    <SelectItem value="advanced">Advanced</SelectItem>
-                  </SelectContent>
-                </Select>
+                <Label>Image URL</Label>
+                <Input value={newsForm.image_url} onChange={(e) => setNewsForm({...newsForm, image_url: e.target.value})} placeholder="https://..." />
+              </div>
+              <div className="flex items-center gap-4">
+                <div className="flex items-center gap-2">
+                  <Switch checked={newsForm.is_pinned} onCheckedChange={(v) => setNewsForm({...newsForm, is_pinned: v})} />
+                  <Label>Pinned</Label>
+                </div>
+                <div className="flex items-center gap-2">
+                  <Switch checked={newsForm.is_breaking} onCheckedChange={(v) => setNewsForm({...newsForm, is_breaking: v})} />
+                  <Label>Breaking</Label>
+                </div>
               </div>
             </div>
-            
-            <div className="grid grid-cols-2 gap-4">
-              <div>
-                <Label>Price (₹)</Label>
-                <Input
-                  type="number"
-                  value={courseForm.price}
-                  onChange={(e) => setCourseForm({...courseForm, price: parseInt(e.target.value) || 0})}
-                  placeholder="0 for free"
-                />
-              </div>
-              <div>
-                <Label>Duration (hours)</Label>
-                <Input
-                  type="number"
-                  value={courseForm.duration_hours}
-                  onChange={(e) => setCourseForm({...courseForm, duration_hours: parseInt(e.target.value) || 0})}
-                />
-              </div>
-            </div>
-            
-            <div>
-              <Label>Instructor Name</Label>
-              <Input
-                value={courseForm.instructor_name}
-                onChange={(e) => setCourseForm({...courseForm, instructor_name: e.target.value})}
-                placeholder="Dr. Ravi Kumar"
-              />
-            </div>
-            
-            <div>
-              <Label>Thumbnail URL</Label>
-              <Input
-                value={courseForm.thumbnail_url}
-                onChange={(e) => setCourseForm({...courseForm, thumbnail_url: e.target.value})}
-                placeholder="https://..."
-              />
-            </div>
-            
-            <div className="flex items-center gap-2">
-              <Switch
-                checked={courseForm.is_featured}
-                onCheckedChange={(v) => setCourseForm({...courseForm, is_featured: v})}
-              />
-              <Label>Featured Course</Label>
-            </div>
-          </div>
-          
-          <DialogFooter>
-            <Button variant="outline" onClick={() => setShowCourseDialog(false)}>Cancel</Button>
-            <Button onClick={saveCourse} disabled={savingCourse}>
-              {savingCourse && <Loader2 className="h-4 w-4 mr-2 animate-spin" />}
-              {editingCourse ? "Update" : "Create"}
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
+            <DialogFooter>
+              <Button variant="outline" onClick={() => setShowNewsDialog(false)}>Cancel</Button>
+              <Button onClick={saveNews} disabled={saving}>
+                {saving && <Loader2 className="h-4 w-4 mr-2 animate-spin" />}
+                {editingNews ? "Update" : "Create"}
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
 
-      {/* Product Dialog */}
-      <Dialog open={showProductDialog} onOpenChange={setShowProductDialog}>
-        <DialogContent className="max-w-md max-h-[90vh] overflow-y-auto">
-          <DialogHeader>
-            <DialogTitle>{editingProduct ? "Edit Product" : "Add Product"}</DialogTitle>
-          </DialogHeader>
-          <div className="space-y-4">
-            <div>
-              <Label>Product Name *</Label>
-              <Input
-                value={productForm.name}
-                onChange={(e) => setProductForm({...productForm, name: e.target.value})}
-                placeholder="Water Bottle"
-              />
-            </div>
-            <div>
-              <Label>Description</Label>
-              <Textarea
-                value={productForm.description}
-                onChange={(e) => setProductForm({...productForm, description: e.target.value})}
-                placeholder="Product description..."
-                rows={2}
-              />
-            </div>
-            <div className="grid grid-cols-2 gap-4">
+        {/* Voucher Dialog */}
+        <Dialog open={showVoucherDialog} onOpenChange={setShowVoucherDialog}>
+          <DialogContent className="max-w-md max-h-[80vh] overflow-y-auto">
+            <DialogHeader>
+              <DialogTitle>{editingVoucher ? "Edit Voucher" : "Add Voucher"}</DialogTitle>
+            </DialogHeader>
+            <div className="space-y-4">
+              <div>
+                <Label>Title *</Label>
+                <Input value={voucherForm.title} onChange={(e) => setVoucherForm({...voucherForm, title: e.target.value})} placeholder="20% Off at Pizza Hut" />
+              </div>
+              <div>
+                <Label>Partner Name *</Label>
+                <Input value={voucherForm.partner_name} onChange={(e) => setVoucherForm({...voucherForm, partner_name: e.target.value})} placeholder="Pizza Hut" />
+              </div>
+              <div>
+                <Label>Description</Label>
+                <Textarea value={voucherForm.description} onChange={(e) => setVoucherForm({...voucherForm, description: e.target.value})} rows={2} />
+              </div>
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <Label>Discount Type</Label>
+                  <Select value={voucherForm.discount_type} onValueChange={(v) => setVoucherForm({...voucherForm, discount_type: v})}>
+                    <SelectTrigger><SelectValue /></SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="percentage">Percentage (%)</SelectItem>
+                      <SelectItem value="flat">Flat (₹)</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div>
+                  <Label>Discount Value</Label>
+                  <Input type="number" value={voucherForm.discount_value} onChange={(e) => setVoucherForm({...voucherForm, discount_value: parseInt(e.target.value) || 0})} />
+                </div>
+              </div>
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <Label>Code Type</Label>
+                  <Select value={voucherForm.code_type} onValueChange={(v) => setVoucherForm({...voucherForm, code_type: v})}>
+                    <SelectTrigger><SelectValue /></SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="random">Auto Generate</SelectItem>
+                      <SelectItem value="specific">Custom Code</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+                {voucherForm.code_type === "specific" && (
+                  <div>
+                    <Label>Custom Code</Label>
+                    <Input value={voucherForm.code} onChange={(e) => setVoucherForm({...voucherForm, code: e.target.value.toUpperCase()})} placeholder="SAVE20" />
+                  </div>
+                )}
+              </div>
               <div>
                 <Label>Category</Label>
-                <Select value={productForm.category} onValueChange={(v) => setProductForm({...productForm, category: v})}>
-                  <SelectTrigger>
-                    <SelectValue />
-                  </SelectTrigger>
+                <Select value={voucherForm.category} onValueChange={(v) => setVoucherForm({...voucherForm, category: v})}>
+                  <SelectTrigger><SelectValue /></SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="Fitness">Fitness</SelectItem>
-                    <SelectItem value="Electronics">Electronics</SelectItem>
-                    <SelectItem value="Home">Home & Living</SelectItem>
-                    <SelectItem value="Fashion">Fashion</SelectItem>
-                    <SelectItem value="Books">Books</SelectItem>
-                    <SelectItem value="Other">Other</SelectItem>
+                    <SelectItem value="food">Food</SelectItem>
+                    <SelectItem value="shopping">Shopping</SelectItem>
+                    <SelectItem value="health">Health</SelectItem>
+                    <SelectItem value="education">Education</SelectItem>
+                    <SelectItem value="entertainment">Entertainment</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
               <div>
-                <Label>MRP (₹)</Label>
-                <Input
-                  type="number"
-                  value={productForm.mrp}
-                  onChange={(e) => setProductForm({...productForm, mrp: parseInt(e.target.value) || 0})}
-                />
+                <Label>Terms & Conditions</Label>
+                <Textarea value={voucherForm.terms_conditions} onChange={(e) => setVoucherForm({...voucherForm, terms_conditions: e.target.value})} rows={2} placeholder="Valid on orders above..." />
+              </div>
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <Label>Min Order (₹)</Label>
+                  <Input type="number" value={voucherForm.min_order_value} onChange={(e) => setVoucherForm({...voucherForm, min_order_value: parseInt(e.target.value) || 0})} />
+                </div>
+                <div>
+                  <Label>Max Uses/User</Label>
+                  <Input type="number" value={voucherForm.max_uses_per_user} onChange={(e) => setVoucherForm({...voucherForm, max_uses_per_user: parseInt(e.target.value) || 1})} />
+                </div>
               </div>
             </div>
-            
-            {/* Point Type Selection */}
-            <div>
-              <Label>Point Type Required *</Label>
-              <Select value={productForm.point_type} onValueChange={(v) => setProductForm({...productForm, point_type: v})}>
-                <SelectTrigger>
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="normal">Normal Points Only</SelectItem>
-                  <SelectItem value="privilege">Privilege Points Only</SelectItem>
-                  <SelectItem value="both">Both (Normal + Privilege)</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-            
-            <div className="grid grid-cols-2 gap-4">
-              <div>
-                <Label>Normal Points *</Label>
-                <Input
-                  type="number"
-                  value={productForm.points_required}
-                  onChange={(e) => setProductForm({...productForm, points_required: parseInt(e.target.value) || 0})}
-                />
-              </div>
-              <div>
-                <Label>Privilege Points</Label>
-                <Input
-                  type="number"
-                  value={productForm.privilege_points_required}
-                  onChange={(e) => setProductForm({...productForm, privilege_points_required: parseInt(e.target.value) || 0})}
-                  disabled={productForm.point_type === "normal"}
-                />
-              </div>
-            </div>
-            
-            <div className="grid grid-cols-2 gap-4">
-              <div>
-                <Label>Delivery Fee (₹)</Label>
-                <Input
-                  type="number"
-                  value={productForm.delivery_fee}
-                  onChange={(e) => setProductForm({...productForm, delivery_fee: parseInt(e.target.value) || 0})}
-                  placeholder="0 for free delivery"
-                />
-              </div>
-              <div>
-                <Label>Stock Quantity</Label>
-                <Input
-                  type="number"
-                  value={productForm.stock_quantity}
-                  onChange={(e) => setProductForm({...productForm, stock_quantity: parseInt(e.target.value) || 0})}
-                />
-              </div>
-            </div>
-            <div>
-              <Label>Image URL</Label>
-              <Input
-                value={productForm.image_url}
-                onChange={(e) => setProductForm({...productForm, image_url: e.target.value})}
-                placeholder="https://images.unsplash.com/..."
-              />
-            </div>
-            <div className="flex items-center gap-2">
-              <Switch
-                checked={productForm.is_active}
-                onCheckedChange={(v) => setProductForm({...productForm, is_active: v})}
-              />
-              <Label>Active (visible to users)</Label>
-            </div>
-          </div>
-          <DialogFooter>
-            <Button variant="outline" onClick={() => setShowProductDialog(false)}>Cancel</Button>
-            <Button onClick={saveProduct} disabled={savingProduct}>
-              {savingProduct && <Loader2 className="h-4 w-4 mr-2 animate-spin" />}
-              {editingProduct ? "Update" : "Create"}
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
+            <DialogFooter>
+              <Button variant="outline" onClick={() => setShowVoucherDialog(false)}>Cancel</Button>
+              <Button onClick={saveVoucher} disabled={saving}>
+                {saving && <Loader2 className="h-4 w-4 mr-2 animate-spin" />}
+                {editingVoucher ? "Update" : "Create"}
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
 
-      {/* Points Adjustment Dialog */}
-      <Dialog open={showPointsDialog} onOpenChange={setShowPointsDialog}>
-        <DialogContent className="max-w-sm">
-          <DialogHeader>
-            <DialogTitle className="flex items-center gap-2">
-              <Coins className="h-5 w-5" />
-              Adjust User Points
-            </DialogTitle>
-          </DialogHeader>
-          <div className="space-y-4">
-            <div>
-              <Label>User</Label>
-              <Select value={pointsForm.user_id} onValueChange={(v) => setPointsForm({...pointsForm, user_id: v})}>
-                <SelectTrigger>
-                  <SelectValue placeholder="Select user" />
-                </SelectTrigger>
-                <SelectContent>
-                  {users.map((u) => (
-                    <SelectItem key={u.id} value={u.id}>
-                      {u.name || u.phone}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-            <div>
-              <Label>Point Type</Label>
-              <Select value={pointsForm.point_type} onValueChange={(v) => setPointsForm({...pointsForm, point_type: v})}>
-                <SelectTrigger>
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="normal">Normal Points</SelectItem>
-                  <SelectItem value="privilege">Privilege Points</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-            <div>
-              <Label>Points (+/-)</Label>
-              <Input
-                type="number"
-                value={pointsForm.points}
-                onChange={(e) => setPointsForm({...pointsForm, points: e.target.value})}
-                placeholder="100 or -50"
-              />
-              <p className="text-xs text-muted-foreground mt-1">
-                Use negative number to deduct points
+        {/* Template Dialog */}
+        <Dialog open={showTemplateDialog} onOpenChange={setShowTemplateDialog}>
+          <DialogContent className="max-w-md max-h-[80vh] overflow-y-auto">
+            <DialogHeader>
+              <DialogTitle>Add Status Template</DialogTitle>
+            </DialogHeader>
+            <div className="space-y-4">
+              <div>
+                <Label>Title *</Label>
+                <Input value={templateForm.title} onChange={(e) => setTemplateForm({...templateForm, title: e.target.value})} placeholder="Ugadi Wishes" />
+              </div>
+              <div>
+                <Label>Title (Telugu)</Label>
+                <Input value={templateForm.title_te} onChange={(e) => setTemplateForm({...templateForm, title_te: e.target.value})} />
+              </div>
+              <div>
+                <Label>Category</Label>
+                <Select value={templateForm.category} onValueChange={(v) => setTemplateForm({...templateForm, category: v})}>
+                  <SelectTrigger><SelectValue /></SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="festival">Festival</SelectItem>
+                    <SelectItem value="birthday">Birthday</SelectItem>
+                    <SelectItem value="event">Event</SelectItem>
+                    <SelectItem value="greeting">Greeting</SelectItem>
+                    <SelectItem value="civic">Civic</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              <div>
+                <Label>Background Image URL *</Label>
+                <Input value={templateForm.background_url} onChange={(e) => setTemplateForm({...templateForm, background_url: e.target.value})} placeholder="https://..." />
+              </div>
+              {templateForm.background_url && (
+                <div className="aspect-square rounded-lg overflow-hidden bg-muted">
+                  <img src={templateForm.background_url} alt="Preview" className="w-full h-full object-cover" />
+                </div>
+              )}
+              <p className="text-xs text-muted-foreground">
+                Photo and name positions are set to defaults. Users can place their photo and name on the template.
               </p>
             </div>
-            <div>
-              <Label>Reason *</Label>
-              <Input
-                value={pointsForm.reason}
-                onChange={(e) => setPointsForm({...pointsForm, reason: e.target.value})}
-                placeholder="Bonus for completing challenge"
-              />
-            </div>
-          </div>
-          <DialogFooter>
-            <Button variant="outline" onClick={() => setShowPointsDialog(false)}>Cancel</Button>
-            <Button onClick={adjustUserPoints}>
-              Adjust Points
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
-
-      {/* Bulk Privilege Points Dialog */}
-      <Dialog open={showBulkPrivilegeDialog} onOpenChange={setShowBulkPrivilegeDialog}>
-        <DialogContent className="max-w-md max-h-[80vh] overflow-y-auto">
-          <DialogHeader>
-            <DialogTitle className="flex items-center gap-2">
-              <Star className="h-5 w-5 text-purple-500" />
-              Assign Bulk Privilege Points
-            </DialogTitle>
-          </DialogHeader>
-          <div className="space-y-4">
-            <div className="flex items-center gap-2 p-3 bg-purple-50 dark:bg-purple-950 rounded-lg">
-              <input
-                type="checkbox"
-                id="selectAll"
-                checked={bulkPrivilegeForm.selectAll}
-                onChange={(e) => setBulkPrivilegeForm({...bulkPrivilegeForm, selectAll: e.target.checked, user_ids: []})}
-                className="h-4 w-4"
-              />
-              <Label htmlFor="selectAll" className="font-semibold text-purple-700 dark:text-purple-300">
-                Select ALL Users
-              </Label>
-            </div>
-            
-            {!bulkPrivilegeForm.selectAll && (
-              <div>
-                <Label>Select Users</Label>
-                <div className="max-h-40 overflow-y-auto border rounded-lg p-2 space-y-1">
-                  {users.map((u) => (
-                    <label key={u.id} className="flex items-center gap-2 p-1 hover:bg-muted rounded cursor-pointer">
-                      <input
-                        type="checkbox"
-                        checked={bulkPrivilegeForm.user_ids.includes(u.id)}
-                        onChange={(e) => {
-                          if (e.target.checked) {
-                            setBulkPrivilegeForm({...bulkPrivilegeForm, user_ids: [...bulkPrivilegeForm.user_ids, u.id]});
-                          } else {
-                            setBulkPrivilegeForm({...bulkPrivilegeForm, user_ids: bulkPrivilegeForm.user_ids.filter(id => id !== u.id)});
-                          }
-                        }}
-                        className="h-4 w-4"
-                      />
-                      <span className="text-sm">{u.name || u.phone}</span>
-                    </label>
-                  ))}
-                </div>
-                <p className="text-xs text-muted-foreground mt-1">
-                  {bulkPrivilegeForm.user_ids.length} user(s) selected
-                </p>
-              </div>
-            )}
-            
-            <div>
-              <Label>Privilege Points to Assign *</Label>
-              <Input
-                type="number"
-                value={bulkPrivilegeForm.points}
-                onChange={(e) => setBulkPrivilegeForm({...bulkPrivilegeForm, points: e.target.value})}
-                placeholder="100"
-                min="1"
-              />
-            </div>
-            <div>
-              <Label>Reason *</Label>
-              <Input
-                value={bulkPrivilegeForm.reason}
-                onChange={(e) => setBulkPrivilegeForm({...bulkPrivilegeForm, reason: e.target.value})}
-                placeholder="Special reward, event bonus, etc."
-              />
-            </div>
-          </div>
-          <DialogFooter>
-            <Button variant="outline" onClick={() => setShowBulkPrivilegeDialog(false)}>Cancel</Button>
-            <Button 
-              onClick={assignBulkPrivilegePoints} 
-              disabled={bulkPrivilegeLoading}
-              className="bg-purple-600 hover:bg-purple-700"
-            >
-              {bulkPrivilegeLoading && <Loader2 className="h-4 w-4 mr-2 animate-spin" />}
-              Assign Privilege Points
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
+            <DialogFooter>
+              <Button variant="outline" onClick={() => setShowTemplateDialog(false)}>Cancel</Button>
+              <Button onClick={saveTemplate} disabled={saving}>
+                {saving && <Loader2 className="h-4 w-4 mr-2 animate-spin" />}
+                Create
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
+      </div>
     </Layout>
   );
 }
