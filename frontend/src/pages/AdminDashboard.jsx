@@ -1070,6 +1070,143 @@ export default function AdminDashboard() {
               )}
             </div>
           </TabsContent>
+
+          {/* ============== CMS TAB ============== */}
+          <TabsContent value="content" className="space-y-4 mt-4">
+            {/* Dump Yard Config */}
+            <Card className="border-l-4 border-l-red-500">
+              <CardHeader className="pb-2">
+                <div className="flex items-center justify-between">
+                  <CardTitle className="text-sm flex items-center gap-2">
+                    <MapPin className="h-4 w-4 text-red-500" />
+                    Dump Yard Statistics
+                  </CardTitle>
+                  <Button size="sm" variant="outline" onClick={() => setShowDumpyardDialog(true)}>
+                    <Edit className="h-3.5 w-3.5 mr-1" />
+                    Edit
+                  </Button>
+                </div>
+              </CardHeader>
+              <CardContent>
+                <div className="grid grid-cols-2 gap-3 text-sm">
+                  <div>
+                    <p className="text-muted-foreground text-xs">Daily Waste</p>
+                    <p className="font-bold text-lg">{dumpyardConfig.daily_waste_tons} tons/day</p>
+                  </div>
+                  <div>
+                    <p className="text-muted-foreground text-xs">Area</p>
+                    <p className="font-bold text-lg">{dumpyardConfig.area_acres} acres</p>
+                  </div>
+                  <div>
+                    <p className="text-muted-foreground text-xs">Red Zone</p>
+                    <p className="font-bold text-lg">{dumpyardConfig.red_zone_km} km</p>
+                  </div>
+                  <div>
+                    <p className="text-muted-foreground text-xs">Status</p>
+                    <Badge variant={dumpyardConfig.status === "Active" ? "destructive" : "secondary"}>{dumpyardConfig.status}</Badge>
+                  </div>
+                </div>
+                {dumpyardConfig.historical_data && (
+                  <div className="mt-3 pt-3 border-t">
+                    <p className="text-xs text-muted-foreground">Historical Note:</p>
+                    <p className="text-sm">{dumpyardConfig.historical_data}</p>
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+
+            {/* Banners Section */}
+            <Card className="border-border/50">
+              <CardHeader className="pb-2">
+                <div className="flex items-center justify-between">
+                  <CardTitle className="text-sm flex items-center gap-2">
+                    <ImageIcon className="h-4 w-4" />
+                    Banners ({banners.length})
+                  </CardTitle>
+                  <Button size="sm" onClick={() => { setEditingBanner(null); setBannerForm({ title: "", subtitle: "", image_url: "", link_url: "", is_active: true, order: 0 }); setShowBannerDialog(true); }}>
+                    <Plus className="h-4 w-4 mr-1" />
+                    Add Banner
+                  </Button>
+                </div>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-2">
+                  {banners.map((banner) => (
+                    <div key={banner.id} className="flex items-center gap-3 p-2 rounded-lg bg-muted/50">
+                      <img src={banner.image_url} alt={banner.title} className="h-12 w-20 rounded object-cover" />
+                      <div className="flex-1 min-w-0">
+                        <p className="font-medium text-sm truncate">{banner.title}</p>
+                        <p className="text-xs text-muted-foreground truncate">{banner.subtitle}</p>
+                      </div>
+                      <Badge variant={banner.is_active ? "default" : "secondary"}>{banner.is_active ? "Active" : "Off"}</Badge>
+                      <Button size="sm" variant="ghost" onClick={() => { setEditingBanner(banner); setBannerForm(banner); setShowBannerDialog(true); }}>
+                        <Edit className="h-3.5 w-3.5" />
+                      </Button>
+                      <Button size="sm" variant="ghost" className="text-destructive" onClick={() => deleteBanner(banner.id)}>
+                        <Trash2 className="h-3.5 w-3.5" />
+                      </Button>
+                    </div>
+                  ))}
+                  {banners.length === 0 && (
+                    <p className="text-center text-muted-foreground py-4 text-sm">No banners. Click "Add Banner" to create one.</p>
+                  )}
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* Benefits Section */}
+            <Card className="border-border/50">
+              <CardHeader className="pb-2">
+                <div className="flex items-center justify-between">
+                  <CardTitle className="text-sm flex items-center gap-2">
+                    <Heart className="h-4 w-4" />
+                    Citizen Benefits ({benefits.length})
+                  </CardTitle>
+                  <Button size="sm" onClick={() => { setEditingBenefit(null); setBenefitForm({ title: "", description: "", image_url: "", category: "government", link_url: "", is_active: true }); setShowBenefitDialog(true); }}>
+                    <Plus className="h-4 w-4 mr-1" />
+                    Add Benefit
+                  </Button>
+                </div>
+              </CardHeader>
+              <CardContent>
+                <div className="grid grid-cols-2 gap-2">
+                  {benefits.map((benefit) => (
+                    <Card key={benefit.id} className="border-border/50 overflow-hidden">
+                      <div className="h-20 relative">
+                        <img src={benefit.image_url || "https://via.placeholder.com/200"} alt={benefit.title} className="w-full h-full object-cover" />
+                        {!benefit.is_active && <div className="absolute inset-0 bg-black/50 flex items-center justify-center"><Badge variant="secondary">Inactive</Badge></div>}
+                      </div>
+                      <CardContent className="p-2">
+                        <p className="font-medium text-xs truncate">{benefit.title}</p>
+                        <div className="flex gap-1 mt-1">
+                          <Button size="sm" variant="ghost" className="h-6 flex-1 text-xs" onClick={() => { setEditingBenefit(benefit); setBenefitForm(benefit); setShowBenefitDialog(true); }}>
+                            Edit
+                          </Button>
+                          <Button size="sm" variant="ghost" className="h-6 text-destructive" onClick={() => deleteBenefit(benefit.id)}>
+                            <Trash2 className="h-3 w-3" />
+                          </Button>
+                        </div>
+                      </CardContent>
+                    </Card>
+                  ))}
+                </div>
+                {benefits.length === 0 && (
+                  <p className="text-center text-muted-foreground py-4 text-sm">No benefits. Add citizen benefit items.</p>
+                )}
+              </CardContent>
+            </Card>
+
+            {/* Seed Default Content */}
+            <Card className="border-dashed">
+              <CardContent className="p-4 text-center">
+                <p className="text-sm text-muted-foreground mb-2">Initialize default content if empty</p>
+                <Button variant="outline" size="sm" onClick={seedContent}>
+                  <RefreshCw className="h-4 w-4 mr-2" />
+                  Seed Default Content
+                </Button>
+              </CardContent>
+            </Card>
+          </TabsContent>
         </Tabs>
 
         {/* ============== DIALOGS ============== */}
