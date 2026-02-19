@@ -1,10 +1,12 @@
-import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Navigate, useLocation } from "react-router-dom";
 import { Toaster } from "./components/ui/sonner";
 import { LanguageProvider } from "./context/LanguageContext";
 import { AuthProvider, useAuth } from "./context/AuthContext";
+import { ThemeProvider } from "./context/ThemeContext";
 import { OfflineBanner } from "./components/OfflineBanner";
 import { useServiceWorker } from "./hooks/useOffline";
 import { useEffect } from "react";
+import { AnimatePresence, motion } from "framer-motion";
 
 // Pages
 import LandingPage from "./pages/LandingPage";
@@ -32,6 +34,34 @@ import CourseDetail from "./pages/CourseDetail";
 import Certificate from "./pages/Certificate";
 
 import "./App.css";
+
+// Page transition variants
+const pageVariants = {
+  initial: { opacity: 0, y: 10 },
+  in: { opacity: 1, y: 0 },
+  out: { opacity: 0, y: -10 }
+};
+
+const pageTransition = {
+  type: "tween",
+  ease: "easeInOut",
+  duration: 0.2
+};
+
+// Animated page wrapper
+function AnimatedPage({ children }) {
+  return (
+    <motion.div
+      initial="initial"
+      animate="in"
+      exit="out"
+      variants={pageVariants}
+      transition={pageTransition}
+    >
+      {children}
+    </motion.div>
+  );
+}
 
 // Protected Route Component
 const ProtectedRoute = ({ children, roles = [] }) => {
