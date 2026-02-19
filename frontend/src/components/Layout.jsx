@@ -36,19 +36,8 @@ import { useState } from "react";
 export default function Layout({ children, title, showBackButton = false }) {
   const { t, language, toggleLanguage } = useLanguage();
   const { user, logout, isVolunteer, isAdmin } = useAuth();
-  const { theme, toggleTheme, isDark } = useTheme();
   const location = useLocation();
   const [menuOpen, setMenuOpen] = useState(false);
-  const [scrolled, setScrolled] = useState(false);
-
-  // Handle scroll for header background
-  useEffect(() => {
-    const handleScroll = () => {
-      setScrolled(window.scrollY > 20);
-    };
-    window.addEventListener("scroll", handleScroll);
-    return () => window.removeEventListener("scroll", handleScroll);
-  }, []);
 
   // Bottom navigation items - main features (5 items with center bulge for NEWS)
   const bottomNavItems = [
