@@ -51,6 +51,16 @@ class QuizSubmission(BaseModel):
     quiz_id: str
     answers: List[dict]  # [{question_id, selected_option}]
 
+class ReviewCreate(BaseModel):
+    course_id: str
+    rating: int  # 1-5 stars
+    review_text: Optional[str] = None
+    review_text_te: Optional[str] = None
+
+class ReviewUpdate(BaseModel):
+    rating: Optional[int] = None
+    review_text: Optional[str] = None
+
 class LiveClassCreate(BaseModel):
     title: str
     title_te: Optional[str] = None
