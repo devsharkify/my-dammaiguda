@@ -31,11 +31,28 @@ export default function DumpYardInfo() {
 
   const fetchData = async () => {
     try {
-      const [infoRes, updatesRes] = await Promise.all([
+      const [infoRes, updatesRes, contentRes] = await Promise.all([
         axios.get(`${API}/dumpyard/info`),
-        axios.get(`${API}/dumpyard/updates`).catch(() => ({ data: [] }))
+        axios.get(`${API}/dumpyard/updates`).catch(() => ({ data: [] })),
+        axios.get(`${API}/content/dumpyard`).catch(() => ({ data: null }))
       ]);
-      setInfo(infoRes.data);
+      
+      // Merge content config with dumpyard info
+      const dumpyardConfig = contentRes.data;
+      const mergedInfo = {
+        ...infoRes.data,
+        ...(dumpyardConfig && {
+          daily_waste_tons: dumpyardConfig.daily_waste_tons,
+          area_acres: dumpyardConfig.area_acres,
+          red_zone_km: dumpyardConfig.red_zone_km,
+          status: dumpyardConfig.status,
+          historical_note: dumpyardConfig.historical_data,
+          health_risks: dumpyardConfig.health_risks,
+          affected_groups: dumpyardConfig.affected_groups
+        })
+      };
+      
+      setInfo(mergedInfo);
       setUpdates(updatesRes.data);
     } catch (error) {
       console.error("Error fetching dump yard info:", error);
