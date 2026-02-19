@@ -3,110 +3,93 @@
 ## Project Overview
 **Name:** My Dammaiguda  
 **Type:** Civic Engagement Platform (PWA)  
-**Version:** 3.4.0  
+**Version:** 3.5.0  
 **Last Updated:** December 19, 2025
 
-## What's Been Implemented (v3.4.0)
+## What's Been Implemented
 
-### ✅ Web Push Notifications (NEW)
-- **Real VAPID Key Integration**
-  - VAPID keys generated and configured in backend/.env
-  - `/api/notifications/vapid-public-key` - Returns public key for frontend
-  - Real web push via `pywebpush` library
-- **Frontend Push Subscription**
-  - `usePushNotifications` hook (`/hooks/usePushNotifications.js`)
-  - Browser permission request
-  - Subscription management (subscribe/unsubscribe)
-  - Test notification button in Profile
-- **Service Worker Push Handling**
-  - Push event listener in `/public/service-worker.js`
-  - Notification display with actions
-  - Click handling with navigation
+### ✅ AIT Education Module (NEW - v3.5.0)
+A comprehensive EdTech platform integrated into the app:
+- **Course Catalog**: Browse, search, filter courses by category
+- **Categories**: K-12, College, Professional, Skill Development, Languages, Tech
+- **Course Detail Page**: Video lessons, progress tracking, enrollment
+- **Quiz System**: Multiple choice quizzes with scoring and results
+- **Live Classes**: Scheduled live sessions with registration
+- **Certificates**: Auto-generated certificates on course completion
+- **Gamification**: XP points, learning stats, completion tracking
+- **Telugu-First UI**: All content supports Telugu translations
 
-### ✅ Enhanced AQI Widget (NEW)
-- **Two Side-by-Side Cards on Dashboard**
-  - Hyderabad citywide AQI
-  - Dammaiguda local AQI
-- **Status Text with Color Coding**
-  - Good (మంచి) - Green
-  - Moderate (మధ్యస్థం) - Yellow
-  - Poor (చెడు) - Orange
-  - Unhealthy (అనారోగ్యకరమైన) - Red
-  - Very Unhealthy - Purple
-  - Hazardous (ప్రమాదకరమైన) - Rose
+**Key Files:**
+- `/app/backend/routers/education.py` - Full backend API
+- `/app/frontend/src/pages/AITEducation.jsx` - Course catalog
+- `/app/frontend/src/pages/CourseDetail.jsx` - Course view/lessons
+- `/app/frontend/src/pages/Certificate.jsx` - Certificate display
+
+**API Endpoints:**
+- `GET /api/education/courses` - List courses with filtering
+- `GET /api/education/courses/categories` - Get categories
+- `GET /api/education/courses/{id}` - Course details with lessons
+- `POST /api/education/enroll` - Enroll in a course
+- `GET /api/education/my-courses` - User's enrolled courses
+- `POST /api/education/quizzes/{id}/submit` - Submit quiz answers
+- `POST /api/education/certificates/generate/{course_id}` - Generate certificate
+
+### ✅ Web Push Notifications (v3.4.0)
+- Real VAPID key integration with `pywebpush`
+- Browser push subscription via `usePushNotifications` hook
+- Service worker push event handling
+- Test notification button in Profile
+
+### ✅ Enhanced AQI Widget (v3.4.0)
+- Two side-by-side cards: Hyderabad & Dammaiguda
+- Status text with color coding (Good/Moderate/Poor/Unhealthy)
 
 ### Previous Features (v3.0-3.3)
-- PWA Offline Support (v3.3.0)
-- Google Maps for live activity tracking (v3.2.0)
-- Daily Fitness Streak & 10 Badges (v3.1.0)
-- Premium Kaizer Fit with weight tracker (v3.0.0)
-- Dashboard redesign with widgets
+- PWA Offline Support
+- Google Maps for live activity tracking
+- Daily Fitness Streak & 10 Badges
+- Premium Kaizer Fit with weight tracker
+- Dashboard with widgets
 - Stories feature (24-hour ephemeral)
 - Citizen Wall with groups
 - News Shorts with AI rephrasing
-- Admin-injected ads
-
-## Key Files (v3.4.0)
-```
-/app/backend/
-├── .env                    - VAPID keys added
-├── private_key.pem         - VAPID private key file
-├── public_key.pem          - VAPID public key file
-└── routers/
-    ├── notifications.py    - Real push implementation
-    └── aqi.py              - /both endpoint for dual AQI
-
-/app/frontend/
-├── public/
-│   └── service-worker.js   - Push event handling
-└── src/
-    ├── hooks/
-    │   └── usePushNotifications.js  - NEW
-    └── pages/
-        ├── Dashboard.jsx   - Dual AQI widgets
-        └── Profile.jsx     - Push toggle with test button
-```
 
 ## Test Credentials
 - **Phone:** 9876543210
-- **OTP:** 123456 (MOCKED - uses static code)
-
-## API Endpoints (New)
-- `GET /api/notifications/vapid-public-key` - Get VAPID public key
-- `POST /api/notifications/test` - Send test notification to user
-- `GET /api/aqi/both` - Get AQI for both Hyderabad and Dammaiguda
+- **OTP:** 123456 (MOCKED)
 
 ## Remaining Backlog
 
 ### P0 (Critical - Blocking Production)
-- [ ] **Real Twilio SMS for OTP** - Currently uses static OTP 123456
-- [ ] **Cloudinary Media Uploads** - Issues, Wall, Stories all use mocked uploads
+- [ ] **Real Twilio SMS for OTP** - Uses static OTP 123456
+- [ ] **Cloudinary Media Uploads** - All uploads mocked
 
 ### P1 (High Priority)
-- [ ] Fix badge count display bug in KaizerFit.jsx (shows 0 initially)
-- [ ] Admin dashboard for ad management
+- [ ] Fix badge count display bug in KaizerFit.jsx
+- [ ] Admin dashboard for ad and course management
+- [ ] Add sample lessons/videos to courses
 
 ### P2 (Medium Priority)
 - [ ] Social sharing cards
-- [ ] Data export features
 - [ ] WebSocket real-time chat
+- [ ] Course reviews/ratings
 
 ### P3 (Low Priority)
-- [ ] Refactor Dashboard.jsx (extract widgets to components)
-- [ ] Refactor KaizerFit.jsx (extract sub-components)
+- [ ] Refactor large components
+- [ ] Data export features
 
-## 3rd Party Integrations Status
+## 3rd Party Integrations
 
-| Integration | Status | Notes |
-|-------------|--------|-------|
-| Emergent LLM Key | ✅ Integrated | AI features |
-| Web Push (VAPID) | ✅ Integrated | Real push notifications |
-| Google Maps API | ⚠️ Partial | UI ready, needs user API key |
-| Twilio SMS | ❌ Not Integrated | OTP is mocked |
-| Cloudinary | ❌ Not Integrated | Uploads mocked |
+| Integration | Status |
+|-------------|--------|
+| Emergent LLM Key | ✅ Integrated |
+| Web Push (VAPID) | ✅ Integrated |
+| Google Maps API | ⚠️ Needs user key |
+| Twilio SMS | ❌ Mocked |
+| Cloudinary | ❌ Mocked |
 
-## Architecture Notes
+## Architecture
 - Backend: FastAPI + Motor (async MongoDB)
 - Frontend: React 19 + Tailwind + Shadcn UI
-- PWA: Service Worker with caching strategies
-- Auth: JWT tokens (OTP flow mocked)
+- Database: MongoDB (dammaiguda_db)
+- PWA: Service Worker with caching
