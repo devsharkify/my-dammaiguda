@@ -90,11 +90,11 @@ export default function AdminConsole() {
     }
     setLoading(true);
     try {
-      // For admin, use the admin phone number
+      const phoneNum = phone.startsWith('+') ? phone : `+91${phone}`;
       const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/auth/send-otp`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ phone: `+91${phone}` })
+        body: JSON.stringify({ phone: phoneNum })
       });
       if (response.ok) {
         setOtpSent(true);
@@ -114,10 +114,11 @@ export default function AdminConsole() {
     }
     setLoading(true);
     try {
+      const phoneNum = phone.startsWith('+') ? phone : `+91${phone}`;
       const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/auth/verify-otp`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ phone: `+91${phone}`, otp })
+        body: JSON.stringify({ phone: phoneNum, otp })
       });
       const data = await response.json();
       
@@ -125,10 +126,10 @@ export default function AdminConsole() {
         login(data.user, data.token);
         toast.success("Welcome, Admin!");
         navigate("/admin-dashboard");
-      } else if (data.user?.role !== "admin") {
+      } else if (response.ok && data.user?.role !== "admin") {
         toast.error("Access denied. Admin only.");
       } else {
-        toast.error("Invalid OTP");
+        toast.error(data.detail || "Invalid OTP");
       }
     } catch (error) {
       toast.error("Verification failed");
