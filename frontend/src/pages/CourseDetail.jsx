@@ -8,9 +8,10 @@ import { Button } from "../components/ui/button";
 import { Badge } from "../components/ui/badge";
 import { Progress } from "../components/ui/progress";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "../components/ui/tabs";
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "../components/ui/dialog";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "../components/ui/dialog";
 import { RadioGroup, RadioGroupItem } from "../components/ui/radio-group";
 import { Label } from "../components/ui/label";
+import { Textarea } from "../components/ui/textarea";
 import { toast } from "sonner";
 import Layout from "../components/Layout";
 import {
@@ -28,7 +29,11 @@ import {
   PlayCircle,
   Trophy,
   Download,
-  Share2
+  Share2,
+  MessageSquare,
+  ThumbsUp,
+  Edit,
+  Trash2
 } from "lucide-react";
 
 const API = `${process.env.REACT_APP_BACKEND_URL}/api`;
@@ -51,11 +56,20 @@ export default function CourseDetail() {
   const [quizResult, setQuizResult] = useState(null);
   const [submittingQuiz, setSubmittingQuiz] = useState(false);
   const [enrolling, setEnrolling] = useState(false);
+  
+  // Reviews state
+  const [reviews, setReviews] = useState([]);
+  const [reviewStats, setReviewStats] = useState(null);
+  const [showReviewDialog, setShowReviewDialog] = useState(false);
+  const [myRating, setMyRating] = useState(0);
+  const [myReviewText, setMyReviewText] = useState("");
+  const [submittingReview, setSubmittingReview] = useState(false);
 
   const headers = { Authorization: `Bearer ${token}` };
 
   useEffect(() => {
     fetchCourseData();
+    fetchReviews();
   }, [courseId]);
 
   const fetchCourseData = async () => {
