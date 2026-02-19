@@ -286,19 +286,15 @@ export default function CitizenBenefits() {
   return (
     <Layout showBackButton title={language === "te" ? "పౌర ప్రయోజనాలు" : "Citizen Benefits"}>
       <div className="space-y-6 pb-20" data-testid="citizen-benefits">
-        <Tabs defaultValue="vouchers" className="w-full">
-          <TabsList className="grid w-full grid-cols-3 h-12">
-            <TabsTrigger value="vouchers" className="text-xs">
-              <Ticket className="h-3.5 w-3.5 mr-1" />
-              {language === "te" ? "వౌచర్లు" : "Vouchers"}
-            </TabsTrigger>
-            <TabsTrigger value="benefits" className="text-xs">
-              <Heart className="h-3.5 w-3.5 mr-1" />
+        <Tabs defaultValue="benefits" className="w-full">
+          <TabsList className="grid w-full grid-cols-2 h-12">
+            <TabsTrigger value="benefits" className="text-sm">
+              <Heart className="h-4 w-4 mr-2" />
               {language === "te" ? "ప్రయోజనాలు" : "Benefits"}
             </TabsTrigger>
-            <TabsTrigger value="applications" className="text-xs">
-              <FileText className="h-3.5 w-3.5 mr-1" />
-              {language === "te" ? "దరఖాస్తులు" : "Applications"}
+            <TabsTrigger value="applications" className="text-sm">
+              <FileText className="h-4 w-4 mr-2" />
+              {language === "te" ? "దరఖాస్తులు" : "My Applications"}
             </TabsTrigger>
           </TabsList>
 
