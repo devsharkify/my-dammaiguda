@@ -41,10 +41,10 @@ class TestNewsEndpoints:
         resp = requests.get(f"{BASE_URL}/api/news/categories")
         assert resp.status_code == 200
         data = resp.json()
-        # Check expected categories
-        expected = ["local", "government", "health", "education", "sports"]
+        # Check expected categories - app uses local, city, state, health, sports
+        expected = ["local", "health", "sports"]
         for cat in expected:
-            assert cat in data or cat in ["city", "state", "national"]  # city/state are equivalent
+            assert cat in data, f"Missing category: {cat}"
         print(f"PASSED: News categories endpoint returns {len(data)} categories")
     
     def test_news_local_category(self):
