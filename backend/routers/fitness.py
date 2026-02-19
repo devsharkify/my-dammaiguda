@@ -385,7 +385,10 @@ async def end_live_activity(data: LiveActivityEnd, user: dict = Depends(get_curr
     # Update daily summary
     await update_daily_fitness_summary(user["id"], today)
     
-    return {"success": True, "activity": activity}
+    # Award fitness points
+    points_awarded = await award_fitness_points(user["id"], activity)
+    
+    return {"success": True, "activity": activity, "points_awarded": points_awarded}
 
 @router.get("/live/active")
 async def get_active_session(user: dict = Depends(get_current_user)):
