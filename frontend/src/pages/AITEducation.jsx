@@ -224,7 +224,7 @@ export default function AITEducation() {
 
           {/* Explore Tab */}
           <TabsContent value="explore" className="mt-4 space-y-4">
-            {/* Categories */}
+            {/* Categories - Only show enabled ones */}
             <div className="flex gap-2 overflow-x-auto pb-2 scrollbar-hide -mx-4 px-4">
               <button
                 onClick={() => setSelectedCategory(null)}
@@ -236,7 +236,7 @@ export default function AITEducation() {
               >
                 {language === "te" ? "అన్నీ" : "All"}
               </button>
-              {categories.map((cat) => (
+              {categories.filter(cat => enabledCategories.includes(cat.id)).map((cat) => (
                 <button
                   key={cat.id}
                   onClick={() => setSelectedCategory(cat.id)}
@@ -247,7 +247,9 @@ export default function AITEducation() {
                   }`}
                 >
                   {categoryIcons[cat.id]}
-                  {language === "te" ? cat.name_te : cat.name}
+                  {cat.id === "professional" 
+                    ? (language === "te" ? "ప్రొఫెషనల్ జాబ్" : "Professional Job")
+                    : (language === "te" ? cat.name_te : cat.name)}
                 </button>
               ))}
             </div>
