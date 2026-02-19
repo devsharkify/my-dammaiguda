@@ -30,7 +30,8 @@ import {
   Search,
   Bell,
   Moon,
-  Sun
+  Sun,
+  Gift
 } from "lucide-react";
 import { useState } from "react";
 
