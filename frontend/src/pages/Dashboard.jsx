@@ -460,6 +460,28 @@ export default function Dashboard() {
           </Link>
         </div>
 
+        {/* Quick Actions Row 3 - News, Wall, Education */}
+        <div className="grid grid-cols-3 gap-3">
+          <Link to="/news" data-testid="quick-action-news">
+            <div className="h-16 rounded-xl bg-cyan-50 flex flex-col items-center justify-center shadow-sm active:scale-95 transition-transform border border-cyan-100">
+              <Newspaper className="h-6 w-6 text-cyan-600" />
+              <span className="text-[10px] mt-1 font-medium text-cyan-700">{language === "te" ? "వార్తలు" : "News"}</span>
+            </div>
+          </Link>
+          <Link to="/wall" data-testid="quick-action-wall">
+            <div className="h-16 rounded-xl bg-pink-50 flex flex-col items-center justify-center shadow-sm active:scale-95 transition-transform border border-pink-100">
+              <MessageSquare className="h-6 w-6 text-pink-600" />
+              <span className="text-[10px] mt-1 font-medium text-pink-700">{language === "te" ? "వాల్" : "Wall"}</span>
+            </div>
+          </Link>
+          <Link to="/education" data-testid="quick-action-education">
+            <div className="h-16 rounded-xl bg-indigo-50 flex flex-col items-center justify-center shadow-sm active:scale-95 transition-transform border border-indigo-100">
+              <GraduationCap className="h-6 w-6 text-indigo-600" />
+              <span className="text-[10px] mt-1 font-medium text-indigo-700">{language === "te" ? "విద్య" : "Education"}</span>
+            </div>
+          </Link>
+        </div>
+
         {/* AQI Widgets - Two cards side by side */}
         <div className="grid grid-cols-2 gap-3" data-testid="aqi-widgets">
           {/* Hyderabad AQI Widget */}
