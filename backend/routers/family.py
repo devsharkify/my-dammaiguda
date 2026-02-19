@@ -224,3 +224,59 @@ async def remove_family_member(member_id: str, user: dict = Depends(get_current_
     )
     
     return {"success": True, "message": "Family member removed"}
+
+
+@router.get("/member/{member_id}/courses")
+async def get_member_course_progress(member_id: str, user: dict = Depends(get_current_user)):
+    """Get a family member's course progress (for parent tracking children's education)"""
+    # Verify family relationship
+    link = await db.family_members.find_one({
+        "user_id": user["id"], "family_member_id": member_id
+    })
+    
+    if not link:
+        raise HTTPException(status_code=403, detail="Not a family member")
+    
+    # Get enrollments for the family member
+    enrollments = await db.enrollments.find(
+        {"user_id": member_id}, {"_id": 0}
+    ).to_list(50)
+    
+    # Enrich with course details
+    course_progress = []
+    for enrollment in enrollments:
+        course = await db.courses.find_one(
+            {"id": enrollment.get("course_id")}, {"_id": 0, "title": 1, "category": 1, "total_lessons": 1}
+        )
+        if course:
+            total_lessons = course.get("total_lessons", 0) or len(enrollment.get("completed_lessons", []))
+            completed = len(enrollment.get("completed_lessons", []))
+            progress_pct = round((completed / total_lessons * 100) if total_lessons > 0 else 0)
+            
+            course_progress.append({
+                "course_id": enrollment.get("course_id"),
+                "course_title": course.get("title"),
+                "category": course.get("category"),
+                "completed_lessons": completed,
+                "total_lessons": total_lessons,
+                "progress_percent": progress_pct,
+                "status": enrollment.get("status", "in_progress"),
+                "certificate_id": enrollment.get("certificate_id"),
+                "enrolled_at": enrollment.get("enrolled_at"),
+                "completed_at": enrollment.get("completed_at")
+            })
+    
+    # Get certificates
+    certificates = await db.certificates.find(
+        {"user_id": member_id}, {"_id": 0}
+    ).to_list(50)
+    
+    return {
+        "member_name": link.get("family_member_name"),
+        "relationship": link.get("relationship"),
+        "courses": course_progress,
+        "total_courses": len(course_progress),
+        "completed_courses": len([c for c in course_progress if c["status"] == "completed"]),
+        "in_progress_courses": len([c for c in course_progress if c["status"] == "in_progress"]),
+        "total_certificates": len(certificates)
+    }
