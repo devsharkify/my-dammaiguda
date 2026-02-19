@@ -186,19 +186,41 @@ function AppRoutes() {
   );
 }
 
+// Animated Routes Wrapper
+function AnimatedRoutes() {
+  const location = useLocation();
+  
+  return (
+    <AnimatePresence mode="wait">
+      <motion.div
+        key={location.pathname}
+        initial="initial"
+        animate="in"
+        exit="out"
+        variants={pageVariants}
+        transition={pageTransition}
+      >
+        <AppRoutes />
+      </motion.div>
+    </AnimatePresence>
+  );
+}
+
 function App() {
   // Register service worker for PWA
   useServiceWorker();
   
   return (
     <BrowserRouter>
-      <LanguageProvider>
-        <AuthProvider>
-          <OfflineBanner />
-          <AppRoutes />
-          <Toaster position="top-center" richColors />
-        </AuthProvider>
-      </LanguageProvider>
+      <ThemeProvider>
+        <LanguageProvider>
+          <AuthProvider>
+            <OfflineBanner />
+            <AnimatedRoutes />
+            <Toaster position="top-center" richColors />
+          </AuthProvider>
+        </LanguageProvider>
+      </ThemeProvider>
     </BrowserRouter>
   );
 }
