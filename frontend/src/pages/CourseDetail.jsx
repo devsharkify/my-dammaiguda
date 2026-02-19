@@ -88,6 +88,51 @@ export default function CourseDetail() {
     }
   };
 
+  const fetchReviews = async () => {
+    try {
+      const response = await axios.get(`${API}/education/courses/${courseId}/reviews`);
+      setReviews(response.data.reviews || []);
+      setReviewStats(response.data.stats);
+    } catch (error) {
+      console.error("Error fetching reviews:", error);
+    }
+  };
+
+  const submitReview = async () => {
+    if (myRating === 0) {
+      toast.error(language === "te" ? "దయచేసి రేటింగ్ ఇవ్వండి" : "Please select a rating");
+      return;
+    }
+    
+    setSubmittingReview(true);
+    try {
+      await axios.post(`${API}/education/courses/${courseId}/reviews`, {
+        course_id: courseId,
+        rating: myRating,
+        review_text: myReviewText
+      }, { headers });
+      
+      toast.success(language === "te" ? "రివ్యూ సమర్పించబడింది!" : "Review submitted!");
+      setShowReviewDialog(false);
+      setMyRating(0);
+      setMyReviewText("");
+      fetchReviews();
+    } catch (error) {
+      toast.error(error.response?.data?.detail || "Failed to submit review");
+    } finally {
+      setSubmittingReview(false);
+    }
+  };
+
+  const markHelpful = async (reviewId) => {
+    try {
+      await axios.post(`${API}/education/reviews/${reviewId}/helpful`, {}, { headers });
+      fetchReviews();
+    } catch (error) {
+      toast.error("Failed to mark helpful");
+    }
+  };
+
   const enrollCourse = async () => {
     setEnrolling(true);
     try {
