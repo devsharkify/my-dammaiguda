@@ -213,6 +213,17 @@ export default function AdminDashboard() {
         const res = await axios.get(`${API}/templates/admin/all`, { headers }).catch(() => ({ data: { templates: [] } }));
         setTemplates(res.data?.templates || []);
       }
+      
+      if (activeTab === "content") {
+        const [bannersRes, benefitsRes, dumpyardRes] = await Promise.all([
+          axios.get(`${API}/content/banners/all`, { headers }).catch(() => ({ data: { banners: [] } })),
+          axios.get(`${API}/content/benefits/all`, { headers }).catch(() => ({ data: { benefits: [] } })),
+          axios.get(`${API}/content/dumpyard`).catch(() => ({ data: {} }))
+        ]);
+        setBanners(bannersRes.data?.banners || []);
+        setBenefits(benefitsRes.data?.benefits || []);
+        if (dumpyardRes.data) setDumpyardConfig(dumpyardRes.data);
+      }
     } catch (error) {
       console.error("Error fetching data:", error);
     } finally {
