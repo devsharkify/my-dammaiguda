@@ -391,6 +391,9 @@ export default function Certificate() {
               <Button onClick={shareToWhatsApp} className="bg-green-500 hover:bg-green-600">
                 <MessageCircle className="h-4 w-4 mr-2" /> WhatsApp
               </Button>
+              <Button onClick={shareToInstagram} className="bg-gradient-to-r from-purple-500 via-pink-500 to-orange-400 hover:opacity-90">
+                <Instagram className="h-4 w-4 mr-2" /> Instagram
+              </Button>
               <Button onClick={shareToTwitter} className="bg-sky-500 hover:bg-sky-600">
                 <Twitter className="h-4 w-4 mr-2" /> Twitter
               </Button>
@@ -399,6 +402,9 @@ export default function Certificate() {
               </Button>
               <Button onClick={shareToLinkedIn} className="bg-blue-700 hover:bg-blue-800">
                 <Linkedin className="h-4 w-4 mr-2" /> LinkedIn
+              </Button>
+              <Button onClick={shareByEmail} variant="outline">
+                <Mail className="h-4 w-4 mr-2" /> Email
               </Button>
             </div>
             
