@@ -42,13 +42,13 @@ export default function Layout({ children, title, showBackButton = false }) {
   const location = useLocation();
   const [menuOpen, setMenuOpen] = useState(false);
 
-  // Bottom navigation items - main features (5 items max for mobile)
+  // Bottom navigation items - main features (5 items with center bulge for NEWS)
   const bottomNavItems = [
     { path: "/dashboard", icon: <Home className="h-5 w-5" />, label: language === "te" ? "హోమ్" : "Home" },
-    { path: "/education", icon: <GraduationCap className="h-5 w-5" />, label: language === "te" ? "విద్య" : "Learn" },
-    { path: "/fitness", icon: <Activity className="h-5 w-5" />, label: language === "te" ? "ఫిట్" : "Fit" },
-    { path: "/shop", icon: <Gift className="h-5 w-5" />, label: language === "te" ? "గిఫ్ట్స్" : "Gifts" },
-    { path: "/profile", icon: <User className="h-5 w-5" />, label: language === "te" ? "ప్రొఫైల్" : "Profile" }
+    { path: "/education", icon: <GraduationCap className="h-5 w-5" />, label: language === "te" ? "విద్య" : "Education" },
+    { path: "/news", icon: <Newspaper className="h-6 w-6" />, label: language === "te" ? "వార్తలు" : "News", isBulge: true },
+    { path: "/benefits", icon: <Heart className="h-5 w-5" />, label: language === "te" ? "ప్రయోజనాలు" : "Benefits" },
+    { path: "/helpline", icon: <Phone className="h-5 w-5" />, label: language === "te" ? "హెల్ప్‌లైన్" : "Helpline" }
   ];
 
   const menuItems = [
