@@ -70,13 +70,19 @@ export default function AdminDashboard() {
   const [productForm, setProductForm] = useState({
     name: "", description: "", category: "Fitness",
     image_url: "", mrp: 0, points_required: 100,
-    stock_quantity: 10, is_active: true
+    privilege_points_required: 0, point_type: "normal",
+    delivery_fee: 0, stock_quantity: 10, is_active: true
   });
   const [savingProduct, setSavingProduct] = useState(false);
   const [showPointsDialog, setShowPointsDialog] = useState(false);
   const [pointsForm, setPointsForm] = useState({
-    user_id: "", phone: "", points: 0, reason: ""
+    user_id: "", phone: "", points: 0, reason: "", point_type: "normal"
   });
+  const [showBulkPrivilegeDialog, setShowBulkPrivilegeDialog] = useState(false);
+  const [bulkPrivilegeForm, setBulkPrivilegeForm] = useState({
+    selectAll: false, user_ids: [], points: 0, reason: ""
+  });
+  const [bulkPrivilegeLoading, setBulkPrivilegeLoading] = useState(false);
   
   const headers = { Authorization: `Bearer ${token}` };
 
