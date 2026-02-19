@@ -519,7 +519,7 @@ export default function Dashboard() {
                   </div>
                   <div>
                     <p className="text-[10px] text-gray-400 font-medium uppercase tracking-wide">
-                      {language === "te" ? "జవహర్ నగర్ డంప్ యార్డ్" : "Jawahar Nagar Landfill"}
+                      {language === "te" ? "జవహర్ నగర్ డంప్ యార్డ్" : "Jawahar Nagar Dump Yard"}
                     </p>
                     <p className="text-lg font-bold text-white">
                       {(dumpyardConfig.daily_waste_tons)?.toLocaleString() || "10,000"} <span className="text-xs font-normal text-gray-400">{language === "te" ? "టన్నులు/రోజు" : "tonnes/day"}</span>
