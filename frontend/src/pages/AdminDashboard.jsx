@@ -33,7 +33,11 @@ import {
   Eye,
   BookOpen,
   Video,
-  Loader2
+  Loader2,
+  Gift,
+  Package,
+  Coins,
+  Truck
 } from "lucide-react";
 
 const API = `${process.env.REACT_APP_BACKEND_URL}/api`;
