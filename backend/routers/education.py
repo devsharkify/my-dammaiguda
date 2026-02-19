@@ -826,8 +826,8 @@ async def mark_review_helpful(review_id: str, user: dict = Depends(get_current_u
 # ============== GAMIFICATION ROUTES ==============
 
 @router.get("/leaderboard")
-async def get_leaderboard(limit: int = 20):
-    """Get learning leaderboard"""
+async def get_leaderboard(limit: int = 20, timeframe: str = "all"):
+    """Get learning leaderboard with enhanced stats"""
     # Aggregate user stats
     pipeline = [
         {"$group": {
@@ -841,17 +841,45 @@ async def get_leaderboard(limit: int = 20):
     
     stats = await db.enrollments.aggregate(pipeline).to_list(limit)
     
-    # Get user details
+    # Get user details and additional stats
     leaderboard = []
     for i, stat in enumerate(stats):
         user = await db.users.find_one({"id": stat["_id"]}, {"_id": 0, "name": 1, "id": 1})
         if user:
+            # Get quiz stats
+            quiz_stats = await db.quiz_attempts.aggregate([
+                {"$match": {"user_id": stat["_id"]}},
+                {"$group": {
+                    "_id": None,
+                    "total_quizzes": {"$sum": 1},
+                    "avg_score": {"$avg": "$score"},
+                    "passed": {"$sum": {"$cond": ["$passed", 1, 0]}}
+                }}
+            ]).to_list(1)
+            
+            # Get certificates count
+            certs_count = await db.certificates.count_documents({"user_id": stat["_id"]})
+            
+            # Calculate XP
+            xp = (stat["courses_completed"] * 100) + (quiz_stats[0]["passed"] * 20 if quiz_stats else 0) + (certs_count * 50)
+            
+            # Determine badge
+            badge = "Beginner"
+            if xp >= 1000: badge = "Expert"
+            elif xp >= 500: badge = "Advanced"
+            elif xp >= 200: badge = "Intermediate"
+            
             leaderboard.append({
                 "rank": i + 1,
                 "user_id": user["id"],
                 "user_name": user.get("name", "Student"),
                 "courses_completed": stat["courses_completed"],
-                "total_courses": stat["total_courses"]
+                "total_courses": stat["total_courses"],
+                "quizzes_passed": quiz_stats[0]["passed"] if quiz_stats else 0,
+                "avg_quiz_score": round(quiz_stats[0]["avg_score"], 1) if quiz_stats else 0,
+                "certificates": certs_count,
+                "xp": xp,
+                "badge": badge
             })
     
     return {"leaderboard": leaderboard}
@@ -870,6 +898,25 @@ async def get_my_stats(user: dict = Depends(get_current_user)):
     
     completed_courses = len([e for e in enrollments if e.get("status") == "completed"])
     avg_quiz_score = sum(a.get("score", 0) for a in quiz_attempts) / len(quiz_attempts) if quiz_attempts else 0
+    quizzes_passed = len([q for q in quiz_attempts if q.get("passed")])
+    
+    # Calculate XP
+    xp = (completed_courses * 100) + (quizzes_passed * 20) + (certificates * 50)
+    
+    # Determine badge and level
+    level = 1 + (xp // 200)
+    badge = "Beginner"
+    if xp >= 1000: badge = "Expert"
+    elif xp >= 500: badge = "Advanced"
+    elif xp >= 200: badge = "Intermediate"
+    
+    # Get rank
+    all_xp = await db.enrollments.aggregate([
+        {"$group": {"_id": "$user_id", "courses": {"$sum": {"$cond": [{"$eq": ["$status", "completed"]}, 1, 0]}}}},
+        {"$sort": {"courses": -1}}
+    ]).to_list(1000)
+    
+    rank = next((i+1 for i, u in enumerate(all_xp) if u["_id"] == user["id"]), len(all_xp) + 1)
     
     return {
         "total_courses_enrolled": len(enrollments),
@@ -878,10 +925,266 @@ async def get_my_stats(user: dict = Depends(get_current_user)):
         "certificates_earned": certificates,
         "total_watch_time_hours": round(total_watch_time / 3600, 1),
         "quizzes_taken": len(quiz_attempts),
+        "quizzes_passed": quizzes_passed,
         "average_quiz_score": round(avg_quiz_score, 1),
         "current_streak": 0,  # TODO: Implement streak tracking
-        "total_xp": completed_courses * 100 + len(quiz_attempts) * 10
+        "total_xp": xp,
+        "level": level,
+        "badge": badge,
+        "rank": rank,
+        "next_level_xp": (level * 200),
+        "xp_progress": xp % 200
     }
+
+# ============== INSTRUCTOR PORTAL ROUTES ==============
+
+@router.get("/instructor/dashboard")
+async def get_instructor_dashboard(user: dict = Depends(get_current_user)):
+    """Get instructor dashboard with course stats"""
+    if user.get("role") not in ["admin", "instructor"]:
+        raise HTTPException(status_code=403, detail="Instructor access required")
+    
+    # Get instructor's courses
+    courses = await db.courses.find(
+        {"instructor_id": user["id"]},
+        {"_id": 0}
+    ).to_list(100)
+    
+    total_students = 0
+    total_revenue = 0
+    course_stats = []
+    
+    for course in courses:
+        # Get enrollment count
+        enrollments = await db.enrollments.count_documents({"course_id": course["id"]})
+        completions = await db.enrollments.count_documents({"course_id": course["id"], "status": "completed"})
+        
+        # Get reviews
+        reviews = await db.course_reviews.aggregate([
+            {"$match": {"course_id": course["id"]}},
+            {"$group": {"_id": None, "avg": {"$avg": "$rating"}, "count": {"$sum": 1}}}
+        ]).to_list(1)
+        
+        total_students += enrollments
+        total_revenue += enrollments * course.get("price", 0)
+        
+        course_stats.append({
+            "id": course["id"],
+            "title": course.get("title"),
+            "enrollments": enrollments,
+            "completions": completions,
+            "completion_rate": round((completions / enrollments * 100) if enrollments > 0 else 0, 1),
+            "rating": round(reviews[0]["avg"], 1) if reviews else 0,
+            "review_count": reviews[0]["count"] if reviews else 0,
+            "revenue": enrollments * course.get("price", 0),
+            "is_published": course.get("is_published", False)
+        })
+    
+    return {
+        "total_courses": len(courses),
+        "total_students": total_students,
+        "total_revenue": total_revenue,
+        "avg_completion_rate": round(sum(c["completion_rate"] for c in course_stats) / len(course_stats) if course_stats else 0, 1),
+        "courses": course_stats
+    }
+
+@router.get("/instructor/courses")
+async def get_instructor_courses(user: dict = Depends(get_current_user)):
+    """Get all courses created by instructor"""
+    if user.get("role") not in ["admin", "instructor"]:
+        raise HTTPException(status_code=403, detail="Instructor access required")
+    
+    # Admin sees all courses, instructor sees their own
+    query = {} if user.get("role") == "admin" else {"instructor_id": user["id"]}
+    
+    courses = await db.courses.find(query, {"_id": 0}).sort("created_at", -1).to_list(100)
+    
+    # Enrich with stats
+    for course in courses:
+        course["enrollments"] = await db.enrollments.count_documents({"course_id": course["id"]})
+        lessons = await db.lessons.count_documents({"course_id": course["id"]})
+        quizzes = await db.quizzes.count_documents({"course_id": course["id"]})
+        course["lessons_count"] = lessons
+        course["quizzes_count"] = quizzes
+    
+    return {"courses": courses}
+
+@router.get("/instructor/course/{course_id}/students")
+async def get_course_students(course_id: str, user: dict = Depends(get_current_user)):
+    """Get students enrolled in a course"""
+    if user.get("role") not in ["admin", "instructor"]:
+        raise HTTPException(status_code=403, detail="Instructor access required")
+    
+    enrollments = await db.enrollments.find(
+        {"course_id": course_id},
+        {"_id": 0}
+    ).to_list(500)
+    
+    students = []
+    for enrollment in enrollments:
+        student = await db.users.find_one(
+            {"id": enrollment["user_id"]},
+            {"_id": 0, "id": 1, "name": 1, "phone": 1}
+        )
+        if student:
+            # Get progress
+            lessons = await db.lessons.find({"course_id": course_id}).to_list(100)
+            completed = await db.lesson_progress.count_documents({
+                "course_id": course_id,
+                "user_id": student["id"],
+                "completed": True
+            })
+            
+            students.append({
+                "user_id": student["id"],
+                "name": student.get("name", "Student"),
+                "phone": student.get("phone", ""),
+                "enrolled_at": enrollment.get("enrolled_at"),
+                "status": enrollment.get("status"),
+                "progress": round((completed / len(lessons) * 100) if lessons else 0, 1),
+                "completed_at": enrollment.get("completed_at")
+            })
+    
+    return {"students": students, "total": len(students)}
+
+@router.get("/instructor/course/{course_id}/analytics")
+async def get_course_analytics(course_id: str, user: dict = Depends(get_current_user)):
+    """Get detailed analytics for a course"""
+    if user.get("role") not in ["admin", "instructor"]:
+        raise HTTPException(status_code=403, detail="Instructor access required")
+    
+    # Course info
+    course = await db.courses.find_one({"id": course_id}, {"_id": 0})
+    if not course:
+        raise HTTPException(status_code=404, detail="Course not found")
+    
+    # Enrollment stats
+    enrollments = await db.enrollments.find({"course_id": course_id}).to_list(1000)
+    completed = len([e for e in enrollments if e.get("status") == "completed"])
+    
+    # Lesson engagement
+    lessons = await db.lessons.find({"course_id": course_id}, {"_id": 0}).sort("order_index", 1).to_list(100)
+    lesson_stats = []
+    for lesson in lessons:
+        views = await db.lesson_progress.count_documents({"lesson_id": lesson["id"]})
+        completions = await db.lesson_progress.count_documents({"lesson_id": lesson["id"], "completed": True})
+        lesson_stats.append({
+            "id": lesson["id"],
+            "title": lesson.get("title"),
+            "order": lesson.get("order_index"),
+            "views": views,
+            "completions": completions,
+            "completion_rate": round((completions / views * 100) if views > 0 else 0, 1)
+        })
+    
+    # Quiz stats
+    quizzes = await db.quizzes.find({"course_id": course_id}, {"_id": 0, "questions": 0}).to_list(50)
+    quiz_stats = []
+    for quiz in quizzes:
+        attempts = await db.quiz_attempts.find({"quiz_id": quiz["id"]}).to_list(1000)
+        avg_score = sum(a.get("score", 0) for a in attempts) / len(attempts) if attempts else 0
+        pass_rate = len([a for a in attempts if a.get("passed")]) / len(attempts) * 100 if attempts else 0
+        quiz_stats.append({
+            "id": quiz["id"],
+            "title": quiz.get("title"),
+            "attempts": len(attempts),
+            "avg_score": round(avg_score, 1),
+            "pass_rate": round(pass_rate, 1)
+        })
+    
+    # Enrollment over time (last 30 days)
+    from datetime import timedelta
+    enrollment_trend = []
+    for i in range(30):
+        date = datetime.now(timezone.utc) - timedelta(days=29-i)
+        date_str = date.strftime("%Y-%m-%d")
+        count = len([e for e in enrollments if e.get("enrolled_at", "")[:10] == date_str])
+        enrollment_trend.append({"date": date_str, "count": count})
+    
+    return {
+        "course": course,
+        "summary": {
+            "total_enrollments": len(enrollments),
+            "completions": completed,
+            "completion_rate": round((completed / len(enrollments) * 100) if enrollments else 0, 1),
+            "total_lessons": len(lessons),
+            "total_quizzes": len(quizzes)
+        },
+        "lessons": lesson_stats,
+        "quizzes": quiz_stats,
+        "enrollment_trend": enrollment_trend
+    }
+
+@router.put("/instructor/lessons/{lesson_id}")
+async def update_lesson(lesson_id: str, updates: dict, user: dict = Depends(get_current_user)):
+    """Update a lesson"""
+    if user.get("role") not in ["admin", "instructor"]:
+        raise HTTPException(status_code=403, detail="Instructor access required")
+    
+    updates.pop("id", None)
+    updates.pop("_id", None)
+    updates["updated_at"] = now_iso()
+    
+    result = await db.lessons.update_one({"id": lesson_id}, {"$set": updates})
+    if result.matched_count == 0:
+        raise HTTPException(status_code=404, detail="Lesson not found")
+    
+    updated = await db.lessons.find_one({"id": lesson_id}, {"_id": 0})
+    return {"success": True, "lesson": updated}
+
+@router.delete("/instructor/lessons/{lesson_id}")
+async def delete_lesson(lesson_id: str, user: dict = Depends(get_current_user)):
+    """Delete a lesson"""
+    if user.get("role") not in ["admin", "instructor"]:
+        raise HTTPException(status_code=403, detail="Instructor access required")
+    
+    result = await db.lessons.delete_one({"id": lesson_id})
+    return {"success": True, "deleted": result.deleted_count > 0}
+
+@router.delete("/instructor/courses/{course_id}")
+async def delete_course(course_id: str, user: dict = Depends(get_current_user)):
+    """Delete a course and all related data"""
+    if user.get("role") not in ["admin", "instructor"]:
+        raise HTTPException(status_code=403, detail="Instructor access required")
+    
+    # Delete course
+    await db.courses.delete_one({"id": course_id})
+    
+    # Delete related data
+    await db.lessons.delete_many({"course_id": course_id})
+    await db.quizzes.delete_many({"course_id": course_id})
+    await db.enrollments.delete_many({"course_id": course_id})
+    await db.lesson_progress.delete_many({"course_id": course_id})
+    
+    return {"success": True, "message": "Course and all related data deleted"}
+
+@router.put("/instructor/quizzes/{quiz_id}")
+async def update_quiz(quiz_id: str, updates: dict, user: dict = Depends(get_current_user)):
+    """Update a quiz"""
+    if user.get("role") not in ["admin", "instructor"]:
+        raise HTTPException(status_code=403, detail="Instructor access required")
+    
+    updates.pop("id", None)
+    updates.pop("_id", None)
+    updates["updated_at"] = now_iso()
+    
+    result = await db.quizzes.update_one({"id": quiz_id}, {"$set": updates})
+    if result.matched_count == 0:
+        raise HTTPException(status_code=404, detail="Quiz not found")
+    
+    updated = await db.quizzes.find_one({"id": quiz_id}, {"_id": 0})
+    return {"success": True, "quiz": updated}
+
+@router.delete("/instructor/quizzes/{quiz_id}")
+async def delete_quiz(quiz_id: str, user: dict = Depends(get_current_user)):
+    """Delete a quiz"""
+    if user.get("role") not in ["admin", "instructor"]:
+        raise HTTPException(status_code=403, detail="Instructor access required")
+    
+    result = await db.quizzes.delete_one({"id": quiz_id})
+    await db.quiz_attempts.delete_many({"quiz_id": quiz_id})
+    
+    return {"success": True, "deleted": result.deleted_count > 0}
 
 # ============== SEED DATA ==============
 
