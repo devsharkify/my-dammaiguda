@@ -605,48 +605,34 @@ export default function KaizerDoctor() {
           </CardContent>
         </Card>
 
-        {/* Quick Actions - Premium Style */}
+        {/* Quick Actions - Doctor Features */}
         <div className="grid grid-cols-2 gap-3">
-          {/* Log Water */}
+          {/* Medicine Search */}
           <Button
-            onClick={logWater}
-            className="h-16 bg-gradient-to-r from-cyan-500 to-blue-500 text-white rounded-xl text-base font-semibold shadow-lg hover:shadow-xl transition-all"
-            data-testid="log-water-btn"
+            onClick={() => {
+              const tabs = document.querySelector('[data-testid="kaizer-doctor"]');
+              if (tabs) tabs.scrollIntoView({ behavior: 'smooth' });
+            }}
+            className="h-16 bg-gradient-to-r from-teal-500 to-cyan-500 text-white rounded-xl text-base font-semibold shadow-lg hover:shadow-xl transition-all"
+            data-testid="medicine-search-btn"
           >
-            <Droplets className="h-6 w-6 mr-2" />
-            {language === "te" ? "నీరు తాగండి" : "Drink Water"}
+            <Pill className="h-6 w-6 mr-2" />
+            {language === "te" ? "మందుల వెతుకు" : "Medicine Search"}
           </Button>
           
-          {/* Log Meal */}
-          <Dialog open={showMealDialog} onOpenChange={setShowMealDialog}>
-            <DialogTrigger asChild>
-              <Button 
-                className="h-16 bg-gradient-to-r from-orange-500 to-red-500 text-white rounded-xl text-base font-semibold shadow-lg hover:shadow-xl transition-all"
-                data-testid="log-meal-btn"
-              >
-                <Apple className="h-6 w-6 mr-2" />
-                {language === "te" ? "భోజనం నమోదు" : "Log Meal"}
-              </Button>
-            </DialogTrigger>
-            <DialogContent className="max-w-md max-h-[80vh] overflow-y-auto">
-              <DialogHeader>
-                <DialogTitle className="flex items-center gap-2">
-                  <Apple className="h-5 w-5 text-orange-500" />
-                  {language === "te" ? "భోజనం నమోదు" : "Log Meal"}
-                </DialogTitle>
-              </DialogHeader>
-              <div className="space-y-4 mt-4">
-                <Select value={mealType} onValueChange={setMealType}>
-                  <SelectTrigger className="h-12">
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="breakfast">{language === "te" ? "అల్పాహారం" : "Breakfast"}</SelectItem>
-                    <SelectItem value="lunch">{language === "te" ? "భోజనం" : "Lunch"}</SelectItem>
-                    <SelectItem value="dinner">{language === "te" ? "రాత్రి భోజనం" : "Dinner"}</SelectItem>
-                    <SelectItem value="snacks">{language === "te" ? "స్నాక్స్" : "Snacks"}</SelectItem>
-                  </SelectContent>
-                </Select>
+          {/* Symptom Checker */}
+          <Button
+            onClick={() => {
+              const tabs = document.querySelector('[data-testid="kaizer-doctor"]');
+              if (tabs) tabs.scrollIntoView({ behavior: 'smooth' });
+            }}
+            className="h-16 bg-gradient-to-r from-blue-500 to-indigo-500 text-white rounded-xl text-base font-semibold shadow-lg hover:shadow-xl transition-all"
+            data-testid="symptom-checker-btn"
+          >
+            <Stethoscope className="h-6 w-6 mr-2" />
+            {language === "te" ? "లక్షణాల తనిఖీ" : "Symptom Check"}
+          </Button>
+        </div>
 
                 <div className="relative">
                   <Search className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
