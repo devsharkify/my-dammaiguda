@@ -103,7 +103,6 @@ export default function Profile() {
           health_reminders: response.data.health_reminders ?? true,
           challenge_updates: response.data.challenge_updates ?? true
         });
-        setPushSubscribed(true);
       }
     } catch (error) {
       console.error("Error fetching notification preferences:", error);
@@ -129,33 +128,31 @@ export default function Profile() {
     }
   };
 
-  const subscribeToPush = async () => {
-    try {
-      // In a real PWA, we would request notification permission and get the subscription
-      // For now, we'll just register with a mock subscription
-      const mockSubscription = {
-        endpoint: `https://push.example.com/${user.id}/${Date.now()}`,
-        keys: {
-          p256dh: "mock_p256dh_key",
-          auth: "mock_auth_key"
-        }
-      };
-      
-      await axios.post(`${API}/notifications/subscribe`, mockSubscription, { headers });
-      setPushSubscribed(true);
-      toast.success(language === "te" ? "నోటిఫికేషన్లు ఎనేబుల్ చేయబడ్డాయి!" : "Notifications enabled!");
-    } catch (error) {
-      toast.error("Failed to enable notifications");
+  const handlePushToggle = async (enabled) => {
+    if (enabled) {
+      const success = await subscribePush(token);
+      if (success) {
+        toast.success(language === "te" ? "పుష్ నోటిఫికేషన్లు ఎనేబుల్ చేయబడ్డాయి!" : "Push notifications enabled!");
+      } else if (permission === 'denied') {
+        toast.error(language === "te" ? "బ్రౌజర్ సెట్టింగ్స్‌లో నోటిఫికేషన్లను అనుమతించండి" : "Please allow notifications in browser settings");
+      }
+    } else {
+      const success = await unsubscribePush(token);
+      if (success) {
+        toast.success(language === "te" ? "పుష్ నోటిఫికేషన్లు డిసేబుల్ చేయబడ్డాయి" : "Push notifications disabled");
+      }
     }
   };
 
-  const unsubscribeFromPush = async () => {
+  const handleTestNotification = async () => {
+    setTestingSend(true);
     try {
-      await axios.delete(`${API}/notifications/subscribe`, { headers });
-      setPushSubscribed(false);
-      toast.success(language === "te" ? "నోటిఫికేషన్లు డిసేబుల్ చేయబడ్డాయి" : "Notifications disabled");
+      await sendTestNotification(token);
+      toast.success(language === "te" ? "టెస్ట్ నోటిఫికేషన్ పంపబడింది!" : "Test notification sent!");
     } catch (error) {
-      toast.error("Failed to disable notifications");
+      toast.error(language === "te" ? "నోటిఫికేషన్ పంపడం విఫలమైంది" : "Failed to send notification");
+    } finally {
+      setTestingSend(false);
     }
   };
 
