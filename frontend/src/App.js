@@ -34,6 +34,7 @@ import CourseDetail from "./pages/CourseDetail";
 import Certificate from "./pages/Certificate";
 import GiftShop from "./pages/GiftShop";
 import DeviceSync from "./pages/DeviceSync";
+import Helpline from "./pages/Helpline";
 
 import "./App.css";
 
