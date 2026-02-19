@@ -62,6 +62,12 @@ class AdminPointsAdjust(BaseModel):
     user_id: str
     points: int
     reason: str
+    point_type: str = "normal"  # "normal" or "privilege"
+
+class BulkPrivilegePointsAdjust(BaseModel):
+    user_ids: List[str]  # Can include "ALL" to select all users
+    points: int
+    reason: str
 
 class OrderStatusUpdate(BaseModel):
     status: str  # "pending", "approved", "rejected", "shipped", "delivered"
