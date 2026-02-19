@@ -40,11 +40,24 @@ const API = `${process.env.REACT_APP_BACKEND_URL}/api`;
 
 export default function AdminDashboard() {
   const { language } = useLanguage();
-  const { user } = useAuth();
+  const { user, token } = useAuth();
   const [stats, setStats] = useState(null);
   const [heatmap, setHeatmap] = useState([]);
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
+  
+  // Education state
+  const [courses, setCourses] = useState([]);
+  const [showCourseDialog, setShowCourseDialog] = useState(false);
+  const [editingCourse, setEditingCourse] = useState(null);
+  const [courseForm, setCourseForm] = useState({
+    title: "", title_te: "", description: "", description_te: "",
+    category: "tech", price: 0, duration_hours: 10, difficulty: "beginner",
+    thumbnail_url: "", instructor_name: "", is_featured: false
+  });
+  const [savingCourse, setSavingCourse] = useState(false);
+  
+  const headers = { Authorization: `Bearer ${token}` };
 
   useEffect(() => {
     fetchData();
