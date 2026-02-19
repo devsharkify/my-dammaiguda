@@ -1138,6 +1138,73 @@ export default function KaizerFit() {
           </div>
         </DialogContent>
       </Dialog>
+
+      {/* Meal Logging Dialog */}
+      <Dialog open={showMealDialog} onOpenChange={setShowMealDialog}>
+        <DialogContent className="max-w-md">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <Apple className="h-5 w-5 text-orange-500" />
+              {language === "te" ? "భోజనం నమోదు" : "Log Meal"}
+            </DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4 pt-2">
+            <Select value={mealType} onValueChange={setMealType}>
+              <SelectTrigger className="h-12">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="breakfast">{language === "te" ? "🌅 అల్పాహారం" : "🌅 Breakfast"}</SelectItem>
+                <SelectItem value="lunch">{language === "te" ? "☀️ భోజనం" : "☀️ Lunch"}</SelectItem>
+                <SelectItem value="snacks">{language === "te" ? "🍿 స్నాక్స్" : "🍿 Snacks"}</SelectItem>
+                <SelectItem value="dinner">{language === "te" ? "🌙 రాత్రి భోజనం" : "🌙 Dinner"}</SelectItem>
+              </SelectContent>
+            </Select>
+            
+            <div className="space-y-1">
+              <Label className="text-xs">{language === "te" ? "కేలరీలు (అంచనా)" : "Calories (estimate)"}</Label>
+              <Input
+                type="number"
+                placeholder="500"
+                className="h-12"
+                onChange={(e) => {
+                  const val = parseInt(e.target.value) || 0;
+                  setCaloriesConsumed(prev => prev + val);
+                }}
+              />
+            </div>
+            
+            <div className="grid grid-cols-4 gap-2">
+              {[200, 300, 500, 700].map(cal => (
+                <Button
+                  key={cal}
+                  variant="outline"
+                  size="sm"
+                  className="h-10"
+                  onClick={() => {
+                    setCaloriesConsumed(prev => prev + cal);
+                    toast.success(`+${cal} ${language === "te" ? "కేలరీలు జోడించబడ్డాయి" : "calories added"}`);
+                    setShowMealDialog(false);
+                  }}
+                >
+                  +{cal}
+                </Button>
+              ))}
+            </div>
+            
+            <Button
+              onClick={() => {
+                toast.success(language === "te" ? "భోజనం నమోదు చేయబడింది!" : "Meal logged!");
+                setShowMealDialog(false);
+              }}
+              className="w-full h-12 rounded-xl bg-gradient-to-r from-orange-500 to-red-500"
+            >
+              <Utensils className="h-4 w-4 mr-2" />
+              {language === "te" ? "నమోదు చేయండి" : "Log Meal"}
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
     </Layout>
   );
 }
