@@ -610,6 +610,196 @@ async def generate_certificate(course_id: str, user: dict = Depends(get_current_
     
     return {"success": True, "certificate": certificate}
 
+# ============== REVIEW ROUTES ==============
+
+@router.get("/courses/{course_id}/reviews")
+async def get_course_reviews(course_id: str, limit: int = 20, skip: int = 0):
+    """Get reviews for a course"""
+    reviews = await db.course_reviews.find(
+        {"course_id": course_id},
+        {"_id": 0}
+    ).sort("created_at", -1).skip(skip).limit(limit).to_list(limit)
+    
+    # Get user names for reviews
+    for review in reviews:
+        user = await db.users.find_one({"id": review.get("user_id")}, {"_id": 0, "name": 1})
+        review["user_name"] = user.get("name", "Student") if user else "Student"
+    
+    # Calculate average rating
+    pipeline = [
+        {"$match": {"course_id": course_id}},
+        {"$group": {
+            "_id": None,
+            "avg_rating": {"$avg": "$rating"},
+            "total_reviews": {"$sum": 1},
+            "five_star": {"$sum": {"$cond": [{"$eq": ["$rating", 5]}, 1, 0]}},
+            "four_star": {"$sum": {"$cond": [{"$eq": ["$rating", 4]}, 1, 0]}},
+            "three_star": {"$sum": {"$cond": [{"$eq": ["$rating", 3]}, 1, 0]}},
+            "two_star": {"$sum": {"$cond": [{"$eq": ["$rating", 2]}, 1, 0]}},
+            "one_star": {"$sum": {"$cond": [{"$eq": ["$rating", 1]}, 1, 0]}}
+        }}
+    ]
+    
+    stats_result = await db.course_reviews.aggregate(pipeline).to_list(1)
+    stats = stats_result[0] if stats_result else {
+        "avg_rating": 0, "total_reviews": 0,
+        "five_star": 0, "four_star": 0, "three_star": 0, "two_star": 0, "one_star": 0
+    }
+    
+    return {
+        "reviews": reviews,
+        "stats": {
+            "average_rating": round(stats.get("avg_rating", 0), 1),
+            "total_reviews": stats.get("total_reviews", 0),
+            "rating_breakdown": {
+                5: stats.get("five_star", 0),
+                4: stats.get("four_star", 0),
+                3: stats.get("three_star", 0),
+                2: stats.get("two_star", 0),
+                1: stats.get("one_star", 0)
+            }
+        }
+    }
+
+@router.post("/courses/{course_id}/reviews")
+async def create_review(course_id: str, review_data: ReviewCreate, user: dict = Depends(get_current_user)):
+    """Create or update a review for a course"""
+    # Check if user is enrolled
+    enrollment = await db.enrollments.find_one({
+        "course_id": course_id,
+        "user_id": user["id"]
+    }, {"_id": 0})
+    
+    if not enrollment:
+        raise HTTPException(status_code=403, detail="You must be enrolled to review this course")
+    
+    # Validate rating
+    if not 1 <= review_data.rating <= 5:
+        raise HTTPException(status_code=400, detail="Rating must be between 1 and 5")
+    
+    # Check for existing review
+    existing = await db.course_reviews.find_one({
+        "course_id": course_id,
+        "user_id": user["id"]
+    })
+    
+    if existing:
+        # Update existing review
+        await db.course_reviews.update_one(
+            {"id": existing["id"]},
+            {"$set": {
+                "rating": review_data.rating,
+                "review_text": review_data.review_text,
+                "review_text_te": review_data.review_text_te,
+                "updated_at": now_iso()
+            }}
+        )
+        return {"success": True, "message": "Review updated", "review_id": existing["id"]}
+    
+    # Create new review
+    new_review = {
+        "id": generate_id(),
+        "course_id": course_id,
+        "user_id": user["id"],
+        "rating": review_data.rating,
+        "review_text": review_data.review_text,
+        "review_text_te": review_data.review_text_te,
+        "created_at": now_iso(),
+        "updated_at": None,
+        "helpful_count": 0
+    }
+    
+    await db.course_reviews.insert_one(new_review)
+    
+    # Update course average rating
+    pipeline = [
+        {"$match": {"course_id": course_id}},
+        {"$group": {"_id": None, "avg": {"$avg": "$rating"}, "count": {"$sum": 1}}}
+    ]
+    result = await db.course_reviews.aggregate(pipeline).to_list(1)
+    if result:
+        await db.courses.update_one(
+            {"id": course_id},
+            {"$set": {
+                "average_rating": round(result[0]["avg"], 1),
+                "review_count": result[0]["count"]
+            }}
+        )
+    
+    return {"success": True, "message": "Review submitted", "review_id": new_review["id"]}
+
+@router.delete("/reviews/{review_id}")
+async def delete_review(review_id: str, user: dict = Depends(get_current_user)):
+    """Delete a review"""
+    review = await db.course_reviews.find_one({"id": review_id})
+    
+    if not review:
+        raise HTTPException(status_code=404, detail="Review not found")
+    
+    if review["user_id"] != user["id"] and user.get("role") != "admin":
+        raise HTTPException(status_code=403, detail="Not authorized to delete this review")
+    
+    course_id = review["course_id"]
+    await db.course_reviews.delete_one({"id": review_id})
+    
+    # Update course average rating
+    pipeline = [
+        {"$match": {"course_id": course_id}},
+        {"$group": {"_id": None, "avg": {"$avg": "$rating"}, "count": {"$sum": 1}}}
+    ]
+    result = await db.course_reviews.aggregate(pipeline).to_list(1)
+    if result:
+        await db.courses.update_one(
+            {"id": course_id},
+            {"$set": {
+                "average_rating": round(result[0]["avg"], 1),
+                "review_count": result[0]["count"]
+            }}
+        )
+    else:
+        await db.courses.update_one(
+            {"id": course_id},
+            {"$set": {"average_rating": 0, "review_count": 0}}
+        )
+    
+    return {"success": True, "message": "Review deleted"}
+
+@router.post("/reviews/{review_id}/helpful")
+async def mark_review_helpful(review_id: str, user: dict = Depends(get_current_user)):
+    """Mark a review as helpful"""
+    review = await db.course_reviews.find_one({"id": review_id})
+    if not review:
+        raise HTTPException(status_code=404, detail="Review not found")
+    
+    # Check if user already marked
+    existing = await db.review_helpful.find_one({
+        "review_id": review_id,
+        "user_id": user["id"]
+    })
+    
+    if existing:
+        # Remove helpful mark
+        await db.review_helpful.delete_one({"id": existing["id"]})
+        await db.course_reviews.update_one(
+            {"id": review_id},
+            {"$inc": {"helpful_count": -1}}
+        )
+        return {"success": True, "action": "removed"}
+    
+    # Add helpful mark
+    await db.review_helpful.insert_one({
+        "id": generate_id(),
+        "review_id": review_id,
+        "user_id": user["id"],
+        "created_at": now_iso()
+    })
+    await db.course_reviews.update_one(
+        {"id": review_id},
+        {"$inc": {"helpful_count": 1}}
+    )
+    
+    return {"success": True, "action": "added"}
+
 # ============== GAMIFICATION ROUTES ==============
 
 @router.get("/leaderboard")
