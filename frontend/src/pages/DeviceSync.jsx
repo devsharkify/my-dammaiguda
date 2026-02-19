@@ -572,7 +572,7 @@ export default function DeviceSync() {
             {bluetoothSupported && (
               <Card className="border-border/50">
                 <CardContent className="p-4 flex items-center gap-3">
-                  <div className="h-10 w-10 rounded-full bg-blue-100 dark:bg-blue-900 flex items-center justify-center">
+                  <div className="h-10 w-10 rounded-full bg-blue-100 flex items-center justify-center">
                     <Bluetooth className="h-5 w-5 text-blue-600" />
                   </div>
                   <div className="flex-1">
@@ -660,7 +660,7 @@ export default function DeviceSync() {
                           {device.description}
                         </p>
                         {isConnected ? (
-                          <Badge className="mt-2 bg-green-100 text-green-700 dark:bg-green-900 dark:text-green-300">
+                          <Badge className="mt-2 bg-green-100 text-green-700">
                             <CheckCircle className="h-3 w-3 mr-1" />
                             {language === "te" ? "కనెక్ట్" : "Connected"}
                           </Badge>

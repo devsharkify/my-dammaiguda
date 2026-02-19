@@ -249,7 +249,7 @@ export default function Layout({ children, title, showBackButton = false }) {
                   logout();
                   setMenuOpen(false);
                 }}
-                className="w-full flex items-center justify-center gap-2 px-4 py-3 text-red-600 hover:bg-red-50 dark:hover:bg-red-950 rounded-xl transition-colors"
+                className="w-full flex items-center justify-center gap-2 px-4 py-3 text-red-600 hover:bg-red-50:bg-red-950 rounded-xl transition-colors"
                 data-testid="logout-button"
               >
                 <LogOut className="h-5 w-5" />
@@ -267,7 +267,7 @@ export default function Layout({ children, title, showBackButton = false }) {
 
       {/* Bottom Navigation Bar - PhonePe Style with Center Bulge */}
       {!showBackButton && (
-        <nav className="fixed bottom-0 left-0 right-0 bg-white dark:bg-[#0e1115] border-t border-border shadow-lg z-40">
+        <nav className="fixed bottom-0 left-0 right-0 bg-white[#0e1115] border-t border-border shadow-lg z-40">
           <div className="max-w-lg mx-auto px-2">
             <div className="flex items-center justify-around py-2">
               {bottomNavItems.map((item, index) => {

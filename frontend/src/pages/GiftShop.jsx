@@ -163,11 +163,11 @@ export default function GiftShop() {
 
   const getStatusBadge = (status) => {
     const statusConfig = {
-      pending: { color: "bg-yellow-100 text-yellow-700 dark:bg-yellow-900 dark:text-yellow-300", icon: Clock, label: language === "te" ? "పెండింగ్" : "Pending" },
-      approved: { color: "bg-blue-100 text-blue-700 dark:bg-blue-900 dark:text-blue-300", icon: CheckCircle, label: language === "te" ? "ఆమోదించబడింది" : "Approved" },
-      shipped: { color: "bg-purple-100 text-purple-700 dark:bg-purple-900 dark:text-purple-300", icon: Truck, label: language === "te" ? "షిప్ అయింది" : "Shipped" },
-      delivered: { color: "bg-green-100 text-green-700 dark:bg-green-900 dark:text-green-300", icon: CheckCircle, label: language === "te" ? "డెలివరీ అయింది" : "Delivered" },
-      rejected: { color: "bg-red-100 text-red-700 dark:bg-red-900 dark:text-red-300", icon: XCircle, label: language === "te" ? "తిరస్కరించబడింది" : "Rejected" }
+      pending: { color: "bg-yellow-100 text-yellow-700", icon: Clock, label: language === "te" ? "పెండింగ్" : "Pending" },
+      approved: { color: "bg-blue-100 text-blue-700", icon: CheckCircle, label: language === "te" ? "ఆమోదించబడింది" : "Approved" },
+      shipped: { color: "bg-purple-100 text-purple-700", icon: Truck, label: language === "te" ? "షిప్ అయింది" : "Shipped" },
+      delivered: { color: "bg-green-100 text-green-700", icon: CheckCircle, label: language === "te" ? "డెలివరీ అయింది" : "Delivered" },
+      rejected: { color: "bg-red-100 text-red-700", icon: XCircle, label: language === "te" ? "తిరస్కరించబడింది" : "Rejected" }
     };
     
     const config = statusConfig[status] || statusConfig.pending;

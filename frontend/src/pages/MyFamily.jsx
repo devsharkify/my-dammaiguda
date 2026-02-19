@@ -646,7 +646,7 @@ export default function MyFamily() {
 
                     {/* Location Info */}
                     {member.last_location ? (
-                      <div className="bg-white dark:bg-gray-800 rounded-lg p-3 space-y-2">
+                      <div className="bg-white rounded-lg p-3 space-y-2">
                         <div className="flex items-center justify-between">
                           <div className="flex items-center gap-2 text-text-muted text-sm">
                             <Clock className="h-4 w-4" />
@@ -668,8 +668,8 @@ export default function MyFamily() {
                         </Button>
                       </div>
                     ) : (
-                      <div className="bg-yellow-50 dark:bg-yellow-900/20 rounded-lg p-3 text-center">
-                        <p className="text-sm text-yellow-700 dark:text-yellow-400">
+                      <div className="bg-yellow-50 rounded-lg p-3 text-center">
+                        <p className="text-sm text-yellow-700">
                           {language === "te" 
                             ? "లొకేషన్ అందుబాటులో లేదు" 
                             : "Location not available yet"}
@@ -679,29 +679,29 @@ export default function MyFamily() {
 
                     {/* Course Progress (for children) */}
                     {member.course_summary && member.course_summary.total_courses > 0 && (
-                      <div className="mt-3 bg-indigo-50 dark:bg-indigo-900/20 rounded-lg p-3">
+                      <div className="mt-3 bg-indigo-50 rounded-lg p-3">
                         <div className="flex items-center gap-2 mb-2">
                           <GraduationCap className="h-4 w-4 text-indigo-600" />
-                          <span className="text-sm font-medium text-indigo-700 dark:text-indigo-300">
+                          <span className="text-sm font-medium text-indigo-700">
                             {language === "te" ? "కోర్సు పురోగతి" : "Course Progress"}
                           </span>
                         </div>
                         <div className="grid grid-cols-3 gap-2 text-center">
-                          <div className="bg-white dark:bg-gray-800 rounded-lg p-2">
+                          <div className="bg-white rounded-lg p-2">
                             <p className="text-lg font-bold text-indigo-600">{member.course_summary.total_courses}</p>
                             <p className="text-[10px] text-muted-foreground">{language === "te" ? "మొత్తం" : "Total"}</p>
                           </div>
-                          <div className="bg-white dark:bg-gray-800 rounded-lg p-2">
+                          <div className="bg-white rounded-lg p-2">
                             <p className="text-lg font-bold text-green-600">{member.course_summary.completed}</p>
                             <p className="text-[10px] text-muted-foreground">{language === "te" ? "పూర్తి" : "Done"}</p>
                           </div>
-                          <div className="bg-white dark:bg-gray-800 rounded-lg p-2">
+                          <div className="bg-white rounded-lg p-2">
                             <p className="text-lg font-bold text-amber-600">{member.course_summary.certificates}</p>
                             <p className="text-[10px] text-muted-foreground">{language === "te" ? "సర్టిఫికెట్లు" : "Certs"}</p>
                           </div>
                         </div>
                         {member.course_summary.in_progress > 0 && (
-                          <p className="text-xs text-indigo-600 dark:text-indigo-400 mt-2 text-center">
+                          <p className="text-xs text-indigo-600 mt-2 text-center">
                             {member.course_summary.in_progress} {language === "te" ? "కోర్సులు కొనసాగుతున్నాయి" : "courses in progress"}
                           </p>
                         )}

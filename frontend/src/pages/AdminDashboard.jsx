@@ -1555,9 +1555,9 @@ export default function AdminDashboard() {
               </DialogTitle>
             </DialogHeader>
             <div className="space-y-4">
-              <div className="flex items-center gap-2 p-3 bg-purple-50 dark:bg-purple-950 rounded-lg">
+              <div className="flex items-center gap-2 p-3 bg-purple-50 rounded-lg">
                 <input type="checkbox" id="selectAll" checked={bulkPrivilegeForm.selectAll} onChange={(e) => setBulkPrivilegeForm({...bulkPrivilegeForm, selectAll: e.target.checked, user_ids: []})} className="h-4 w-4" />
-                <Label htmlFor="selectAll" className="font-semibold text-purple-700 dark:text-purple-300">Select ALL Users</Label>
+                <Label htmlFor="selectAll" className="font-semibold text-purple-700">Select ALL Users</Label>
               </div>
               {!bulkPrivilegeForm.selectAll && (
                 <div>

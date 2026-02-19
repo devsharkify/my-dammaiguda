@@ -177,8 +177,8 @@ export default function IssueFeed() {
 
         {/* Admin Notes (if issue_not_found) */}
         {issue.status === "issue_not_found" && (
-          <div className="bg-gray-50 dark:bg-gray-800 p-2 rounded-lg mb-3 text-xs">
-            <p className="text-gray-600 dark:text-gray-300 flex items-center gap-1">
+          <div className="bg-gray-50 p-2 rounded-lg mb-3 text-xs">
+            <p className="text-gray-600 flex items-center gap-1">
               <Phone className="h-3 w-3" />
               {language === "te" 
                 ? "దయచేసి మమ్మల్ని సంప్రదించండి వివరాల కోసం" 

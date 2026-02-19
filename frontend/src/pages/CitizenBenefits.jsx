@@ -573,7 +573,7 @@ export default function CitizenBenefits() {
                       {language === "te" ? "వౌచర్ కోడ్" : "Voucher Code"}
                     </p>
                     <div className="flex items-center justify-center gap-2">
-                      <div className="bg-white dark:bg-gray-800 px-6 py-3 rounded-lg border-2 border-dashed border-primary">
+                      <div className="bg-white px-6 py-3 rounded-lg border-2 border-dashed border-primary">
                         <p className="text-xl font-mono font-bold tracking-widest text-primary">
                           {selectedVoucher.code}
                         </p>

@@ -627,15 +627,15 @@ export default function InstructorPortal() {
             {courseAnalytics && (
               <div className="space-y-4">
                 <div className="grid grid-cols-3 gap-2 text-center">
-                  <div className="p-3 rounded-lg bg-blue-50 dark:bg-blue-900/20">
+                  <div className="p-3 rounded-lg bg-blue-50">
                     <p className="text-xl font-bold text-blue-600">{courseAnalytics.summary.total_enrollments}</p>
                     <p className="text-xs text-muted-foreground">Enrollments</p>
                   </div>
-                  <div className="p-3 rounded-lg bg-green-50 dark:bg-green-900/20">
+                  <div className="p-3 rounded-lg bg-green-50">
                     <p className="text-xl font-bold text-green-600">{courseAnalytics.summary.completions}</p>
                     <p className="text-xs text-muted-foreground">Completions</p>
                   </div>
-                  <div className="p-3 rounded-lg bg-purple-50 dark:bg-purple-900/20">
+                  <div className="p-3 rounded-lg bg-purple-50">
                     <p className="text-xl font-bold text-purple-600">{courseAnalytics.summary.completion_rate}%</p>
                     <p className="text-xs text-muted-foreground">Rate</p>
                   </div>

@@ -74,7 +74,7 @@ export default function Leaderboard() {
       case "Expert": return "bg-gradient-to-r from-purple-500 to-pink-500 text-white";
       case "Advanced": return "bg-gradient-to-r from-blue-500 to-cyan-500 text-white";
       case "Intermediate": return "bg-gradient-to-r from-green-500 to-emerald-500 text-white";
-      default: return "bg-gray-100 text-gray-600 dark:bg-gray-800 dark:text-gray-300";
+      default: return "bg-gray-100 text-gray-600";
     }
   };
 
@@ -208,7 +208,7 @@ export default function Leaderboard() {
             ) : (
               <div className="divide-y">
                 {/* Top 3 Special Display */}
-                <div className="grid grid-cols-3 gap-2 p-4 bg-gradient-to-b from-amber-50 to-transparent dark:from-amber-900/10">
+                <div className="grid grid-cols-3 gap-2 p-4 bg-gradient-to-b from-amber-50 to-transparent">
                   {[1, 0, 2].map((idx) => {
                     const entry = leaderboard[idx];
                     if (!entry) return <div key={idx} />;

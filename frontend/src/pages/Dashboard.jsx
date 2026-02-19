@@ -506,23 +506,23 @@ export default function Dashboard() {
           
           {/* Dump Yard Quick Info Card */}
           <Link to="/dumpyard">
-            <Card className="border-border/50 overflow-hidden h-full bg-gradient-to-br from-red-50 to-orange-50 dark:from-red-950/30 dark:to-orange-950/30">
+            <Card className="border-border/50 overflow-hidden h-full bg-gradient-to-br from-red-50 to-orange-50">
               <CardContent className="p-3">
                 <div className="flex items-center gap-2 mb-1">
-                  <div className="h-8 w-8 rounded-lg bg-red-100 dark:bg-red-900/50 flex items-center justify-center">
+                  <div className="h-8 w-8 rounded-lg bg-red-100 flex items-center justify-center">
                     <Trash className="h-4 w-4 text-red-600" />
                   </div>
-                  <span className="text-xs font-medium text-red-700 dark:text-red-400">
+                  <span className="text-xs font-medium text-red-700">
                     {language === "te" ? "డంప్ యార్డ్" : "Dump Yard"}
                   </span>
                 </div>
                 <div className="mt-1">
-                  <p className="text-sm font-semibold text-red-800 dark:text-red-300">
+                  <p className="text-sm font-semibold text-red-800">
                     {language === "te" 
                       ? `${dumpyardConfig.daily_waste_tons?.toLocaleString()} టన్నులు/రోజు` 
                       : `${dumpyardConfig.daily_waste_tons?.toLocaleString()} tons/day`}
                   </p>
-                  <p className="text-[10px] text-red-600/80 dark:text-red-400/80 mt-0.5">
+                  <p className="text-[10px] text-red-600/80 mt-0.5">
                     {language === "te" 
                       ? `${dumpyardConfig.area_acres} ఎకరాలు ప్రాంతం` 
                       : `${dumpyardConfig.area_acres} acres area`}
@@ -530,7 +530,7 @@ export default function Dashboard() {
                 </div>
                 <div className="flex items-center gap-1 mt-2">
                   <AlertTriangle className="h-3 w-3 text-red-500" />
-                  <span className="text-[9px] text-red-600 dark:text-red-400">
+                  <span className="text-[9px] text-red-600">
                     {language === "te" 
                       ? `${dumpyardConfig.red_zone_km} కి.మీ. రెడ్ జోన్` 
                       : `${dumpyardConfig.red_zone_km}km Red Zone Active`}

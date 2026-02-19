@@ -283,7 +283,7 @@ export default function LiveChat() {
                     <Hash className="h-6 w-6 text-primary" />
                   </div>
                   <div className="flex-1">
-                    <h3 className="font-semibold dark:text-white">
+                    <h3 className="font-semibold">
                       {language === "te" && room.name_te ? room.name_te : room.name}
                     </h3>
                     <p className="text-xs text-muted-foreground">
@@ -364,7 +364,7 @@ export default function LiveChat() {
                   className={`rounded-2xl px-4 py-2 ${
                     msg.user_id === user?.id 
                       ? "bg-primary text-white rounded-br-sm" 
-                      : "bg-muted dark:bg-gray-800 rounded-bl-sm dark:text-white"
+                      : "bg-muted rounded-bl-sm"
                   }`}
                 >
                   {msg.reply_to && (
@@ -394,7 +394,7 @@ export default function LiveChat() {
                         className={`text-xs px-1.5 py-0.5 rounded-full ${
                           users.includes(user?.id) 
                             ? "bg-primary/20 text-primary" 
-                            : "bg-muted dark:bg-gray-700"
+                            : "bg-muted"
                         }`}
                       >
                         {emoji} {users.length}
@@ -438,9 +438,9 @@ export default function LiveChat() {
 
       {/* Reply preview */}
       {replyTo && (
-        <div className="px-4 py-2 bg-muted/50 dark:bg-gray-800 border-t flex items-center gap-2">
+        <div className="px-4 py-2 bg-muted/50 border-t flex items-center gap-2">
           <Reply className="h-4 w-4 text-muted-foreground" />
-          <div className="flex-1 text-xs truncate dark:text-gray-300">
+          <div className="flex-1 text-xs truncate">
             {language === "te" ? "జవాబు:" : "Replying to:"} {replyTo.content}
           </div>
           <button onClick={() => setReplyTo(null)} className="text-muted-foreground hover:text-foreground">
@@ -450,7 +450,7 @@ export default function LiveChat() {
       )}
 
       {/* Input */}
-      <div className="sticky bottom-0 bg-background dark:bg-gray-900 border-t p-4">
+      <div className="sticky bottom-0 bg-background border-t p-4">
         <div className="flex items-center gap-2">
           <button className="p-2 text-muted-foreground hover:text-primary">
             <Smile className="h-5 w-5" />
@@ -464,7 +464,7 @@ export default function LiveChat() {
             }}
             onKeyPress={(e) => e.key === "Enter" && !e.shiftKey && sendMessage()}
             placeholder={language === "te" ? "మెసేజ్ టైప్ చేయండి..." : "Type a message..."}
-            className="flex-1 rounded-full dark:bg-gray-800 dark:text-white dark:border-gray-700"
+            className="flex-1 rounded-full"
             disabled={!connected}
             data-testid="chat-input"
           />

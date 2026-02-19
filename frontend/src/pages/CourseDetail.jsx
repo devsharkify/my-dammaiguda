@@ -889,11 +889,11 @@ export default function CourseDetail() {
             </div>
             
             {/* Payment Instructions */}
-            <div className="bg-amber-50 dark:bg-amber-950/30 rounded-lg p-3 text-sm">
-              <p className="font-medium text-amber-800 dark:text-amber-200">
+            <div className="bg-amber-50 rounded-lg p-3 text-sm">
+              <p className="font-medium text-amber-800">
                 {language === "te" ? "చెల్లింపు తర్వాత:" : "After Payment:"}
               </p>
-              <ol className="list-decimal list-inside text-amber-700 dark:text-amber-300 mt-2 space-y-1 text-xs">
+              <ol className="list-decimal list-inside text-amber-700 mt-2 space-y-1 text-xs">
                 <li>{language === "te" ? "స్క్రీన్‌షాట్ తీయండి" : "Take a screenshot"}</li>
                 <li>{language === "te" ? "క్రింద కన్ఫర్మ్ నొక్కండి" : "Click Confirm below"}</li>
                 <li>{language === "te" ? "24 గంటల్లో యాక్సెస్ పొందండి" : "Get access within 24 hours"}</li>
