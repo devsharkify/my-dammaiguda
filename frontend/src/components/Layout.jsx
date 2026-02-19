@@ -284,13 +284,43 @@ export default function Layout({ children, title, showBackButton = false }) {
         {children}
       </main>
 
-      {/* Bottom Navigation Bar - PhonePe Style */}
+      {/* Bottom Navigation Bar - PhonePe Style with Center Bulge */}
       {!showBackButton && (
         <nav className="fixed bottom-0 left-0 right-0 bg-white dark:bg-[#0e1115] border-t border-border shadow-lg z-40">
           <div className="max-w-lg mx-auto px-2">
             <div className="flex items-center justify-around py-2">
-              {bottomNavItems.map((item) => {
+              {bottomNavItems.map((item, index) => {
                 const active = isActive(item.path);
+                
+                // Special bulge styling for center NEWS item
+                if (item.isBulge) {
+                  return (
+                    <Link
+                      key={item.path}
+                      to={item.path}
+                      className="flex flex-col items-center relative -mt-6"
+                      data-testid={`nav-${item.path.replace("/", "")}`}
+                    >
+                      <motion.div 
+                        className={`p-4 rounded-full shadow-lg transition-all ${
+                          active 
+                            ? "bg-gradient-to-br from-primary to-purple-600 text-white" 
+                            : "bg-gradient-to-br from-red-500 to-orange-500 text-white"
+                        }`}
+                        whileTap={{ scale: 0.9 }}
+                        whileHover={{ scale: 1.05 }}
+                      >
+                        {item.icon}
+                      </motion.div>
+                      <span className={`text-[10px] mt-1 font-semibold ${
+                        active ? "text-primary" : "text-foreground"
+                      }`}>
+                        {item.label}
+                      </span>
+                    </Link>
+                  );
+                }
+                
                 return (
                   <Link
                     key={item.path}
