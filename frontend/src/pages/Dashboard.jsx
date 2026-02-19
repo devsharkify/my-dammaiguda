@@ -515,61 +515,36 @@ export default function Dashboard() {
           </Card>
         </Link>
 
-        {/* Dump Yard Info - Full Width Rectangular Card Below AQI */}
+        {/* Dump Yard Alert - Compact Card */}
         <Link to="/dumpyard" data-testid="dumpyard-widget">
-          <Card className="bg-gradient-to-r from-red-50 to-orange-50 rounded-2xl border border-red-200/60 shadow-sm overflow-hidden">
-            <CardContent className="p-4">
-              <div className="flex items-center justify-between">
+          <Card className="bg-gradient-to-r from-red-500 to-orange-500 rounded-xl shadow-sm overflow-hidden">
+            <CardContent className="p-3">
+              <div className="flex items-center justify-between text-white">
                 <div className="flex items-center gap-3">
-                  <div className="h-14 w-14 rounded-2xl bg-red-100 flex items-center justify-center">
-                    <Trash className="h-7 w-7 text-red-600" />
+                  <div className="h-10 w-10 rounded-xl bg-white/20 flex items-center justify-center">
+                    <AlertTriangle className="h-5 w-5" />
                   </div>
                   <div>
-                    <p className="text-xs text-red-600/70 font-medium">
-                      {language === "te" ? "జవహర్ నగర్ లాండ్‌ఫిల్" : "Jawahar Nagar Landfill"}
+                    <p className="text-xs text-white/80 font-medium">
+                      {language === "te" ? "జవహర్ నగర్ డంప్" : "Jawahar Nagar Dump"}
                     </p>
-                    <p className="text-sm font-semibold text-red-800">
-                      {language === "te" ? "డంప్ యార్డ్ ప్రభావం" : "Dump Yard Impact"}
-                    </p>
+                    <div className="flex items-center gap-2">
+                      <span className="text-lg font-bold">
+                        {(dumpyardConfig.daily_waste_tons / 1000)?.toFixed(0) || "10"}K
+                      </span>
+                      <span className="text-xs text-white/70">
+                        {language === "te" ? "టన్నులు/రోజు" : "t/day"}
+                      </span>
+                    </div>
                   </div>
                 </div>
-                <div className="text-right">
-                  <p className="text-2xl font-bold text-red-700">
-                    {dumpyardConfig.daily_waste_tons?.toLocaleString() || "8,000"}
-                  </p>
-                  <p className="text-[10px] text-red-600/80 font-medium">
-                    {language === "te" ? "టన్నులు/రోజు" : "tonnes/day"}
-                  </p>
-                </div>
-              </div>
-              
-              {/* Health Risks - Key Info */}
-              <div className="mt-3 pt-3 border-t border-red-200/50">
-                <div className="flex items-center gap-1.5 mb-2">
-                  <AlertTriangle className="h-3.5 w-3.5 text-red-500" />
-                  <span className="text-xs font-semibold text-red-700">
-                    {language === "te" ? "ఆరోగ్య ప్రమాదాలు" : "Health Risks"}
-                  </span>
-                </div>
-                <div className="flex flex-wrap gap-1.5">
-                  {[
-                    { en: "Respiratory", te: "శ్వాసకోశ" },
-                    { en: "Skin Issues", te: "చర్మ" },
-                    { en: "Water Contamination", te: "నీటి కాలుష్యం" },
-                    { en: "Kidney", te: "కిడ్నీ" }
-                  ].map((risk, idx) => (
-                    <Badge key={idx} variant="secondary" className="text-[9px] bg-red-100 text-red-700 border-red-200">
-                      {language === "te" ? risk.te : risk.en}
-                    </Badge>
-                  ))}
-                </div>
-                <div className="flex items-center justify-between mt-2">
-                  <span className="text-[10px] text-red-600">
-                    {language === "te" 
-                      ? `${dumpyardConfig.area_acres || 351} ఎకరాలు • ${dumpyardConfig.red_zone_km || 5} కి.మీ ప్రభావ జోన్` 
-                      : `${dumpyardConfig.area_acres || 351} acres • ${dumpyardConfig.red_zone_km || 5}km impact zone`}
-                  </span>
-                  <ChevronRight className="h-4 w-4 text-red-400" />
+                <div className="flex items-center gap-2">
+                  <div className="flex gap-1">
+                    {["⚠️", "💧", "🫁"].map((emoji, idx) => (
+                      <span key={idx} className="text-sm">{emoji}</span>
+                    ))}
+                  </div>
+                  <ChevronRight className="h-4 w-4 text-white/70" />
                 </div>
               </div>
             </CardContent>
