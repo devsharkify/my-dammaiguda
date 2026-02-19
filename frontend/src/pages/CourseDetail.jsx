@@ -979,6 +979,181 @@ export default function CourseDetail() {
           </DialogFooter>
         </DialogContent>
       </Dialog>
+
+      {/* Scholarship Application Dialog */}
+      <Dialog open={showScholarshipDialog} onOpenChange={setShowScholarshipDialog}>
+        <DialogContent className="max-w-md max-h-[90vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <GraduationCap className="h-5 w-5 text-primary" />
+              {language === "te" ? "స్కాలర్‌షిప్ దరఖాస్తు" : "Scholarship Application"}
+            </DialogTitle>
+          </DialogHeader>
+          
+          <div className="space-y-4">
+            {/* Course Info */}
+            <div className="bg-primary/10 rounded-lg p-3 border border-primary/20">
+              <p className="text-xs text-primary font-medium">{language === "te" ? "కోర్సు" : "Course"}</p>
+              <p className="font-semibold text-sm">{course?.title}</p>
+              <p className="text-xs text-muted-foreground mt-1">
+                {language === "te" ? "ఫీజు:" : "Fee:"} ₹{course?.price?.toLocaleString()}
+              </p>
+            </div>
+            
+            {/* Form Fields */}
+            <div className="space-y-3">
+              <div>
+                <Label className="text-xs flex items-center gap-1">
+                  <User className="h-3 w-3" />
+                  {language === "te" ? "పూర్తి పేరు *" : "Full Name *"}
+                </Label>
+                <Input
+                  value={scholarshipForm.full_name}
+                  onChange={(e) => setScholarshipForm({...scholarshipForm, full_name: e.target.value})}
+                  placeholder={language === "te" ? "మీ పేరు" : "Your name"}
+                  className="mt-1"
+                />
+              </div>
+              
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <Label className="text-xs flex items-center gap-1">
+                    <Phone className="h-3 w-3" />
+                    {language === "te" ? "మొబైల్ *" : "Mobile *"}
+                  </Label>
+                  <Input
+                    value={scholarshipForm.mobile}
+                    onChange={(e) => setScholarshipForm({...scholarshipForm, mobile: e.target.value})}
+                    placeholder="9876543210"
+                    className="mt-1"
+                  />
+                </div>
+                <div>
+                  <Label className="text-xs flex items-center gap-1">
+                    <Calendar className="h-3 w-3" />
+                    {language === "te" ? "వయసు *" : "Age *"}
+                  </Label>
+                  <Input
+                    type="number"
+                    value={scholarshipForm.age}
+                    onChange={(e) => setScholarshipForm({...scholarshipForm, age: e.target.value})}
+                    placeholder="18"
+                    className="mt-1"
+                  />
+                </div>
+              </div>
+              
+              <div>
+                <Label className="text-xs flex items-center gap-1">
+                  <Mail className="h-3 w-3" />
+                  {language === "te" ? "ఇమెయిల్ *" : "Email *"}
+                </Label>
+                <Input
+                  type="email"
+                  value={scholarshipForm.email}
+                  onChange={(e) => setScholarshipForm({...scholarshipForm, email: e.target.value})}
+                  placeholder="your@email.com"
+                  className="mt-1"
+                />
+              </div>
+              
+              <div>
+                <Label className="text-xs">
+                  {language === "te" ? "విద్యా స్థాయి *" : "Education Level *"}
+                </Label>
+                <Select
+                  value={scholarshipForm.education_level}
+                  onValueChange={(value) => setScholarshipForm({...scholarshipForm, education_level: value})}
+                >
+                  <SelectTrigger className="mt-1">
+                    <SelectValue placeholder={language === "te" ? "ఎంచుకోండి" : "Select"} />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="10th">{language === "te" ? "10వ తరగతి" : "10th Class"}</SelectItem>
+                    <SelectItem value="12th">{language === "te" ? "12వ తరగతి / ఇంటర్" : "12th Class / Inter"}</SelectItem>
+                    <SelectItem value="graduate">{language === "te" ? "గ్రాడ్యుయేట్" : "Graduate"}</SelectItem>
+                    <SelectItem value="post_graduate">{language === "te" ? "పోస్ట్ గ్రాడ్యుయేట్" : "Post Graduate"}</SelectItem>
+                    <SelectItem value="working">{language === "te" ? "ఉద్యోగి" : "Working Professional"}</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              
+              <div>
+                <Label className="text-xs flex items-center gap-1">
+                  <Building className="h-3 w-3" />
+                  {language === "te" ? "కాలేజ్/స్కూల్ పేరు *" : "College/School Name *"}
+                </Label>
+                <Input
+                  value={scholarshipForm.institution_name}
+                  onChange={(e) => setScholarshipForm({...scholarshipForm, institution_name: e.target.value})}
+                  placeholder={language === "te" ? "మీ సంస్థ పేరు" : "Your institution name"}
+                  className="mt-1"
+                />
+              </div>
+              
+              <div>
+                <Label className="text-xs">
+                  {language === "te" ? "కుటుంబ వార్షిక ఆదాయం" : "Family Annual Income"}
+                </Label>
+                <Select
+                  value={scholarshipForm.family_income}
+                  onValueChange={(value) => setScholarshipForm({...scholarshipForm, family_income: value})}
+                >
+                  <SelectTrigger className="mt-1">
+                    <SelectValue placeholder={language === "te" ? "ఎంచుకోండి" : "Select"} />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="below_1L">{language === "te" ? "₹1 లక్ష కంటే తక్కువ" : "Below ₹1 Lakh"}</SelectItem>
+                    <SelectItem value="1L_3L">{language === "te" ? "₹1-3 లక్షలు" : "₹1-3 Lakhs"}</SelectItem>
+                    <SelectItem value="3L_5L">{language === "te" ? "₹3-5 లక్షలు" : "₹3-5 Lakhs"}</SelectItem>
+                    <SelectItem value="above_5L">{language === "te" ? "₹5 లక్షల పైన" : "Above ₹5 Lakhs"}</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              
+              <div>
+                <Label className="text-xs">
+                  {language === "te" ? "మీకు స్కాలర్‌షిప్ ఎందుకు అవసరం?" : "Why do you need scholarship?"}
+                </Label>
+                <Textarea
+                  value={scholarshipForm.reason}
+                  onChange={(e) => setScholarshipForm({...scholarshipForm, reason: e.target.value})}
+                  placeholder={language === "te" 
+                    ? "మీ పరిస్థితిని క్లుప్తంగా వివరించండి..." 
+                    : "Briefly explain your situation..."}
+                  rows={3}
+                  className="mt-1"
+                />
+              </div>
+            </div>
+            
+            {/* Info Note */}
+            <div className="bg-blue-50 rounded-lg p-3 text-xs text-blue-700">
+              <p className="font-medium mb-1">
+                {language === "te" ? "గమనిక:" : "Note:"}
+              </p>
+              <ul className="list-disc list-inside space-y-0.5">
+                <li>{language === "te" ? "దరఖాస్తు 24-48 గంటల్లో సమీక్షించబడుతుంది" : "Application will be reviewed within 24-48 hours"}</li>
+                <li>{language === "te" ? "ఆమోదించబడితే, కోర్సు యాక్సెస్ ఆటోమేటిక్‌గా ఇవ్వబడుతుంది" : "If approved, course access will be granted automatically"}</li>
+              </ul>
+            </div>
+          </div>
+          
+          <DialogFooter className="flex-col gap-2 sm:flex-col">
+            <Button 
+              onClick={handleScholarshipSubmit} 
+              disabled={scholarshipSubmitting}
+              className="w-full"
+            >
+              {scholarshipSubmitting && <Loader2 className="h-4 w-4 mr-2 animate-spin" />}
+              {language === "te" ? "దరఖాస్తు సమర్పించు" : "Submit Application"}
+            </Button>
+            <Button variant="ghost" onClick={() => setShowScholarshipDialog(false)} className="w-full">
+              {language === "te" ? "రద్దు చేయి" : "Cancel"}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </Layout>
   );
 }
