@@ -482,6 +482,134 @@ export default function AdminDashboard() {
           </TabsContent>
         </Tabs>
       </div>
+
+      {/* Course Create/Edit Dialog */}
+      <Dialog open={showCourseDialog} onOpenChange={setShowCourseDialog}>
+        <DialogContent className="max-w-lg max-h-[90vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle>
+              {editingCourse ? "Edit Course" : "Create New Course"}
+            </DialogTitle>
+          </DialogHeader>
+          
+          <div className="space-y-4">
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <Label>Title (English)</Label>
+                <Input
+                  value={courseForm.title}
+                  onChange={(e) => setCourseForm({...courseForm, title: e.target.value})}
+                  placeholder="Python Basics"
+                />
+              </div>
+              <div>
+                <Label>Title (Telugu)</Label>
+                <Input
+                  value={courseForm.title_te}
+                  onChange={(e) => setCourseForm({...courseForm, title_te: e.target.value})}
+                  placeholder="పైథాన్ బేసిక్స్"
+                />
+              </div>
+            </div>
+            
+            <div>
+              <Label>Description</Label>
+              <Textarea
+                value={courseForm.description}
+                onChange={(e) => setCourseForm({...courseForm, description: e.target.value})}
+                placeholder="Course description..."
+                rows={3}
+              />
+            </div>
+            
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <Label>Category</Label>
+                <Select value={courseForm.category} onValueChange={(v) => setCourseForm({...courseForm, category: v})}>
+                  <SelectTrigger>
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="k12">School (K-12)</SelectItem>
+                    <SelectItem value="college">College</SelectItem>
+                    <SelectItem value="professional">Professional</SelectItem>
+                    <SelectItem value="skill">Skill Development</SelectItem>
+                    <SelectItem value="language">Languages</SelectItem>
+                    <SelectItem value="tech">Technology</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              <div>
+                <Label>Difficulty</Label>
+                <Select value={courseForm.difficulty} onValueChange={(v) => setCourseForm({...courseForm, difficulty: v})}>
+                  <SelectTrigger>
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="beginner">Beginner</SelectItem>
+                    <SelectItem value="intermediate">Intermediate</SelectItem>
+                    <SelectItem value="advanced">Advanced</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+            
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <Label>Price (₹)</Label>
+                <Input
+                  type="number"
+                  value={courseForm.price}
+                  onChange={(e) => setCourseForm({...courseForm, price: parseInt(e.target.value) || 0})}
+                  placeholder="0 for free"
+                />
+              </div>
+              <div>
+                <Label>Duration (hours)</Label>
+                <Input
+                  type="number"
+                  value={courseForm.duration_hours}
+                  onChange={(e) => setCourseForm({...courseForm, duration_hours: parseInt(e.target.value) || 0})}
+                />
+              </div>
+            </div>
+            
+            <div>
+              <Label>Instructor Name</Label>
+              <Input
+                value={courseForm.instructor_name}
+                onChange={(e) => setCourseForm({...courseForm, instructor_name: e.target.value})}
+                placeholder="Dr. Ravi Kumar"
+              />
+            </div>
+            
+            <div>
+              <Label>Thumbnail URL</Label>
+              <Input
+                value={courseForm.thumbnail_url}
+                onChange={(e) => setCourseForm({...courseForm, thumbnail_url: e.target.value})}
+                placeholder="https://..."
+              />
+            </div>
+            
+            <div className="flex items-center gap-2">
+              <Switch
+                checked={courseForm.is_featured}
+                onCheckedChange={(v) => setCourseForm({...courseForm, is_featured: v})}
+              />
+              <Label>Featured Course</Label>
+            </div>
+          </div>
+          
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setShowCourseDialog(false)}>Cancel</Button>
+            <Button onClick={saveCourse} disabled={savingCourse}>
+              {savingCourse && <Loader2 className="h-4 w-4 mr-2 animate-spin" />}
+              {editingCourse ? "Update" : "Create"}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </Layout>
   );
 }
