@@ -151,9 +151,9 @@ export default function AITEducation() {
                   </p>
                   <h2 className="text-2xl font-bold">{myStats.total_xp} XP</h2>
                 </div>
-                <div className="h-14 w-14 rounded-full bg-white/20 flex items-center justify-center">
+                <Link to="/leaderboard" className="h-14 w-14 rounded-full bg-white/20 flex items-center justify-center hover:bg-white/30 transition-colors">
                   <Trophy className="h-7 w-7" />
-                </div>
+                </Link>
               </div>
               
               <div className="grid grid-cols-4 gap-2 text-center">
@@ -182,6 +182,15 @@ export default function AITEducation() {
                   </p>
                 </div>
               </div>
+              
+              {/* Leaderboard Link */}
+              <Link to="/leaderboard" className="flex items-center justify-between mt-3 pt-3 border-t border-white/20 text-sm hover:bg-white/10 rounded-lg px-2 py-1 transition-colors">
+                <span className="flex items-center gap-2">
+                  <Trophy className="h-4 w-4" />
+                  {language === "te" ? "లీడర్‌బోర్డ్ చూడండి" : "View Leaderboard"}
+                </span>
+                <ChevronRight className="h-4 w-4" />
+              </Link>
             </CardContent>
           </Card>
         )}
