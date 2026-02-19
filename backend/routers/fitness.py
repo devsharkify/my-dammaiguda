@@ -1724,3 +1724,198 @@ async def check_and_award_badges(user: dict = Depends(get_current_user)):
         "new_badges_count": len(awarded)
     }
 
+
+
+# ============== TODAY'S STATS & WEEKLY SUMMARY ==============
+
+@router.get("/today-stats")
+async def get_today_stats(user: dict = Depends(get_current_user)):
+    """Get today's fitness summary for dashboard"""
+    today = datetime.now(timezone.utc).strftime("%Y-%m-%d")
+    
+    # Get today's activities
+    activities = await db.activities.find(
+        {"user_id": user["id"], "date": today},
+        {"_id": 0}
+    ).to_list(100)
+    
+    # Get live sessions from today
+    live_sessions = await db.live_activities.find(
+        {"user_id": user["id"], "status": "completed", "end_time": {"$regex": f"^{today}"}},
+        {"_id": 0}
+    ).to_list(100)
+    
+    # Aggregate stats
+    total_steps = 0
+    total_calories = 0
+    total_active_minutes = 0
+    heart_rates = []
+    total_distance = 0
+    
+    for a in activities:
+        total_steps += a.get("steps", 0) or 0
+        total_calories += a.get("calories_burned", 0) or 0
+        total_active_minutes += a.get("duration_minutes", 0) or 0
+        total_distance += a.get("distance_km", 0) or 0
+        if a.get("heart_rate_avg"):
+            heart_rates.append(a.get("heart_rate_avg"))
+    
+    for ls in live_sessions:
+        total_steps += ls.get("total_steps", 0) or 0
+        total_calories += ls.get("total_calories", 0) or 0
+        if ls.get("total_duration_seconds"):
+            total_active_minutes += ls.get("total_duration_seconds", 0) // 60
+        if ls.get("total_distance_meters"):
+            total_distance += ls.get("total_distance_meters", 0) / 1000
+        if ls.get("avg_heart_rate"):
+            heart_rates.append(ls.get("avg_heart_rate"))
+    
+    # Get sleep data (placeholder - would need sleep tracking integration)
+    sleep_hours = 7.5  # Default/placeholder
+    
+    # Calculate average heart rate
+    heart_rate_avg = round(sum(heart_rates) / len(heart_rates)) if heart_rates else 72
+    
+    return {
+        "steps": total_steps,
+        "calories": total_calories,
+        "distance": round(total_distance, 1),
+        "activeMinutes": total_active_minutes,
+        "sleepHours": sleep_hours,
+        "heartRateAvg": heart_rate_avg
+    }
+
+@router.get("/weekly-summary")
+async def get_weekly_summary(user: dict = Depends(get_current_user)):
+    """Get weekly activity summary for charts"""
+    today = datetime.now(timezone.utc)
+    week_start = today - timedelta(days=today.weekday())  # Monday
+    
+    days = []
+    day_names = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']
+    
+    for i in range(7):
+        date = week_start + timedelta(days=i)
+        date_str = date.strftime("%Y-%m-%d")
+        is_past_or_today = date <= today
+        
+        # Get activities for this day
+        activities = await db.activities.find(
+            {"user_id": user["id"], "date": date_str},
+            {"_id": 0, "steps": 1}
+        ).to_list(100)
+        
+        total_steps = sum(a.get("steps", 0) or 0 for a in activities)
+        
+        days.append({
+            "day": day_names[i],
+            "date": date_str,
+            "steps": total_steps,
+            "active": is_past_or_today
+        })
+    
+    return {"days": days}
+
+@router.get("/devices")
+async def get_connected_devices(user: dict = Depends(get_current_user)):
+    """Get user's connected fitness devices"""
+    devices = await db.fitness_devices.find(
+        {"user_id": user["id"]},
+        {"_id": 0}
+    ).to_list(20)
+    
+    # Get last sync time
+    last_sync = await db.device_syncs.find_one(
+        {"user_id": user["id"]},
+        {"_id": 0},
+        sort=[("sync_time", -1)]
+    )
+    
+    return {
+        "devices": devices,
+        "last_sync": last_sync.get("sync_time") if last_sync else None
+    }
+
+@router.post("/devices/connect")
+async def connect_device(data: dict, user: dict = Depends(get_current_user)):
+    """Connect a fitness device"""
+    device = {
+        "id": generate_id(),
+        "user_id": user["id"],
+        "device_type": data.get("device_type"),
+        "device_name": data.get("device_name"),
+        "bluetooth_id": data.get("bluetooth_id"),
+        "connected_at": now_iso(),
+        "status": "connected"
+    }
+    
+    # Check if device already connected
+    existing = await db.fitness_devices.find_one({
+        "user_id": user["id"],
+        "device_type": data.get("device_type")
+    })
+    
+    if existing:
+        await db.fitness_devices.update_one(
+            {"id": existing["id"]},
+            {"$set": {"connected_at": now_iso(), "status": "connected"}}
+        )
+        return {"success": True, "message": "Device reconnected"}
+    
+    await db.fitness_devices.insert_one(device)
+    device.pop("_id", None)
+    
+    return {"success": True, "device": device}
+
+@router.delete("/devices/{device_id}")
+async def disconnect_device(device_id: str, user: dict = Depends(get_current_user)):
+    """Disconnect a fitness device"""
+    result = await db.fitness_devices.delete_one({
+        "id": device_id,
+        "user_id": user["id"]
+    })
+    
+    return {"success": True, "deleted": result.deleted_count > 0}
+
+@router.post("/sync-all")
+async def sync_all_devices(user: dict = Depends(get_current_user)):
+    """Sync all connected devices"""
+    devices = await db.fitness_devices.find(
+        {"user_id": user["id"], "status": "connected"},
+        {"_id": 0}
+    ).to_list(20)
+    
+    # Record sync attempt
+    await db.device_syncs.insert_one({
+        "id": generate_id(),
+        "user_id": user["id"],
+        "sync_time": now_iso(),
+        "devices_count": len(devices)
+    })
+    
+    # In a real implementation, this would trigger actual device sync
+    # For now, we simulate a successful sync
+    
+    return {
+        "success": True,
+        "synced_count": len(devices),
+        "sync_time": now_iso()
+    }
+
+@router.post("/sync")
+async def sync_health_data(data: dict, user: dict = Depends(get_current_user)):
+    """Sync health data from Bluetooth device"""
+    # Store the synced data point
+    data_point = {
+        "id": generate_id(),
+        "user_id": user["id"],
+        "heart_rate": data.get("heart_rate"),
+        "timestamp": data.get("timestamp"),
+        "source": data.get("source", "bluetooth"),
+        "created_at": now_iso()
+    }
+    
+    await db.health_data_points.insert_one(data_point)
+    
+    return {"success": True}
+
