@@ -185,8 +185,9 @@ Build a production-ready, mobile-first civic engagement platform "My Dammaiguda"
   - Disabled K-12 and College categories
   - Added "Professional Job" category
   - Single course: Digital Marketing Mastery - ₹54,999
-  - Payment dialog with QR code placeholder
+  - Payment dialog with PhonePe QR code
   - "Apply for Scholarship" link to Benefits page
+  - Admin can add additional courses via Admin Panel → Education tab
 - **Testing**: 100% pass rate (iteration_24: CMS/AQI, iteration_25: UI changes)
 
 ### Feb 19, 2026 - Session 1
