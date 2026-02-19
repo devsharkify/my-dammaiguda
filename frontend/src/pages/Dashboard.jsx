@@ -332,7 +332,7 @@ export default function Dashboard() {
 
   return (
     <Layout>
-      <div className="space-y-3 pb-20" data-testid="dashboard">
+      <div className="space-y-4 pb-20 max-w-full overflow-x-hidden" data-testid="dashboard">
         
         {/* Promotional Banner - PhonePe Style */}
         <Link to="/education" className="block">
