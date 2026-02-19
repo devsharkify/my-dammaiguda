@@ -338,6 +338,17 @@ export default function Profile() {
               </div>
             ) : (
               <>
+                {/* Browser Support Check */}
+                {!pushSupported && (
+                  <div className="p-4 bg-amber-50 rounded-xl border border-amber-200">
+                    <p className="text-sm text-amber-800">
+                      {language === "te" 
+                        ? "మీ బ్రౌజర్ పుష్ నోటిఫికేషన్లకు మద్దతు ఇవ్వదు" 
+                        : "Your browser does not support push notifications"}
+                    </p>
+                  </div>
+                )}
+
                 {/* Master Push Toggle */}
                 <div className="flex items-center justify-between p-4 bg-gradient-to-r from-primary/10 to-teal-500/10 rounded-xl">
                   <div className="flex items-center gap-3">
@@ -360,10 +371,30 @@ export default function Profile() {
                   </div>
                   <Switch
                     checked={pushSubscribed}
-                    onCheckedChange={(checked) => checked ? subscribeToPush() : unsubscribeFromPush()}
+                    onCheckedChange={handlePushToggle}
+                    disabled={pushLoading || !pushSupported}
                     data-testid="push-toggle"
                   />
                 </div>
+
+                {/* Test Notification Button */}
+                {pushSubscribed && (
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={handleTestNotification}
+                    disabled={testingSend}
+                    className="w-full"
+                    data-testid="test-notification-btn"
+                  >
+                    {testingSend ? (
+                      <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                    ) : (
+                      <Send className="h-4 w-4 mr-2" />
+                    )}
+                    {language === "te" ? "టెస్ట్ నోటిఫికేషన్ పంపండి" : "Send Test Notification"}
+                  </Button>
+                )}
 
                 {pushSubscribed && (
                   <div className="space-y-3 pt-2">
