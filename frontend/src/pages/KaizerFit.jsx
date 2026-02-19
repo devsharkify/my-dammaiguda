@@ -344,7 +344,7 @@ export default function KaizerFit() {
             data-testid="start-live-activity-btn"
           >
             <Play className="h-5 w-5 mr-2" />
-            {language === "te" ? "లైవ్ యాక్టివిటీ" : "Start Live"}
+            {language === "te" ? "లైవ్ ట్రాకింగ్" : "Start Live"}
           </Button>
           <Button
             onClick={() => setShowManualRecord(true)}
@@ -353,29 +353,31 @@ export default function KaizerFit() {
             data-testid="record-fitness-btn"
           >
             <PenSquare className="h-5 w-5 mr-2" />
-            {language === "te" ? "రికార్డ్ చేయండి" : "Record Fitness"}
+            {language === "te" ? "నమోదు చేయండి" : "Record Fitness"}
           </Button>
         </div>
 
-        {/* Connect Smartwatch Card */}
-        <Link to="/devices" data-testid="connect-devices-link">
-          <Card className="border-0 bg-gradient-to-r from-violet-500/10 to-purple-500/10 border border-violet-200 dark:border-violet-800 hover:shadow-md transition-all">
-            <CardContent className="p-4 flex items-center gap-3">
-              <div className="h-12 w-12 rounded-xl bg-gradient-to-br from-violet-500 to-purple-600 flex items-center justify-center text-white">
-                <Watch className="h-6 w-6" />
-              </div>
-              <div className="flex-1">
-                <p className="font-semibold text-sm">
-                  {language === "te" ? "స్మార్ట్‌వాచ్ కనెక్ట్ చేయండి" : "Connect Smartwatch"}
-                </p>
-                <p className="text-xs text-muted-foreground">
-                  {language === "te" ? "Apple Watch, Fitbit, Mi Band మరిన్ని..." : "Apple Watch, Fitbit, Mi Band & more..."}
-                </p>
-              </div>
-              <ChevronRight className="h-5 w-5 text-muted-foreground" />
-            </CardContent>
-          </Card>
-        </Link>
+        {/* Connect Smartwatch Card - Added margin top for spacing */}
+        <div className="mt-2">
+          <Link to="/devices" data-testid="connect-devices-link">
+            <Card className="border-0 bg-gradient-to-r from-violet-500/10 to-purple-500/10 border border-violet-200 dark:border-violet-800 dark:bg-violet-900/20 hover:shadow-md transition-all">
+              <CardContent className="p-4 flex items-center gap-3">
+                <div className="h-12 w-12 rounded-xl bg-gradient-to-br from-violet-500 to-purple-600 flex items-center justify-center text-white">
+                  <Watch className="h-6 w-6" />
+                </div>
+                <div className="flex-1">
+                  <p className="font-semibold text-sm dark:text-white">
+                    {language === "te" ? "స్మార్ట్ వాచ్ జోడించండి" : "Connect Smartwatch"}
+                  </p>
+                  <p className="text-xs text-muted-foreground dark:text-gray-400">
+                    {language === "te" ? "Apple Watch, Fitbit, Mi Band..." : "Apple Watch, Fitbit, Mi Band & more..."}
+                  </p>
+                </div>
+                <ChevronRight className="h-5 w-5 text-muted-foreground dark:text-gray-400" />
+              </CardContent>
+            </Card>
+          </Link>
+        </div>
 
         {/* Streak & Badges Section */}
         <div className="grid grid-cols-2 gap-3">
