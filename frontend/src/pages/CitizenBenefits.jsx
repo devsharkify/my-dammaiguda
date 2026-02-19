@@ -534,6 +534,98 @@ export default function CitizenBenefits() {
             )}
           </TabsContent>
         </Tabs>
+
+        {/* Voucher Details Dialog */}
+        <Dialog open={showVoucherDialog} onOpenChange={setShowVoucherDialog}>
+          <DialogContent className="max-w-md">
+            {selectedVoucher && (
+              <>
+                <DialogHeader>
+                  <DialogTitle className="flex items-center gap-2">
+                    <div className={`h-10 w-10 rounded-lg ${getVoucherCategoryColor(selectedVoucher.category)} flex items-center justify-center`}>
+                      {getVoucherCategoryIcon(selectedVoucher.category)}
+                    </div>
+                    <div>
+                      <h3 className="font-semibold">
+                        {language === "te" && selectedVoucher.title_te ? selectedVoucher.title_te : selectedVoucher.title}
+                      </h3>
+                      <p className="text-xs text-muted-foreground font-normal">{selectedVoucher.partner_name}</p>
+                    </div>
+                  </DialogTitle>
+                </DialogHeader>
+                
+                <div className="space-y-4 mt-4">
+                  {/* Discount Display */}
+                  <div className="bg-gradient-to-r from-primary/10 to-primary/5 rounded-xl p-4 text-center">
+                    <p className="text-4xl font-bold text-primary">
+                      {selectedVoucher.discount_type === "percentage" 
+                        ? `${selectedVoucher.discount_value}%` 
+                        : `₹${selectedVoucher.discount_value}`}
+                    </p>
+                    <p className="text-sm text-muted-foreground mt-1">
+                      {selectedVoucher.discount_type === "percentage" ? "Discount" : "Flat Off"}
+                    </p>
+                  </div>
+
+                  {/* Voucher Code */}
+                  <div className="bg-muted rounded-xl p-4">
+                    <p className="text-xs text-muted-foreground mb-2 text-center">
+                      {language === "te" ? "వౌచర్ కోడ్" : "Voucher Code"}
+                    </p>
+                    <div className="flex items-center justify-center gap-2">
+                      <div className="bg-white dark:bg-gray-800 px-6 py-3 rounded-lg border-2 border-dashed border-primary">
+                        <p className="text-xl font-mono font-bold tracking-widest text-primary">
+                          {selectedVoucher.code}
+                        </p>
+                      </div>
+                      <Button size="icon" variant="outline" onClick={copyVoucherCode}>
+                        <Copy className="h-4 w-4" />
+                      </Button>
+                    </div>
+                  </div>
+
+                  {/* Description */}
+                  <p className="text-sm text-muted-foreground">
+                    {language === "te" && selectedVoucher.description_te ? selectedVoucher.description_te : selectedVoucher.description}
+                  </p>
+
+                  {/* Terms & Conditions */}
+                  {selectedVoucher.terms_conditions && (
+                    <div className="text-xs text-muted-foreground bg-muted/50 p-3 rounded-lg">
+                      <p className="font-medium mb-1">{language === "te" ? "నిబంధనలు:" : "Terms & Conditions:"}</p>
+                      <p>{selectedVoucher.terms_conditions}</p>
+                    </div>
+                  )}
+
+                  {/* Validity */}
+                  <div className="flex items-center justify-between text-xs text-muted-foreground">
+                    {selectedVoucher.min_order_value && (
+                      <span>Min order: ₹{selectedVoucher.min_order_value}</span>
+                    )}
+                    {selectedVoucher.valid_until && (
+                      <span>Valid till: {new Date(selectedVoucher.valid_until).toLocaleDateString()}</span>
+                    )}
+                  </div>
+                </div>
+
+                <DialogFooter className="flex gap-2 mt-4">
+                  <Button variant="outline" className="flex-1" onClick={shareVoucher}>
+                    <Share2 className="h-4 w-4 mr-2" />
+                    {language === "te" ? "షేర్" : "Share"}
+                  </Button>
+                  <Button className="flex-1" onClick={claimVoucher} disabled={claimingVoucher}>
+                    {claimingVoucher ? (
+                      <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                    ) : (
+                      <Gift className="h-4 w-4 mr-2" />
+                    )}
+                    {language === "te" ? "క్లెయిమ్" : "Claim"}
+                  </Button>
+                </DialogFooter>
+              </>
+            )}
+          </DialogContent>
+        </Dialog>
       </div>
     </Layout>
   );
