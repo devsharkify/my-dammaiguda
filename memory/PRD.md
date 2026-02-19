@@ -8,69 +8,43 @@ Build a production-ready, mobile-first civic engagement platform "My Dammaiguda"
 ### Core Modules
 - **User Auth**: OTP-based authentication (currently MOCKED - static 123456)
 - **Issue Reporting**: Citizens report local issues with media support
-- **Dump Yard/Environment**: Environmental information tracking
-- **Health & Fitness (Kaizer Fit)**: Comprehensive fitness tracking with smartwatch integration
+- **Dump Yard/Environment**: Comprehensive pollution zone data, health risks, affected groups, and updates
+- **Health & Fitness (Kaizer Fit)**: Fitness tracking with smartwatch integration
 - **Citizen Benefits**: Government scheme information
 - **Ward Expenditure Dashboard**: Local spending transparency
 - **Polls**: Community voting
 - **Volunteer Module**: Volunteer coordination
 - **Admin Dashboard**: Platform management
+- **Gift Shop**: E-commerce with two-tier points system
 
 ---
 
 ## Recently Implemented Features (Feb 19, 2026)
 
-### 1. Language Default Change ✅
-- English is now the default language (previously Telugu)
-- Users can toggle to Telugu if desired
-- Stored in localStorage as `dammaiguda_language`
+### 1. Two-Tier Points System for Gift Shop ✅
+- **Normal Points**: Earned through activities, fitness, admin credits
+- **Privilege Points**: Exclusively assigned by admin to selected users
+- **Product Point Types**:
+  - `normal` - Only requires normal points
+  - `privilege` - Only requires privilege points  
+  - `both` - Requires both types
+- **Admin Features**:
+  - Single user point adjustment (normal OR privilege)
+  - Bulk privilege points assignment to ALL users or selected users
+  - Product creation with point_type, privilege_points_required, delivery_fee
+- **Wallet Display**: Shows both balances side by side
 
-### 2. Gift Shop Module (E-commerce) ✅
-- **Points Wallet System**: Balance tracking, transaction history
-- **Product Catalog**: Categories (Fitness, Electronics, Home, Fashion, Books)
-- **Product Details**: MRP display, points-to-claim conversion, stock tracking
-- **Claim Flow**: Delivery address collection, order creation
-- **Order Tracking**: Status flow (pending → approved → shipped → delivered)
-- **Admin Management**:
-  - Add/Edit/Delete products
-  - Approve/Reject orders
-  - Mark orders as shipped/delivered
-  - Adjust user points (+/-)
-  - View order statistics
+### 2. Enhanced Dumpyard Section ✅
+- **Pollution Zones Tab**: Red (2km), Orange (5km), Green (10km) zones with risk levels
+- **Health Risks Tab**: 
+  - Respiratory Issues, Cadmium Exposure, Skin Allergies, Eye Irritation
+  - Risk descriptions in English and Telugu
+- **Affected Groups**: Children, Pregnant Women, Elderly with specific advice
+- **Updates Tab**: News and alerts from the dump yard
 
-### 3. Fitness Page Enhancements ✅
-- **Mandatory Onboarding**: First-time users must provide:
-  - Height (cm), Weight (kg), Gender, Age
-  - Fitness Goal (optional)
-  - BMI and calorie recommendations calculated automatically
-- **Manual Activity Recording**: Log workouts with editable dates
-  - Activity type, duration, distance, calories, notes
-  - Cannot record future activities
-- **Start Live Activity**: GPS-tracked real-time activity
-- **Record Fitness**: Manual entry option alongside live tracking
-- **Connect Smartwatch Card**: Quick link to device sync page
-
-### 4. Smartwatch/Device Integration ✅
-- **Device Sync Page** (`/devices`):
-  - Sync status card showing connected device count
-  - Auto-sync toggle
-  - Connected devices list with disconnect option
-- **Supported Devices**:
-  - Apple Watch (iOS - via Apple Health)
-  - Fitbit (all platforms)
-  - Samsung Galaxy Watch (Android - via Samsung Health)
-  - Noise/boAt (Bluetooth)
-  - Google Fit (Android - Health Connect)
-  - Mi Band/Amazfit (via Zepp app)
-- **Web Bluetooth API**: For compatible devices (Noise, Mi Band)
-- **Backend Support**: Device connection, sync logging
-
-### 5. Admin Gift Shop Management ✅
-- **New "Shop" Tab** in Admin Dashboard
-- **Order Statistics**: Pending, Approved, Shipped, Delivered counts
-- **Product Management**: Add, edit, delete products
-- **Order Management**: Approve, reject, ship, deliver orders
-- **Points Adjustment**: Add or deduct points from users
+### 3. Bug Fixes ✅
+- Fixed Issues page crash (frontend was parsing API response incorrectly)
+- Added missing admin endpoints (/api/admin/stats, /api/admin/users, /api/admin/issues-heatmap)
 
 ---
 
@@ -88,34 +62,50 @@ Build a production-ready, mobile-first civic engagement platform "My Dammaiguda"
 │   └── ThemeContext.jsx (dark/light mode)
 ├── pages/
 │   ├── Dashboard.jsx (Quick actions grid, AQI widgets)
-│   ├── GiftShop.jsx (Wallet, products, orders)
-│   ├── DeviceSync.jsx (Smartwatch connection)
-│   ├── KaizerFit.jsx (Onboarding, live/manual tracking)
-│   ├── AdminDashboard.jsx (Shop tab added)
+│   ├── GiftShop.jsx (Dual wallet, products with point types)
+│   ├── DumpYardInfo.jsx (Zones, Risks, Updates tabs)
+│   ├── AdminDashboard.jsx (Shop tab with bulk privilege)
 │   └── ... (other modules)
-└── hooks/
-    └── usePushNotifications.js
 ```
 
 ### Backend (FastAPI)
 ```
 /app/backend/
-├── server.py (main app, router registration)
+├── server.py (main app, admin endpoints, dumpyard data)
 └── routers/
     ├── auth.py (OTP auth - MOCKED)
-    ├── fitness.py (profile, activities, devices, badges, manual recording)
-    ├── shop.py (wallet, products, orders, admin)
-    ├── education.py (courses, lessons, certificates)
+    ├── shop.py (two-tier points, wallet, products, orders)
+    ├── fitness.py (profile, activities, devices)
     └── ... (other modules)
 ```
 
 ### Database (MongoDB)
 Key Collections:
 - `users`, `wallets`, `points_transactions`
-- `gift_products`, `gift_orders`
-- `fitness_profiles`, `fitness_devices`, `device_syncs`
-- `activities`, `fitness_daily`
-- `courses`, `lessons`, `quizzes`, `enrollments`, `certificates`
+- `gift_products` (with point_type, privilege_points_required, delivery_fee)
+- `gift_orders` (with normal_points_spent, privilege_points_spent)
+- `dumpyard_updates`
+
+---
+
+## Key API Endpoints
+
+### Shop (Two-Tier Points)
+- `GET /api/shop/wallet` - Returns balance + privilege_balance
+- `GET /api/shop/products` - Products with point_type badges
+- `POST /api/shop/claim` - Deducts correct point type(s)
+- `POST /api/shop/admin/products` - Create with point_type, delivery_fee
+- `POST /api/shop/admin/points/adjust` - Single user, specify point_type
+- `POST /api/shop/admin/points/bulk-privilege` - Mass privilege assignment
+
+### Dumpyard
+- `GET /api/dumpyard/info` - Zones, health risks, affected groups
+- `GET /api/dumpyard/updates` - News and alerts
+
+### Admin
+- `GET /api/admin/stats` - Dashboard statistics
+- `GET /api/admin/users` - All users list
+- `GET /api/admin/issues-heatmap` - Issues by colony
 
 ---
 
@@ -125,58 +115,23 @@ Key Collections:
 - **OTP Authentication**: Uses static code `123456`
 - **Media Uploads**: Not connected to cloud storage
 
-### Smartwatch Integration Notes
-- Health Connect (Android) and HealthKit (iOS) are **native-only APIs**
-- Web apps cannot directly access these APIs
-- Current implementation:
-  - Web Bluetooth for compatible devices
-  - Manual sync for other devices
-  - Backend ready to receive data from native apps
-
 ### Requires User API Keys
 - Twilio SMS (for real OTP)
 - Cloudinary (for media storage)
-- Google Maps API (partially integrated)
-
-### Working Integrations
-- Emergent LLM Key (AI features)
-- Web Push (VAPID) - fully working
-- AQI data (real-time scraping)
 
 ---
 
 ## Test Credentials
 - **Regular User**: Phone `9876543210`, OTP: `123456`
 - **Admin User**: Phone `+919999999999`, OTP: `123456`
+- **Test User Points**: 1000 Normal + 120 Privilege
 
 ---
 
-## Sample Data
-- **Gift Products**: Water Bottle (100 pts), Yoga Mat (250 pts), Fitness Tracker (500 pts)
-- **User Points**: Test user has 1,000 points
-
----
-
-## API Endpoints Added
-
-### Shop
-- `GET /api/shop/wallet` - Get user wallet
-- `GET /api/shop/products` - List products
-- `POST /api/shop/claim` - Claim a gift
-- `GET /api/shop/orders` - User orders
-- `GET /api/shop/admin/products` - Admin products
-- `POST /api/shop/admin/products` - Create product
-- `PUT /api/shop/admin/orders/{id}/status` - Update order
-- `POST /api/shop/admin/points/adjust` - Adjust user points
-
-### Fitness
-- `GET /api/fitness/profile` - Get fitness profile
-- `POST /api/fitness/profile` - Create/update profile
-- `POST /api/fitness/record` - Manual activity record
-- `GET /api/fitness/devices` - Connected devices
-- `POST /api/fitness/devices/connect` - Connect device
-- `DELETE /api/fitness/devices/{id}` - Disconnect
-- `POST /api/fitness/sync-all` - Sync all devices
+## Sample Gift Products
+1. **Water Bottle** - 100 normal points, free delivery
+2. **VIP Event Pass** - 100 privilege points only
+3. **Premium Fitness Band** - 500 normal + 50 privilege, ₹49 delivery
 
 ---
 
@@ -184,10 +139,10 @@ Key Collections:
 1. Real Twilio OTP integration
 2. Cloudinary media upload integration
 3. OpenGraph Meta Tags for certificate sharing
-4. Automatic points rewards for fitness activities
+4. Automatic fitness points rewards (connect Fitness → Gift Shop)
 
 ## Future/Backlog (P2)
-- Native app for full Health Connect/HealthKit integration
+- Native app for Health Connect/HealthKit integration
 - Instructor Portal for course management
 - Student Progress Leaderboard
 - WebSocket Real-time Chat
@@ -198,19 +153,19 @@ Key Collections:
 ## Change Log
 
 ### Feb 19, 2026 (Latest)
+- Implemented two-tier points system (Normal + Privilege)
+- Added bulk privilege points assignment to ALL users
+- Enhanced product model with point_type, privilege_points_required, delivery_fee
+- Updated wallet to show both balance types
+- Populated Dumpyard with comprehensive data (zones, risks, groups, updates)
+- Fixed Issues page crash
+- Added admin stats/users/heatmap endpoints
+- Testing: 89% backend, 100% frontend success
+
+### Feb 19, 2026 (Earlier)
 - Changed default language from Telugu to English
 - Built Gift Shop module with wallet, products, orders
-- Added Admin Gift Shop management (Shop tab)
-- Added fitness profile onboarding (mandatory for first-time users)
-- Added manual activity recording with editable dates
-- Built Device Sync page with smartwatch connection UI
-- Added Web Bluetooth support for compatible devices
-- Testing: 100% backend, 95% frontend success
-
-### Previous Sessions
-- Built AIT Education module with courses, quizzes, certificates
-- Implemented web push notifications
-- Created PhonePe-style UI with bottom navigation
-- Added AQI widgets with real-time data
-- Built Kaizer Fit with live activity tracking
-- Implemented dark mode and page transitions
+- Added Admin Gift Shop management
+- Added fitness profile onboarding
+- Added manual activity recording
+- Built Device Sync page
