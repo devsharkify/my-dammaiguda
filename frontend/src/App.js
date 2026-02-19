@@ -225,7 +225,8 @@ function AppRoutes() {
       } />
       
       {/* Admin Routes */}
-      <Route path="/admin" element={
+      <Route path="/admin" element={<AdminConsole />} />
+      <Route path="/admin-dashboard" element={
         <ProtectedRoute roles={["admin"]}>
           <AdminDashboard />
         </ProtectedRoute>
