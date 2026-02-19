@@ -1,7 +1,9 @@
 import { Link, useLocation } from "react-router-dom";
 import { useLanguage } from "../context/LanguageContext";
 import { useAuth } from "../context/AuthContext";
+import { useTheme } from "../context/ThemeContext";
 import { Button } from "../components/ui/button";
+import { motion, AnimatePresence } from "framer-motion";
 import {
   Home,
   AlertTriangle,
@@ -26,7 +28,9 @@ import {
   PenSquare,
   GraduationCap,
   Search,
-  Bell
+  Bell,
+  Moon,
+  Sun
 } from "lucide-react";
 import { useState } from "react";
 
