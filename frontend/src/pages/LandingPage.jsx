@@ -111,18 +111,17 @@ export default function LandingPage() {
       {/* Hero Section */}
       <section className="relative overflow-hidden">
         <div 
-          className="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-secondary/5"
-          style={{ backgroundImage: "url('data:image/svg+xml,...')" }}
+          className="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-secondary/5 dark:from-primary/10 dark:to-purple-900/20"
         />
         
         <div className="max-w-7xl mx-auto px-4 py-16 md:py-24 relative">
           <div className="text-center max-w-3xl mx-auto">
-            <h1 className="font-heading text-4xl sm:text-5xl lg:text-6xl font-bold text-text-primary tracking-tight leading-tight">
+            <h1 className="font-heading text-4xl sm:text-5xl lg:text-6xl font-bold text-text-primary dark:text-white tracking-tight leading-tight">
               {language === "te" ? (
                 <>
-                  <span className="text-primary">దమ్మాయిగూడ</span> కోసం
+                  <span className="text-primary">దమ్మాయిగూడ</span>
                   <br />
-                  పౌర నిశ్చితార్థం
+                  మీ వార్డు, మీ చేతుల్లో
                 </>
               ) : (
                 <>
@@ -133,10 +132,10 @@ export default function LandingPage() {
               )}
             </h1>
             
-            <p className="mt-6 text-lg text-text-secondary leading-relaxed font-body">
+            <p className="mt-6 text-lg text-text-secondary dark:text-gray-300 leading-relaxed font-body">
               {language === "te"
-                ? "మీ వార్డు సమస్యలను నివేదించండి, ఆరోగ్య ప్రమాదాల గురించి తెలుసుకోండి, ప్రయోజనాలను పొందండి మరియు మీ సమాజాన్ని మెరుగుపరచడంలో భాగస్వామి అవ్వండి."
-                : "Report ward issues, learn about health risks, access benefits, and be part of improving your community."}
+                ? "సమస్యలు తెలియజేయండి, ప్రభుత్వ సహాయాలు పొందండి, ఆరోగ్యం ట్రాక్ చేయండి - అంతా ఒకే చోట!"
+                : "Report issues, access benefits, track health - all in one place!"}
             </p>
             
             <div className="mt-10 flex flex-col sm:flex-row gap-4 justify-center">
@@ -146,7 +145,7 @@ export default function LandingPage() {
                   className="bg-primary text-white hover:bg-primary/90 h-14 rounded-full px-10 text-lg font-medium shadow-lg shadow-primary/25 transition-all hover:shadow-xl hover:shadow-primary/30"
                   data-testid="get-started-btn"
                 >
-                  {language === "te" ? "ప్రారంభించండి" : "Get Started"}
+                  {language === "te" ? "ప్రారంభించు" : "Get Started"}
                   <ArrowRight className="ml-2 h-5 w-5" />
                 </Button>
               </Link>
@@ -155,7 +154,7 @@ export default function LandingPage() {
                 <Button 
                   size="lg"
                   variant="outline"
-                  className="border-2 border-primary text-primary hover:bg-primary/10 h-14 rounded-full px-10 text-lg font-medium"
+                  className="border-2 border-primary text-primary hover:bg-primary/10 h-14 rounded-full px-10 text-lg font-medium dark:text-primary dark:border-primary"
                   data-testid="view-issues-btn"
                 >
                   {language === "te" ? "సమస్యలు చూడండి" : "View Issues"}
