@@ -628,45 +628,57 @@ export default function Dashboard() {
         </div>
 
         {/* Quick Actions Row 2 - Fit, Doctor, My Family */}
-        <div className="grid grid-cols-3 gap-3">
+        <div className="grid grid-cols-3 gap-2.5">
           <Link to="/fitness" data-testid="quick-action-fit">
-            <div className="h-16 rounded-xl bg-blue-50 flex flex-col items-center justify-center shadow-sm active:scale-95 transition-transform border border-blue-100">
-              <Activity className="h-6 w-6 text-blue-600" />
-              <span className="text-[10px] mt-1 font-medium text-blue-700">{language === "te" ? "ఫిట్" : "Fit"}</span>
+            <div className="h-20 rounded-2xl bg-blue-50 flex flex-col items-center justify-center shadow-sm active:scale-95 transition-all border border-blue-100 hover:bg-blue-100">
+              <div className="h-10 w-10 rounded-xl bg-blue-100 flex items-center justify-center mb-1">
+                <Activity className="h-5 w-5 text-blue-600" />
+              </div>
+              <span className="text-[11px] font-semibold text-blue-700">{language === "te" ? "ఫిట్‌నెస్" : "Fitness"}</span>
             </div>
           </Link>
           <Link to="/doctor" data-testid="quick-action-doctor">
-            <div className="h-16 rounded-xl bg-teal-50 flex flex-col items-center justify-center shadow-sm active:scale-95 transition-transform border border-teal-100">
-              <Stethoscope className="h-6 w-6 text-teal-600" />
-              <span className="text-[10px] mt-1 font-medium text-teal-700">{language === "te" ? "డాక్టర్" : "Doctor"}</span>
+            <div className="h-20 rounded-2xl bg-teal-50 flex flex-col items-center justify-center shadow-sm active:scale-95 transition-all border border-teal-100 hover:bg-teal-100">
+              <div className="h-10 w-10 rounded-xl bg-teal-100 flex items-center justify-center mb-1">
+                <Stethoscope className="h-5 w-5 text-teal-600" />
+              </div>
+              <span className="text-[11px] font-semibold text-teal-700">{language === "te" ? "డాక్టర్" : "Doctor"}</span>
             </div>
           </Link>
           <Link to="/family" data-testid="quick-action-family">
-            <div className="h-16 rounded-xl bg-purple-50 flex flex-col items-center justify-center shadow-sm active:scale-95 transition-transform border border-purple-100">
-              <Users className="h-6 w-6 text-purple-600" />
-              <span className="text-[10px] mt-1 font-medium text-purple-700">{language === "te" ? "కుటుంబం" : "Family"}</span>
+            <div className="h-20 rounded-2xl bg-purple-50 flex flex-col items-center justify-center shadow-sm active:scale-95 transition-all border border-purple-100 hover:bg-purple-100">
+              <div className="h-10 w-10 rounded-xl bg-purple-100 flex items-center justify-center mb-1">
+                <Users className="h-5 w-5 text-purple-600" />
+              </div>
+              <span className="text-[11px] font-semibold text-purple-700">{language === "te" ? "కుటుంబం" : "Family"}</span>
             </div>
           </Link>
         </div>
 
         {/* Quick Actions Row 3 - Gifts, Education, Polls */}
-        <div className="grid grid-cols-3 gap-3">
+        <div className="grid grid-cols-3 gap-2.5">
           <Link to="/shop" data-testid="quick-action-shop">
-            <div className="h-16 rounded-xl bg-gradient-to-br from-amber-50 to-orange-50 flex flex-col items-center justify-center shadow-sm active:scale-95 transition-transform border border-amber-200">
-              <Gift className="h-6 w-6 text-amber-600" />
-              <span className="text-[10px] mt-1 font-medium text-amber-700">{language === "te" ? "గిఫ్ట్స్" : "Gifts"}</span>
+            <div className="h-20 rounded-2xl bg-gradient-to-br from-amber-50 to-orange-50 flex flex-col items-center justify-center shadow-sm active:scale-95 transition-all border border-amber-200 hover:from-amber-100 hover:to-orange-100">
+              <div className="h-10 w-10 rounded-xl bg-amber-100 flex items-center justify-center mb-1">
+                <Gift className="h-5 w-5 text-amber-600" />
+              </div>
+              <span className="text-[11px] font-semibold text-amber-700">{language === "te" ? "గిఫ్ట్స్" : "Gifts"}</span>
             </div>
           </Link>
           <Link to="/education" data-testid="quick-action-education">
-            <div className="h-16 rounded-xl bg-indigo-50 flex flex-col items-center justify-center shadow-sm active:scale-95 transition-transform border border-indigo-100">
-              <GraduationCap className="h-6 w-6 text-indigo-600" />
-              <span className="text-[10px] mt-1 font-medium text-indigo-700">{language === "te" ? "విద్య" : "Education"}</span>
+            <div className="h-20 rounded-2xl bg-indigo-50 flex flex-col items-center justify-center shadow-sm active:scale-95 transition-all border border-indigo-100 hover:bg-indigo-100">
+              <div className="h-10 w-10 rounded-xl bg-indigo-100 flex items-center justify-center mb-1">
+                <GraduationCap className="h-5 w-5 text-indigo-600" />
+              </div>
+              <span className="text-[11px] font-semibold text-indigo-700">{language === "te" ? "విద్య" : "Courses"}</span>
             </div>
           </Link>
           <Link to="/polls" data-testid="quick-action-polls">
-            <div className="h-16 rounded-xl bg-emerald-50 flex flex-col items-center justify-center shadow-sm active:scale-95 transition-transform border border-emerald-100">
-              <Ticket className="h-6 w-6 text-emerald-600" />
-              <span className="text-[10px] mt-1 font-medium text-emerald-700">{language === "te" ? "పోల్స్" : "Polls"}</span>
+            <div className="h-20 rounded-2xl bg-emerald-50 flex flex-col items-center justify-center shadow-sm active:scale-95 transition-all border border-emerald-100 hover:bg-emerald-100">
+              <div className="h-10 w-10 rounded-xl bg-emerald-100 flex items-center justify-center mb-1">
+                <Ticket className="h-5 w-5 text-emerald-600" />
+              </div>
+              <span className="text-[11px] font-semibold text-emerald-700">{language === "te" ? "పోల్స్" : "Polls"}</span>
             </div>
           </Link>
         </div>
