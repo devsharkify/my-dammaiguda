@@ -253,14 +253,17 @@ export default function AdminDashboard() {
         </div>
 
         <Tabs defaultValue="issues" className="w-full">
-          <TabsList className="grid w-full grid-cols-3 h-12">
-            <TabsTrigger value="issues" className="text-sm">
+          <TabsList className="grid w-full grid-cols-4 h-12">
+            <TabsTrigger value="issues" className="text-xs">
               {language === "te" ? "సమస్యలు" : "Issues"}
             </TabsTrigger>
-            <TabsTrigger value="heatmap" className="text-sm">
+            <TabsTrigger value="education" className="text-xs">
+              {language === "te" ? "విద్య" : "Education"}
+            </TabsTrigger>
+            <TabsTrigger value="heatmap" className="text-xs">
               {language === "te" ? "హీట్‌మ్యాప్" : "Heatmap"}
             </TabsTrigger>
-            <TabsTrigger value="users" className="text-sm">
+            <TabsTrigger value="users" className="text-xs">
               {language === "te" ? "వినియోగదారులు" : "Users"}
             </TabsTrigger>
           </TabsList>
