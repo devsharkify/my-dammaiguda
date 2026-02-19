@@ -91,6 +91,93 @@ class ManualActivityRecord(BaseModel):
 
 # ============== HELPER ==============
 
+# Fitness Points Configuration
+FITNESS_POINTS_CONFIG = {
+    "enabled": True,
+    "points_per_1000_steps": 10,
+    "points_per_10_min_activity": 5,
+    "points_per_100_calories": 2,
+    "daily_bonus_threshold_steps": 10000,
+    "daily_bonus_points": 50,
+    "max_daily_points": 200
+}
+
+async def award_fitness_points(user_id: str, activity_data: dict):
+    """Award points based on fitness activity"""
+    if not FITNESS_POINTS_CONFIG["enabled"]:
+        return 0
+    
+    points = 0
+    
+    # Points for steps
+    steps = activity_data.get("steps", 0) or 0
+    if steps > 0:
+        points += (steps // 1000) * FITNESS_POINTS_CONFIG["points_per_1000_steps"]
+    
+    # Points for duration
+    duration = activity_data.get("duration_minutes", 0) or 0
+    if duration > 0:
+        points += (duration // 10) * FITNESS_POINTS_CONFIG["points_per_10_min_activity"]
+    
+    # Points for calories
+    calories = activity_data.get("calories_burned", 0) or 0
+    if calories > 0:
+        points += (calories // 100) * FITNESS_POINTS_CONFIG["points_per_100_calories"]
+    
+    # Check daily limit
+    today = datetime.now(timezone.utc).strftime("%Y-%m-%d")
+    daily_points = await db.fitness_points_log.aggregate([
+        {"$match": {"user_id": user_id, "date": today}},
+        {"$group": {"_id": None, "total": {"$sum": "$points"}}}
+    ]).to_list(1)
+    
+    current_daily = daily_points[0]["total"] if daily_points else 0
+    remaining_daily = FITNESS_POINTS_CONFIG["max_daily_points"] - current_daily
+    points = min(points, remaining_daily)
+    
+    if points > 0:
+        # Log the fitness points
+        await db.fitness_points_log.insert_one({
+            "id": generate_id(),
+            "user_id": user_id,
+            "points": points,
+            "activity_type": activity_data.get("activity_type"),
+            "date": today,
+            "created_at": now_iso()
+        })
+        
+        # Add to user's wallet (normal points)
+        wallet = await db.wallets.find_one({"user_id": user_id})
+        if wallet:
+            await db.wallets.update_one(
+                {"user_id": user_id},
+                {"$inc": {"balance": points, "total_earned": points}}
+            )
+        else:
+            await db.wallets.insert_one({
+                "id": generate_id(),
+                "user_id": user_id,
+                "balance": points,
+                "privilege_balance": 0,
+                "total_earned": points,
+                "total_privilege_earned": 0,
+                "total_spent": 0,
+                "created_at": now_iso()
+            })
+        
+        # Add points transaction
+        await db.points_transactions.insert_one({
+            "id": generate_id(),
+            "user_id": user_id,
+            "points": points,
+            "point_type": "normal",
+            "transaction_type": "earned",
+            "description": f"Fitness: {activity_data.get('activity_type', 'activity')} ({duration}min, {steps} steps)",
+            "created_at": now_iso()
+        })
+    
+    return points
+
 async def update_daily_fitness_summary(user_id: str, date: str):
     """Update daily fitness summary"""
     activities = await db.activities.find({"user_id": user_id, "date": date}, {"_id": 0}).to_list(100)
