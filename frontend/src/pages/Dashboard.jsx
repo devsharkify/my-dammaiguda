@@ -520,6 +520,28 @@ export default function Dashboard() {
           </Link>
         </div>
 
+        {/* Quick Actions Row 4 - Gift Shop, Poll, Benefits */}
+        <div className="grid grid-cols-3 gap-3">
+          <Link to="/shop" data-testid="quick-action-shop">
+            <div className="h-16 rounded-xl bg-gradient-to-br from-amber-50 to-orange-50 flex flex-col items-center justify-center shadow-sm active:scale-95 transition-transform border border-amber-200">
+              <Gift className="h-6 w-6 text-amber-600" />
+              <span className="text-[10px] mt-1 font-medium text-amber-700">{language === "te" ? "గిఫ్ట్స్" : "Gifts"}</span>
+            </div>
+          </Link>
+          <Link to="/polls" data-testid="quick-action-polls">
+            <div className="h-16 rounded-xl bg-emerald-50 flex flex-col items-center justify-center shadow-sm active:scale-95 transition-transform border border-emerald-100">
+              <Ticket className="h-6 w-6 text-emerald-600" />
+              <span className="text-[10px] mt-1 font-medium text-emerald-700">{language === "te" ? "పోల్స్" : "Polls"}</span>
+            </div>
+          </Link>
+          <Link to="/benefits" data-testid="quick-action-benefits">
+            <div className="h-16 rounded-xl bg-rose-50 flex flex-col items-center justify-center shadow-sm active:scale-95 transition-transform border border-rose-100">
+              <Heart className="h-6 w-6 text-rose-600" />
+              <span className="text-[10px] mt-1 font-medium text-rose-700">{language === "te" ? "ప్రయోజనాలు" : "Benefits"}</span>
+            </div>
+          </Link>
+        </div>
+
         {/* AQI Widgets - Two cards side by side */}
         <div className="grid grid-cols-2 gap-3" data-testid="aqi-widgets">
           {/* Hyderabad AQI Widget */}
