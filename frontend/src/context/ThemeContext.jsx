@@ -28,13 +28,6 @@ export function ThemeProvider({ children }) {
     
     // Store preference
     localStorage.setItem('theme', theme);
-    
-    // Update body background for dark mode
-    if (theme === 'dark') {
-      document.body.style.backgroundColor = '#0a0a0a';
-    } else {
-      document.body.style.backgroundColor = '#F8F9FA';
-    }
   }, [theme]);
 
   const toggleTheme = () => {
