@@ -82,6 +82,14 @@ export default function Dashboard() {
   // Benefits data
   const [benefits, setBenefits] = useState([]);
   
+  // CMS Content - Dump Yard
+  const [dumpyardConfig, setDumpyardConfig] = useState({
+    daily_waste_tons: 1200,
+    area_acres: 350,
+    red_zone_km: 2,
+    status: "Active"
+  });
+  
   // Floating AI Chat
   const [showAiChat, setShowAiChat] = useState(false);
   const [aiMessage, setAiMessage] = useState("");
