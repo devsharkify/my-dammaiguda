@@ -84,7 +84,7 @@ export default function AuthPage() {
       const formattedPhone = phone.startsWith("+91") ? phone : `+91${phone}`;
       const result = await verifyOTP(formattedPhone, otp);
       
-      if (result.is_new) {
+      if (result.is_new_user) {
         // New user - show registration form
         setIsNewUser(true);
         setStep(3);
