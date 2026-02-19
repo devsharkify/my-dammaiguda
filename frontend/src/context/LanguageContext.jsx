@@ -271,7 +271,7 @@ const translations = {
 export function LanguageProvider({ children }) {
   const [language, setLanguage] = useState(() => {
     const saved = localStorage.getItem("dammaiguda_language");
-    return saved || "te"; // Default to Telugu
+    return saved || "en"; // Default to English
   });
 
   useEffect(() => {
