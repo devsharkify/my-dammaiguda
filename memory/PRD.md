@@ -122,6 +122,15 @@ Build a production-ready, mobile-first civic engagement platform "My Dammaiguda"
 - `GET /api/aqi/both` - Both locations combined
 - `GET /api/aqi/current` - Multiple Hyderabad locations
 
+### Chat (WebSocket Real-Time)
+- `GET /api/chat/rooms` - List all chat rooms
+- `POST /api/chat/rooms` - Create a new room (admin)
+- `GET /api/chat/rooms/{room_id}/messages` - Get message history
+- `POST /api/chat/rooms/{room_id}/messages` - Send message (REST fallback)
+- `POST /api/chat/messages/{message_id}/react` - Add reaction to message
+- `WS /api/chat/ws/{room_id}` - WebSocket connection for real-time chat
+- `POST /api/chat/seed` - Seed default rooms (admin)
+
 ### Gamification (Enhanced)
 - `GET /api/education/leaderboard` - Enhanced with XP, badges, quiz stats
 - `GET /api/education/my-stats` - User stats with level, badge, rank, XP progress
