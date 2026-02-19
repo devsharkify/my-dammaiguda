@@ -195,12 +195,12 @@ export default function LandingPage() {
       </section>
 
       {/* Quick Links Section */}
-      <section className="py-16">
+      <section className="py-16 dark:bg-gray-900">
         <div className="max-w-7xl mx-auto px-4">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
             <Link 
               to="/dumpyard" 
-              className="bg-red-500 text-white rounded-xl p-6 text-center hover:bg-red-600 transition-colors"
+              className="bg-red-500 text-white rounded-xl p-6 text-center hover:bg-red-600 transition-colors shadow-lg"
               data-testid="quick-link-dumpyard"
             >
               <MapPin className="h-8 w-8 mx-auto mb-2" />
@@ -211,7 +211,7 @@ export default function LandingPage() {
             
             <Link 
               to="/expenditure"
-              className="bg-blue-500 text-white rounded-xl p-6 text-center hover:bg-blue-600 transition-colors"
+              className="bg-blue-500 text-white rounded-xl p-6 text-center hover:bg-blue-600 transition-colors shadow-lg"
               data-testid="quick-link-expenditure"
             >
               <BarChart3 className="h-8 w-8 mx-auto mb-2" />
@@ -222,7 +222,7 @@ export default function LandingPage() {
             
             <Link 
               to="/polls"
-              className="bg-purple-500 text-white rounded-xl p-6 text-center hover:bg-purple-600 transition-colors"
+              className="bg-purple-500 text-white rounded-xl p-6 text-center hover:bg-purple-600 transition-colors shadow-lg"
               data-testid="quick-link-polls"
             >
               <FileText className="h-8 w-8 mx-auto mb-2" />
@@ -233,7 +233,7 @@ export default function LandingPage() {
             
             <Link 
               to="/issues"
-              className="bg-orange-500 text-white rounded-xl p-6 text-center hover:bg-orange-600 transition-colors"
+              className="bg-orange-500 text-white rounded-xl p-6 text-center hover:bg-orange-600 transition-colors shadow-lg"
               data-testid="quick-link-issues"
             >
               <AlertTriangle className="h-8 w-8 mx-auto mb-2" />
@@ -246,19 +246,19 @@ export default function LandingPage() {
       </section>
 
       {/* Footer */}
-      <footer className="bg-text-primary text-white py-8">
+      <footer className="bg-gray-900 text-white py-8">
         <div className="max-w-7xl mx-auto px-4 text-center">
           <div className="flex items-center justify-center gap-2 mb-4">
             <Shield className="h-6 w-6" />
             <span className="font-heading font-bold text-lg">{t("appName")}</span>
           </div>
-          <p className="text-white/70 text-sm">
+          <p className="text-gray-400 text-sm">
             {language === "te" 
-              ? "దమ్మాయిగూడ వార్డు కోసం పౌర నిశ్చితార్థ వేదిక"
+              ? "దమ్మాయిగూడ వార్డు - పౌర సేవల వేదిక"
               : "Civic Engagement Platform for Dammaiguda Ward"}
           </p>
-          <p className="text-white/50 text-xs mt-2">
-            © 2024 My Dammaiguda. {language === "te" ? "అన్ని హక్కులు రిజర్వ్ చేయబడ్డాయి" : "All rights reserved."}
+          <p className="text-gray-500 text-xs mt-2">
+            © 2024 My Dammaiguda. {language === "te" ? "అన్ని హక్కులు భద్రం" : "All rights reserved."}
           </p>
         </div>
       </footer>
