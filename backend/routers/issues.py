@@ -124,7 +124,19 @@ async def update_issue_status(issue_id: str, update: UpdateIssueStatus, user: di
     if user.get("role") not in ["volunteer", "admin"]:
         raise HTTPException(status_code=403, detail="Not authorized")
     
-    valid_statuses = ["reported", "verified", "in_progress", "escalated", "resolved", "closed"]
+    valid_statuses = [
+        "reported", 
+        "verified", 
+        "in_progress", 
+        "action_taken",
+        "filed_with_authority",
+        "resolved_by_authority",
+        "resolved_by_us",
+        "issue_not_found",
+        "escalated", 
+        "resolved", 
+        "closed"
+    ]
     if update.status not in valid_statuses:
         raise HTTPException(status_code=400, detail="Invalid status")
     
