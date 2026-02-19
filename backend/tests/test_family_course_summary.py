@@ -14,13 +14,13 @@ class TestFamilyAPI:
     def auth_token(self):
         """Get auth token using test credentials"""
         # Request OTP
-        response = requests.post(f"{BASE_URL}/api/auth/request-otp", json={
+        response = requests.post(f"{BASE_URL}/api/auth/otp", json={
             "phone": "9876543210"
         })
         assert response.status_code == 200, f"Failed to request OTP: {response.text}"
         
         # Verify OTP
-        response = requests.post(f"{BASE_URL}/api/auth/verify-otp", json={
+        response = requests.post(f"{BASE_URL}/api/auth/verify", json={
             "phone": "9876543210",
             "otp": "123456"  # Static test OTP
         })
