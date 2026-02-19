@@ -468,8 +468,13 @@ export default function Dashboard() {
           ))}
         </div>
 
-        {/* AQI Widgets - Dammaiguda (Big) + Dump Yard Card */}
-        <div className="grid grid-cols-2 gap-3" data-testid="aqi-widgets">
+        {/* AQI Widgets - Air Quality (Pollution) + Dump Yard Card */}
+        <div data-testid="aqi-widgets">
+          <h3 className="font-semibold text-sm mb-2 flex items-center gap-2">
+            <Wind className="h-4 w-4 text-primary" />
+            {language === "te" ? "గాలి నాణ్యత (కాలుష్యం)" : "Air Quality (Pollution)"}
+          </h3>
+          <div className="grid grid-cols-2 gap-3">
           {/* Dammaiguda AQI Widget - Main Focus */}
           <Link to="/aqi">
             <Card className="border-border/50 overflow-hidden h-full">
