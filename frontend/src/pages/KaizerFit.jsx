@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import { useLanguage } from "../context/LanguageContext";
 import { useAuth } from "../context/AuthContext";
 import axios from "axios";
@@ -28,6 +28,7 @@ import {
   Award,
   Zap,
   Heart,
+  Watch,
   Timer,
   ChevronRight,
   Sparkles,
