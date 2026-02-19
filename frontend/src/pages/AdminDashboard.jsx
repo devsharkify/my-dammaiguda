@@ -370,9 +370,12 @@ export default function AdminDashboard() {
         </div>
 
         <Tabs defaultValue="issues" className="w-full">
-          <TabsList className="grid w-full grid-cols-4 h-12">
+          <TabsList className="grid w-full grid-cols-5 h-12">
             <TabsTrigger value="issues" className="text-xs">
               {language === "te" ? "సమస్యలు" : "Issues"}
+            </TabsTrigger>
+            <TabsTrigger value="shop" className="text-xs">
+              {language === "te" ? "షాప్" : "Shop"}
             </TabsTrigger>
             <TabsTrigger value="education" className="text-xs">
               {language === "te" ? "విద్య" : "Education"}
