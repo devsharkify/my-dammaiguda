@@ -939,7 +939,7 @@ export default function AdminDashboard() {
 
       {/* Product Dialog */}
       <Dialog open={showProductDialog} onOpenChange={setShowProductDialog}>
-        <DialogContent className="max-w-md">
+        <DialogContent className="max-w-md max-h-[90vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle>{editingProduct ? "Edit Product" : "Add Product"}</DialogTitle>
           </DialogHeader>
@@ -987,13 +987,50 @@ export default function AdminDashboard() {
                 />
               </div>
             </div>
+            
+            {/* Point Type Selection */}
+            <div>
+              <Label>Point Type Required *</Label>
+              <Select value={productForm.point_type} onValueChange={(v) => setProductForm({...productForm, point_type: v})}>
+                <SelectTrigger>
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="normal">Normal Points Only</SelectItem>
+                  <SelectItem value="privilege">Privilege Points Only</SelectItem>
+                  <SelectItem value="both">Both (Normal + Privilege)</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <Label>Points Required *</Label>
+                <Label>Normal Points *</Label>
                 <Input
                   type="number"
                   value={productForm.points_required}
                   onChange={(e) => setProductForm({...productForm, points_required: parseInt(e.target.value) || 0})}
+                />
+              </div>
+              <div>
+                <Label>Privilege Points</Label>
+                <Input
+                  type="number"
+                  value={productForm.privilege_points_required}
+                  onChange={(e) => setProductForm({...productForm, privilege_points_required: parseInt(e.target.value) || 0})}
+                  disabled={productForm.point_type === "normal"}
+                />
+              </div>
+            </div>
+            
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <Label>Delivery Fee (₹)</Label>
+                <Input
+                  type="number"
+                  value={productForm.delivery_fee}
+                  onChange={(e) => setProductForm({...productForm, delivery_fee: parseInt(e.target.value) || 0})}
+                  placeholder="0 for free delivery"
                 />
               </div>
               <div>
