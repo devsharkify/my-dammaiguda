@@ -112,14 +112,15 @@ export default function Dashboard() {
 
   const fetchDashboardData = async () => {
     try {
-      const [issuesRes, storiesRes, groupsRes, aqiRes, adsRes, wallRes, benefitsRes] = await Promise.all([
+      const [issuesRes, storiesRes, groupsRes, aqiRes, adsRes, wallRes, benefitsRes, dumpyardRes] = await Promise.all([
         axios.get(`${API}/issues?limit=3`).catch(() => ({ data: { issues: [] } })),
         axios.get(`${API}/stories/feed`, { headers }).catch(() => ({ data: { feed: [], my_stories: null } })),
         axios.get(`${API}/wall/groups`, { headers }).catch(() => ({ data: [] })),
         axios.get(`${API}/aqi/both`).catch(() => ({ data: null })),
         axios.get(`${API}/stories/ads/stories`, { headers }).catch(() => ({ data: { ads: [] } })),
         axios.get(`${API}/wall/posts?limit=1`, { headers }).catch(() => ({ data: { posts: [] } })),
-        axios.get(`${API}/benefits`).catch(() => ({ data: [] }))
+        axios.get(`${API}/benefits`).catch(() => ({ data: [] })),
+        axios.get(`${API}/content/dumpyard`).catch(() => ({ data: null }))
       ]);
       
       setRecentIssues(issuesRes.data?.issues || issuesRes.data || []);
@@ -130,6 +131,11 @@ export default function Dashboard() {
       setStoryAds(adsRes.data?.ads || []);
       setLatestWallPost(wallRes.data?.posts?.[0] || null);
       setBenefits(benefitsRes.data || []);
+      
+      // Set dump yard config from CMS
+      if (dumpyardRes.data && dumpyardRes.data.daily_waste_tons) {
+        setDumpyardConfig(dumpyardRes.data);
+      }
     } catch (error) {
       console.error("Error fetching dashboard data:", error);
     } finally {
