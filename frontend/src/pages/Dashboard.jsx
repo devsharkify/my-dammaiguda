@@ -107,7 +107,7 @@ export default function Dashboard() {
         axios.get(`${API}/issues?limit=3`).catch(() => ({ data: { issues: [] } })),
         axios.get(`${API}/stories/feed`, { headers }).catch(() => ({ data: { feed: [], my_stories: null } })),
         axios.get(`${API}/wall/groups`, { headers }).catch(() => ({ data: [] })),
-        axios.get(`${API}/aqi/current`).catch(() => ({ data: null })),
+        axios.get(`${API}/aqi/both`).catch(() => ({ data: null })),
         axios.get(`${API}/stories/ads/stories`, { headers }).catch(() => ({ data: { ads: [] } })),
         axios.get(`${API}/wall/posts?limit=1`, { headers }).catch(() => ({ data: { posts: [] } })),
         axios.get(`${API}/benefits`).catch(() => ({ data: [] }))
