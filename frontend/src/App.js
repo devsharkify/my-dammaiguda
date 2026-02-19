@@ -183,6 +183,9 @@ function AppRoutes() {
         </ProtectedRoute>
       } />
       
+      {/* Helpline Route */}
+      <Route path="/helpline" element={<Helpline />} />
+      
       {/* Volunteer Routes */}
       <Route path="/volunteer" element={
         <ProtectedRoute roles={["volunteer", "admin"]}>
