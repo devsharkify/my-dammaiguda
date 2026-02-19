@@ -1,118 +1,126 @@
 {
-  "project_name": "My Dammaiguda",
-  "version": "1.0.0",
-  "last_updated": "2026-05-20",
-  "author": "E1",
-  "persona": {
-    "identity": "The Anti-AI Designer",
-    "mission": "Create a civic platform that feels human, urgent, and trustworthy. No generic government gray-ware.",
-    "principles": [
-      "Clarity is Kindness: For non-tech savvy users, bigger is better.",
-      "Status is Signal: Color is not decoration; it is information (Red = Danger, Green = Safe).",
-      "Native Feel: It must feel like a native app even on the web."
-    ]
-  },
-  "theme_strategy": {
-    "mode": "light",
-    "primary_palette": {
-      "name": "Civic Trust",
-      "colors": {
-        "primary": "#0F766E",
-        "primary_foreground": "#FFFFFF",
-        "secondary": "#F3F4F6",
-        "secondary_foreground": "#1F2937",
-        "background": "#F9FAFB",
-        "surface": "#FFFFFF",
-        "header_bg": "#111827",
-        "header_text": "#F9FAFB"
+  "design_system": {
+    "identity": {
+      "name": "My Dammaiguda",
+      "tone": "Civic Authority & Community Trust",
+      "aesthetic": "High-Contrast Utility (Civic Tech)",
+      "principles": [
+        "Contrast is King: Black Navigation vs White Content",
+        "Data over Decoration: Clean widgets, minimal gradients",
+        "Accessibility First: High legibility for elderly users"
+      ]
+    },
+    "colors": {
+      "primary": "#0F766E",
+      "secondary": "#C2410C",
+      "accent": "#F59E0B",
+      "background": "#FFFFFF",
+      "surface": "#F8F9FA",
+      "text": {
+        "primary": "#111827",
+        "secondary": "#4B5563",
+        "muted": "#9CA3AF",
+        "inverse": "#FFFFFF"
+      },
+      "navigation": {
+        "background": "#000000",
+        "active": "#FFFFFF",
+        "inactive": "#9CA3AF"
+      },
+      "status": {
+        "success": "#059669",
+        "warning": "#D97706",
+        "danger": "#DC2626",
+        "info": "#2563EB"
       }
     },
-    "status_palette": {
-      "good": "#059669",
-      "moderate": "#D97706",
-      "unhealthy": "#DC2626",
-      "very_unhealthy": "#7F1D1D",
-      "hazardous": "#450A0A"
-    }
-  },
-  "typography": {
-    "font_family": {
-      "heading": "Manrope, sans-serif",
-      "body": "Inter, Noto Sans Telugu, sans-serif",
-      "telugu": "Noto Sans Telugu, sans-serif"
+    "typography": {
+      "font_family": {
+        "heading": "Manrope, sans-serif",
+        "body": "Inter, sans-serif",
+        "regional": "Noto Sans Telugu, sans-serif"
+      },
+      "scale": {
+        "h1": "text-2xl font-bold tracking-tight",
+        "h2": "text-xl font-bold",
+        "h3": "text-lg font-semibold",
+        "body": "text-sm leading-relaxed",
+        "caption": "text-xs font-medium text-muted-foreground"
+      }
     },
-    "scale": {
-      "h1": "text-2xl font-bold tracking-tight text-gray-900",
-      "h2": "text-xl font-bold tracking-tight text-gray-900",
-      "h3": "text-lg font-semibold text-gray-900",
-      "body": "text-base font-normal text-gray-700 leading-relaxed",
-      "small": "text-sm font-medium text-gray-500",
-      "badge": "text-xs font-bold uppercase tracking-wide"
-    }
-  },
-  "layout_system": {
-    "grid_strategy": "Mobile First Stack",
-    "container": "w-full max-w-md mx-auto px-4 pb-20 pt-4",
     "spacing": {
-      "section_gap": "gap-4",
-      "card_padding": "p-4",
-      "internal_gap": "gap-3"
-    },
-    "card_style": "bg-white rounded-2xl border border-gray-100 shadow-[0_2px_8px_rgba(0,0,0,0.04)] overflow-hidden"
+      "container_padding": "p-4 md:p-6",
+      "element_gap": "gap-3 md:gap-4",
+      "radius": "rounded-xl"
+    }
   },
-  "components": {
-    "AQI_Widget": {
-      "description": "The heartbeat of the app. Must be instantly readable.",
-      "issues_addressed": ["Text wrapping on 'Unhealthy'", "Spacing issues"],
-      "structure": "flex flex-col p-5 bg-white rounded-2xl border border-gray-100 shadow-sm relative overflow-hidden",
-      "fixes": {
-        "badge_container": "inline-flex px-3 py-1 rounded-full items-center justify-center min-w-[80px] text-center",
-        "badge_text": "text-xs font-bold whitespace-normal leading-tight break-words text-center",
-        "value_display": "text-5xl font-extrabold tracking-tighter text-gray-900 my-2"
+  "component_overrides": {
+    "Layout": {
+      "path": "/app/frontend/src/components/Layout.jsx",
+      "header": {
+        "style": "bg-black text-white shadow-md",
+        "elements": {
+          "profile_icon": "REMOVE (User Request)",
+          "logo": "Keep existing Shield + App Name",
+          "menu_trigger": "Keep existing Menu icon"
+        }
+      },
+      "bottom_navigation": {
+        "style": "bg-black text-white border-t border-white/10 safe-area-bottom",
+        "active_item": "text-white font-bold scale-105",
+        "inactive_item": "text-gray-500 hover:text-gray-300",
+        "bulge_button": "bg-white text-black shadow-glow-white border-4 border-black -mt-8 rounded-full p-4"
+      },
+      "sidebar": {
+        "structure": [
+          "Header (App Name + Close Button)",
+          "Profile Section (Avatar + Name + Phone) - Compact, Top of list",
+          "Navigation Links (Scrollable)",
+          "Logout (Bottom Fixed)"
+        ],
+        "style": "bg-white text-gray-900 w-72 shadow-2xl",
+        "spacing": "Remove excessive white space at top. Use p-4 for header, p-2 for list."
       }
     },
-    "Quick_Actions": {
-      "description": "Grid of actionable items.",
-      "structure": "grid grid-cols-2 gap-3",
-      "item_style": "flex flex-col items-center justify-center p-4 bg-gray-50 hover:bg-gray-100 rounded-xl transition-all active:scale-95 border border-transparent hover:border-gray-200"
-    },
-    "Dump_Yard_Card": {
-      "description": "Information density without clutter.",
-      "structure": "flex flex-col p-4 bg-orange-50/50 border border-orange-100 rounded-2xl",
-      "highlight": "text-orange-700 font-bold"
-    },
-    "Header": {
-      "description": "Sticky top navigation.",
-      "structure": "sticky top-0 z-50 w-full bg-gray-900 text-white shadow-md backdrop-blur-sm bg-opacity-95",
-      "inner": "flex items-center justify-between px-4 h-14"
+    "Dashboard": {
+      "path": "/app/frontend/src/pages/Dashboard.jsx",
+      "dump_yard_widget": {
+        "design_goal": "Compact, Alert-Style, Reduced Text",
+        "width": "w-full md:w-1/2 lg:w-1/3 (On mobile keep full width but reduce height/padding)",
+        "style": "bg-white border-l-4 border-red-600 shadow-sm rounded-lg",
+        "content_structure": [
+          "Header: 'Dump Yard Status' (Small Label)",
+          "Main Metric: '1,200 Tons/Day' (Large, Bold)",
+          "Status Badge: '🔴 Active Risk' (Pill)",
+          "Footer: 'View Report →' (Link)"
+        ],
+        "remove": [
+          "List of diseases (Respiratory, Skin, etc.)",
+          "Detailed impact zone text (Keep it minimal)"
+        ]
+      }
     }
   },
-  "specific_fixes": {
-    "aqi_badge_wrap": {
-      "problem": "Long status text like 'Very Unhealthy' breaks layout",
-      "solution_css": "max-w-full whitespace-normal text-center leading-3 py-1.5 h-auto min-h-[24px]",
-      "recommendation": "Do not use fixed height pills. Allow them to grow vertically."
-    },
-    "card_borders": {
-      "problem": "Inconsistent border radius and colors",
-      "solution_css": "rounded-2xl border border-gray-200/60 shadow-sm"
-    },
-    "mobile_overflow": {
-      "problem": "Elements pushing out of 375px viewport",
-      "solution_css": "w-full max-w-[100vw] overflow-x-hidden"
-    }
+  "visual_enhancements": {
+    "shadows": "shadow-sm for cards, shadow-xl for floating elements",
+    "borders": "border border-gray-100 for cards to define edges on white background",
+    "glassmorphism": "Use sparingly. Only for modal overlays (backdrop-blur-sm).",
+    "animations": "Button press scale (active:scale-95), Page transitions (fade-in)"
   },
-  "instructions_to_main_agent": [
-    "1. APPLY THE FIXES: Go to `Dashboard.js` or `AQIWidget.js` component and apply the specific badge fixes.",
-    "2. STANDARDIZE CARDS: Replace all custom card styles with the `card_style` defined in layout_system.",
-    "3. HEADER UPDATE: Ensure the header is `bg-gray-900` and sticky.",
-    "4. FONT CHECK: Ensure `Noto Sans Telugu` is loaded and applied for Telugu text.",
-    "5. TEST ID: Add `data-testid` to all interactive elements."
-  ],
   "universal_guidelines": [
-    "Do not use gradients for text.",
-    "Avoid 'Inter' for headings; use 'Manrope'.",
-    "Buttons must be at least 44px height for touch targets.",
-    "Use 2px borders for active states to improve accessibility."
+    "Dark colors look good when used independently without gradients. DO NOT use dark colors as gradients",
+    "Don't make generic centered layouts, simplistic gradients, and uniform styling.",
+    "Create depth through layered design elements with z-index hierarchy",
+    "You MUST NOT apply universal transition. Eg: transition: all. This results in breaking transforms. Always add transitions for specific interactive elements",
+    "You MUST NOT center align the app container, ie do not add .App { text-align: center; } in the css file.",
+    "Always use modern button styles like pill-shaped, or sharp button with interaction animations & color relevant to the app style",
+    "NEVER: use AI assistant Emoji characters like 🤖🧠💭💡🔮🎯 etc for icons."
+  ],
+  "instructions_to_main_agent": [
+    "1. Modify Layout.jsx: Change Bottom Nav background to 'bg-black'. Update icons to be 'text-gray-500' (inactive) and 'text-white' (active).",
+    "2. Modify Layout.jsx: Remove the Profile Link/Icon from the top Header.",
+    "3. Modify Layout.jsx: Refactor Sidebar (Hamburger Menu). Move the User Profile info to be immediately below the close button/logo, with minimal padding. Ensure no large white gaps.",
+    "4. Modify Dashboard.jsx: Redesign the Dump Yard widget. Make it look like a 'Critical Alert' card. Remove the list of health risks. Keep it concise: Status, Daily Waste, and a 'View Details' link.",
+    "5. Ensure all text contrast ratios meet accessibility standards (White text on Black bg is safe)."
   ]
 }
