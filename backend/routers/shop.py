@@ -264,10 +264,26 @@ async def get_product(product_id: str, user: dict = Depends(get_current_user)):
     if not product:
         raise HTTPException(status_code=404, detail="Product not found")
     
-    wallet = await db.wallets.find_one({"user_id": user["id"]}, {"_id": 0, "balance": 1})
+    wallet = await db.wallets.find_one({"user_id": user["id"]}, {"_id": 0})
     user_balance = wallet.get("balance", 0) if wallet else 0
-    product["can_afford"] = user_balance >= product["points_required"]
+    user_privilege_balance = wallet.get("privilege_balance", 0) if wallet else 0
+    
+    point_type = product.get("point_type", "normal")
+    normal_required = product.get("points_required", 0)
+    privilege_required = product.get("privilege_points_required", 0)
+    
+    if point_type == "normal":
+        product["can_afford"] = user_balance >= normal_required
+    elif point_type == "privilege":
+        product["can_afford"] = user_privilege_balance >= privilege_required
+    else:  # both
+        product["can_afford"] = (user_balance >= normal_required and user_privilege_balance >= privilege_required)
+    
     product["user_balance"] = user_balance
+    product["user_privilege_balance"] = user_privilege_balance
+    product.setdefault("privilege_points_required", 0)
+    product.setdefault("point_type", "normal")
+    product.setdefault("delivery_fee", 0)
     
     return product
 
