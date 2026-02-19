@@ -21,7 +21,29 @@ Build a production-ready, mobile-first civic engagement platform "My Dammaiguda"
 
 ## Recently Implemented Features (Feb 19, 2026)
 
-### 1. Two-Tier Points System for Gift Shop ✅
+### 1. Dashboard Reorganization ✅
+- **Stories bar** at top
+- **AQI Widget**: Dammaiguda AQI (BIG font, 3xl) with Hyderabad status (small 10px text below)
+- **Dump Yard Card**: Quick info (1,200 tons/day, 350 acres, 2km Red Zone alert)
+- **Citizen Wall Widget**: Latest community post
+- **9 Quick Action Boxes**: Report, Issues, Benefits, Fit, Doctor, Family, Gifts, Education, Polls
+- **Benefits Slider**: Citizen benefits cards
+
+### 2. Bottom Navigation Update ✅
+- Removed AI Assistant/Chat from bottom navigation
+- New navigation: **Home → Learn → Fit → Gifts → Profile**
+
+### 3. Issues Page Enhancement ✅
+- **Two Tabs**: "All Issues" and "My Issues" (user-filed issues with badge)
+- **New Admin Status Options**:
+  - Action Taken
+  - Filed with Authority
+  - Resolved by Authority  
+  - Resolved by Us
+  - Issue Not Found (with "Please contact us" message)
+- Status badges now have icons
+
+### 4. Two-Tier Points System for Gift Shop ✅
 - **Normal Points**: Earned through activities, fitness, admin credits
 - **Privilege Points**: Exclusively assigned by admin to selected users
 - **Product Point Types**:
