@@ -454,113 +454,62 @@ export default function Dashboard() {
           ))}
         </div>
 
-        {/* Quick Actions Row 1 - Report, Issues, Dump Yard */}
-        <div className="grid grid-cols-3 gap-3">
-          <Link to="/report" data-testid="quick-action-report">
-            <div className="h-16 rounded-xl bg-red-50 flex flex-col items-center justify-center shadow-sm active:scale-95 transition-transform border border-red-100">
-              <AlertTriangle className="h-6 w-6 text-red-600" />
-              <span className="text-[10px] mt-1 font-medium text-red-700">{language === "te" ? "రిపోర్ట్" : "Report"}</span>
-            </div>
-          </Link>
-          <Link to="/issues" data-testid="quick-action-issues">
-            <div className="h-16 rounded-xl bg-orange-50 flex flex-col items-center justify-center shadow-sm active:scale-95 transition-transform border border-orange-100">
-              <FileText className="h-6 w-6 text-orange-600" />
-              <span className="text-[10px] mt-1 font-medium text-orange-700">{language === "te" ? "సమస్యలు" : "Issues"}</span>
-            </div>
-          </Link>
-          <Link to="/dump-yard" data-testid="quick-action-dump">
-            <div className="h-16 rounded-xl bg-amber-50 flex flex-col items-center justify-center shadow-sm active:scale-95 transition-transform border border-amber-100">
-              <Trash className="h-6 w-6 text-amber-600" />
-              <span className="text-[10px] mt-1 font-medium text-amber-700">{language === "te" ? "డంప్ యార్డ్" : "Dump"}</span>
-            </div>
-          </Link>
-        </div>
-
-        {/* Quick Actions Row 2 - Fit, Doctor, My Family */}
-        <div className="grid grid-cols-3 gap-3">
-          <Link to="/fitness" data-testid="quick-action-fit">
-            <div className="h-16 rounded-xl bg-blue-50 flex flex-col items-center justify-center shadow-sm active:scale-95 transition-transform border border-blue-100">
-              <Activity className="h-6 w-6 text-blue-600" />
-              <span className="text-[10px] mt-1 font-medium text-blue-700">{language === "te" ? "ఫిట్" : "Fit"}</span>
-            </div>
-          </Link>
-          <Link to="/doctor" data-testid="quick-action-doctor">
-            <div className="h-16 rounded-xl bg-teal-50 flex flex-col items-center justify-center shadow-sm active:scale-95 transition-transform border border-teal-100">
-              <Stethoscope className="h-6 w-6 text-teal-600" />
-              <span className="text-[10px] mt-1 font-medium text-teal-700">{language === "te" ? "డాక్టర్" : "Doctor"}</span>
-            </div>
-          </Link>
-          <Link to="/family" data-testid="quick-action-family">
-            <div className="h-16 rounded-xl bg-purple-50 flex flex-col items-center justify-center shadow-sm active:scale-95 transition-transform border border-purple-100">
-              <Users className="h-6 w-6 text-purple-600" />
-              <span className="text-[10px] mt-1 font-medium text-purple-700">{language === "te" ? "కుటుంబం" : "Family"}</span>
-            </div>
-          </Link>
-        </div>
-
-        {/* Quick Actions Row 3 - Gifts, Education, Polls */}
-        <div className="grid grid-cols-3 gap-3">
-          <Link to="/shop" data-testid="quick-action-shop">
-            <div className="h-16 rounded-xl bg-gradient-to-br from-amber-50 to-orange-50 flex flex-col items-center justify-center shadow-sm active:scale-95 transition-transform border border-amber-200">
-              <Gift className="h-6 w-6 text-amber-600" />
-              <span className="text-[10px] mt-1 font-medium text-amber-700">{language === "te" ? "గిఫ్ట్స్" : "Gifts"}</span>
-            </div>
-          </Link>
-          <Link to="/education" data-testid="quick-action-education">
-            <div className="h-16 rounded-xl bg-indigo-50 flex flex-col items-center justify-center shadow-sm active:scale-95 transition-transform border border-indigo-100">
-              <GraduationCap className="h-6 w-6 text-indigo-600" />
-              <span className="text-[10px] mt-1 font-medium text-indigo-700">{language === "te" ? "విద్య" : "Education"}</span>
-            </div>
-          </Link>
-          <Link to="/polls" data-testid="quick-action-polls">
-            <div className="h-16 rounded-xl bg-emerald-50 flex flex-col items-center justify-center shadow-sm active:scale-95 transition-transform border border-emerald-100">
-              <Ticket className="h-6 w-6 text-emerald-600" />
-              <span className="text-[10px] mt-1 font-medium text-emerald-700">{language === "te" ? "పోల్స్" : "Polls"}</span>
-            </div>
-          </Link>
-        </div>
-
-        {/* AQI Widgets - Two cards side by side */}
+        {/* AQI Widgets - Dammaiguda (Big) + Dump Yard Card */}
         <div className="grid grid-cols-2 gap-3" data-testid="aqi-widgets">
-          {/* Hyderabad AQI Widget */}
+          {/* Dammaiguda AQI Widget - Main Focus */}
           <Link to="/aqi">
             <Card className="border-border/50 overflow-hidden h-full">
               <CardContent className="p-3">
-                <div className="flex items-center gap-2 mb-2">
-                  <div className={`h-8 w-8 rounded-lg ${getAqiInfo(aqiData?.hyderabad?.aqi).bg} ${getAqiInfo(aqiData?.hyderabad?.aqi).text} flex items-center justify-center`}>
-                    <Wind className="h-4 w-4" />
+                <div className="flex items-center gap-2 mb-1">
+                  <div className={`h-8 w-8 rounded-lg ${getAqiInfo(aqiData?.dammaiguda?.aqi).bg} ${getAqiInfo(aqiData?.dammaiguda?.aqi).text} flex items-center justify-center`}>
+                    <MapPin className="h-4 w-4" />
                   </div>
-                  <span className="text-xs text-muted-foreground">
-                    {language === "te" ? "హైదరాబాద్" : "Hyderabad"}
+                  <span className="text-xs font-medium">
+                    {language === "te" ? "దమ్మాయిగూడ" : "Dammaiguda"}
                   </span>
                 </div>
                 <div className="flex items-end justify-between">
-                  <p className="font-bold text-2xl">{aqiData?.hyderabad?.aqi || "—"}</p>
-                  <Badge className={`${getAqiInfo(aqiData?.hyderabad?.aqi).bg} ${getAqiInfo(aqiData?.hyderabad?.aqi).text} text-[10px]`}>
-                    {language === "te" ? getAqiInfo(aqiData?.hyderabad?.aqi).status_te : getAqiInfo(aqiData?.hyderabad?.aqi).status}
+                  <p className="font-bold text-3xl">{aqiData?.dammaiguda?.aqi || "—"}</p>
+                  <Badge className={`${getAqiInfo(aqiData?.dammaiguda?.aqi).bg} ${getAqiInfo(aqiData?.dammaiguda?.aqi).text} text-[10px]`}>
+                    {language === "te" ? getAqiInfo(aqiData?.dammaiguda?.aqi).status_te : getAqiInfo(aqiData?.dammaiguda?.aqi).status}
                   </Badge>
+                </div>
+                {/* Hyderabad small text */}
+                <div className="flex items-center gap-1.5 mt-2 pt-2 border-t border-border/30">
+                  <Wind className="h-3 w-3 text-muted-foreground" />
+                  <span className="text-[10px] text-muted-foreground">
+                    {language === "te" ? "హైదరాబాద్" : "Hyderabad"}: {aqiData?.hyderabad?.aqi || "—"} ({language === "te" ? getAqiInfo(aqiData?.hyderabad?.aqi).status_te : getAqiInfo(aqiData?.hyderabad?.aqi).status})
+                  </span>
                 </div>
               </CardContent>
             </Card>
           </Link>
           
-          {/* Dammaiguda AQI Widget */}
-          <Link to="/aqi">
-            <Card className="border-border/50 overflow-hidden h-full">
+          {/* Dump Yard Quick Info Card */}
+          <Link to="/dump-yard">
+            <Card className="border-border/50 overflow-hidden h-full bg-gradient-to-br from-red-50 to-orange-50 dark:from-red-950/30 dark:to-orange-950/30">
               <CardContent className="p-3">
-                <div className="flex items-center gap-2 mb-2">
-                  <div className={`h-8 w-8 rounded-lg ${getAqiInfo(aqiData?.dammaiguda?.aqi).bg} ${getAqiInfo(aqiData?.dammaiguda?.aqi).text} flex items-center justify-center`}>
-                    <MapPin className="h-4 w-4" />
+                <div className="flex items-center gap-2 mb-1">
+                  <div className="h-8 w-8 rounded-lg bg-red-100 dark:bg-red-900/50 flex items-center justify-center">
+                    <Trash className="h-4 w-4 text-red-600" />
                   </div>
-                  <span className="text-xs text-muted-foreground">
-                    {language === "te" ? "దమ్మాయిగూడ" : "Dammaiguda"}
+                  <span className="text-xs font-medium text-red-700 dark:text-red-400">
+                    {language === "te" ? "డంప్ యార్డ్" : "Dump Yard"}
                   </span>
                 </div>
-                <div className="flex items-end justify-between">
-                  <p className="font-bold text-2xl">{aqiData?.dammaiguda?.aqi || "—"}</p>
-                  <Badge className={`${getAqiInfo(aqiData?.dammaiguda?.aqi).bg} ${getAqiInfo(aqiData?.dammaiguda?.aqi).text} text-[10px]`}>
-                    {language === "te" ? getAqiInfo(aqiData?.dammaiguda?.aqi).status_te : getAqiInfo(aqiData?.dammaiguda?.aqi).status}
-                  </Badge>
+                <div className="mt-1">
+                  <p className="text-sm font-semibold text-red-800 dark:text-red-300">
+                    {language === "te" ? "1,200 టన్నులు/రోజు" : "1,200 tons/day"}
+                  </p>
+                  <p className="text-[10px] text-red-600/80 dark:text-red-400/80 mt-0.5">
+                    {language === "te" ? "350 ఎకరాలు ప్రాంతం" : "350 acres area"}
+                  </p>
+                </div>
+                <div className="flex items-center gap-1 mt-2">
+                  <AlertTriangle className="h-3 w-3 text-red-500" />
+                  <span className="text-[9px] text-red-600 dark:text-red-400">
+                    {language === "te" ? "2 కి.మీ. రెడ్ జోన్" : "2km Red Zone Active"}
+                  </span>
                 </div>
               </CardContent>
             </Card>
@@ -621,6 +570,72 @@ export default function Dashboard() {
             )}
           </CardContent>
         </Card>
+
+        {/* Quick Actions - 9 boxes (3x3 grid) */}
+        <div className="grid grid-cols-3 gap-3">
+          <Link to="/report" data-testid="quick-action-report">
+            <div className="h-16 rounded-xl bg-red-50 flex flex-col items-center justify-center shadow-sm active:scale-95 transition-transform border border-red-100">
+              <AlertTriangle className="h-6 w-6 text-red-600" />
+              <span className="text-[10px] mt-1 font-medium text-red-700">{language === "te" ? "రిపోర్ట్" : "Report"}</span>
+            </div>
+          </Link>
+          <Link to="/issues" data-testid="quick-action-issues">
+            <div className="h-16 rounded-xl bg-orange-50 flex flex-col items-center justify-center shadow-sm active:scale-95 transition-transform border border-orange-100">
+              <FileText className="h-6 w-6 text-orange-600" />
+              <span className="text-[10px] mt-1 font-medium text-orange-700">{language === "te" ? "సమస్యలు" : "Issues"}</span>
+            </div>
+          </Link>
+          <Link to="/benefits" data-testid="quick-action-benefits">
+            <div className="h-16 rounded-xl bg-green-50 flex flex-col items-center justify-center shadow-sm active:scale-95 transition-transform border border-green-100">
+              <Heart className="h-6 w-6 text-green-600" />
+              <span className="text-[10px] mt-1 font-medium text-green-700">{language === "te" ? "ప్రయోజనాలు" : "Benefits"}</span>
+            </div>
+          </Link>
+        </div>
+
+        {/* Quick Actions Row 2 - Fit, Doctor, My Family */}
+        <div className="grid grid-cols-3 gap-3">
+          <Link to="/fitness" data-testid="quick-action-fit">
+            <div className="h-16 rounded-xl bg-blue-50 flex flex-col items-center justify-center shadow-sm active:scale-95 transition-transform border border-blue-100">
+              <Activity className="h-6 w-6 text-blue-600" />
+              <span className="text-[10px] mt-1 font-medium text-blue-700">{language === "te" ? "ఫిట్" : "Fit"}</span>
+            </div>
+          </Link>
+          <Link to="/doctor" data-testid="quick-action-doctor">
+            <div className="h-16 rounded-xl bg-teal-50 flex flex-col items-center justify-center shadow-sm active:scale-95 transition-transform border border-teal-100">
+              <Stethoscope className="h-6 w-6 text-teal-600" />
+              <span className="text-[10px] mt-1 font-medium text-teal-700">{language === "te" ? "డాక్టర్" : "Doctor"}</span>
+            </div>
+          </Link>
+          <Link to="/family" data-testid="quick-action-family">
+            <div className="h-16 rounded-xl bg-purple-50 flex flex-col items-center justify-center shadow-sm active:scale-95 transition-transform border border-purple-100">
+              <Users className="h-6 w-6 text-purple-600" />
+              <span className="text-[10px] mt-1 font-medium text-purple-700">{language === "te" ? "కుటుంబం" : "Family"}</span>
+            </div>
+          </Link>
+        </div>
+
+        {/* Quick Actions Row 3 - Gifts, Education, Polls */}
+        <div className="grid grid-cols-3 gap-3">
+          <Link to="/shop" data-testid="quick-action-shop">
+            <div className="h-16 rounded-xl bg-gradient-to-br from-amber-50 to-orange-50 flex flex-col items-center justify-center shadow-sm active:scale-95 transition-transform border border-amber-200">
+              <Gift className="h-6 w-6 text-amber-600" />
+              <span className="text-[10px] mt-1 font-medium text-amber-700">{language === "te" ? "గిఫ్ట్స్" : "Gifts"}</span>
+            </div>
+          </Link>
+          <Link to="/education" data-testid="quick-action-education">
+            <div className="h-16 rounded-xl bg-indigo-50 flex flex-col items-center justify-center shadow-sm active:scale-95 transition-transform border border-indigo-100">
+              <GraduationCap className="h-6 w-6 text-indigo-600" />
+              <span className="text-[10px] mt-1 font-medium text-indigo-700">{language === "te" ? "విద్య" : "Education"}</span>
+            </div>
+          </Link>
+          <Link to="/polls" data-testid="quick-action-polls">
+            <div className="h-16 rounded-xl bg-emerald-50 flex flex-col items-center justify-center shadow-sm active:scale-95 transition-transform border border-emerald-100">
+              <Ticket className="h-6 w-6 text-emerald-600" />
+              <span className="text-[10px] mt-1 font-medium text-emerald-700">{language === "te" ? "పోల్స్" : "Polls"}</span>
+            </div>
+          </Link>
+        </div>
 
         {/* Citizen Benefits Slider */}
         <div data-testid="benefits-section">
