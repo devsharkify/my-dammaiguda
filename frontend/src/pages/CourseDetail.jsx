@@ -364,13 +364,13 @@ export default function CourseDetail() {
         {!isEnrolled && (
           <Card className="border-0 bg-gradient-to-r from-primary to-purple-600 text-white">
             <CardContent className="p-4">
-              <div className="flex items-center justify-between">
+              <div className="flex items-center justify-between mb-3">
                 <div>
                   <p className="text-white/80 text-sm">
                     {language === "te" ? "కోర్సు ఫీజు" : "Course Fee"}
                   </p>
                   <p className="text-2xl font-bold">
-                    {course.price === 0 ? (language === "te" ? "ఉచితం" : "FREE") : `₹${course.price}`}
+                    {course.price === 0 ? (language === "te" ? "ఉచితం" : "FREE") : `₹${course.price?.toLocaleString()}`}
                   </p>
                 </div>
                 <Button 
@@ -383,9 +383,23 @@ export default function CourseDetail() {
                   ) : (
                     <PlayCircle className="h-4 w-4 mr-2" />
                   )}
-                  {language === "te" ? "ఇప్పుడు చేరండి" : "Enroll Now"}
+                  {course.price > 0 
+                    ? (language === "te" ? "చెల్లించి చేరండి" : "Pay & Enroll")
+                    : (language === "te" ? "ఇప్పుడు చేరండి" : "Enroll Now")}
                 </Button>
               </div>
+              
+              {/* Scholarship Option */}
+              {course.price > 0 && (
+                <Link 
+                  to="/benefits" 
+                  className="flex items-center justify-center gap-2 w-full py-2 bg-white/10 rounded-lg text-sm hover:bg-white/20 transition-colors"
+                >
+                  <GraduationCap className="h-4 w-4" />
+                  {language === "te" ? "స్కాలర్‌షిప్ కోసం అప్లై చేయండి" : "Apply for Scholarship"}
+                  <ChevronRight className="h-4 w-4" />
+                </Link>
+              )}
             </CardContent>
           </Card>
         )}
