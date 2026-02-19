@@ -33,6 +33,7 @@ import AITEducation from "./pages/AITEducation";
 import CourseDetail from "./pages/CourseDetail";
 import Certificate from "./pages/Certificate";
 import GiftShop from "./pages/GiftShop";
+import DeviceSync from "./pages/DeviceSync";
 
 import "./App.css";
 
