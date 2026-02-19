@@ -539,6 +539,7 @@ export default function Dashboard() {
               </CardContent>
             </Card>
           </Link>
+          </div>
         </div>
 
         {/* Wall Widget - Medium Sized */}
