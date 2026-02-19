@@ -102,6 +102,11 @@ export default function DumpYardInfo() {
                     ? `${info?.area_acres} ఎకరాలు | రోజువారీ వ్యర్థాలు: ${info?.daily_waste_tons} టన్నులు`
                     : `${info?.area_acres} acres | Daily waste: ${info?.daily_waste_tons} tons`}
                 </p>
+                {info?.historical_note && (
+                  <p className="text-white/70 text-xs mt-2 bg-white/10 rounded px-2 py-1">
+                    {info.historical_note}
+                  </p>
+                )}
               </div>
             </div>
           </CardContent>
