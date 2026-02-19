@@ -58,6 +58,7 @@ const ageRanges = ["18-25", "26-35", "36-45", "46-55", "56-65", "65+"];
 export default function Profile() {
   const { language, setLanguage } = useLanguage();
   const { user, token, updateProfile, logout } = useAuth();
+  const { theme, toggleTheme, isDark } = useTheme();
   const navigate = useNavigate();
   
   // Push notification hook
