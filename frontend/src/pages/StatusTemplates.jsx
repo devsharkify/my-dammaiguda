@@ -81,8 +81,8 @@ export default function StatusTemplates() {
       title: "Ugadi Wishes",
       title_te: "ఉగాది శుభాకాంక్షలు",
       category: "festival",
-      background_url: "https://images.unsplash.com/photo-1607344645866-009c320c5ab8?w=800",
-      thumbnail_url: "https://images.unsplash.com/photo-1607344645866-009c320c5ab8?w=200",
+      background_url: "https://picsum.photos/800/800?random=1",
+      thumbnail_url: "https://picsum.photos/200/200?random=1",
       photo_position: { x: 150, y: 100, width: 120, height: 120, shape: "circle" },
       name_position: { x: 210, y: 280, fontSize: 24, color: "#ffffff", align: "center" }
     },
@@ -91,8 +91,8 @@ export default function StatusTemplates() {
       title: "Happy Birthday",
       title_te: "పుట్టినరోజు శుభాకాంక్షలు",
       category: "birthday",
-      background_url: "https://images.unsplash.com/photo-1558636508-e0db3814bd1d?w=800",
-      thumbnail_url: "https://images.unsplash.com/photo-1558636508-e0db3814bd1d?w=200",
+      background_url: "https://picsum.photos/800/800?random=2",
+      thumbnail_url: "https://picsum.photos/200/200?random=2",
       photo_position: { x: 150, y: 80, width: 100, height: 100, shape: "circle" },
       name_position: { x: 200, y: 240, fontSize: 20, color: "#333333", align: "center" }
     },
@@ -101,8 +101,8 @@ export default function StatusTemplates() {
       title: "Diwali Greetings",
       title_te: "దీపావళి శుభాకాంక్షలు",
       category: "festival",
-      background_url: "https://images.unsplash.com/photo-1605810230434-7631ac76ec81?w=800",
-      thumbnail_url: "https://images.unsplash.com/photo-1605810230434-7631ac76ec81?w=200",
+      background_url: "https://picsum.photos/800/800?random=3",
+      thumbnail_url: "https://picsum.photos/200/200?random=3",
       photo_position: { x: 160, y: 120, width: 100, height: 100, shape: "circle" },
       name_position: { x: 210, y: 300, fontSize: 22, color: "#FFD700", align: "center" }
     },
@@ -111,8 +111,8 @@ export default function StatusTemplates() {
       title: "Thank You",
       title_te: "ధన్యవాదాలు",
       category: "greeting",
-      background_url: "https://images.unsplash.com/photo-1518199266791-5375a83190b7?w=800",
-      thumbnail_url: "https://images.unsplash.com/photo-1518199266791-5375a83190b7?w=200",
+      background_url: "https://picsum.photos/800/800?random=4",
+      thumbnail_url: "https://picsum.photos/200/200?random=4",
       photo_position: { x: 155, y: 90, width: 110, height: 110, shape: "circle" },
       name_position: { x: 210, y: 260, fontSize: 20, color: "#ffffff", align: "center" }
     }
