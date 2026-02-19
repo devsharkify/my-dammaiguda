@@ -1,164 +1,118 @@
 {
-  "design_system": {
-    "identity": {
-      "name": "My Dammaiguda",
-      "tone": "Premium Civic Tech",
-      "keywords": ["Trustworthy", "Modern", "Clean", "Community-First", "High-Performance"],
-      "theme_strategy": "Light Mode Dominant with Section-Specific Accents"
-    },
-    "typography": {
-      "font_family": {
-        "headings": "Manrope, sans-serif",
-        "body": "Inter, sans-serif",
-        "mono": "JetBrains Mono, monospace"
-      },
-      "scale": {
-        "h1": "text-4xl md:text-5xl font-bold tracking-tight",
-        "h2": "text-3xl md:text-4xl font-semibold tracking-tight",
-        "h3": "text-2xl md:text-3xl font-semibold",
-        "h4": "text-xl md:text-2xl font-medium",
-        "body_lg": "text-lg leading-relaxed",
-        "body_base": "text-base leading-relaxed",
-        "caption": "text-sm text-muted-foreground"
-      }
-    },
-    "colors": {
-      "palette": {
-        "primary": {
-          "DEFAULT": "#0F172A",
-          "foreground": "#F8FAFC",
-          "description": "Deep Slate Navy - Authority & Trust"
-        },
-        "secondary": {
-          "DEFAULT": "#F1F5F9",
-          "foreground": "#0F172A",
-          "description": "Soft Slate - Backgrounds & Secondary Actions"
-        },
-        "accent_civic": {
-          "DEFAULT": "#3B82F6",
-          "foreground": "#FFFFFF",
-          "description": "Bright Blue - Civic Actions"
-        },
-        "accent_fitness": {
-          "DEFAULT": "#F97316",
-          "foreground": "#FFFFFF",
-          "description": "Electric Orange - Kaizer Fit Energy"
-        },
-        "accent_eco": {
-          "DEFAULT": "#10B981",
-          "foreground": "#FFFFFF",
-          "description": "Emerald Green - AQI & Environment"
-        },
-        "background": "#F8FAFC",
+  "project_name": "My Dammaiguda",
+  "version": "1.0.0",
+  "last_updated": "2026-05-20",
+  "author": "E1",
+  "persona": {
+    "identity": "The Anti-AI Designer",
+    "mission": "Create a civic platform that feels human, urgent, and trustworthy. No generic government gray-ware.",
+    "principles": [
+      "Clarity is Kindness: For non-tech savvy users, bigger is better.",
+      "Status is Signal: Color is not decoration; it is information (Red = Danger, Green = Safe).",
+      "Native Feel: It must feel like a native app even on the web."
+    ]
+  },
+  "theme_strategy": {
+    "mode": "light",
+    "primary_palette": {
+      "name": "Civic Trust",
+      "colors": {
+        "primary": "#0F766E",
+        "primary_foreground": "#FFFFFF",
+        "secondary": "#F3F4F6",
+        "secondary_foreground": "#1F2937",
+        "background": "#F9FAFB",
         "surface": "#FFFFFF",
-        "border": "#E2E8F0"
-      },
-      "gradients": {
-        "civic_hero": "bg-gradient-to-br from-slate-900 to-slate-800",
-        "fitness_card": "bg-gradient-to-br from-orange-500 to-red-600",
-        "eco_card": "bg-gradient-to-br from-emerald-500 to-teal-600"
+        "header_bg": "#111827",
+        "header_text": "#F9FAFB"
       }
     },
-    "spacing": {
-      "container_padding": "p-4 md:p-6 lg:p-8",
-      "section_gap": "gap-6 md:gap-8",
-      "card_padding": "p-6"
-    },
-    "borders": {
-      "radius": {
-        "sm": "rounded-lg",
-        "md": "rounded-xl",
-        "lg": "rounded-2xl",
-        "full": "rounded-full"
-      },
-      "width": "border",
-      "color": "border-slate-200"
-    },
-    "shadows": {
-      "card": "shadow-[0_2px_8px_rgba(0,0,0,0.04)] hover:shadow-[0_8px_24px_rgba(0,0,0,0.08)] transition-all duration-300",
-      "floating": "shadow-[0_12px_32px_rgba(0,0,0,0.12)]",
-      "inner": "shadow-inner"
-    },
-    "motion": {
-      "hover_lift": "hover:-translate-y-1 transition-transform duration-300 ease-out",
-      "button_press": "active:scale-95 transition-transform duration-100",
-      "fade_in": "animate-in fade-in duration-500 slide-in-from-bottom-4"
+    "status_palette": {
+      "good": "#059669",
+      "moderate": "#D97706",
+      "unhealthy": "#DC2626",
+      "very_unhealthy": "#7F1D1D",
+      "hazardous": "#450A0A"
     }
+  },
+  "typography": {
+    "font_family": {
+      "heading": "Manrope, sans-serif",
+      "body": "Inter, Noto Sans Telugu, sans-serif",
+      "telugu": "Noto Sans Telugu, sans-serif"
+    },
+    "scale": {
+      "h1": "text-2xl font-bold tracking-tight text-gray-900",
+      "h2": "text-xl font-bold tracking-tight text-gray-900",
+      "h3": "text-lg font-semibold text-gray-900",
+      "body": "text-base font-normal text-gray-700 leading-relaxed",
+      "small": "text-sm font-medium text-gray-500",
+      "badge": "text-xs font-bold uppercase tracking-wide"
+    }
+  },
+  "layout_system": {
+    "grid_strategy": "Mobile First Stack",
+    "container": "w-full max-w-md mx-auto px-4 pb-20 pt-4",
+    "spacing": {
+      "section_gap": "gap-4",
+      "card_padding": "p-4",
+      "internal_gap": "gap-3"
+    },
+    "card_style": "bg-white rounded-2xl border border-gray-100 shadow-[0_2px_8px_rgba(0,0,0,0.04)] overflow-hidden"
   },
   "components": {
-    "cards": {
-      "style": "bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden",
-      "interaction": "hover:border-slate-300 transition-colors duration-300"
-    },
-    "buttons": {
-      "primary": "bg-slate-900 text-white hover:bg-slate-800 rounded-full px-6 py-2.5 font-medium shadow-lg shadow-slate-900/20 transition-all",
-      "secondary": "bg-white text-slate-900 border border-slate-200 hover:bg-slate-50 rounded-full px-6 py-2.5 font-medium transition-all",
-      "ghost": "text-slate-600 hover:text-slate-900 hover:bg-slate-100 rounded-lg px-4 py-2 transition-all"
-    },
-    "inputs": {
-      "style": "bg-slate-50 border-slate-200 focus:border-slate-900 focus:ring-1 focus:ring-slate-900 rounded-xl px-4 py-3 transition-all"
-    },
-    "charts": {
-      "library": "recharts",
-      "style": "minimal",
-      "grid": "stroke-slate-100 stroke-dasharray-3-3",
-      "tooltip": "bg-white border border-slate-100 shadow-xl rounded-lg p-3 text-sm"
-    }
-  },
-  "layout_strategies": {
-    "dashboard": {
-      "type": "bento_grid",
-      "classes": "grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6",
-      "hero_span": "col-span-1 md:col-span-2 lg:col-span-2 row-span-2"
-    },
-    "mobile_nav": {
-      "style": "fixed bottom-0 left-0 right-0 bg-white/80 backdrop-blur-lg border-t border-slate-200 p-2 flex justify-around items-center z-50 safe-area-pb"
-    }
-  },
-  "assets": {
-    "images": {
-      "hero_city": {
-        "url": "https://images.pexels.com/photos/11742414/pexels-photo-11742414.jpeg",
-        "alt": "Hyderabad City Skyline",
-        "usage": "Landing Page Hero, Dashboard Header Background"
-      },
-      "fitness_cover": {
-        "url": "https://images.pexels.com/photos/4397838/pexels-photo-4397838.jpeg",
-        "alt": "Woman working out with weights",
-        "usage": "Kaizer Fit Hero Section"
-      },
-      "nature_aqi": {
-        "url": "https://images.unsplash.com/photo-1591194144619-0d49deb41079?crop=entropy&cs=srgb&fm=jpg&ixid=M3w3NDQ2NDJ8MHwxfHNlYXJjaHwyfHxuYXR1cmUlMjBwYXJrJTIwZ3JlZW4lMjB0cmVlcyUyMHNreXxlbnwwfHx8fDE3NzE0NTQyNDh8MA&ixlib=rb-4.1.0&q=85",
-        "alt": "Green trees and blue sky",
-        "usage": "AQI Report Background"
-      },
-      "waste_management": {
-        "url": "https://images.unsplash.com/photo-1621859191129-6bc88cf02966?crop=entropy&cs=srgb&fm=jpg&ixid=M3w4NjAxODF8MHwxfHNlYXJjaHw0fHx3YXN0ZSUyMG1hbmFnZW1lbnQlMjByZWN5Y2xpbmclMjB0cnVjayUyMG1vZGVybnxlbnwwfHx8fDE3NzE0NTQyNTN8MA&ixlib=rb-4.1.0&q=85",
-        "alt": "Modern waste management truck",
-        "usage": "Dump Yard Info Page"
+    "AQI_Widget": {
+      "description": "The heartbeat of the app. Must be instantly readable.",
+      "issues_addressed": ["Text wrapping on 'Unhealthy'", "Spacing issues"],
+      "structure": "flex flex-col p-5 bg-white rounded-2xl border border-gray-100 shadow-sm relative overflow-hidden",
+      "fixes": {
+        "badge_container": "inline-flex px-3 py-1 rounded-full items-center justify-center min-w-[80px] text-center",
+        "badge_text": "text-xs font-bold whitespace-normal leading-tight break-words text-center",
+        "value_display": "text-5xl font-extrabold tracking-tighter text-gray-900 my-2"
       }
     },
-    "icons": {
-      "library": "lucide-react",
-      "style": "stroke-width-1.5"
+    "Quick_Actions": {
+      "description": "Grid of actionable items.",
+      "structure": "grid grid-cols-2 gap-3",
+      "item_style": "flex flex-col items-center justify-center p-4 bg-gray-50 hover:bg-gray-100 rounded-xl transition-all active:scale-95 border border-transparent hover:border-gray-200"
+    },
+    "Dump_Yard_Card": {
+      "description": "Information density without clutter.",
+      "structure": "flex flex-col p-4 bg-orange-50/50 border border-orange-100 rounded-2xl",
+      "highlight": "text-orange-700 font-bold"
+    },
+    "Header": {
+      "description": "Sticky top navigation.",
+      "structure": "sticky top-0 z-50 w-full bg-gray-900 text-white shadow-md backdrop-blur-sm bg-opacity-95",
+      "inner": "flex items-center justify-between px-4 h-14"
+    }
+  },
+  "specific_fixes": {
+    "aqi_badge_wrap": {
+      "problem": "Long status text like 'Very Unhealthy' breaks layout",
+      "solution_css": "max-w-full whitespace-normal text-center leading-3 py-1.5 h-auto min-h-[24px]",
+      "recommendation": "Do not use fixed height pills. Allow them to grow vertically."
+    },
+    "card_borders": {
+      "problem": "Inconsistent border radius and colors",
+      "solution_css": "rounded-2xl border border-gray-200/60 shadow-sm"
+    },
+    "mobile_overflow": {
+      "problem": "Elements pushing out of 375px viewport",
+      "solution_css": "w-full max-w-[100vw] overflow-x-hidden"
     }
   },
   "instructions_to_main_agent": [
-    "Implement the 'Bento Grid' layout for the Dashboard.jsx page.",
-    "Use the 'Manrope' font for all headings. Add it to index.css via Google Fonts import if missing.",
-    "Ensure all cards have the 'hover_lift' motion effect defined in the design system.",
-    "For KaizerFit.jsx, use the 'accent_fitness' color (#F97316) for charts and primary buttons.",
-    "For AQIReport.jsx, use the 'accent_eco' color (#10B981) and the nature image as a subtle background or header.",
-    "For DumpYardInfo.jsx, focus on clarity and information hierarchy using the 'waste_management' image.",
-    "Ensure the mobile navigation bar is implemented with the glassmorphism style defined.",
-    "Use 'recharts' for all data visualization, styling them to match the minimal aesthetic.",
-    "Add 'data-testid' to all interactive elements."
+    "1. APPLY THE FIXES: Go to `Dashboard.js` or `AQIWidget.js` component and apply the specific badge fixes.",
+    "2. STANDARDIZE CARDS: Replace all custom card styles with the `card_style` defined in layout_system.",
+    "3. HEADER UPDATE: Ensure the header is `bg-gray-900` and sticky.",
+    "4. FONT CHECK: Ensure `Noto Sans Telugu` is loaded and applied for Telugu text.",
+    "5. TEST ID: Add `data-testid` to all interactive elements."
   ],
   "universal_guidelines": [
-    "Avoid generic centered layouts. Use asymmetry and whitespace.",
-    "Do not use 'transition: all'. Animate specific properties.",
-    "Ensure high contrast for text accessibility.",
-    "Use 'sonner' for toast notifications.",
-    "Prioritize Shadcn components but customize them to match the 'Premium Civic Tech' theme."
+    "Do not use gradients for text.",
+    "Avoid 'Inter' for headings; use 'Manrope'.",
+    "Buttons must be at least 44px height for touch targets.",
+    "Use 2px borders for active states to improve accessibility."
   ]
 }
