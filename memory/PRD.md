@@ -3,127 +3,94 @@
 ## Original Problem Statement
 Build a production-ready, mobile-first civic engagement platform "My Dammaiguda". The platform must be minimalistic, fast, low-data, and trust-focused.
 
-## Product Requirements
-
-### Core Modules
-- **User Auth**: OTP-based authentication (currently MOCKED - static 123456)
-- **Issue Reporting**: Citizens report local issues with media support
-- **Dump Yard/Environment**: Comprehensive pollution zone data, health risks, affected groups, and updates
-- **Health & Fitness (Kaizer Fit)**: Fitness tracking with smartwatch integration
-- **Citizen Benefits**: Government scheme information + Discount Vouchers
-- **Ward Expenditure Dashboard**: Local spending transparency
-- **Polls**: Community voting
-- **Volunteer Module**: Volunteer coordination
-- **Admin Dashboard**: Comprehensive platform management
-- **Gift Shop**: E-commerce with two-tier points system
-- **AIT Education**: EdTech platform with courses, certificates
-
 ---
 
 ## What's Been Implemented (Feb 19, 2026)
 
-### P1 Features - Latest Session
+### P2 Features - Latest Session
 
-#### 1. Enhanced Device Sync (Smartwatch Integration)
-- **Two-tab Interface**: Devices | Activity
-- **Devices Tab**:
-  - 6 device types: Apple Watch, Fitbit, Samsung Galaxy Watch, Noise/boAt, Google Fit, Mi Band/Amazfit
-  - Sync Status card with connected devices count and Auto Sync toggle
-  - Bluetooth availability indicator
-  - Connected devices list with disconnect option
-  - Device cards with gradient icons and connection status
-- **Activity Tab**:
-  - **Live Heart Rate Card**: Real-time BPM display with pulse animation and heartbeat line
-  - **Today's Summary**: Steps, Calories, Active Minutes with progress bars
-  - **Stats Grid**: Distance, Sleep hours, Average heart rate
-  - **Weekly Progress**: 7-day bar chart with total steps and trend indicator
-- **Backend Endpoints**:
-  - `GET /api/fitness/today-stats` - Daily activity summary
-  - `GET /api/fitness/weekly-summary` - 7-day activity data
-  - `GET /api/fitness/devices` - Connected devices
-  - `POST /api/fitness/devices/connect` - Connect device
-  - `DELETE /api/fitness/devices/{id}` - Disconnect device
-  - `POST /api/fitness/sync-all` - Sync all devices
+#### 1. Instructor Portal (`/instructor`)
+- **Dashboard Stats**: Total courses, students, revenue, completion rate
+- **Course Management**:
+  - Create/Edit courses with title, description, category, difficulty, price, duration
+  - Draft and Live status badges
+  - Publish button for draft courses
+- **Lesson Management**: Add lessons with video URL, order, duration, free preview toggle
+- **Quiz Management**: Create quizzes with passing score and time limit
+- **Analytics**: Enrollment trends, lesson engagement, quiz performance stats
+- **Students List**: View enrolled students with progress percentages
+- **Actions**: Edit, Delete, Add Lesson, Add Quiz, View Analytics, View Students
 
-#### 2. Status Templates with Drag-and-Drop Editor
-- **Template Gallery**:
-  - Category filters: All, Festivals, Birthday, Events, Greetings
-  - 4 sample templates with category badges
-- **Editor Dialog** with 3 tabs:
-  - **Preview Tab**: Simple photo upload and name input
-  - **Photo Tab**:
-    - Upload/change photo button
-    - Size slider (60-180px)
-    - Position nudge controls (arrow buttons)
-    - Drag-and-drop on preview
-  - **Name Tab**:
-    - Name input field
-    - Font size slider (14-36px)
-    - Color picker (6 color options)
-    - Position nudge controls
-    - Drag-and-drop on preview
-- **Generation**: Canvas-based image creation with download and share options
-- **CORS Fix**: Using picsum.photos for CORS-enabled sample images
+#### 2. Student Progress Leaderboard (`/leaderboard`)
+- **My Status Card**:
+  - Level display with progress to next level
+  - Badge (Beginner/Intermediate/Advanced/Expert)
+  - Rank and total XP
+  - Quick stats (Courses, Quizzes, Certs, Watch time)
+- **How to Earn XP**: Shows XP values (+100 course, +20 quiz, +50 certificate)
+- **Top Learners Podium**: Visual display of top 3 users
+- **Full Leaderboard**: Ranked list with names, badges, XP
+- **Badge Levels**: Explanation of Expert/Advanced/Intermediate/Beginner tiers
+- **XP System**:
+  - Complete Course: +100 XP
+  - Pass Quiz: +20 XP
+  - Get Certificate: +50 XP
+  - Level up every 200 XP
 
-### Previous Session - Admin Panel
-- Comprehensive Admin Panel with 8 tabs (Overview, Users, Issues, Edu, Shop, News, Vouchers, Templates)
-- Two-tier points system (Normal + Privilege)
-- Dashboard reorganization (AQI, Dump Yard, Citizen Wall, Quick Actions)
-- Enhanced issue statuses
-- Discount vouchers system
-- News Shorts feed
-- Automatic fitness points rewards
+#### 3. Auth Flow Fix
+- Fixed navigation after login/registration (now redirects to home)
+- Fixed `is_new_user` field check in AuthPage
+
+### P1 Features (Previous Session)
+- Device Sync with Activity tab (live heart rate, daily summary, weekly chart)
+- Status Templates with drag-and-drop editor
+
+### Admin Panel & Core Features (Earlier)
+- Comprehensive Admin Panel (8 tabs)
+- Two-tier points system
+- Dashboard reorganization
+- News Shorts, Vouchers, Templates
 
 ---
 
 ## Technical Architecture
 
-### Frontend (React)
+### New Files Created
 ```
-/app/frontend/src/
-├── components/
-│   ├── Layout.jsx (PhonePe-style bottom nav)
-│   └── ui/ (Shadcn components)
-├── context/
-│   ├── AuthContext.jsx
-│   ├── LanguageContext.jsx
-│   └── ThemeContext.jsx
-├── pages/
-│   ├── DeviceSync.jsx (Enhanced - Devices/Activity tabs)
-│   ├── StatusTemplates.jsx (Enhanced - Drag-drop editor)
-│   ├── AdminDashboard.jsx (8 tabs)
-│   ├── Dashboard.jsx
-│   ├── GiftShop.jsx
-│   └── ...
+/app/frontend/src/pages/
+├── InstructorPortal.jsx  (Instructor dashboard)
+├── Leaderboard.jsx       (Gamification leaderboard)
 ```
 
-### Backend (FastAPI)
+### Modified Files
 ```
-/app/backend/
-├── server.py
-└── routers/
-    ├── fitness.py (Enhanced - today-stats, weekly-summary)
-    ├── templates.py
-    ├── shop.py
-    └── ...
+/app/frontend/src/
+├── App.js                (Added /instructor and /leaderboard routes)
+├── pages/AuthPage.jsx    (Fixed login navigation)
+├── pages/AITEducation.jsx (Added leaderboard link)
+
+/app/backend/routers/
+├── education.py          (Enhanced gamification + instructor endpoints)
 ```
 
 ---
 
 ## Key API Endpoints
 
-### Fitness (New/Enhanced)
-- `GET /api/fitness/today-stats` - Daily summary (steps, calories, distance, activeMinutes, sleepHours, heartRateAvg)
-- `GET /api/fitness/weekly-summary` - 7-day data with steps per day
-- `GET /api/fitness/devices` - Connected devices with last sync time
-- `POST /api/fitness/devices/connect` - Connect new device
-- `DELETE /api/fitness/devices/{id}` - Disconnect device
-- `POST /api/fitness/sync-all` - Sync all connected devices
-- `POST /api/fitness/sync` - Sync health data from Bluetooth
+### Gamification (Enhanced)
+- `GET /api/education/leaderboard` - Enhanced with XP, badges, quiz stats
+- `GET /api/education/my-stats` - User stats with level, badge, rank, XP progress
 
-### Admin
-- `GET /api/admin/stats` - Dashboard statistics
-- Full CRUD for Shop, News, Vouchers, Templates
+### Instructor Portal
+- `GET /api/education/instructor/dashboard` - Instructor stats (courses, students, revenue)
+- `GET /api/education/instructor/courses` - Instructor's courses with enrollments
+- `GET /api/education/instructor/course/{id}/students` - Enrolled students with progress
+- `GET /api/education/instructor/course/{id}/analytics` - Course analytics (lessons, quizzes, trends)
+- `PUT /api/education/instructor/lessons/{id}` - Update lesson
+- `DELETE /api/education/instructor/lessons/{id}` - Delete lesson
+- `PUT /api/education/instructor/quizzes/{id}` - Update quiz
+- `DELETE /api/education/instructor/quizzes/{id}` - Delete quiz
+- `DELETE /api/education/instructor/courses/{id}` - Delete course with all related data
 
 ---
 
@@ -134,62 +101,40 @@ Build a production-ready, mobile-first civic engagement platform "My Dammaiguda"
 ---
 
 ## Known Limitations / MOCKED Features
-
-### P0 - Not Yet Integrated
 - **OTP Authentication**: Uses static code `123456` (Twilio integration needed)
 - **Media Uploads**: Not connected to cloud storage (Cloudinary integration needed)
-
-### Simulated
-- **Device Connections**: Devices connect to DB but no real sync with external APIs
-- **Heart Rate Data**: Simulated with random values 60-100 bpm when devices connected
 
 ---
 
 ## Test Reports
-- `/app/test_reports/iteration_22.json` - P1 features (Device Sync, Status Templates)
-- `/app/test_reports/iteration_21.json` - Admin Panel comprehensive testing
-- `/app/backend/tests/test_device_sync_templates.py` - Backend pytest
+- `/app/test_reports/iteration_23.json` - Instructor Portal & Leaderboard testing
+- `/app/test_reports/iteration_22.json` - P1 features testing
 
 ---
 
 ## Upcoming Tasks
 
-### P1 - Remaining
-- None (completed)
-
-### P2 - Future
-- Instructor Portal for course management
-- Student Progress Leaderboard
+### P2 - Remaining
 - WebSocket Real-time Chat
 - Real OTP integration (Twilio)
 - Real media uploads (Cloudinary)
-- Third-party fitness data aggregator integration (Google Fit API, Apple HealthKit)
+
+### Future
+- Third-party fitness data aggregator (Google Fit API)
 
 ---
 
 ## Change Log
 
-### Feb 19, 2026 (Current Session)
-- **Device Sync Enhancement**:
-  - Added Devices/Activity tab navigation
-  - Live heart rate card with pulse animation
-  - Today's summary with progress bars
-  - Weekly progress bar chart
-  - New backend endpoints for stats
-- **Status Templates Enhancement**:
-  - Drag-and-drop positioning for photo and name
-  - Photo tab with size slider and nudge controls
-  - Name tab with font size, color picker, nudge controls
-  - Fixed CORS issue with sample template images
-- **Admin Panel completed** (previous session):
-  - 8 fully functional tabs
-  - 100% backend test pass rate
+### Feb 19, 2026 (Latest)
+- **Instructor Portal**: Complete course management for instructors/admins
+- **Student Leaderboard**: XP-based gamification with levels and badges
+- **Auth Fix**: Login now properly navigates to home page
+- **Education Link**: Added "View Leaderboard" link from education page
 
 ### Previous Sessions
+- Device Sync enhancement (Activity tab)
+- Status Templates enhancement (drag-drop)
+- Admin Panel completion
 - Two-tier points system
 - Dashboard reorganization
-- Bottom navigation redesign
-- Issues enhancement
-- Discount vouchers
-- News Shorts feed
-- Automatic fitness points rewards
