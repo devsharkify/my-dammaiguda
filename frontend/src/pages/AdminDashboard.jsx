@@ -218,7 +218,8 @@ export default function AdminDashboard() {
     setProductForm({
       name: "", description: "", category: "Fitness",
       image_url: "", mrp: 0, points_required: 100,
-      stock_quantity: 10, is_active: true
+      privilege_points_required: 0, point_type: "normal",
+      delivery_fee: 0, stock_quantity: 10, is_active: true
     });
     setEditingProduct(null);
   };
@@ -231,6 +232,9 @@ export default function AdminDashboard() {
       image_url: product.image_url || "",
       mrp: product.mrp || 0,
       points_required: product.points_required || 100,
+      privilege_points_required: product.privilege_points_required || 0,
+      point_type: product.point_type || "normal",
+      delivery_fee: product.delivery_fee || 0,
       stock_quantity: product.stock_quantity || 10,
       is_active: product.is_active !== false
     });
