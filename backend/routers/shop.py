@@ -78,21 +78,32 @@ class OrderStatusUpdate(BaseModel):
 
 @router.get("/wallet")
 async def get_wallet(user: dict = Depends(get_current_user)):
-    """Get user's points wallet"""
+    """Get user's points wallet with both normal and privilege points"""
     wallet = await db.wallets.find_one({"user_id": user["id"]}, {"_id": 0})
     
     if not wallet:
-        # Create wallet if doesn't exist
+        # Create wallet if doesn't exist with both point types
         wallet = {
             "id": generate_id(),
             "user_id": user["id"],
-            "balance": 0,
+            "balance": 0,  # Normal points
+            "privilege_balance": 0,  # Privilege points
             "total_earned": 0,
+            "total_privilege_earned": 0,
             "total_spent": 0,
             "created_at": now_iso(),
             "updated_at": now_iso()
         }
         await db.wallets.insert_one(wallet)
+    
+    # Ensure privilege fields exist for old wallets
+    if "privilege_balance" not in wallet:
+        wallet["privilege_balance"] = 0
+        wallet["total_privilege_earned"] = 0
+        await db.wallets.update_one(
+            {"user_id": user["id"]},
+            {"$set": {"privilege_balance": 0, "total_privilege_earned": 0}}
+        )
     
     # Get recent transactions
     transactions = await db.points_transactions.find(
