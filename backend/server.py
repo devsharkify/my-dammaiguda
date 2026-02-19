@@ -167,6 +167,70 @@ async def get_colonies():
         "Bowenpally", "Rampally", "Nagaram"
     ]
 
+
+# ============== ADMIN ENDPOINTS ==============
+
+@app.get("/api/admin/stats")
+async def get_admin_stats():
+    """Get admin dashboard statistics"""
+    # Issues stats
+    total_issues = await db.issues.count_documents({})
+    pending_issues = await db.issues.count_documents({"status": {"$in": ["reported", "verified", "in_progress"]}})
+    closed_issues = await db.issues.count_documents({"status": "closed"})
+    
+    # Get by category
+    category_pipeline = [
+        {"$group": {"_id": "$category", "count": {"$sum": 1}}}
+    ]
+    by_category = {r["_id"]: r["count"] for r in await db.issues.aggregate(category_pipeline).to_list(20)}
+    
+    # Users stats
+    total_users = await db.users.count_documents({})
+    
+    # Fitness stats
+    fitness_participants = await db.fitness_profiles.count_documents({})
+    
+    # Benefits pending applications
+    pending_benefits = 0  # Placeholder
+    
+    return {
+        "issues": {
+            "total": total_issues,
+            "pending": pending_issues,
+            "closed": closed_issues,
+            "by_category": by_category
+        },
+        "users": {
+            "total": total_users
+        },
+        "fitness": {
+            "participants": fitness_participants
+        },
+        "benefits": {
+            "pending": pending_benefits
+        }
+    }
+
+@app.get("/api/admin/issues-heatmap")
+async def get_issues_heatmap():
+    """Get issues heatmap data by colony"""
+    pipeline = [
+        {"$match": {"reporter_colony": {"$ne": None}}},
+        {"$group": {"_id": "$reporter_colony", "count": {"$sum": 1}}},
+        {"$sort": {"count": -1}},
+        {"$limit": 20}
+    ]
+    
+    heatmap = await db.issues.aggregate(pipeline).to_list(20)
+    return heatmap
+
+@app.get("/api/admin/users")
+async def get_admin_users():
+    """Get all users for admin"""
+    users = await db.users.find({}, {"_id": 0}).sort("created_at", -1).limit(100).to_list(100)
+    return users
+
+
 if __name__ == "__main__":
     import uvicorn
     uvicorn.run(app, host="0.0.0.0", port=8001)
