@@ -123,6 +123,19 @@ function AppRoutes() {
         </ProtectedRoute>
       } />
       
+      {/* AIT Education Routes */}
+      <Route path="/education" element={
+        <ProtectedRoute>
+          <AITEducation />
+        </ProtectedRoute>
+      } />
+      <Route path="/education/course/:courseId" element={
+        <ProtectedRoute>
+          <CourseDetail />
+        </ProtectedRoute>
+      } />
+      <Route path="/education/certificate/:certificateId" element={<Certificate />} />
+      
       {/* Volunteer Routes */}
       <Route path="/volunteer" element={
         <ProtectedRoute roles={["volunteer", "admin"]}>
