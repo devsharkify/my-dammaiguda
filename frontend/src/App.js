@@ -35,6 +35,7 @@ import Certificate from "./pages/Certificate";
 import GiftShop from "./pages/GiftShop";
 import DeviceSync from "./pages/DeviceSync";
 import Helpline from "./pages/Helpline";
+import StatusTemplates from "./pages/StatusTemplates";
 
 import "./App.css";
 
