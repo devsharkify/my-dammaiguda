@@ -828,6 +828,215 @@ export default function KaizerFit() {
           </div>
         </DialogContent>
       </Dialog>
+
+      {/* Fitness Profile Onboarding Dialog */}
+      <Dialog open={showOnboarding} onOpenChange={(open) => { if(hasProfile) setShowOnboarding(open); }}>
+        <DialogContent className="max-w-sm rounded-2xl">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <Activity className="h-5 w-5 text-primary" />
+              {language === "te" ? "ఫిట్‌నెస్ ప్రొఫైల్ సెటప్" : "Fitness Profile Setup"}
+            </DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4 pt-2">
+            <p className="text-sm text-muted-foreground">
+              {language === "te" 
+                ? "ఫిట్‌నెస్ ఫీచర్‌లను ఉపయోగించడానికి మీ వివరాలను నమోదు చేయండి"
+                : "Please enter your details to use fitness features"}
+            </p>
+            
+            <div className="grid grid-cols-2 gap-3">
+              <div className="space-y-1">
+                <Label className="text-xs">{language === "te" ? "ఎత్తు (సెం.మీ)" : "Height (cm)"} *</Label>
+                <Input
+                  type="number"
+                  placeholder="170"
+                  value={onboardingData.height_cm}
+                  onChange={(e) => setOnboardingData({...onboardingData, height_cm: e.target.value})}
+                  className="h-11"
+                  data-testid="onboard-height"
+                />
+              </div>
+              <div className="space-y-1">
+                <Label className="text-xs">{language === "te" ? "బరువు (కిలోలు)" : "Weight (kg)"} *</Label>
+                <Input
+                  type="number"
+                  placeholder="70"
+                  value={onboardingData.weight_kg}
+                  onChange={(e) => setOnboardingData({...onboardingData, weight_kg: e.target.value})}
+                  className="h-11"
+                  data-testid="onboard-weight"
+                />
+              </div>
+            </div>
+            
+            <div className="grid grid-cols-2 gap-3">
+              <div className="space-y-1">
+                <Label className="text-xs">{language === "te" ? "లింగం" : "Gender"} *</Label>
+                <Select value={onboardingData.gender} onValueChange={(v) => setOnboardingData({...onboardingData, gender: v})}>
+                  <SelectTrigger className="h-11" data-testid="onboard-gender">
+                    <SelectValue placeholder={language === "te" ? "ఎంచుకోండి" : "Select"} />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="male">{language === "te" ? "పురుషుడు" : "Male"}</SelectItem>
+                    <SelectItem value="female">{language === "te" ? "స్త్రీ" : "Female"}</SelectItem>
+                    <SelectItem value="other">{language === "te" ? "ఇతర" : "Other"}</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              <div className="space-y-1">
+                <Label className="text-xs">{language === "te" ? "వయస్సు" : "Age"} *</Label>
+                <Input
+                  type="number"
+                  placeholder="25"
+                  value={onboardingData.age}
+                  onChange={(e) => setOnboardingData({...onboardingData, age: e.target.value})}
+                  className="h-11"
+                  data-testid="onboard-age"
+                />
+              </div>
+            </div>
+            
+            <div className="space-y-1">
+              <Label className="text-xs">{language === "te" ? "ఫిట్‌నెస్ లక్ష్యం" : "Fitness Goal"}</Label>
+              <Select value={onboardingData.fitness_goal} onValueChange={(v) => setOnboardingData({...onboardingData, fitness_goal: v})}>
+                <SelectTrigger className="h-11">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="weight_loss">{language === "te" ? "బరువు తగ్గడం" : "Weight Loss"}</SelectItem>
+                  <SelectItem value="muscle_gain">{language === "te" ? "కండరాల పెంపు" : "Muscle Gain"}</SelectItem>
+                  <SelectItem value="maintain">{language === "te" ? "నిర్వహించడం" : "Maintain Weight"}</SelectItem>
+                  <SelectItem value="general_fitness">{language === "te" ? "సాధారణ ఫిట్‌నెస్" : "General Fitness"}</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            
+            <Button
+              onClick={submitProfile}
+              disabled={submitting}
+              className="w-full h-12 rounded-xl bg-gradient-to-r from-primary to-purple-600"
+              data-testid="submit-profile-btn"
+            >
+              {submitting ? (
+                <span className="flex items-center gap-2">
+                  <div className="h-4 w-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                  {language === "te" ? "సేవ్ చేస్తోంది..." : "Saving..."}
+                </span>
+              ) : (
+                language === "te" ? "ప్రారంభించండి" : "Get Started"
+              )}
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* Manual Record Dialog */}
+      <Dialog open={showManualRecord} onOpenChange={setShowManualRecord}>
+        <DialogContent className="max-w-sm rounded-2xl">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <PenSquare className="h-5 w-5 text-primary" />
+              {language === "te" ? "యాక్టివిటీ రికార్డ్ చేయండి" : "Record Activity"}
+            </DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4 pt-2">
+            <div className="space-y-1">
+              <Label className="text-xs">{language === "te" ? "యాక్టివిటీ రకం" : "Activity Type"} *</Label>
+              <Select value={manualRecord.activity_type} onValueChange={(v) => setManualRecord({...manualRecord, activity_type: v})}>
+                <SelectTrigger className="h-11" data-testid="record-activity-type">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  {LIVE_ACTIVITIES.map((act) => (
+                    <SelectItem key={act.id} value={act.id}>
+                      {act.icon} {language === "te" ? act.name_te : act.name_en}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+            
+            <div className="grid grid-cols-2 gap-3">
+              <div className="space-y-1">
+                <Label className="text-xs">{language === "te" ? "వ్యవధి (నిమిషాలు)" : "Duration (min)"} *</Label>
+                <Input
+                  type="number"
+                  placeholder="30"
+                  value={manualRecord.duration_minutes}
+                  onChange={(e) => setManualRecord({...manualRecord, duration_minutes: e.target.value})}
+                  className="h-11"
+                  data-testid="record-duration"
+                />
+              </div>
+              <div className="space-y-1">
+                <Label className="text-xs">{language === "te" ? "తేదీ" : "Date"} *</Label>
+                <Input
+                  type="date"
+                  value={manualRecord.date}
+                  max={new Date().toISOString().split("T")[0]}
+                  onChange={(e) => setManualRecord({...manualRecord, date: e.target.value})}
+                  className="h-11"
+                  data-testid="record-date"
+                />
+              </div>
+            </div>
+            
+            <div className="grid grid-cols-2 gap-3">
+              <div className="space-y-1">
+                <Label className="text-xs">{language === "te" ? "దూరం (కి.మీ)" : "Distance (km)"}</Label>
+                <Input
+                  type="number"
+                  step="0.1"
+                  placeholder="5.0"
+                  value={manualRecord.distance_km}
+                  onChange={(e) => setManualRecord({...manualRecord, distance_km: e.target.value})}
+                  className="h-11"
+                />
+              </div>
+              <div className="space-y-1">
+                <Label className="text-xs">{language === "te" ? "కేలరీలు" : "Calories"}</Label>
+                <Input
+                  type="number"
+                  placeholder="Auto"
+                  value={manualRecord.calories_burned}
+                  onChange={(e) => setManualRecord({...manualRecord, calories_burned: e.target.value})}
+                  className="h-11"
+                />
+              </div>
+            </div>
+            
+            <div className="space-y-1">
+              <Label className="text-xs">{language === "te" ? "నోట్స్" : "Notes"}</Label>
+              <Input
+                placeholder={language === "te" ? "ఐచ్ఛిక నోట్స్..." : "Optional notes..."}
+                value={manualRecord.notes}
+                onChange={(e) => setManualRecord({...manualRecord, notes: e.target.value})}
+                className="h-11"
+              />
+            </div>
+            
+            <Button
+              onClick={submitManualRecord}
+              disabled={submitting}
+              className="w-full h-12 rounded-xl"
+              data-testid="submit-record-btn"
+            >
+              {submitting ? (
+                <span className="flex items-center gap-2">
+                  <div className="h-4 w-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                  {language === "te" ? "సేవ్ చేస్తోంది..." : "Saving..."}
+                </span>
+              ) : (
+                <>
+                  <Plus className="h-4 w-4 mr-2" />
+                  {language === "te" ? "రికార్డ్ చేయండి" : "Record Activity"}
+                </>
+              )}
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
     </Layout>
   );
 }
