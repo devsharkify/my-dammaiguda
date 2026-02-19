@@ -1318,15 +1318,6 @@ async def delete_activity_record(activity_id: str, user: dict = Depends(get_curr
     
     return {"success": True, "message": "Activity deleted"}
 
-        "name": "Variety Master",
-        "name_te": "వెరైటీ మాస్టర్",
-        "description": "Try 5 different activity types",
-        "description_te": "5 వేర్వేరు యాక్టివిటీ రకాలు ప్రయత్నించండి",
-        "icon": "🎨",
-        "color": "from-indigo-500 to-purple-500"
-    }
-}
-
 @router.get("/streaks")
 async def get_user_streaks(user: dict = Depends(get_current_user)):
     """Get user's current streak and streak history"""
