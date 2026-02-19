@@ -527,13 +527,41 @@ export default function CitizenWall() {
                         size="sm" 
                         className="text-text-muted"
                         onClick={() => {
+                          const postUrl = `${window.location.origin}/wall?post=${post.id}`;
+                          const shareText = `${post.user_name}: ${post.content?.substring(0, 200)}${post.content?.length > 200 ? '...' : ''}\n\n${language === "te" ? "సిటిజన్ వాల్ నుండి షేర్ చేయబడింది" : "Shared from Citizen Wall"}\n${postUrl}`;
+                          
                           if (navigator.share) {
-                            navigator.share({ text: post.content, title: "Citizen Wall Post" });
+                            // Use Web Share API for better sharing on mobile
+                            const shareData = { 
+                              title: `${post.user_name} - ${language === "te" ? "సిటిజన్ వాల్" : "Citizen Wall"}`,
+                              text: shareText,
+                              url: postUrl
+                            };
+                            
+                            // If post has image, try to fetch and include it
+                            if (post.image_url) {
+                              fetch(post.image_url)
+                                .then(res => res.blob())
+                                .then(blob => {
+                                  const file = new File([blob], 'post_image.jpg', { type: 'image/jpeg' });
+                                  if (navigator.canShare && navigator.canShare({ files: [file] })) {
+                                    navigator.share({ ...shareData, files: [file] });
+                                  } else {
+                                    navigator.share(shareData);
+                                  }
+                                })
+                                .catch(() => navigator.share(shareData));
+                            } else {
+                              navigator.share(shareData);
+                            }
                           } else {
-                            navigator.clipboard.writeText(post.content);
-                            toast.success(language === "te" ? "కాపీ చేయబడింది!" : "Copied to clipboard!");
+                            // Fallback: Create WhatsApp share link with image preview
+                            const whatsappUrl = `https://api.whatsapp.com/send?text=${encodeURIComponent(shareText)}`;
+                            window.open(whatsappUrl, '_blank');
+                            toast.success(language === "te" ? "షేర్ లింక్ తెరవబడింది!" : "Share link opened!");
                           }
                         }}
+                        data-testid={`share-btn-${post.id}`}
                       >
                         <Share2 className="h-5 w-5" />
                       </Button>
