@@ -83,7 +83,11 @@ export default function AITEducation() {
         axios.get(`${API}/education/my-stats`, { headers }).catch(() => ({ data: null }))
       ]);
 
-      setCourses(coursesRes.data.courses || []);
+      // Filter to only show premium Digital Marketing course (price > 50000)
+      const allCourses = coursesRes.data.courses || [];
+      const filteredCourses = allCourses.filter(c => c.price >= 50000);
+      setCourses(filteredCourses.length > 0 ? filteredCourses : allCourses.slice(0, 1));
+      
       setCategories(categoriesRes.data.categories || []);
       setMyCourses(myCoursesRes.data.courses || []);
       setLiveClasses(liveRes.data.live_classes || []);
@@ -102,7 +106,10 @@ export default function AITEducation() {
       if (searchQuery) params.append("search", searchQuery);
       
       const response = await axios.get(`${API}/education/courses?${params.toString()}`);
-      setCourses(response.data.courses || []);
+      // Filter to only show premium Digital Marketing course (price > 50000)
+      const allCourses = response.data.courses || [];
+      const filteredCourses = allCourses.filter(c => c.price >= 50000);
+      setCourses(filteredCourses.length > 0 ? filteredCourses : allCourses.slice(0, 1));
     } catch (error) {
       console.error("Error fetching courses:", error);
     }
