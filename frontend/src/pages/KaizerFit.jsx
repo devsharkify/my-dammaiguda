@@ -329,14 +329,25 @@ export default function KaizerFit() {
         </Card>
 
         {/* Start Live Activity Button */}
-        <Button
-          onClick={() => setShowActivityPicker(true)}
-          className="w-full h-14 bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600 text-white rounded-2xl text-base font-semibold shadow-lg shadow-emerald-500/25 transition-all active:scale-[0.98]"
-          data-testid="start-live-activity-btn"
-        >
-          <Play className="h-5 w-5 mr-2" />
-          {language === "te" ? "లైవ్ యాక్టివిటీ ప్రారంభించండి" : "Start Live Activity"}
-        </Button>
+        <div className="grid grid-cols-2 gap-3">
+          <Button
+            onClick={() => setShowActivityPicker(true)}
+            className="h-14 bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600 text-white rounded-2xl text-sm font-semibold shadow-lg shadow-emerald-500/25 transition-all active:scale-[0.98]"
+            data-testid="start-live-activity-btn"
+          >
+            <Play className="h-5 w-5 mr-2" />
+            {language === "te" ? "లైవ్ యాక్టివిటీ" : "Start Live"}
+          </Button>
+          <Button
+            onClick={() => setShowManualRecord(true)}
+            variant="outline"
+            className="h-14 rounded-2xl text-sm font-semibold border-2 hover:bg-primary/5"
+            data-testid="record-fitness-btn"
+          >
+            <PenSquare className="h-5 w-5 mr-2" />
+            {language === "te" ? "రికార్డ్ చేయండి" : "Record Fitness"}
+          </Button>
+        </div>
 
         {/* Streak & Badges Section */}
         <div className="grid grid-cols-2 gap-3">
