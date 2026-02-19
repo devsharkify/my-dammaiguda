@@ -59,6 +59,7 @@ export default function KaizerFit() {
   // Streaks & Badges
   const [streakData, setStreakData] = useState(null);
   const [badges, setBadges] = useState([]);
+  const [badgesCount, setBadgesCount] = useState({ earned: 0, total: 10 });
   const [newBadges, setNewBadges] = useState([]);
   const [showBadgesDialog, setShowBadgesDialog] = useState(false);
   const [showNewBadgeDialog, setShowNewBadgeDialog] = useState(false);
