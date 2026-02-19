@@ -89,17 +89,142 @@ async def get_dumpyard_info():
         "status": "active",
         "daily_waste_tons": 1200,
         "area_acres": 350,
-        "health_risks": [
-            {"en": "Respiratory Issues", "te": "శ్వాసకోశ సమస్యలు"},
-            {"en": "Skin Allergies", "te": "చర్మ అలర్జీలు"},
-            {"en": "Eye Irritation", "te": "కంటి చికాకు"},
-            {"en": "Cadmium Exposure", "te": "కాడ్మియం బహిర్గతం"}
+        "pollution_zones": [
+            {
+                "zone": "red",
+                "radius_km": 2,
+                "risk": "high",
+                "risk_te": "అధికం",
+                "description": "Highly contaminated area. Avoid prolonged outdoor activities."
+            },
+            {
+                "zone": "orange", 
+                "radius_km": 5,
+                "risk": "medium",
+                "risk_te": "మధ్యస్థం",
+                "description": "Moderate contamination. Limit outdoor activities during peak hours."
+            },
+            {
+                "zone": "green",
+                "radius_km": 10,
+                "risk": "low",
+                "risk_te": "తక్కువ",
+                "description": "Lower risk zone. General precautions recommended."
+            }
+        ],
+        "health_risks": {
+            "respiratory": {
+                "title": "Respiratory Issues",
+                "title_te": "శ్వాసకోశ సమస్యలు",
+                "description": "Airborne pollutants can cause asthma, bronchitis, and other respiratory conditions.",
+                "description_te": "వాయు కాలుష్యాలు ఆస్తమా, బ్రాంకైటిస్ మరియు ఇతర శ్వాసకోశ సమస్యలకు కారణమవుతాయి."
+            },
+            "cadmium": {
+                "title": "Cadmium Exposure",
+                "title_te": "కాడ్మియం బహిర్గతం",
+                "description": "Heavy metal contamination in groundwater can lead to kidney damage and bone disorders.",
+                "description_te": "భూగర్భ జలాల్లో భారీ లోహ కలుషితం కిడ్నీ దెబ్బతినడం మరియు ఎముక సమస్యలకు దారితీస్తుంది."
+            },
+            "skin": {
+                "title": "Skin Allergies",
+                "title_te": "చర్మ అలర్జీలు",
+                "description": "Contact with contaminated water or air can cause rashes and skin irritation.",
+                "description_te": "కలుషిత నీరు లేదా గాలితో సంపర్కం దద్దుర్లు మరియు చర్మ చికాకుకు కారణమవుతుంది."
+            },
+            "eye": {
+                "title": "Eye Irritation",
+                "title_te": "కంటి చికాకు",
+                "description": "Toxic fumes can cause chronic eye irritation and vision problems.",
+                "description_te": "విషపూరిత పొగలు దీర్ఘకాలిక కంటి చికాకు మరియు దృష్టి సమస్యలకు కారణమవుతాయి."
+            }
+        },
+        "affected_groups": [
+            {
+                "group": "children",
+                "group_te": "పిల్లలు",
+                "risk_level": "very_high",
+                "advice": "Keep children indoors during peak pollution hours (10 AM - 4 PM). Use N95 masks outdoors.",
+                "advice_te": "గరిష్ట కాలుష్య సమయాల్లో పిల్లలను ఇంట్లో ఉంచండి. బయట N95 మాస్కులు వాడండి."
+            },
+            {
+                "group": "pregnant_women",
+                "group_te": "గర్భిణీ స్త్రీలు",
+                "risk_level": "very_high",
+                "advice": "Avoid the area completely. Consult doctor regularly for prenatal checkups.",
+                "advice_te": "ఈ ప్రాంతాన్ని పూర్తిగా నివారించండి. ప్రసవపూర్వ పరీక్షల కోసం క్రమం తప్పకుండా వైద్యుడిని సంప్రదించండి."
+            },
+            {
+                "group": "elderly",
+                "group_te": "వృద్ధులు",
+                "risk_level": "high",
+                "advice": "Limit outdoor activities. Keep windows closed. Use air purifiers indoors.",
+                "advice_te": "బయటి కార్యకలాపాలను పరిమితం చేయండి. కిటికీలు మూసి ఉంచండి. ఇంట్లో ఎయిర్ ప్యూరిఫైయర్లు వాడండి."
+            }
         ],
         "affected_areas": [
-            "Dammaiguda", "Alwal", "Bolaram", "Yapral", "Lothkunta"
+            "Dammaiguda", "Alwal", "Bolaram", "Yapral", "Lothkunta", "Rampally", "Nagaram"
         ],
-        "remediation_status": "ongoing"
+        "remediation_status": "ongoing",
+        "remediation_progress": 35,
+        "next_steps": [
+            {"en": "Bio-mining of old waste", "te": "పాత వ్యర్థాల బయో-మైనింగ్"},
+            {"en": "Groundwater treatment plant", "te": "భూగర్భ జలాల శుద్ధి కేంద్రం"},
+            {"en": "Buffer zone plantation", "te": "బఫర్ జోన్ మొక్కల పెంపకం"}
+        ]
     }
+
+@app.get("/api/dumpyard/info")
+async def get_dumpyard_info_alias():
+    """Alias for dump yard info (frontend compatibility)"""
+    return await get_dumpyard_info()
+
+@app.get("/api/dumpyard/updates")
+async def get_dumpyard_updates():
+    """Get dump yard news and updates"""
+    updates = await db.dumpyard_updates.find({}, {"_id": 0}).sort("date", -1).limit(20).to_list(20)
+    
+    # If no updates exist, return sample data
+    if not updates:
+        updates = [
+            {
+                "id": "update-1",
+                "title": "Bio-Mining Project Phase 1 Complete",
+                "title_te": "బయో-మైనింగ్ ప్రాజెక్ట్ ఫేజ్ 1 పూర్తి",
+                "content": "The first phase of the bio-mining project has been completed. 20% of old waste has been processed and cleared from the site.",
+                "content_te": "బయో-మైనింగ్ ప్రాజెక్ట్ మొదటి దశ పూర్తయింది. 20% పాత వ్యర్థాలు ప్రాసెస్ చేయబడి సైట్ నుండి తొలగించబడ్డాయి.",
+                "date": "2026-02-15T10:00:00Z",
+                "category": "remediation"
+            },
+            {
+                "id": "update-2",
+                "title": "Free Health Camp This Sunday",
+                "title_te": "ఈ ఆదివారం ఉచిత ఆరోగ్య క్యాంప్",
+                "content": "Free health screening for residents of affected areas. Location: Dammaiguda Community Hall, 9 AM - 4 PM.",
+                "content_te": "ప్రభావిత ప్రాంతాల నివాసులకు ఉచిత ఆరోగ్య పరీక్ష. స్థానం: దమ్మాయిగూడ కమ్యూనిటీ హాల్, ఉ. 9 - సా. 4.",
+                "date": "2026-02-10T08:00:00Z",
+                "category": "health"
+            },
+            {
+                "id": "update-3",
+                "title": "Air Quality Alert",
+                "title_te": "వాయు నాణ్యత హెచ్చరిక",
+                "content": "Due to recent fires, air quality has deteriorated. Residents advised to stay indoors and use masks.",
+                "content_te": "ఇటీవలి మంటల కారణంగా వాయు నాణ్యత క్షీణించింది. నివాసులు ఇంట్లో ఉండాలని, మాస్కులు వాడాలని సలహా ఇవ్వబడింది.",
+                "date": "2026-02-05T14:00:00Z",
+                "category": "alert"
+            },
+            {
+                "id": "update-4",
+                "title": "Groundwater Testing Results",
+                "title_te": "భూగర్భ జలాల పరీక్ష ఫలితాలు",
+                "content": "Recent tests show cadmium levels in groundwater are above safe limits within 3km radius. RO water recommended.",
+                "content_te": "ఇటీవలి పరీక్షలు 3 కి.మీ. వ్యాసార్థంలో భూగర్భ జలాల్లో కాడ్మియం స్థాయిలు సురక్షిత పరిమితులకు మించి ఉన్నాయని చూపిస్తున్నాయి. RO నీరు సిఫార్సు.",
+                "date": "2026-01-28T09:00:00Z",
+                "category": "health"
+            }
+        ]
+    
+    return updates
 
 @app.get("/api/benefits")
 async def get_benefits():
