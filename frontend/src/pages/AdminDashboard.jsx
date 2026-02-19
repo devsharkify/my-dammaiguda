@@ -170,6 +170,97 @@ export default function AdminDashboard() {
     setShowCourseDialog(true);
   };
 
+  // Gift Shop functions
+  const saveProduct = async () => {
+    if (!productForm.name || !productForm.points_required) {
+      toast.error("Name and points are required");
+      return;
+    }
+    
+    setSavingProduct(true);
+    try {
+      if (editingProduct) {
+        await axios.put(`${API}/shop/admin/products/${editingProduct.id}`, productForm, { headers });
+        toast.success("Product updated!");
+      } else {
+        await axios.post(`${API}/shop/admin/products`, productForm, { headers });
+        toast.success("Product created!");
+      }
+      setShowProductDialog(false);
+      resetProductForm();
+      fetchData();
+    } catch (error) {
+      toast.error(error.response?.data?.detail || "Failed to save product");
+    } finally {
+      setSavingProduct(false);
+    }
+  };
+
+  const deleteProduct = async (productId) => {
+    if (!window.confirm("Are you sure you want to delete this product?")) return;
+    try {
+      await axios.delete(`${API}/shop/admin/products/${productId}`, { headers });
+      toast.success("Product deleted!");
+      fetchData();
+    } catch (error) {
+      toast.error("Failed to delete product");
+    }
+  };
+
+  const resetProductForm = () => {
+    setProductForm({
+      name: "", description: "", category: "Fitness",
+      image_url: "", mrp: 0, points_required: 100,
+      stock_quantity: 10, is_active: true
+    });
+    setEditingProduct(null);
+  };
+
+  const openEditProduct = (product) => {
+    setProductForm({
+      name: product.name || "",
+      description: product.description || "",
+      category: product.category || "Fitness",
+      image_url: product.image_url || "",
+      mrp: product.mrp || 0,
+      points_required: product.points_required || 100,
+      stock_quantity: product.stock_quantity || 10,
+      is_active: product.is_active !== false
+    });
+    setEditingProduct(product);
+    setShowProductDialog(true);
+  };
+
+  const updateOrderStatus = async (orderId, status) => {
+    try {
+      await axios.put(`${API}/shop/admin/orders/${orderId}/status`, { status }, { headers });
+      toast.success(`Order ${status}!`);
+      fetchData();
+    } catch (error) {
+      toast.error("Failed to update order");
+    }
+  };
+
+  const adjustUserPoints = async () => {
+    if (!pointsForm.user_id || !pointsForm.points || !pointsForm.reason) {
+      toast.error("All fields are required");
+      return;
+    }
+    
+    try {
+      await axios.post(`${API}/shop/admin/points/adjust`, {
+        user_id: pointsForm.user_id,
+        points: parseInt(pointsForm.points),
+        reason: pointsForm.reason
+      }, { headers });
+      toast.success(`Points adjusted: ${pointsForm.points > 0 ? '+' : ''}${pointsForm.points}`);
+      setShowPointsDialog(false);
+      setPointsForm({ user_id: "", phone: "", points: 0, reason: "" });
+    } catch (error) {
+      toast.error(error.response?.data?.detail || "Failed to adjust points");
+    }
+  };
+
   const updateUserRole = async (userId, role) => {
     try {
       await axios.put(`${API}/admin/users/${userId}/role?role=${role}`);
