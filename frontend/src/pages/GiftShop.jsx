@@ -305,25 +305,45 @@ export default function GiftShop() {
                         alt={product.name}
                         className="w-full h-full object-cover"
                       />
-                      <Badge className="absolute top-2 right-2 bg-amber-500 text-white">
-                        <Coins className="h-3 w-3 mr-1" />
-                        {product.points_required}
-                      </Badge>
+                      <div className="absolute top-2 right-2 flex flex-col gap-1">
+                        <Badge className="bg-amber-500 text-white text-[10px]">
+                          <Coins className="h-2.5 w-2.5 mr-0.5" />
+                          {product.points_required}
+                        </Badge>
+                        {product.point_type === "privilege" && (
+                          <Badge className="bg-purple-500 text-white text-[10px]">
+                            <Star className="h-2.5 w-2.5 mr-0.5" />
+                            {product.privilege_points_required || 0}P
+                          </Badge>
+                        )}
+                        {product.point_type === "both" && (
+                          <Badge className="bg-purple-500 text-white text-[10px]">
+                            +{product.privilege_points_required || 0}P
+                          </Badge>
+                        )}
+                      </div>
                     </div>
                     <CardContent className="p-3">
                       <h3 className="font-semibold text-sm line-clamp-1">{product.name}</h3>
                       <p className="text-xs text-muted-foreground line-clamp-1">{product.description}</p>
                       <div className="flex items-center justify-between mt-2">
-                        <span className="text-xs text-muted-foreground line-through">
-                          MRP Rs.{product.mrp}
-                        </span>
+                        <div>
+                          <span className="text-xs text-muted-foreground line-through">
+                            MRP Rs.{product.mrp}
+                          </span>
+                          {product.delivery_fee > 0 && (
+                            <span className="text-[10px] text-muted-foreground block">
+                              +₹{product.delivery_fee} {language === "te" ? "డెలివరీ" : "delivery"}
+                            </span>
+                          )}
+                        </div>
                         {product.can_afford ? (
-                          <Badge variant="outline" className="text-xs text-green-600 border-green-600">
-                            {language === "te" ? "క్లెయిమ్ చేయవచ్చు" : "Can Claim"}
+                          <Badge variant="outline" className="text-[10px] text-green-600 border-green-600">
+                            {language === "te" ? "క్లెయిమ్" : "Claim"}
                           </Badge>
                         ) : (
-                          <Badge variant="outline" className="text-xs text-red-600 border-red-600">
-                            {product.points_required - (wallet?.balance || 0)} {language === "te" ? "అవసరం" : "needed"}
+                          <Badge variant="outline" className="text-[10px] text-red-600 border-red-600">
+                            {language === "te" ? "సరిపడదు" : "Need more"}
                           </Badge>
                         )}
                       </div>
