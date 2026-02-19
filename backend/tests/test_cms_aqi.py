@@ -23,7 +23,7 @@ def admin_token():
     assert response.status_code == 200, f"Failed to send OTP: {response.text}"
     
     # Step 2: Verify OTP
-    response = requests.post(f"{BASE_URL}/api/auth/verify-otp", json={"phone": ADMIN_PHONE, "code": OTP})
+    response = requests.post(f"{BASE_URL}/api/auth/verify-otp", json={"phone": ADMIN_PHONE, "otp": OTP})
     assert response.status_code == 200, f"Failed to verify OTP: {response.text}"
     data = response.json()
     assert "token" in data, "Token not in response"
