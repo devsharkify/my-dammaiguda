@@ -262,13 +262,43 @@ export default function AdminDashboard() {
       await axios.post(`${API}/shop/admin/points/adjust`, {
         user_id: pointsForm.user_id,
         points: parseInt(pointsForm.points),
-        reason: pointsForm.reason
+        reason: pointsForm.reason,
+        point_type: pointsForm.point_type || "normal"
       }, { headers });
-      toast.success(`Points adjusted: ${pointsForm.points > 0 ? '+' : ''}${pointsForm.points}`);
+      toast.success(`${pointsForm.point_type === "privilege" ? "Privilege " : ""}Points adjusted: ${pointsForm.points > 0 ? '+' : ''}${pointsForm.points}`);
       setShowPointsDialog(false);
-      setPointsForm({ user_id: "", phone: "", points: 0, reason: "" });
+      setPointsForm({ user_id: "", phone: "", points: 0, reason: "", point_type: "normal" });
     } catch (error) {
       toast.error(error.response?.data?.detail || "Failed to adjust points");
+    }
+  };
+
+  const assignBulkPrivilegePoints = async () => {
+    if (!bulkPrivilegeForm.points || !bulkPrivilegeForm.reason) {
+      toast.error("Points and reason are required");
+      return;
+    }
+    if (!bulkPrivilegeForm.selectAll && bulkPrivilegeForm.user_ids.length === 0) {
+      toast.error("Select at least one user or 'All Users'");
+      return;
+    }
+    
+    setBulkPrivilegeLoading(true);
+    try {
+      const user_ids = bulkPrivilegeForm.selectAll ? ["ALL"] : bulkPrivilegeForm.user_ids;
+      const response = await axios.post(`${API}/shop/admin/points/bulk-privilege`, {
+        user_ids,
+        points: parseInt(bulkPrivilegeForm.points),
+        reason: bulkPrivilegeForm.reason
+      }, { headers });
+      toast.success(response.data.message);
+      setShowBulkPrivilegeDialog(false);
+      setBulkPrivilegeForm({ selectAll: false, user_ids: [], points: 0, reason: "" });
+      fetchData();
+    } catch (error) {
+      toast.error(error.response?.data?.detail || "Failed to assign privilege points");
+    } finally {
+      setBulkPrivilegeLoading(false);
     }
   };
 
