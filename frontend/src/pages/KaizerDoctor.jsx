@@ -463,21 +463,6 @@ export default function KaizerDoctor() {
     }
   };
 
-  const filteredFoods = foodSearch 
-    ? foods.filter(f => 
-        f.name.toLowerCase().includes(foodSearch.toLowerCase()) ||
-        (f.name_te && f.name_te.includes(foodSearch))
-      )
-    : foods.filter(f => f.meal_type === mealType || !f.meal_type);
-
-  const toggleFoodSelection = (food) => {
-    if (selectedFoods.find(f => f.name === food.name)) {
-      setSelectedFoods(selectedFoods.filter(f => f.name !== food.name));
-    } else {
-      setSelectedFoods([...selectedFoods, food]);
-    }
-  };
-
   // Get localized quote
   const localizedQuote = HEALTH_QUOTES[language]?.[HEALTH_QUOTES["en"].indexOf(quote)] || quote;
 
@@ -493,11 +478,6 @@ export default function KaizerDoctor() {
 
   const healthScore = dashboard?.health_score || 0;
   const today = dashboard?.today || {};
-  const waterGoal = 8;
-  const waterProgress = Math.min(100, Math.round((waterGlasses / waterGoal) * 100));
-  const caloriesGoal = 2000;
-  const caloriesConsumed = today.nutrition?.total_calories || 0;
-  const caloriesProgress = Math.min(100, Math.round((caloriesConsumed / caloriesGoal) * 100));
 
   return (
     <Layout showBackButton title={language === "te" ? "కైజర్ డాక్టర్" : "Kaizer Doctor"}>
