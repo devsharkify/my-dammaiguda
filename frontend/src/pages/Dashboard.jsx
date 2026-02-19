@@ -498,18 +498,12 @@ export default function Dashboard() {
           </Link>
         </div>
 
-        {/* Quick Actions Row 3 - News, Wall, Education */}
+        {/* Quick Actions Row 3 - Gifts, Education, Polls */}
         <div className="grid grid-cols-3 gap-3">
-          <Link to="/news" data-testid="quick-action-news">
-            <div className="h-16 rounded-xl bg-cyan-50 flex flex-col items-center justify-center shadow-sm active:scale-95 transition-transform border border-cyan-100">
-              <Newspaper className="h-6 w-6 text-cyan-600" />
-              <span className="text-[10px] mt-1 font-medium text-cyan-700">{language === "te" ? "వార్తలు" : "News"}</span>
-            </div>
-          </Link>
-          <Link to="/wall" data-testid="quick-action-wall">
-            <div className="h-16 rounded-xl bg-pink-50 flex flex-col items-center justify-center shadow-sm active:scale-95 transition-transform border border-pink-100">
-              <MessageSquare className="h-6 w-6 text-pink-600" />
-              <span className="text-[10px] mt-1 font-medium text-pink-700">{language === "te" ? "వాల్" : "Wall"}</span>
+          <Link to="/shop" data-testid="quick-action-shop">
+            <div className="h-16 rounded-xl bg-gradient-to-br from-amber-50 to-orange-50 flex flex-col items-center justify-center shadow-sm active:scale-95 transition-transform border border-amber-200">
+              <Gift className="h-6 w-6 text-amber-600" />
+              <span className="text-[10px] mt-1 font-medium text-amber-700">{language === "te" ? "గిఫ్ట్స్" : "Gifts"}</span>
             </div>
           </Link>
           <Link to="/education" data-testid="quick-action-education">
@@ -518,26 +512,10 @@ export default function Dashboard() {
               <span className="text-[10px] mt-1 font-medium text-indigo-700">{language === "te" ? "విద్య" : "Education"}</span>
             </div>
           </Link>
-        </div>
-
-        {/* Quick Actions Row 4 - Gift Shop, Poll, Benefits */}
-        <div className="grid grid-cols-3 gap-3">
-          <Link to="/shop" data-testid="quick-action-shop">
-            <div className="h-16 rounded-xl bg-gradient-to-br from-amber-50 to-orange-50 flex flex-col items-center justify-center shadow-sm active:scale-95 transition-transform border border-amber-200">
-              <Gift className="h-6 w-6 text-amber-600" />
-              <span className="text-[10px] mt-1 font-medium text-amber-700">{language === "te" ? "గిఫ్ట్స్" : "Gifts"}</span>
-            </div>
-          </Link>
           <Link to="/polls" data-testid="quick-action-polls">
             <div className="h-16 rounded-xl bg-emerald-50 flex flex-col items-center justify-center shadow-sm active:scale-95 transition-transform border border-emerald-100">
               <Ticket className="h-6 w-6 text-emerald-600" />
               <span className="text-[10px] mt-1 font-medium text-emerald-700">{language === "te" ? "పోల్స్" : "Polls"}</span>
-            </div>
-          </Link>
-          <Link to="/benefits" data-testid="quick-action-benefits">
-            <div className="h-16 rounded-xl bg-rose-50 flex flex-col items-center justify-center shadow-sm active:scale-95 transition-transform border border-rose-100">
-              <Heart className="h-6 w-6 text-rose-600" />
-              <span className="text-[10px] mt-1 font-medium text-rose-700">{language === "te" ? "ప్రయోజనాలు" : "Benefits"}</span>
             </div>
           </Link>
         </div>
