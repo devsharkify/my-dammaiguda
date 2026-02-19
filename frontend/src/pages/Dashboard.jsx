@@ -486,7 +486,7 @@ export default function Dashboard() {
           </Link>
           
           {/* Dump Yard Quick Info Card */}
-          <Link to="/dump-yard">
+          <Link to="/dumpyard">
             <Card className="border-border/50 overflow-hidden h-full bg-gradient-to-br from-red-50 to-orange-50 dark:from-red-950/30 dark:to-orange-950/30">
               <CardContent className="p-3">
                 <div className="flex items-center gap-2 mb-1">
