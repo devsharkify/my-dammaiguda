@@ -468,81 +468,113 @@ export default function Dashboard() {
           ))}
         </div>
 
-        {/* AQI Widgets - Air Quality (Pollution) + Dump Yard Card */}
-        <div data-testid="aqi-widgets">
-          <h3 className="font-semibold text-sm mb-3 flex items-center gap-2">
-            <Wind className="h-4 w-4 text-primary" />
-            {language === "te" ? "గాలి నాణ్యత (కాలుష్యం)" : "Air Quality (Pollution)"}
-          </h3>
-          <div className="grid grid-cols-2 gap-3">
-          {/* Dammaiguda AQI Widget - Main Focus */}
-          <Link to="/aqi">
-            <Card className="bg-white rounded-2xl border border-gray-200/60 shadow-sm overflow-hidden h-full">
-              <CardContent className="p-4">
-                <div className="flex items-center gap-2 mb-2">
-                  <div className={`h-10 w-10 rounded-xl ${getAqiInfo(aqiData?.dammaiguda?.aqi).bg} ${getAqiInfo(aqiData?.dammaiguda?.aqi).text} flex items-center justify-center`}>
-                    <MapPin className="h-5 w-5" />
+        {/* AQI Monitor - Full Width Rectangular Card */}
+        <Link to="/aqi" data-testid="aqi-widget">
+          <Card className="bg-white rounded-2xl border border-gray-200/60 shadow-sm overflow-hidden">
+            <CardContent className="p-4">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-3">
+                  <div className={`h-14 w-14 rounded-2xl ${getAqiInfo(aqiData?.dammaiguda?.aqi).bg} ${getAqiInfo(aqiData?.dammaiguda?.aqi).text} flex items-center justify-center`}>
+                    <Wind className="h-7 w-7" />
                   </div>
-                  <span className="text-sm font-semibold text-gray-900">
-                    {language === "te" ? "దమ్మాయిగూడ" : "Dammaiguda"}
-                  </span>
+                  <div>
+                    <p className="text-xs text-gray-500 font-medium">
+                      {language === "te" ? "గాలి నాణ్యత సూచిక" : "Air Quality Index"}
+                    </p>
+                    <p className="text-sm font-semibold text-gray-900">
+                      {language === "te" ? "దమ్మాయిగూడ" : "Dammaiguda"}
+                    </p>
+                  </div>
                 </div>
-                <div className="flex items-center justify-between gap-2">
+                <div className="text-right">
                   <p className="font-extrabold text-4xl tracking-tighter text-gray-900">{aqiData?.dammaiguda?.aqi || "—"}</p>
-                  <div className={`inline-flex px-2.5 py-1.5 rounded-lg items-center justify-center ${getAqiInfo(aqiData?.dammaiguda?.aqi).bg} min-w-[60px]`}>
-                    <span className={`text-[10px] font-bold whitespace-nowrap leading-tight ${getAqiInfo(aqiData?.dammaiguda?.aqi).text}`}>
+                  <div className={`inline-flex px-2.5 py-1 rounded-lg items-center justify-center ${getAqiInfo(aqiData?.dammaiguda?.aqi).bg} mt-1`}>
+                    <span className={`text-[10px] font-bold whitespace-nowrap ${getAqiInfo(aqiData?.dammaiguda?.aqi).text}`}>
                       {language === "te" ? getAqiInfo(aqiData?.dammaiguda?.aqi).status_te : getAqiInfo(aqiData?.dammaiguda?.aqi).status}
                     </span>
                   </div>
                 </div>
-                {/* Hyderabad small text */}
-                <div className="flex items-center gap-1.5 mt-3 pt-3 border-t border-gray-100">
-                  <Wind className="h-3 w-3 text-gray-400" />
-                  <span className="text-[11px] text-gray-500">
-                    {language === "te" ? "హైదరాబాద్" : "Hyd"}: {aqiData?.hyderabad?.aqi || "—"}
-                  </span>
-                </div>
-              </CardContent>
-            </Card>
-          </Link>
-          
-          {/* Dump Yard Quick Info Card */}
-          <Link to="/dumpyard">
-            <Card className="bg-gradient-to-br from-red-50 to-orange-50 rounded-2xl border border-orange-100 shadow-sm overflow-hidden h-full">
-              <CardContent className="p-4">
-                <div className="flex items-center gap-2 mb-2">
-                  <div className="h-10 w-10 rounded-xl bg-red-100 flex items-center justify-center">
-                    <Trash className="h-5 w-5 text-red-600" />
+              </div>
+              <div className="flex items-center justify-between mt-3 pt-3 border-t border-gray-100">
+                <div className="flex items-center gap-4">
+                  <div className="flex items-center gap-1.5">
+                    <MapPin className="h-3 w-3 text-gray-400" />
+                    <span className="text-[11px] text-gray-500">
+                      {language === "te" ? "హైదరాబాద్" : "Hyderabad"}: <span className="font-semibold">{aqiData?.hyderabad?.aqi || "—"}</span>
+                    </span>
                   </div>
-                  <span className="text-sm font-semibold text-red-800">
-                    {language === "te" ? "డంప్ యార్డ్" : "Dump Yard"}
-                  </span>
+                  <div className="flex items-center gap-1.5">
+                    <span className="text-[11px] text-gray-500">
+                      PM2.5: <span className="font-semibold">{aqiData?.dammaiguda?.pm25 || "—"}</span>
+                    </span>
+                  </div>
                 </div>
-                <div className="mt-1">
-                  <p className="text-lg font-bold text-red-700">
-                    {language === "te" 
-                      ? `${dumpyardConfig.daily_waste_tons?.toLocaleString()} టన్/రోజు` 
-                      : `${dumpyardConfig.daily_waste_tons?.toLocaleString()} t/day`}
+                <ChevronRight className="h-4 w-4 text-gray-400" />
+              </div>
+            </CardContent>
+          </Card>
+        </Link>
+
+        {/* Dump Yard Info - Full Width Rectangular Card Below AQI */}
+        <Link to="/dumpyard" data-testid="dumpyard-widget">
+          <Card className="bg-gradient-to-r from-red-50 to-orange-50 rounded-2xl border border-red-200/60 shadow-sm overflow-hidden">
+            <CardContent className="p-4">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-3">
+                  <div className="h-14 w-14 rounded-2xl bg-red-100 flex items-center justify-center">
+                    <Trash className="h-7 w-7 text-red-600" />
+                  </div>
+                  <div>
+                    <p className="text-xs text-red-600/70 font-medium">
+                      {language === "te" ? "జవహర్ నగర్ లాండ్‌ఫిల్" : "Jawahar Nagar Landfill"}
+                    </p>
+                    <p className="text-sm font-semibold text-red-800">
+                      {language === "te" ? "డంప్ యార్డ్ ప్రభావం" : "Dump Yard Impact"}
+                    </p>
+                  </div>
+                </div>
+                <div className="text-right">
+                  <p className="text-2xl font-bold text-red-700">
+                    {dumpyardConfig.daily_waste_tons?.toLocaleString() || "8,000"}
                   </p>
-                  <p className="text-xs text-red-600/80 mt-1">
-                    {language === "te" 
-                      ? `${dumpyardConfig.area_acres} ఎకరాలు` 
-                      : `${dumpyardConfig.area_acres} acres`}
+                  <p className="text-[10px] text-red-600/80 font-medium">
+                    {language === "te" ? "టన్నులు/రోజు" : "tonnes/day"}
                   </p>
                 </div>
-                <div className="flex items-center gap-1.5 mt-3 pt-3 border-t border-orange-200/50">
+              </div>
+              
+              {/* Health Risks - Key Info */}
+              <div className="mt-3 pt-3 border-t border-red-200/50">
+                <div className="flex items-center gap-1.5 mb-2">
                   <AlertTriangle className="h-3.5 w-3.5 text-red-500" />
-                  <span className="text-[11px] text-red-600 font-medium">
-                    {language === "te" 
-                      ? `${dumpyardConfig.red_zone_km} కి.మీ. జోన్` 
-                      : `${dumpyardConfig.red_zone_km}km Zone`}
+                  <span className="text-xs font-semibold text-red-700">
+                    {language === "te" ? "ఆరోగ్య ప్రమాదాలు" : "Health Risks"}
                   </span>
                 </div>
-              </CardContent>
-            </Card>
-          </Link>
-          </div>
-        </div>
+                <div className="flex flex-wrap gap-1.5">
+                  {[
+                    { en: "Respiratory", te: "శ్వాసకోశ" },
+                    { en: "Skin Issues", te: "చర్మ" },
+                    { en: "Water Contamination", te: "నీటి కాలుష్యం" },
+                    { en: "Kidney", te: "కిడ్నీ" }
+                  ].map((risk, idx) => (
+                    <Badge key={idx} variant="secondary" className="text-[9px] bg-red-100 text-red-700 border-red-200">
+                      {language === "te" ? risk.te : risk.en}
+                    </Badge>
+                  ))}
+                </div>
+                <div className="flex items-center justify-between mt-2">
+                  <span className="text-[10px] text-red-600">
+                    {language === "te" 
+                      ? `${dumpyardConfig.area_acres || 351} ఎకరాలు • ${dumpyardConfig.red_zone_km || 5} కి.మీ ప్రభావ జోన్` 
+                      : `${dumpyardConfig.area_acres || 351} acres • ${dumpyardConfig.red_zone_km || 5}km impact zone`}
+                  </span>
+                  <ChevronRight className="h-4 w-4 text-red-400" />
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        </Link>
 
         {/* Wall Widget - Medium Sized */}
         <Card className="bg-white rounded-2xl border border-gray-200/60 shadow-sm overflow-hidden" data-testid="wall-widget">
