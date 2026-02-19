@@ -312,7 +312,7 @@ async def enroll_course(enrollment: EnrollmentRequest, user: dict = Depends(get_
     existing = await db.enrollments.find_one({
         "course_id": enrollment.course_id,
         "user_id": user["id"]
-    })
+    }, {"_id": 0})
     
     if existing:
         return {"success": True, "message": "Already enrolled", "enrollment": existing}
