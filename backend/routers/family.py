@@ -133,15 +133,35 @@ async def get_family_requests(user: dict = Depends(get_current_user)):
 
 @router.get("/members")
 async def get_family_members(user: dict = Depends(get_current_user)):
-    """Get list of family members"""
+    """Get list of family members with location and course progress summary"""
     members = await db.family_members.find({"user_id": user["id"]}, {"_id": 0}).to_list(50)
     
     for member in members:
+        # Get location
         location = await db.family_locations.find_one(
             {"user_id": member["family_member_id"]}, {"_id": 0},
             sort=[("updated_at", -1)]
         )
         member["last_location"] = location
+        
+        # Get course progress summary (for children especially)
+        enrollments = await db.enrollments.find(
+            {"user_id": member["family_member_id"]}, {"_id": 0}
+        ).to_list(20)
+        
+        total_courses = len(enrollments)
+        completed_courses = len([e for e in enrollments if e.get("status") == "completed"])
+        in_progress = len([e for e in enrollments if e.get("status") != "completed"])
+        
+        # Count certificates
+        cert_count = await db.certificates.count_documents({"user_id": member["family_member_id"]})
+        
+        member["course_summary"] = {
+            "total_courses": total_courses,
+            "completed": completed_courses,
+            "in_progress": in_progress,
+            "certificates": cert_count
+        }
     
     return members
 
