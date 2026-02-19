@@ -954,12 +954,17 @@ export default function CourseDetail() {
               <p className="text-center text-sm text-muted-foreground mb-2">
                 {language === "te" ? "చెల్లించలేకపోతున్నారా?" : "Can't afford?"}
               </p>
-              <Link to="/benefits" onClick={() => setShowPaymentDialog(false)}>
-                <Button variant="outline" className="w-full">
-                  <GraduationCap className="h-4 w-4 mr-2" />
-                  {language === "te" ? "స్కాలర్‌షిప్ కోసం అప్లై చేయండి" : "Apply for Scholarship"}
-                </Button>
-              </Link>
+              <Button 
+                variant="outline" 
+                className="w-full"
+                onClick={() => {
+                  setShowPaymentDialog(false);
+                  setShowScholarshipDialog(true);
+                }}
+              >
+                <GraduationCap className="h-4 w-4 mr-2" />
+                {language === "te" ? "స్కాలర్‌షిప్ కోసం అప్లై చేయండి" : "Apply for Scholarship"}
+              </Button>
             </div>
           </div>
           
