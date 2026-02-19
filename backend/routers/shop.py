@@ -687,19 +687,22 @@ async def admin_get_users_points(
     limit: int = Query(50, ge=1, le=100),
     user: dict = Depends(get_current_user)
 ):
-    """Admin: Get all users with their points balance"""
+    """Admin: Get all users with their points balance (normal and privilege)"""
     if user.get("role") != "admin":
         raise HTTPException(status_code=403, detail="Admin access required")
     
     # Get wallets with user info
     wallets = await db.wallets.find({}, {"_id": 0}).sort("balance", -1).skip((page-1)*limit).limit(limit).to_list(limit)
     
-    # Enrich with user info
+    # Enrich with user info and ensure privilege fields
     for w in wallets:
         u = await db.users.find_one({"id": w["user_id"]}, {"_id": 0, "name": 1, "phone": 1})
         if u:
             w["user_name"] = u.get("name", "")
             w["user_phone"] = u.get("phone", "")
+        # Ensure privilege balance exists
+        w.setdefault("privilege_balance", 0)
+        w.setdefault("total_privilege_earned", 0)
     
     total = await db.wallets.count_documents({})
     
