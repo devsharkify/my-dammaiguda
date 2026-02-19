@@ -111,7 +111,22 @@ export default function Layout({ children, title, showBackButton = false }) {
             </Link>
           )}
 
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-1">
+            {/* Dark Mode Toggle */}
+            <button
+              onClick={toggleTheme}
+              className="p-2 rounded-full text-white/80 hover:text-white hover:bg-white/10 transition-colors"
+              data-testid="theme-toggle"
+            >
+              <motion.div
+                initial={false}
+                animate={{ rotate: isDark ? 180 : 0 }}
+                transition={{ duration: 0.3 }}
+              >
+                {isDark ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
+              </motion.div>
+            </button>
+            
             <Button
               variant="ghost"
               size="sm"
