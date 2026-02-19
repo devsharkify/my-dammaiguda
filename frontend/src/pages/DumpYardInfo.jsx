@@ -190,25 +190,133 @@ export default function DumpYardInfo() {
           <TabsContent value="risks" className="mt-4 space-y-4">
             {/* Toxic Exposure Info */}
             <div className="space-y-3">
-              {info?.health_risks && Object.entries(info.health_risks).map(([key, risk]) => (
-                <Card key={key} className="border-border/50" data-testid={`risk-${key}`}>
-                  <CardContent className="p-4">
-                    <div className="flex items-start gap-3">
-                      <div className="h-10 w-10 rounded-xl bg-red-100 flex items-center justify-center flex-shrink-0">
-                        {key === "cadmium" ? <Skull className="h-5 w-5 text-red-600" /> : <Wind className="h-5 w-5 text-red-600" />}
+              {info?.health_risks && (
+                Array.isArray(info.health_risks) ? (
+                  // Handle both string array and object array formats
+                  typeof info.health_risks[0] === 'string' ? (
+                    // String array format from CMS
+                    info.health_risks.map((risk, idx) => (
+                      <Card key={idx} className="border-border/50" data-testid={`risk-${idx}`}>
+                        <CardContent className="p-4">
+                          <div className="flex items-start gap-3">
+                            <div className="h-10 w-10 rounded-xl bg-red-100 flex items-center justify-center flex-shrink-0">
+                              {idx === 0 ? <Wind className="h-5 w-5 text-red-600" /> : 
+                               idx === 1 ? <AlertTriangle className="h-5 w-5 text-red-600" /> :
+                               <Skull className="h-5 w-5 text-red-600" />}
+                            </div>
+                            <div>
+                              <h3 className="font-semibold text-text-primary">{risk}</h3>
+                            </div>
+                          </div>
+                        </CardContent>
+                      </Card>
+                    ))
+                  ) : (
+                    // Object array format
+                    Object.entries(info.health_risks).map(([key, risk]) => (
+                      <Card key={key} className="border-border/50" data-testid={`risk-${key}`}>
+                        <CardContent className="p-4">
+                          <div className="flex items-start gap-3">
+                            <div className="h-10 w-10 rounded-xl bg-red-100 flex items-center justify-center flex-shrink-0">
+                              {key === "cadmium" ? <Skull className="h-5 w-5 text-red-600" /> : <Wind className="h-5 w-5 text-red-600" />}
+                            </div>
+                            <div>
+                              <h3 className="font-semibold text-text-primary">
+                                {language === "te" ? risk.title_te : risk.title}
+                              </h3>
+                              <p className="text-sm text-text-muted mt-1">
+                                {language === "te" ? risk.description_te : risk.description}
+                              </p>
+                            </div>
+                          </div>
+                        </CardContent>
+                      </Card>
+                    ))
+                  )
+                ) : null
+              )}
+              
+              {/* Default health risks if none from backend */}
+              {(!info?.health_risks || info.health_risks.length === 0) && (
+                <>
+                  <Card className="border-border/50">
+                    <CardContent className="p-4">
+                      <div className="flex items-start gap-3">
+                        <div className="h-10 w-10 rounded-xl bg-red-100 flex items-center justify-center flex-shrink-0">
+                          <Wind className="h-5 w-5 text-red-600" />
+                        </div>
+                        <div>
+                          <h3 className="font-semibold text-text-primary">
+                            {language === "te" ? "శ్వాసకోశ సమస్యలు" : "Respiratory Issues"}
+                          </h3>
+                          <p className="text-sm text-text-muted mt-1">
+                            {language === "te" 
+                              ? "విషపూరిత పొగల వల్ల ఆస్తమా, బ్రాంకైటిస్ మరియు ఊపిరితిత్తుల వ్యాధులు" 
+                              : "Asthma, bronchitis, and lung diseases from toxic fumes"}
+                          </p>
+                        </div>
                       </div>
-                      <div>
-                        <h3 className="font-semibold text-text-primary">
-                          {language === "te" ? risk.title_te : risk.title}
-                        </h3>
-                        <p className="text-sm text-text-muted mt-1">
-                          {language === "te" ? risk.description_te : risk.description}
-                        </p>
+                    </CardContent>
+                  </Card>
+                  <Card className="border-border/50">
+                    <CardContent className="p-4">
+                      <div className="flex items-start gap-3">
+                        <div className="h-10 w-10 rounded-xl bg-red-100 flex items-center justify-center flex-shrink-0">
+                          <AlertTriangle className="h-5 w-5 text-red-600" />
+                        </div>
+                        <div>
+                          <h3 className="font-semibold text-text-primary">
+                            {language === "te" ? "నీటి కాలుష్యం" : "Water Contamination"}
+                          </h3>
+                          <p className="text-sm text-text-muted mt-1">
+                            {language === "te" 
+                              ? "భూగర్భ జలాలలో కాడ్మియం, సీసం మరియు మెర్క్యురీ వంటి భారీ లోహాలు" 
+                              : "Heavy metals like cadmium, lead, and mercury in groundwater"}
+                          </p>
+                        </div>
                       </div>
-                    </div>
-                  </CardContent>
-                </Card>
-              ))}
+                    </CardContent>
+                  </Card>
+                  <Card className="border-border/50">
+                    <CardContent className="p-4">
+                      <div className="flex items-start gap-3">
+                        <div className="h-10 w-10 rounded-xl bg-red-100 flex items-center justify-center flex-shrink-0">
+                          <Skull className="h-5 w-5 text-red-600" />
+                        </div>
+                        <div>
+                          <h3 className="font-semibold text-text-primary">
+                            {language === "te" ? "క్యాన్సర్ ప్రమాదం" : "Cancer Risk"}
+                          </h3>
+                          <p className="text-sm text-text-muted mt-1">
+                            {language === "te" 
+                              ? "చుట్టుపక్కల ప్రాంతాలలో క్యాన్సర్ మరియు కిడ్నీ వ్యాధుల ప్రమాదం పెరిగింది" 
+                              : "Increased risk of cancer and kidney diseases in surrounding areas"}
+                          </p>
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+                  <Card className="border-border/50">
+                    <CardContent className="p-4">
+                      <div className="flex items-start gap-3">
+                        <div className="h-10 w-10 rounded-xl bg-orange-100 flex items-center justify-center flex-shrink-0">
+                          <Heart className="h-5 w-5 text-orange-600" />
+                        </div>
+                        <div>
+                          <h3 className="font-semibold text-text-primary">
+                            {language === "te" ? "చర్మ సమస్యలు" : "Skin Diseases"}
+                          </h3>
+                          <p className="text-sm text-text-muted mt-1">
+                            {language === "te" 
+                              ? "కలుషిత నీటి వల్ల చర్మ వ్యాధులు మరియు అలెర్జీలు" 
+                              : "Skin diseases and allergies from polluted water"}
+                          </p>
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+                </>
+              )}
             </div>
 
             {/* Affected Groups */}
