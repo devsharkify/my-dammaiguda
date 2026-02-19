@@ -98,6 +98,28 @@ Build a production-ready, mobile-first civic engagement platform "My Dammaiguda"
 - Fixed Issues page crash (frontend was parsing API response incorrectly)
 - Added missing admin endpoints (/api/admin/stats, /api/admin/users, /api/admin/issues-heatmap)
 
+### 11. News Page (Shorts Style) ✅ (P1)
+- **Shorts-style feed**: Vertical swipeable cards with large images
+- **Categories**: Local, City, State, Sports, Health (from RSS feeds)
+- **Features**: Reactions (like/love/angry), share, refresh, category filters
+- **Sample News Seeded**: Metro extension, Health camp, School quiz, Ration card drive
+
+### 12. Certificate OpenGraph Meta Tags ✅ (P1)
+- **Endpoint**: `/certificate/{certificate_id}` returns HTML with OG tags
+- **Meta tags**: og:title, og:description, og:image, og:url, twitter:card
+- **Social Preview**: Shows "{User} completed {Course}!" with certificate image
+- **Auto-redirect**: Redirects to frontend certificate view page
+
+### 13. Automatic Fitness Points Rewards ✅ (P1)
+- **Points System**:
+  - 10 points per 1,000 steps
+  - 5 points per 10 minutes of activity
+  - 2 points per 100 calories burned
+  - Max 200 points per day
+- **Integration**: Points auto-add to user wallet (normal points)
+- **Endpoints**: `/fitness/my-points`, `/fitness/points-config`
+- **Activity Response**: Returns `points_awarded` field
+
 ---
 
 ## Technical Architecture
