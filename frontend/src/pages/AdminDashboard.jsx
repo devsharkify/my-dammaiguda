@@ -557,7 +557,7 @@ export default function AdminDashboard() {
           <TabsContent value="overview" className="space-y-4 mt-4">
             {/* Stats Cards */}
             <div className="grid grid-cols-2 gap-3">
-              <Card>
+              <Card className="border-l-4 border-l-blue-500">
                 <CardContent className="p-4">
                   <div className="flex items-center gap-3">
                     <div className="h-10 w-10 rounded-lg bg-blue-100 flex items-center justify-center">
@@ -571,7 +571,7 @@ export default function AdminDashboard() {
                 </CardContent>
               </Card>
               
-              <Card>
+              <Card className="border-l-4 border-l-orange-500">
                 <CardContent className="p-4">
                   <div className="flex items-center gap-3">
                     <div className="h-10 w-10 rounded-lg bg-orange-100 flex items-center justify-center">
@@ -585,7 +585,7 @@ export default function AdminDashboard() {
                 </CardContent>
               </Card>
               
-              <Card>
+              <Card className="border-l-4 border-l-green-500">
                 <CardContent className="p-4">
                   <div className="flex items-center gap-3">
                     <div className="h-10 w-10 rounded-lg bg-green-100 flex items-center justify-center">
@@ -599,7 +599,7 @@ export default function AdminDashboard() {
                 </CardContent>
               </Card>
               
-              <Card>
+              <Card className="border-l-4 border-l-purple-500">
                 <CardContent className="p-4">
                   <div className="flex items-center gap-3">
                     <div className="h-10 w-10 rounded-lg bg-purple-100 flex items-center justify-center">
@@ -613,6 +613,58 @@ export default function AdminDashboard() {
                 </CardContent>
               </Card>
             </div>
+
+            {/* Quick Actions */}
+            <Card>
+              <CardHeader className="pb-2">
+                <CardTitle className="text-sm flex items-center gap-2">
+                  <Settings className="h-4 w-4" />
+                  Quick Actions
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="grid grid-cols-2 gap-2">
+                  <Button variant="outline" size="sm" className="h-10 justify-start" onClick={() => setActiveTab("shop")}>
+                    <Gift className="h-4 w-4 mr-2 text-pink-500" />
+                    <span className="text-xs">Add Gift</span>
+                  </Button>
+                  <Button variant="outline" size="sm" className="h-10 justify-start" onClick={() => setActiveTab("news")}>
+                    <Newspaper className="h-4 w-4 mr-2 text-blue-500" />
+                    <span className="text-xs">Post News</span>
+                  </Button>
+                  <Button variant="outline" size="sm" className="h-10 justify-start" onClick={() => setActiveTab("vouchers")}>
+                    <Ticket className="h-4 w-4 mr-2 text-green-500" />
+                    <span className="text-xs">Add Voucher</span>
+                  </Button>
+                  <Button variant="outline" size="sm" className="h-10 justify-start" onClick={() => { setActiveTab("shop"); setTimeout(() => setShowBulkPrivilegeDialog(true), 100); }}>
+                    <Star className="h-4 w-4 mr-2 text-amber-500" />
+                    <span className="text-xs">Bulk Points</span>
+                  </Button>
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* Issues by Category */}
+            {stats.issues?.by_category && Object.keys(stats.issues.by_category).length > 0 && (
+              <Card>
+                <CardHeader className="pb-2">
+                  <CardTitle className="text-sm flex items-center gap-2">
+                    <AlertTriangle className="h-4 w-4" />
+                    Issues by Category
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-2">
+                    {Object.entries(stats.issues.by_category).map(([category, count]) => (
+                      <div key={category} className="flex items-center justify-between">
+                        <span className="text-sm capitalize">{category}</span>
+                        <Badge variant="secondary">{count}</Badge>
+                      </div>
+                    ))}
+                  </div>
+                </CardContent>
+              </Card>
+            )}
 
             {/* Issues Heatmap */}
             {Array.isArray(heatmap) && heatmap.length > 0 && (
