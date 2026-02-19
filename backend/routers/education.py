@@ -1197,6 +1197,127 @@ async def delete_quiz(quiz_id: str, user: dict = Depends(get_current_user)):
     
     return {"success": True, "deleted": result.deleted_count > 0}
 
+# ============== SCHOLARSHIP ROUTES ==============
+
+@router.post("/scholarships/apply")
+async def apply_scholarship(data: ScholarshipApplication, user: dict = Depends(get_current_user)):
+    """Apply for scholarship for a course"""
+    # Check if already applied
+    existing = await db.scholarship_applications.find_one({
+        "user_id": user["id"],
+        "course_id": data.course_id
+    })
+    if existing:
+        raise HTTPException(status_code=400, detail="You have already applied for scholarship for this course")
+    
+    application = {
+        "id": generate_id(),
+        "user_id": user["id"],
+        "course_id": data.course_id,
+        "course_title": data.course_title,
+        "full_name": data.full_name,
+        "mobile": data.mobile,
+        "email": data.email,
+        "age": data.age,
+        "education_level": data.education_level,
+        "institution_name": data.institution_name,
+        "family_income": data.family_income,
+        "reason": data.reason,
+        "status": "pending",  # pending, approved, rejected
+        "admin_notes": None,
+        "created_at": now_iso(),
+        "updated_at": now_iso()
+    }
+    
+    await db.scholarship_applications.insert_one(application)
+    
+    return {"success": True, "application": {k: v for k, v in application.items() if k != "_id"}}
+
+@router.get("/scholarships/my-applications")
+async def get_my_scholarship_applications(user: dict = Depends(get_current_user)):
+    """Get user's scholarship applications"""
+    applications = await db.scholarship_applications.find(
+        {"user_id": user["id"]},
+        {"_id": 0}
+    ).sort("created_at", -1).to_list(50)
+    
+    return {"applications": applications}
+
+@router.get("/admin/scholarships")
+async def get_all_scholarship_applications(
+    status: Optional[str] = None,
+    limit: int = 50,
+    skip: int = 0,
+    user: dict = Depends(get_current_user)
+):
+    """Get all scholarship applications (admin only)"""
+    if user.get("role") != "admin":
+        raise HTTPException(status_code=403, detail="Admin only")
+    
+    query = {}
+    if status:
+        query["status"] = status
+    
+    applications = await db.scholarship_applications.find(
+        query, {"_id": 0}
+    ).sort("created_at", -1).skip(skip).limit(limit).to_list(limit)
+    
+    total = await db.scholarship_applications.count_documents(query)
+    
+    return {"applications": applications, "total": total}
+
+@router.put("/admin/scholarships/{application_id}")
+async def update_scholarship_application(
+    application_id: str,
+    status: str,
+    admin_notes: Optional[str] = None,
+    user: dict = Depends(get_current_user)
+):
+    """Approve or reject scholarship application (admin only)"""
+    if user.get("role") != "admin":
+        raise HTTPException(status_code=403, detail="Admin only")
+    
+    if status not in ["approved", "rejected"]:
+        raise HTTPException(status_code=400, detail="Status must be 'approved' or 'rejected'")
+    
+    application = await db.scholarship_applications.find_one({"id": application_id})
+    if not application:
+        raise HTTPException(status_code=404, detail="Application not found")
+    
+    # Update application
+    await db.scholarship_applications.update_one(
+        {"id": application_id},
+        {"$set": {
+            "status": status,
+            "admin_notes": admin_notes,
+            "reviewed_by": user["id"],
+            "reviewed_at": now_iso(),
+            "updated_at": now_iso()
+        }}
+    )
+    
+    # If approved, enroll the user in the course
+    if status == "approved":
+        existing_enrollment = await db.enrollments.find_one({
+            "user_id": application["user_id"],
+            "course_id": application["course_id"]
+        })
+        
+        if not existing_enrollment:
+            enrollment = {
+                "id": generate_id(),
+                "user_id": application["user_id"],
+                "course_id": application["course_id"],
+                "enrolled_at": now_iso(),
+                "scholarship_id": application_id,
+                "is_scholarship": True,
+                "completed_lessons": [],
+                "last_accessed": now_iso()
+            }
+            await db.enrollments.insert_one(enrollment)
+    
+    return {"success": True, "status": status}
+
 # ============== SEED DATA ==============
 
 @router.post("/seed")
