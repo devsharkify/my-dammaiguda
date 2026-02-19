@@ -12,6 +12,8 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "
 import { RadioGroup, RadioGroupItem } from "../components/ui/radio-group";
 import { Label } from "../components/ui/label";
 import { Textarea } from "../components/ui/textarea";
+import { Input } from "../components/ui/input";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../components/ui/select";
 import { toast } from "sonner";
 import Layout from "../components/Layout";
 import {
@@ -36,7 +38,12 @@ import {
   Trash2,
   CreditCard,
   QrCode,
-  GraduationCap
+  GraduationCap,
+  User,
+  Phone,
+  Mail,
+  Building,
+  Calendar
 } from "lucide-react";
 
 const API = `${process.env.REACT_APP_BACKEND_URL}/api`;
