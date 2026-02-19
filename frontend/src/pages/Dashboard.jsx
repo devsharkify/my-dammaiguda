@@ -470,77 +470,74 @@ export default function Dashboard() {
 
         {/* AQI Monitor - Full Width Rectangular Card */}
         <Link to="/aqi" data-testid="aqi-widget">
-          <Card className="bg-white rounded-2xl border border-gray-200/60 shadow-sm overflow-hidden">
+          <Card className="bg-white rounded-xl border border-gray-100 shadow-sm overflow-hidden">
             <CardContent className="p-4">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-3">
-                  <div className={`h-12 w-12 rounded-2xl ${getAqiInfo(aqiData?.dammaiguda?.aqi).bg} ${getAqiInfo(aqiData?.dammaiguda?.aqi).text} flex items-center justify-center`}>
-                    <Wind className="h-6 w-6" />
+                  <div className={`h-11 w-11 rounded-xl ${getAqiInfo(aqiData?.dammaiguda?.aqi).bg} ${getAqiInfo(aqiData?.dammaiguda?.aqi).text} flex items-center justify-center`}>
+                    <Wind className="h-5 w-5" />
                   </div>
                   <div>
-                    <p className="text-xs text-gray-500 font-medium">
-                      {language === "te" ? "గాలి నాణ్యత సూచిక" : "Air Quality Index"}
+                    <p className="text-[11px] text-gray-400 font-medium">
+                      {language === "te" ? "గాలి నాణ్యత" : "Air Quality"}
                     </p>
-                    <p className="text-sm font-semibold text-gray-900">
+                    <p className="text-sm font-semibold text-gray-800">
                       {language === "te" ? "దమ్మాయిగూడ" : "Dammaiguda"}
                     </p>
                   </div>
                 </div>
                 <div className="text-right">
-                  <p className="font-extrabold text-4xl tracking-tighter text-gray-900">{aqiData?.dammaiguda?.aqi || "—"}</p>
-                  <div className={`inline-flex px-2.5 py-1 rounded-lg items-center justify-center ${getAqiInfo(aqiData?.dammaiguda?.aqi).bg} mt-1`}>
-                    <span className={`text-[10px] font-bold whitespace-nowrap ${getAqiInfo(aqiData?.dammaiguda?.aqi).text}`}>
+                  <p className="font-bold text-3xl text-gray-800">{aqiData?.dammaiguda?.aqi || "—"}</p>
+                  <div className={`inline-flex px-2 py-0.5 rounded-md items-center justify-center ${getAqiInfo(aqiData?.dammaiguda?.aqi).bg} mt-0.5`}>
+                    <span className={`text-[9px] font-semibold ${getAqiInfo(aqiData?.dammaiguda?.aqi).text}`}>
                       {language === "te" ? getAqiInfo(aqiData?.dammaiguda?.aqi).status_te : getAqiInfo(aqiData?.dammaiguda?.aqi).status}
                     </span>
                   </div>
                 </div>
               </div>
-              <div className="flex items-center justify-between mt-3 pt-3 border-t border-gray-100">
-                <div className="flex items-center gap-1.5">
-                  <MapPin className="h-3 w-3 text-gray-400" />
-                  <span className="text-[11px] text-gray-500">
-                    {language === "te" ? "హైదరాబాద్" : "Hyderabad"}: <span className="font-semibold">{aqiData?.hyderabad?.aqi || "—"}</span>
+              <div className="flex items-center justify-between mt-2.5 pt-2.5 border-t border-gray-50">
+                <div className="flex items-center gap-1">
+                  <MapPin className="h-3 w-3 text-gray-300" />
+                  <span className="text-[10px] text-gray-400">
+                    {language === "te" ? "హైదరాబాద్" : "Hyderabad"}: <span className="font-medium text-gray-500">{aqiData?.hyderabad?.aqi || "—"}</span>
                   </span>
                 </div>
-                <ChevronRight className="h-4 w-4 text-gray-400" />
+                <ChevronRight className="h-4 w-4 text-gray-300" />
               </div>
             </CardContent>
           </Card>
         </Link>
 
-        {/* Dump Yard Alert - Informative Card */}
+        {/* Dump Yard Alert - Softer Card */}
         <Link to="/dumpyard" data-testid="dumpyard-widget">
-          <Card className="bg-gradient-to-r from-red-600 to-orange-500 rounded-xl shadow-lg overflow-hidden">
-            <CardContent className="p-4">
+          <Card className="bg-gradient-to-r from-red-500/90 to-orange-400/90 rounded-xl shadow-sm overflow-hidden">
+            <CardContent className="p-3.5">
               <div className="flex items-start justify-between text-white">
-                <div className="flex items-center gap-3">
-                  <div className="h-12 w-12 rounded-xl bg-white/20 flex items-center justify-center">
-                    <AlertTriangle className="h-6 w-6" />
+                <div className="flex items-center gap-2.5">
+                  <div className="h-10 w-10 rounded-lg bg-white/15 flex items-center justify-center">
+                    <AlertTriangle className="h-5 w-5" />
                   </div>
                   <div>
-                    <p className="text-xs text-white/80 font-medium uppercase tracking-wide">
-                      {language === "te" ? "జవహర్ నగర్ లాండ్‌ఫిల్" : "Jawahar Nagar Landfill"}
+                    <p className="text-[10px] text-white/70 font-medium uppercase tracking-wide">
+                      {language === "te" ? "జవహర్ నగర్ డంప్ యార్డ్" : "Jawahar Nagar Landfill"}
                     </p>
-                    <p className="text-xl font-bold mt-0.5">
-                      {(dumpyardConfig.daily_waste_tons)?.toLocaleString() || "10,000"} {language === "te" ? "టన్నులు/రోజు" : "tonnes/day"}
-                    </p>
-                    <p className="text-xs text-white/70 mt-0.5">
-                      {language === "te" ? "విషపూరిత వ్యర్థాలు • ఆరోగ్య ప్రమాదం" : "Toxic waste • Health hazard"}
+                    <p className="text-lg font-bold">
+                      {(dumpyardConfig.daily_waste_tons)?.toLocaleString() || "10,000"} <span className="text-xs font-normal text-white/80">{language === "te" ? "టన్నులు/రోజు" : "tonnes/day"}</span>
                     </p>
                   </div>
                 </div>
-                <ChevronRight className="h-5 w-5 text-white/70 mt-1" />
+                <ChevronRight className="h-4 w-4 text-white/50 mt-1" />
               </div>
               
               {/* Health Risk Tags */}
-              <div className="flex gap-2 mt-3">
+              <div className="flex gap-1.5 mt-2.5">
                 {[
-                  { en: "Respiratory", te: "శ్వాసకోశ", icon: "🫁" },
-                  { en: "Water Toxic", te: "నీటి విషం", icon: "💧" },
-                  { en: "Cancer Risk", te: "క్యాన్సర్ ప్రమాదం", icon: "⚠️" }
+                  { en: "Respiratory", te: "శ్వాసకోశం", icon: "🫁" },
+                  { en: "Water", te: "నీరు", icon: "💧" },
+                  { en: "Cancer", te: "క్యాన్సర్", icon: "⚠️" }
                 ].map((tag, idx) => (
-                  <span key={idx} className="inline-flex items-center gap-1 px-2 py-1 bg-white/20 rounded-full text-[10px] font-medium">
-                    <span>{tag.icon}</span>
+                  <span key={idx} className="inline-flex items-center gap-0.5 px-1.5 py-0.5 bg-white/15 rounded text-[9px] font-medium">
+                    <span className="text-[10px]">{tag.icon}</span>
                     {language === "te" ? tag.te : tag.en}
                   </span>
                 ))}
