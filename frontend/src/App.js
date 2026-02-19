@@ -40,6 +40,7 @@ import NewsPage from "./pages/NewsPage";
 import InstructorPortal from "./pages/InstructorPortal";
 import Leaderboard from "./pages/Leaderboard";
 import LiveChat from "./pages/LiveChat";
+import AdminConsole from "./pages/AdminConsole";
 
 import "./App.css";
 
