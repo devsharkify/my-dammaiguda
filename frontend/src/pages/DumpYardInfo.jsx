@@ -325,40 +325,159 @@ export default function DumpYardInfo() {
             </h2>
             
             <div className="space-y-3">
-              {info?.affected_groups?.map((group, idx) => (
-                <Card 
-                  key={idx} 
-                  className="border-border/50"
-                  data-testid={`affected-group-${group.group}`}
-                >
-                  <CardContent className="p-4">
-                    <div className="flex items-start gap-3">
-                      <div className={`h-12 w-12 rounded-xl flex items-center justify-center ${
-                        group.risk_level === "very_high" ? "bg-red-100 text-red-600" : "bg-orange-100 text-orange-600"
-                      }`}>
-                        {groupIcons[group.group]}
-                      </div>
-                      <div className="flex-1">
-                        <div className="flex items-center justify-between">
-                          <h3 className="font-semibold text-text-primary">
-                            {language === "te" ? group.group_te : group.group}
-                          </h3>
-                          <Badge className={`${
-                            group.risk_level === "very_high" ? "bg-red-100 text-red-700" : "bg-orange-100 text-orange-700"
+              {info?.affected_groups && Array.isArray(info.affected_groups) ? (
+                typeof info.affected_groups[0] === 'string' ? (
+                  // String array from CMS
+                  info.affected_groups.map((group, idx) => (
+                    <Card 
+                      key={idx} 
+                      className="border-border/50"
+                      data-testid={`affected-group-${idx}`}
+                    >
+                      <CardContent className="p-4">
+                        <div className="flex items-start gap-3">
+                          <div className={`h-12 w-12 rounded-xl flex items-center justify-center ${
+                            group.toLowerCase().includes("very high") || group.toLowerCase().includes("worker") 
+                              ? "bg-red-100 text-red-600" 
+                              : "bg-orange-100 text-orange-600"
                           }`}>
-                            {group.risk_level === "very_high" 
-                              ? (language === "te" ? "చాలా అధికం" : "Very High")
-                              : (language === "te" ? "అధికం" : "High")}
-                          </Badge>
+                            {group.toLowerCase().includes("child") ? <Baby className="h-6 w-6" /> :
+                             group.toLowerCase().includes("pregnant") ? <Heart className="h-6 w-6" /> :
+                             group.toLowerCase().includes("elder") ? <Users className="h-6 w-6" /> :
+                             <Users className="h-6 w-6" />}
+                          </div>
+                          <div className="flex-1">
+                            <div className="flex items-center justify-between">
+                              <h3 className="font-semibold text-text-primary">{group}</h3>
+                              <Badge className={`${
+                                group.toLowerCase().includes("very high") || group.toLowerCase().includes("worker")
+                                  ? "bg-red-100 text-red-700" 
+                                  : "bg-orange-100 text-orange-700"
+                              }`}>
+                                {group.toLowerCase().includes("very high") || group.toLowerCase().includes("worker")
+                                  ? (language === "te" ? "చాలా అధికం" : "Very High")
+                                  : (language === "te" ? "అధికం" : "High")}
+                              </Badge>
+                            </div>
+                          </div>
                         </div>
-                        <p className="text-sm text-text-muted mt-2">
-                          {language === "te" ? group.advice_te : group.advice}
-                        </p>
+                      </CardContent>
+                    </Card>
+                  ))
+                ) : (
+                  // Object array format
+                  info.affected_groups.map((group, idx) => (
+                    <Card 
+                      key={idx} 
+                      className="border-border/50"
+                      data-testid={`affected-group-${group.group}`}
+                    >
+                      <CardContent className="p-4">
+                        <div className="flex items-start gap-3">
+                          <div className={`h-12 w-12 rounded-xl flex items-center justify-center ${
+                            group.risk_level === "very_high" ? "bg-red-100 text-red-600" : "bg-orange-100 text-orange-600"
+                          }`}>
+                            {groupIcons[group.group]}
+                          </div>
+                          <div className="flex-1">
+                            <div className="flex items-center justify-between">
+                              <h3 className="font-semibold text-text-primary">
+                                {language === "te" ? group.group_te : group.group}
+                              </h3>
+                              <Badge className={`${
+                                group.risk_level === "very_high" ? "bg-red-100 text-red-700" : "bg-orange-100 text-orange-700"
+                              }`}>
+                                {group.risk_level === "very_high" 
+                                  ? (language === "te" ? "చాలా అధికం" : "Very High")
+                                  : (language === "te" ? "అధికం" : "High")}
+                              </Badge>
+                            </div>
+                            <p className="text-sm text-text-muted mt-2">
+                              {language === "te" ? group.advice_te : group.advice}
+                            </p>
+                          </div>
+                        </div>
+                      </CardContent>
+                    </Card>
+                  ))
+                )
+              ) : (
+                // Default affected groups if none from backend
+                <>
+                  <Card className="border-border/50">
+                    <CardContent className="p-4">
+                      <div className="flex items-start gap-3">
+                        <div className="h-12 w-12 rounded-xl flex items-center justify-center bg-red-100 text-red-600">
+                          <Baby className="h-6 w-6" />
+                        </div>
+                        <div className="flex-1">
+                          <div className="flex items-center justify-between">
+                            <h3 className="font-semibold text-text-primary">
+                              {language === "te" ? "పిల్లలు" : "Children"}
+                            </h3>
+                            <Badge className="bg-red-100 text-red-700">
+                              {language === "te" ? "చాలా అధికం" : "Very High"}
+                            </Badge>
+                          </div>
+                          <p className="text-sm text-text-muted mt-2">
+                            {language === "te" 
+                              ? "బాలల అభివృద్ధిపై తీవ్ర ప్రభావం, జ్ఞాపకశక్తి మరియు శ్వాసకోశ సమస్యలు" 
+                              : "Severe impact on child development, memory, and respiratory issues"}
+                          </p>
+                        </div>
                       </div>
-                    </div>
-                  </CardContent>
-                </Card>
-              ))}
+                    </CardContent>
+                  </Card>
+                  <Card className="border-border/50">
+                    <CardContent className="p-4">
+                      <div className="flex items-start gap-3">
+                        <div className="h-12 w-12 rounded-xl flex items-center justify-center bg-red-100 text-red-600">
+                          <Heart className="h-6 w-6" />
+                        </div>
+                        <div className="flex-1">
+                          <div className="flex items-center justify-between">
+                            <h3 className="font-semibold text-text-primary">
+                              {language === "te" ? "గర్భిణీ స్త్రీలు" : "Pregnant Women"}
+                            </h3>
+                            <Badge className="bg-red-100 text-red-700">
+                              {language === "te" ? "చాలా అధికం" : "Very High"}
+                            </Badge>
+                          </div>
+                          <p className="text-sm text-text-muted mt-2">
+                            {language === "te" 
+                              ? "గర్భస్థ శిశువుపై ప్రభావం, తక్కువ బరువు మరియు జన్మ లోపాల ప్రమాదం" 
+                              : "Impact on fetal development, low birth weight, and birth defect risks"}
+                          </p>
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+                  <Card className="border-border/50">
+                    <CardContent className="p-4">
+                      <div className="flex items-start gap-3">
+                        <div className="h-12 w-12 rounded-xl flex items-center justify-center bg-orange-100 text-orange-600">
+                          <Users className="h-6 w-6" />
+                        </div>
+                        <div className="flex-1">
+                          <div className="flex items-center justify-between">
+                            <h3 className="font-semibold text-text-primary">
+                              {language === "te" ? "వృద్ధులు" : "Elderly"}
+                            </h3>
+                            <Badge className="bg-orange-100 text-orange-700">
+                              {language === "te" ? "అధికం" : "High"}
+                            </Badge>
+                          </div>
+                          <p className="text-sm text-text-muted mt-2">
+                            {language === "te" 
+                              ? "రోగనిరోధక వ్యవస్థ బలహీనత, శ్వాసకోశ మరియు గుండె సమస్యలు" 
+                              : "Weakened immune system, respiratory and heart complications"}
+                          </p>
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+                </>
+              )}
             </div>
           </TabsContent>
 
