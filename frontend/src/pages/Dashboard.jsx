@@ -508,25 +508,25 @@ export default function Dashboard() {
           </Card>
         </Link>
 
-        {/* Dump Yard Alert - Softer Card */}
+        {/* Dump Yard Alert - Grey Card */}
         <Link to="/dumpyard" data-testid="dumpyard-widget">
-          <Card className="bg-gradient-to-r from-red-500/90 to-orange-400/90 rounded-xl shadow-sm overflow-hidden">
+          <Card className="bg-gray-800 rounded-xl overflow-hidden">
             <CardContent className="p-3.5">
               <div className="flex items-start justify-between text-white">
                 <div className="flex items-center gap-2.5">
-                  <div className="h-10 w-10 rounded-lg bg-white/15 flex items-center justify-center">
-                    <AlertTriangle className="h-5 w-5" />
+                  <div className="h-10 w-10 rounded-lg bg-white/10 flex items-center justify-center">
+                    <AlertTriangle className="h-5 w-5 text-red-400" />
                   </div>
                   <div>
-                    <p className="text-[10px] text-white/70 font-medium uppercase tracking-wide">
+                    <p className="text-[10px] text-gray-400 font-medium uppercase tracking-wide">
                       {language === "te" ? "జవహర్ నగర్ డంప్ యార్డ్" : "Jawahar Nagar Landfill"}
                     </p>
-                    <p className="text-lg font-bold">
-                      {(dumpyardConfig.daily_waste_tons)?.toLocaleString() || "10,000"} <span className="text-xs font-normal text-white/80">{language === "te" ? "టన్నులు/రోజు" : "tonnes/day"}</span>
+                    <p className="text-lg font-bold text-white">
+                      {(dumpyardConfig.daily_waste_tons)?.toLocaleString() || "10,000"} <span className="text-xs font-normal text-gray-400">{language === "te" ? "టన్నులు/రోజు" : "tonnes/day"}</span>
                     </p>
                   </div>
                 </div>
-                <ChevronRight className="h-4 w-4 text-white/50 mt-1" />
+                <ChevronRight className="h-4 w-4 text-gray-500 mt-1" />
               </div>
               
               {/* Health Risk Tags */}
@@ -536,7 +536,7 @@ export default function Dashboard() {
                   { en: "Water", te: "నీరు", icon: "💧" },
                   { en: "Cancer", te: "క్యాన్సర్", icon: "⚠️" }
                 ].map((tag, idx) => (
-                  <span key={idx} className="inline-flex items-center gap-0.5 px-1.5 py-0.5 bg-white/15 rounded text-[9px] font-medium">
+                  <span key={idx} className="inline-flex items-center gap-0.5 px-1.5 py-0.5 bg-white/10 rounded text-[9px] font-medium text-gray-300">
                     <span className="text-[10px]">{tag.icon}</span>
                     {language === "te" ? tag.te : tag.en}
                   </span>
