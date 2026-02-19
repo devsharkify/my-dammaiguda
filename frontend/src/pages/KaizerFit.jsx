@@ -56,6 +56,28 @@ export default function KaizerFit() {
   const [todayStats, setTodayStats] = useState(null);
   const [loading, setLoading] = useState(true);
   
+  // Fitness Profile (Onboarding)
+  const [hasProfile, setHasProfile] = useState(true);
+  const [showOnboarding, setShowOnboarding] = useState(false);
+  const [onboardingData, setOnboardingData] = useState({
+    height_cm: "",
+    weight_kg: "",
+    gender: "",
+    age: "",
+    fitness_goal: "general_fitness"
+  });
+  
+  // Manual Recording
+  const [showManualRecord, setShowManualRecord] = useState(false);
+  const [manualRecord, setManualRecord] = useState({
+    activity_type: "walking",
+    duration_minutes: "",
+    date: new Date().toISOString().split("T")[0],
+    distance_km: "",
+    calories_burned: "",
+    notes: ""
+  });
+  
   // Streaks & Badges
   const [streakData, setStreakData] = useState(null);
   const [badges, setBadges] = useState([]);
@@ -79,8 +101,85 @@ export default function KaizerFit() {
   const headers = { Authorization: `Bearer ${token}` };
 
   useEffect(() => {
-    fetchAllData();
+    checkProfile();
   }, []);
+  
+  const checkProfile = async () => {
+    try {
+      const res = await axios.get(`${API}/fitness/profile`, { headers });
+      setHasProfile(res.data.has_profile);
+      if (!res.data.has_profile) {
+        setShowOnboarding(true);
+      } else {
+        fetchAllData();
+      }
+    } catch (error) {
+      console.error("Error checking profile:", error);
+      fetchAllData();
+    }
+  };
+
+  const submitProfile = async () => {
+    if (!onboardingData.height_cm || !onboardingData.weight_kg || !onboardingData.gender || !onboardingData.age) {
+      toast.error(language === "te" ? "అన్ని ఫీల్డ్‌లు అవసరం" : "All fields are required");
+      return;
+    }
+    
+    setSubmitting(true);
+    try {
+      await axios.post(`${API}/fitness/profile`, {
+        height_cm: parseFloat(onboardingData.height_cm),
+        weight_kg: parseFloat(onboardingData.weight_kg),
+        gender: onboardingData.gender,
+        age: parseInt(onboardingData.age),
+        fitness_goal: onboardingData.fitness_goal
+      }, { headers });
+      
+      toast.success(language === "te" ? "ప్రొఫైల్ సృష్టించబడింది!" : "Profile created!");
+      setShowOnboarding(false);
+      setHasProfile(true);
+      fetchAllData();
+    } catch (error) {
+      toast.error(error.response?.data?.detail || "Failed to create profile");
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
+  const submitManualRecord = async () => {
+    if (!manualRecord.duration_minutes || !manualRecord.date) {
+      toast.error(language === "te" ? "వ్యవధి మరియు తేదీ అవసరం" : "Duration and date are required");
+      return;
+    }
+    
+    setSubmitting(true);
+    try {
+      await axios.post(`${API}/fitness/record`, {
+        activity_type: manualRecord.activity_type,
+        duration_minutes: parseInt(manualRecord.duration_minutes),
+        date: manualRecord.date,
+        distance_km: manualRecord.distance_km ? parseFloat(manualRecord.distance_km) : null,
+        calories_burned: manualRecord.calories_burned ? parseInt(manualRecord.calories_burned) : null,
+        notes: manualRecord.notes || null
+      }, { headers });
+      
+      toast.success(language === "te" ? "యాక్టివిటీ రికార్డ్ అయింది!" : "Activity recorded!");
+      setShowManualRecord(false);
+      setManualRecord({
+        activity_type: "walking",
+        duration_minutes: "",
+        date: new Date().toISOString().split("T")[0],
+        distance_km: "",
+        calories_burned: "",
+        notes: ""
+      });
+      fetchAllData();
+    } catch (error) {
+      toast.error(error.response?.data?.detail || "Failed to record activity");
+    } finally {
+      setSubmitting(false);
+    }
+  };
 
   const fetchAllData = async () => {
     setLoading(true);
