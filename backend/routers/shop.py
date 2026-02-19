@@ -584,7 +584,7 @@ async def admin_update_order_status(order_id: str, update: OrderStatusUpdate, us
 
 @router.post("/admin/points/adjust")
 async def admin_adjust_points(request: AdminPointsAdjust, user: dict = Depends(get_current_user)):
-    """Admin: Add or deduct points from a user"""
+    """Admin: Add or deduct points from a user (normal or privilege)"""
     if user.get("role") != "admin":
         raise HTTPException(status_code=403, detail="Admin access required")
     
@@ -594,29 +594,91 @@ async def admin_adjust_points(request: AdminPointsAdjust, user: dict = Depends(g
         raise HTTPException(status_code=404, detail="User not found")
     
     trans_type = "admin_credit" if request.points > 0 else "admin_debit"
+    point_type = request.point_type if request.point_type in ["normal", "privilege"] else "normal"
+    
     await add_points_transaction(
         request.user_id,
         abs(request.points),
         trans_type,
-        f"Admin adjustment: {request.reason}",
-        None
+        f"Admin adjustment ({point_type}): {request.reason}",
+        None,
+        point_type
     )
     
-    # Update wallet
-    if request.points > 0:
-        await db.wallets.update_one(
-            {"user_id": request.user_id},
-            {"$inc": {"balance": request.points, "total_earned": request.points}},
-            upsert=True
-        )
-    else:
-        await db.wallets.update_one(
-            {"user_id": request.user_id},
-            {"$inc": {"balance": request.points}},
-            upsert=True
-        )
+    # Update wallet based on point type
+    if point_type == "privilege":
+        if request.points > 0:
+            await db.wallets.update_one(
+                {"user_id": request.user_id},
+                {"$inc": {"privilege_balance": request.points, "total_privilege_earned": request.points}},
+                upsert=True
+            )
+        else:
+            await db.wallets.update_one(
+                {"user_id": request.user_id},
+                {"$inc": {"privilege_balance": request.points}},
+                upsert=True
+            )
+    else:  # normal
+        if request.points > 0:
+            await db.wallets.update_one(
+                {"user_id": request.user_id},
+                {"$inc": {"balance": request.points, "total_earned": request.points}},
+                upsert=True
+            )
+        else:
+            await db.wallets.update_one(
+                {"user_id": request.user_id},
+                {"$inc": {"balance": request.points}},
+                upsert=True
+            )
     
-    return {"message": f"Points adjusted by {request.points} for user"}
+    return {"message": f"{point_type.capitalize()} points adjusted by {request.points} for user"}
+
+@router.post("/admin/points/bulk-privilege")
+async def admin_bulk_privilege_points(request: BulkPrivilegePointsAdjust, user: dict = Depends(get_current_user)):
+    """Admin: Assign privilege points to multiple users or ALL users"""
+    if user.get("role") != "admin":
+        raise HTTPException(status_code=403, detail="Admin access required")
+    
+    if request.points <= 0:
+        raise HTTPException(status_code=400, detail="Points must be positive for bulk assignment")
+    
+    # Get target users
+    if "ALL" in request.user_ids:
+        target_users = await db.users.find({}, {"_id": 0, "id": 1}).to_list(1000)
+        user_ids = [u["id"] for u in target_users]
+    else:
+        user_ids = request.user_ids
+    
+    success_count = 0
+    for uid in user_ids:
+        try:
+            await add_points_transaction(
+                uid,
+                request.points,
+                "admin_credit",
+                f"Bulk privilege points: {request.reason}",
+                None,
+                "privilege"
+            )
+            await db.wallets.update_one(
+                {"user_id": uid},
+                {
+                    "$inc": {"privilege_balance": request.points, "total_privilege_earned": request.points},
+                    "$setOnInsert": {"id": generate_id(), "balance": 0, "total_earned": 0, "total_spent": 0, "created_at": now_iso()}
+                },
+                upsert=True
+            )
+            success_count += 1
+        except Exception as e:
+            print(f"Failed to add privilege points to {uid}: {e}")
+    
+    return {
+        "message": f"Privilege points ({request.points}) assigned to {success_count} users",
+        "success_count": success_count,
+        "total_requested": len(user_ids)
+    }
 
 @router.get("/admin/users/points")
 async def admin_get_users_points(
