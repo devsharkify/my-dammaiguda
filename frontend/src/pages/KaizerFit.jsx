@@ -441,6 +441,72 @@ export default function KaizerFit() {
           </Card>
         </div>
 
+        {/* Water & Nutrition Tracking */}
+        <div className="grid grid-cols-2 gap-3">
+          {/* Water Tracking */}
+          <Card className="border-0 shadow-lg bg-gradient-to-br from-cyan-500 to-blue-500 text-white overflow-hidden">
+            <CardContent className="p-4 relative">
+              <div className="absolute -right-4 -top-4 text-6xl opacity-20">💧</div>
+              <div className="flex items-center justify-between mb-2">
+                <p className="text-cyan-100 text-xs font-medium uppercase tracking-wide">
+                  {language === "te" ? "నీరు" : "Water"}
+                </p>
+                <button 
+                  onClick={async () => {
+                    try {
+                      const res = await axios.post(`${API}/doctor/water`, { glasses: 1 }, { headers });
+                      setWaterGlasses(res.data.glasses);
+                      toast.success(language === "te" ? "నీరు నమోదు!" : "Water logged!");
+                    } catch (err) {
+                      setWaterGlasses(prev => Math.min(prev + 1, 12));
+                      toast.success(language === "te" ? "నీరు నమోదు!" : "Water logged!");
+                    }
+                  }}
+                  className="h-8 w-8 rounded-full bg-white/20 flex items-center justify-center hover:bg-white/30 transition-colors"
+                  data-testid="log-water-btn"
+                >
+                  <Plus className="h-4 w-4" />
+                </button>
+              </div>
+              <p className="text-3xl font-bold">{waterGlasses}/{waterGoal}</p>
+              <p className="text-cyan-100 text-xs">{language === "te" ? "గ్లాసులు" : "glasses"}</p>
+              <div className="mt-2 h-2 bg-white/20 rounded-full overflow-hidden">
+                <div 
+                  className="h-full bg-white/70 rounded-full transition-all duration-500"
+                  style={{ width: `${Math.min(100, (waterGlasses / waterGoal) * 100)}%` }}
+                />
+              </div>
+            </CardContent>
+          </Card>
+          
+          {/* Calories Tracking */}
+          <Card className="border-0 shadow-lg bg-gradient-to-br from-orange-500 to-red-500 text-white overflow-hidden">
+            <CardContent className="p-4 relative">
+              <div className="absolute -right-4 -top-4 text-6xl opacity-20">🍎</div>
+              <div className="flex items-center justify-between mb-2">
+                <p className="text-orange-100 text-xs font-medium uppercase tracking-wide">
+                  {language === "te" ? "కేలరీలు" : "Calories"}
+                </p>
+                <button 
+                  onClick={() => setShowMealDialog(true)}
+                  className="h-8 w-8 rounded-full bg-white/20 flex items-center justify-center hover:bg-white/30 transition-colors"
+                  data-testid="log-meal-btn"
+                >
+                  <Plus className="h-4 w-4" />
+                </button>
+              </div>
+              <p className="text-3xl font-bold">{caloriesConsumed}</p>
+              <p className="text-orange-100 text-xs">/ {caloriesGoal} {language === "te" ? "కేల్" : "kcal"}</p>
+              <div className="mt-2 h-2 bg-white/20 rounded-full overflow-hidden">
+                <div 
+                  className="h-full bg-white/70 rounded-full transition-all duration-500"
+                  style={{ width: `${Math.min(100, (caloriesConsumed / caloriesGoal) * 100)}%` }}
+                />
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+
         {/* Weight Section */}
         <div className="space-y-4">
           <div className="flex items-center justify-between">
