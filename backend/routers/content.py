@@ -4,26 +4,9 @@ from fastapi import APIRouter, HTTPException, Depends
 from pydantic import BaseModel
 from typing import Optional, List, Dict, Any
 from datetime import datetime, timezone
-import uuid
+from .utils import db, generate_id, now_iso, get_current_user
 
 router = APIRouter(prefix="/content", tags=["content"])
-
-# Database reference
-db = None
-
-def set_db(database):
-    global db
-    db = database
-
-def generate_id():
-    return str(uuid.uuid4())[:8]
-
-def now_iso():
-    return datetime.now(timezone.utc).isoformat()
-
-# Auth dependency placeholder
-async def get_current_user():
-    return {"id": "admin", "role": "admin"}
 
 # ============== PYDANTIC MODELS ==============
 
