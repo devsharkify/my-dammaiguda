@@ -37,6 +37,7 @@ import { useState } from "react";
 export default function Layout({ children, title, showBackButton = false }) {
   const { t, language, toggleLanguage } = useLanguage();
   const { user, logout, isVolunteer, isAdmin } = useAuth();
+  const { theme, toggleTheme, isDark } = useTheme();
   const location = useLocation();
   const [menuOpen, setMenuOpen] = useState(false);
 
