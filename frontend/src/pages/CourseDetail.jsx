@@ -59,6 +59,7 @@ export default function CourseDetail() {
   const [quizResult, setQuizResult] = useState(null);
   const [submittingQuiz, setSubmittingQuiz] = useState(false);
   const [enrolling, setEnrolling] = useState(false);
+  const [showPaymentDialog, setShowPaymentDialog] = useState(false);
   
   // Reviews state
   const [reviews, setReviews] = useState([]);
