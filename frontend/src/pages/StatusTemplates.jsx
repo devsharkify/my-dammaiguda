@@ -53,6 +53,30 @@ export default function StatusTemplates() {
     }
   }, [user, categoryFilter]);
 
+  // Sample fallback templates when DB is empty
+  const sampleTemplates = [
+    {
+      id: "sample-1",
+      title: "Ugadi Wishes",
+      title_te: "ఉగాది శుభాకాంక్షలు",
+      category: "festival",
+      background_url: "https://images.unsplash.com/photo-1607344645866-009c320c5ab8?w=800",
+      thumbnail_url: "https://images.unsplash.com/photo-1607344645866-009c320c5ab8?w=200",
+      photo_position: { x: 150, y: 100, width: 120, height: 120, shape: "circle" },
+      name_position: { x: 210, y: 280, fontSize: 24, color: "#ffffff", align: "center" }
+    },
+    {
+      id: "sample-2",
+      title: "Happy Birthday",
+      title_te: "పుట్టినరోజు శుభాకాంక్షలు",
+      category: "birthday",
+      background_url: "https://images.unsplash.com/photo-1558636508-e0db3814bd1d?w=800",
+      thumbnail_url: "https://images.unsplash.com/photo-1558636508-e0db3814bd1d?w=200",
+      photo_position: { x: 150, y: 80, width: 100, height: 100, shape: "circle" },
+      name_position: { x: 200, y: 240, fontSize: 20, color: "#333333", align: "center" }
+    }
+  ];
+
   const fetchTemplates = async () => {
     setLoading(true);
     try {
@@ -61,32 +85,13 @@ export default function StatusTemplates() {
         url += `?category=${categoryFilter}`;
       }
       const response = await axios.get(url);
-      setTemplates(response.data?.templates || []);
+      const apiTemplates = response.data?.templates || [];
+      // Use sample templates if API returns empty array
+      setTemplates(apiTemplates.length > 0 ? apiTemplates : sampleTemplates);
     } catch (error) {
       console.error("Error fetching templates:", error);
       // Add sample templates if API fails
-      setTemplates([
-        {
-          id: "sample-1",
-          title: "Ugadi Wishes",
-          title_te: "ఉగాది శుభాకాంక్షలు",
-          category: "festival",
-          background_url: "https://images.unsplash.com/photo-1607344645866-009c320c5ab8?w=800",
-          thumbnail_url: "https://images.unsplash.com/photo-1607344645866-009c320c5ab8?w=200",
-          photo_position: { x: 150, y: 100, width: 120, height: 120, shape: "circle" },
-          name_position: { x: 210, y: 280, fontSize: 24, color: "#ffffff", align: "center" }
-        },
-        {
-          id: "sample-2",
-          title: "Happy Birthday",
-          title_te: "పుట్టినరోజు శుభాకాంక్షలు",
-          category: "birthday",
-          background_url: "https://images.unsplash.com/photo-1558636508-e0db3814bd1d?w=800",
-          thumbnail_url: "https://images.unsplash.com/photo-1558636508-e0db3814bd1d?w=200",
-          photo_position: { x: 150, y: 80, width: 100, height: 100, shape: "circle" },
-          name_position: { x: 200, y: 240, fontSize: 20, color: "#333333", align: "center" }
-        }
-      ]);
+      setTemplates(sampleTemplates);
     } finally {
       setLoading(false);
     }
