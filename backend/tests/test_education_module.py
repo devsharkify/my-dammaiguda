@@ -6,7 +6,7 @@ import pytest
 import requests
 import os
 
-BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', 'https://my-dammaiguda.preview.emergentagent.com')
+BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', 'https://kaizer-connect.preview.emergentagent.com')
 
 class TestEducationModule:
     """Education module API tests"""
