@@ -446,6 +446,157 @@ export default function AdminDashboard() {
             </div>
           </TabsContent>
 
+          {/* Gift Shop Management Tab */}
+          <TabsContent value="shop" className="mt-4 space-y-4">
+            {/* Order Stats */}
+            <div className="grid grid-cols-4 gap-2">
+              <Card className="border-amber-200 bg-amber-50 dark:bg-amber-950 dark:border-amber-800">
+                <CardContent className="p-3 text-center">
+                  <Clock className="h-5 w-5 mx-auto mb-1 text-amber-600" />
+                  <p className="text-xl font-bold text-amber-700 dark:text-amber-400">{orderStats?.pending || 0}</p>
+                  <p className="text-[10px] text-amber-600">Pending</p>
+                </CardContent>
+              </Card>
+              <Card className="border-blue-200 bg-blue-50 dark:bg-blue-950 dark:border-blue-800">
+                <CardContent className="p-3 text-center">
+                  <CheckCircle className="h-5 w-5 mx-auto mb-1 text-blue-600" />
+                  <p className="text-xl font-bold text-blue-700 dark:text-blue-400">{orderStats?.approved || 0}</p>
+                  <p className="text-[10px] text-blue-600">Approved</p>
+                </CardContent>
+              </Card>
+              <Card className="border-purple-200 bg-purple-50 dark:bg-purple-950 dark:border-purple-800">
+                <CardContent className="p-3 text-center">
+                  <Truck className="h-5 w-5 mx-auto mb-1 text-purple-600" />
+                  <p className="text-xl font-bold text-purple-700 dark:text-purple-400">{orderStats?.shipped || 0}</p>
+                  <p className="text-[10px] text-purple-600">Shipped</p>
+                </CardContent>
+              </Card>
+              <Card className="border-green-200 bg-green-50 dark:bg-green-950 dark:border-green-800">
+                <CardContent className="p-3 text-center">
+                  <Package className="h-5 w-5 mx-auto mb-1 text-green-600" />
+                  <p className="text-xl font-bold text-green-700 dark:text-green-400">{orderStats?.delivered || 0}</p>
+                  <p className="text-[10px] text-green-600">Delivered</p>
+                </CardContent>
+              </Card>
+            </div>
+
+            {/* Products Section */}
+            <div className="flex items-center justify-between">
+              <h3 className="font-semibold flex items-center gap-2">
+                <Gift className="h-5 w-5" />
+                {language === "te" ? "ఉత్పత్తులు" : "Products"}
+              </h3>
+              <div className="flex gap-2">
+                <Button size="sm" variant="outline" onClick={() => setShowPointsDialog(true)}>
+                  <Coins className="h-4 w-4 mr-1" />
+                  Adjust Points
+                </Button>
+                <Button size="sm" onClick={() => { resetProductForm(); setShowProductDialog(true); }}>
+                  <Plus className="h-4 w-4 mr-1" />
+                  Add Product
+                </Button>
+              </div>
+            </div>
+            
+            <div className="grid grid-cols-2 gap-3">
+              {giftProducts.map((product) => (
+                <Card key={product.id} className={`border-border/50 ${!product.is_active ? 'opacity-50' : ''}`}>
+                  <CardContent className="p-3">
+                    <div className="flex gap-2">
+                      <img
+                        src={product.image_url || "https://via.placeholder.com/60?text=Gift"}
+                        alt={product.name}
+                        className="w-14 h-14 rounded-lg object-cover"
+                      />
+                      <div className="flex-1 min-w-0">
+                        <h4 className="font-medium text-sm truncate">{product.name}</h4>
+                        <div className="flex items-center gap-2 mt-1">
+                          <Badge variant="outline" className="text-xs">
+                            <Coins className="h-3 w-3 mr-1" />
+                            {product.points_required}
+                          </Badge>
+                          <span className="text-xs text-muted-foreground">
+                            Stock: {product.stock_quantity}
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+                    <div className="flex gap-1 mt-2">
+                      <Button size="sm" variant="ghost" className="h-7 flex-1" onClick={() => openEditProduct(product)}>
+                        <Edit className="h-3 w-3" />
+                      </Button>
+                      <Button size="sm" variant="ghost" className="h-7 flex-1 text-destructive" onClick={() => deleteProduct(product.id)}>
+                        <Trash2 className="h-3 w-3" />
+                      </Button>
+                    </div>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+
+            {/* Orders Section */}
+            <div className="mt-4">
+              <h3 className="font-semibold flex items-center gap-2 mb-3">
+                <Package className="h-5 w-5" />
+                {language === "te" ? "ఆర్డర్లు" : "Recent Orders"}
+              </h3>
+              <div className="space-y-2">
+                {giftOrders.length === 0 ? (
+                  <Card className="border-border/50">
+                    <CardContent className="p-6 text-center text-muted-foreground">
+                      No orders yet
+                    </CardContent>
+                  </Card>
+                ) : giftOrders.slice(0, 10).map((order) => (
+                  <Card key={order.id} className="border-border/50">
+                    <CardContent className="p-3">
+                      <div className="flex items-center gap-3">
+                        <img
+                          src={order.product_image || "https://via.placeholder.com/40?text=Gift"}
+                          alt={order.product_name}
+                          className="w-10 h-10 rounded-lg object-cover"
+                        />
+                        <div className="flex-1 min-w-0">
+                          <p className="font-medium text-sm truncate">{order.product_name}</p>
+                          <p className="text-xs text-muted-foreground">
+                            {order.user_name || order.user_phone} • {order.points_spent} pts
+                          </p>
+                        </div>
+                        <div className="flex flex-col gap-1">
+                          {order.status === "pending" && (
+                            <div className="flex gap-1">
+                              <Button size="sm" variant="outline" className="h-6 text-xs px-2" onClick={() => updateOrderStatus(order.id, "approved")}>
+                                Approve
+                              </Button>
+                              <Button size="sm" variant="outline" className="h-6 text-xs px-2 text-destructive" onClick={() => updateOrderStatus(order.id, "rejected")}>
+                                Reject
+                              </Button>
+                            </div>
+                          )}
+                          {order.status === "approved" && (
+                            <Button size="sm" variant="outline" className="h-6 text-xs" onClick={() => updateOrderStatus(order.id, "shipped")}>
+                              Mark Shipped
+                            </Button>
+                          )}
+                          {order.status === "shipped" && (
+                            <Button size="sm" variant="outline" className="h-6 text-xs" onClick={() => updateOrderStatus(order.id, "delivered")}>
+                              Mark Delivered
+                            </Button>
+                          )}
+                          {(order.status === "delivered" || order.status === "rejected") && (
+                            <Badge className={order.status === "delivered" ? "bg-green-100 text-green-700" : "bg-red-100 text-red-700"}>
+                              {order.status}
+                            </Badge>
+                          )}
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
+            </div>
+          </TabsContent>
+
           {/* Education Management Tab */}
           <TabsContent value="education" className="mt-4 space-y-4">
             <div className="flex items-center justify-between">
