@@ -161,6 +161,7 @@ Build a production-ready, mobile-first civic engagement platform "My Dammaiguda"
 ---
 
 ## Test Reports
+- `/app/test_reports/iteration_27.json` - UI/UX improvements (AQI badge, cards, Quick Actions, mobile layout)
 - `/app/test_reports/iteration_26.json` - KaizerFit spacing, Dark mode, Telugu, Live Chat
 - `/app/test_reports/iteration_25.json` - UI Changes (back button, header scroll, AQI headline, education)
 - `/app/test_reports/iteration_24.json` - CMS Integration & AQI Web Crawl testing
