@@ -17,6 +17,9 @@ const translations = {
     search: "Search",
     filter: "Filter",
     all: "All",
+    viewAll: "View All",
+    today: "Today",
+    yesterday: "Yesterday",
     
     // Navigation
     home: "Home",
@@ -24,13 +27,34 @@ const translations = {
     issues: "Issues",
     reportIssue: "Report Issue",
     dumpYard: "Dump Yard",
-    fitness: "Kaizer Fit",
+    fitness: "Fitness",
+    doctor: "Doctor",
     benefits: "Benefits",
     expenditure: "Expenditure",
     polls: "Polls",
     profile: "Profile",
     logout: "Logout",
     login: "Login",
+    education: "Education",
+    news: "News",
+    family: "Family",
+    gifts: "Gifts",
+    courses: "Courses",
+    wall: "Citizen Wall",
+    
+    // Dashboard
+    airQuality: "Air Quality",
+    veryUnhealthy: "Very Unhealthy",
+    unhealthy: "Unhealthy",
+    moderate: "Moderate",
+    good: "Good",
+    severe: "Severe",
+    hazardous: "Hazardous",
+    tonnesPerDay: "tonnes/day",
+    citizenWall: "Citizen Wall",
+    citizenBenefits: "Citizen Benefits",
+    recentIssues: "Recent Issues",
+    quickActions: "Quick Actions",
     
     // Auth
     phoneNumber: "Phone Number",
@@ -83,6 +107,9 @@ const translations = {
     children: "Children",
     pregnantWomen: "Pregnant Women",
     elderly: "Elderly",
+    respiratory: "Respiratory",
+    waterToxic: "Water",
+    cancer: "Cancer",
     
     // Fitness
     dailySteps: "Daily Steps",
@@ -96,9 +123,14 @@ const translations = {
     pollutionAlert: "Pollution Alert",
     unsafeOutdoor: "Unsafe for outdoor exercise",
     bestTimeExercise: "Best time for exercise",
+    water: "Water",
+    glasses: "glasses",
+    calories: "Calories",
+    steps: "Steps",
+    streak: "Streak",
+    badges: "Badges",
     
     // Benefits
-    citizenBenefits: "Citizen Benefits",
     healthCheckup: "Free Health Checkup",
     educationVoucher: "Education Voucher",
     insurance: "Accidental Insurance",
@@ -136,50 +168,74 @@ const translations = {
     analytics: "Analytics"
   },
   te: {
-    // Common
+    // Common - సాధారణం
     appName: "మై దమ్మాయిగూడ",
     loading: "లోడ్ అవుతోంది...",
     submit: "సమర్పించు",
     cancel: "రద్దు",
-    save: "సేవ్",
+    save: "సేవ్ చేయి",
     back: "వెనుకకు",
     next: "తదుపరి",
     close: "మూసివేయి",
-    search: "వెతకండి",
+    search: "వెతుకు",
     filter: "ఫిల్టర్",
     all: "అన్నీ",
+    viewAll: "అన్నీ చూడు",
+    today: "ఈ రోజు",
+    yesterday: "నిన్న",
     
-    // Navigation
+    // Navigation - నావిగేషన్
     home: "హోమ్",
     dashboard: "డాష్‌బోర్డ్",
     issues: "సమస్యలు",
     reportIssue: "సమస్య నివేదించు",
     dumpYard: "డంప్ యార్డ్",
-    fitness: "కైజర్ ఫిట్",
+    fitness: "ఫిట్‌నెస్",
+    doctor: "డాక్టర్",
     benefits: "ప్రయోజనాలు",
     expenditure: "ఖర్చులు",
     polls: "పోల్స్",
     profile: "ప్రొఫైల్",
-    logout: "లాగ్అవుట్",
+    logout: "లాగ్ అవుట్",
     login: "లాగిన్",
+    education: "చదువు",
+    news: "వార్తలు",
+    family: "కుటుంబం",
+    gifts: "బహుమతులు",
+    courses: "కోర్సులు",
+    wall: "సిటిజన్ వాల్",
     
-    // Auth
+    // Dashboard - డాష్‌బోర్డ్
+    airQuality: "గాలి నాణ్యత",
+    veryUnhealthy: "చాలా హానికరం",
+    unhealthy: "హానికరం",
+    moderate: "మధ్యస్థం",
+    good: "మంచిది",
+    severe: "తీవ్రం",
+    hazardous: "ప్రమాదకరం",
+    tonnesPerDay: "టన్నులు/రోజు",
+    citizenWall: "సిటిజన్ వాల్",
+    citizenBenefits: "పౌర ప్రయోజనాలు",
+    recentIssues: "ఇటీవలి సమస్యలు",
+    quickActions: "త్వరిత చర్యలు",
+    
+    // Auth - ప్రమాణీకరణ
     phoneNumber: "ఫోన్ నంబర్",
-    enterPhone: "మీ ఫోన్ నంబర్ నమోదు చేయండి",
-    sendOTP: "OTP పంపండి",
-    enterOTP: "OTP నమోదు చేయండి",
+    enterPhone: "మీ ఫోన్ నంబర్ ఇవ్వండి",
+    sendOTP: "OTP పంపు",
+    enterOTP: "OTP ఇవ్వండి",
     verifyOTP: "OTP ధృవీకరించు",
     otpSent: "మీ ఫోన్‌కు OTP పంపబడింది",
-    invalidOTP: "చెల్లని OTP",
+    invalidOTP: "తప్పు OTP",
     name: "పేరు",
-    enterName: "మీ పేరు నమోదు చేయండి",
-    colony: "కాలనీ/ప్రాంతం",
+    enterName: "మీ పేరు ఇవ్వండి",
+    colony: "కాలనీ/ఏరియా",
     selectColony: "మీ కాలనీ ఎంచుకోండి",
-    ageRange: "వయస్సు పరిధి",
-    selectAge: "వయస్సు ఎంచుకోండి",
-    register: "నమోదు",
+    ageRange: "వయసు",
+    selectAge: "వయసు ఎంచుకోండి",
+    register: "రిజిస్టర్",
     
-    // Issues
+    // Issues - సమస్యలు
     issueCategories: {
       dump_yard: "డంప్ యార్డ్",
       garbage: "చెత్త",
@@ -192,79 +248,87 @@ const translations = {
     issueStatus: {
       reported: "నివేదించబడింది",
       verified: "ధృవీకరించబడింది",
-      escalated: "పెంచబడింది",
-      closed: "మూసివేయబడింది"
+      escalated: "ఎస్కలేట్ చేయబడింది",
+      closed: "పూర్తయింది"
     },
-    reportNewIssue: "కొత్త సమస్య నివేదించు",
-    selectCategory: "వర్గం ఎంచుకోండి",
-    describeIssue: "సమస్యను వివరించండి",
-    addPhoto: "ఫోటో/వీడియో జోడించండి",
-    getCurrentLocation: "ప్రస్తుత స్థానం పొందండి",
-    locationCaptured: "స్థానం సంగ్రహించబడింది",
-    submitReport: "నివేదిక సమర్పించండి",
+    reportNewIssue: "కొత్త సమస్య రిపోర్ట్ చేయి",
+    selectCategory: "వర్గం ఎంచుకో",
+    describeIssue: "సమస్య వివరించు",
+    addPhoto: "ఫోటో/వీడియో జోడించు",
+    getCurrentLocation: "లొకేషన్ తీసుకో",
+    locationCaptured: "లొకేషన్ తీసుకున్నాం",
+    submitReport: "సమర్పించు",
     issueReported: "సమస్య విజయవంతంగా నివేదించబడింది",
     
-    // Dump Yard
+    // Dump Yard - డంప్ యార్డ్
     pollutionZones: "కాలుష్య ప్రమాద జోన్లు",
     healthRisks: "ఆరోగ్య ప్రమాదాలు",
-    affectedGroups: "ప్రభావితమైన సమూహాలు",
+    affectedGroups: "ప్రభావిత సమూహాలు",
     redZone: "రెడ్ జోన్ - అధిక ప్రమాదం",
     orangeZone: "ఆరంజ్ జోన్ - మధ్యస్థ ప్రమాదం",
-    greenZone: "సురక్షిత జోన్",
+    greenZone: "సేఫ్ జోన్",
     children: "పిల్లలు",
-    pregnantWomen: "గర్భిణీ స్త్రీలు",
+    pregnantWomen: "గర్భిణీలు",
     elderly: "వృద్ధులు",
+    respiratory: "శ్వాసకోశం",
+    waterToxic: "నీరు",
+    cancer: "క్యాన్సర్",
     
-    // Fitness
+    // Fitness - ఫిట్‌నెస్
     dailySteps: "రోజువారీ అడుగులు",
     weeklyProgress: "వారపు పురోగతి",
     fitnessScore: "ఫిట్‌నెస్ స్కోర్",
-    logSteps: "అడుగులు నమోదు చేయండి",
+    logSteps: "అడుగులు నమోదు చేయి",
     challenges: "ఛాలెంజ్‌లు",
-    joinChallenge: "ఛాలెంజ్‌లో చేరండి",
+    joinChallenge: "ఛాలెంజ్‌లో చేరు",
     leaderboard: "లీడర్‌బోర్డ్",
     wardStats: "వార్డు గణాంకాలు",
     pollutionAlert: "కాలుష్య హెచ్చరిక",
-    unsafeOutdoor: "బయటి వ్యాయామానికి అసురక్షితం",
-    bestTimeExercise: "వ్యాయామానికి ఉత్తమ సమయం",
+    unsafeOutdoor: "బయట వ్యాయామం సేఫ్ కాదు",
+    bestTimeExercise: "వ్యాయామానికి మంచి సమయం",
+    water: "నీరు",
+    glasses: "గ్లాసులు",
+    calories: "కేలరీలు",
+    steps: "అడుగులు",
+    streak: "స్ట్రీక్",
+    badges: "బ్యాడ్జ్‌లు",
     
-    // Benefits
-    citizenBenefits: "పౌర ప్రయోజనాలు",
+    // Benefits - ప్రయోజనాలు
     healthCheckup: "ఉచిత ఆరోగ్య పరీక్ష",
     educationVoucher: "విద్యా వౌచర్",
     insurance: "ప్రమాద బీమా",
-    healthInsurance: "ఆరోగ్య బీమా సహాయం",
-    applyNow: "ఇప్పుడే దరఖాస్తు చేయండి",
+    healthInsurance: "ఆరోగ్య బీమా",
+    applyNow: "ఇప్పుడే అప్లై చేయి",
     eligibility: "అర్హత",
-    applicationStatus: "దరఖాస్తు స్థితి",
+    applicationStatus: "అప్లికేషన్ స్టేటస్",
     pending: "పెండింగ్",
-    approved: "ఆమోదించబడింది",
-    rejected: "తిరస్కరించబడింది",
+    approved: "అప్రూవ్ అయింది",
+    rejected: "రిజెక్ట్ అయింది",
     
-    // Expenditure
+    // Expenditure - ఖర్చులు
     wardExpenditure: "వార్డు ఖర్చులు",
     yearWise: "సంవత్సరం వారీగా",
     categoryWise: "వర్గం వారీగా",
     amountSpent: "ఖర్చు చేసిన మొత్తం",
     groundReality: "వాస్తవ పరిస్థితి",
-    rtiDocuments: "RTI పత్రాలు",
+    rtiDocuments: "RTI డాక్యుమెంట్లు",
     
-    // Polls
-    activePollsTitle: "సక్రియ పోల్స్",
-    vote: "ఓటు వేయండి",
+    // Polls - పోల్స్
+    activePollsTitle: "యాక్టివ్ పోల్స్",
+    vote: "ఓటు వేయి",
     voted: "ఓటు వేశారు",
     results: "ఫలితాలు",
     totalVotes: "మొత్తం ఓట్లు",
     
-    // Admin/Volunteer
-    volunteerDashboard: "వలంటీర్ డాష్‌బోర్డ్",
+    // Admin/Volunteer - అడ్మిన్/వాలంటీర్
+    volunteerDashboard: "వాలంటీర్ డాష్‌బోర్డ్",
     adminDashboard: "అడ్మిన్ డాష్‌బోర్డ్",
-    pendingVerification: "ధృవీకరణ పెండింగ్",
-    verify: "ధృవీకరించు",
-    escalate: "పెంచు",
-    closeIssue: "సమస్య మూసివేయి",
-    issueHeatmap: "సమస్య హీట్‌మ్యాప్",
-    analytics: "విశ్లేషణలు"
+    pendingVerification: "వెరిఫికేషన్ పెండింగ్",
+    verify: "వెరిఫై చేయి",
+    escalate: "ఎస్కలేట్ చేయి",
+    closeIssue: "సమస్య క్లోజ్ చేయి",
+    issueHeatmap: "ఇష్యూ హీట్‌మ్యాప్",
+    analytics: "అనలిటిక్స్"
   }
 };
 
