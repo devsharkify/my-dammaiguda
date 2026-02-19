@@ -81,6 +81,18 @@ class ProgressUpdate(BaseModel):
     completed: bool = True
     watch_time_seconds: int = 0
 
+class ScholarshipApplication(BaseModel):
+    course_id: str
+    course_title: str
+    full_name: str
+    mobile: str
+    email: str
+    age: str
+    education_level: str
+    institution_name: str
+    family_income: Optional[str] = None
+    reason: Optional[str] = None
+
 # ============== HELPER FUNCTIONS ==============
 
 def calculate_course_progress(enrollments: list, lessons: list) -> dict:
