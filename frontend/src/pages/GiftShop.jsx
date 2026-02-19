@@ -448,13 +448,29 @@ export default function GiftShop() {
                     alt={selectedProduct.name}
                     className="w-16 h-16 rounded-lg object-cover"
                   />
-                  <div>
+                  <div className="flex-1">
                     <h3 className="font-semibold">{selectedProduct.name}</h3>
                     <p className="text-sm text-muted-foreground">MRP: Rs.{selectedProduct.mrp}</p>
-                    <Badge className="mt-1 bg-amber-500 text-white">
-                      <Coins className="h-3 w-3 mr-1" />
-                      {selectedProduct.points_required} points
-                    </Badge>
+                    <div className="flex flex-wrap gap-1 mt-1">
+                      {(selectedProduct.point_type === "normal" || selectedProduct.point_type === "both") && (
+                        <Badge className="bg-amber-500 text-white">
+                          <Coins className="h-3 w-3 mr-1" />
+                          {selectedProduct.points_required} pts
+                        </Badge>
+                      )}
+                      {(selectedProduct.point_type === "privilege" || selectedProduct.point_type === "both") && (
+                        <Badge className="bg-purple-500 text-white">
+                          <Star className="h-3 w-3 mr-1" />
+                          {selectedProduct.privilege_points_required || 0} privilege
+                        </Badge>
+                      )}
+                      {selectedProduct.delivery_fee > 0 && (
+                        <Badge variant="outline">
+                          <Truck className="h-3 w-3 mr-1" />
+                          ₹{selectedProduct.delivery_fee}
+                        </Badge>
+                      )}
+                    </div>
                   </div>
                 </div>
 
