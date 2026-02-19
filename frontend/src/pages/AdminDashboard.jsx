@@ -61,6 +61,23 @@ export default function AdminDashboard() {
   });
   const [savingCourse, setSavingCourse] = useState(false);
   
+  // Gift Shop state
+  const [giftProducts, setGiftProducts] = useState([]);
+  const [giftOrders, setGiftOrders] = useState([]);
+  const [orderStats, setOrderStats] = useState({});
+  const [showProductDialog, setShowProductDialog] = useState(false);
+  const [editingProduct, setEditingProduct] = useState(null);
+  const [productForm, setProductForm] = useState({
+    name: "", description: "", category: "Fitness",
+    image_url: "", mrp: 0, points_required: 100,
+    stock_quantity: 10, is_active: true
+  });
+  const [savingProduct, setSavingProduct] = useState(false);
+  const [showPointsDialog, setShowPointsDialog] = useState(false);
+  const [pointsForm, setPointsForm] = useState({
+    user_id: "", phone: "", points: 0, reason: ""
+  });
+  
   const headers = { Authorization: `Bearer ${token}` };
 
   useEffect(() => {
