@@ -197,30 +197,6 @@ export default function Layout({ children, title, showBackButton = false }) {
               )}
             </div>
 
-            {/* Dark Mode Toggle in Menu */}
-            <div className="px-4 py-3 border-b border-border">
-              <button
-                onClick={toggleTheme}
-                className="w-full flex items-center justify-between px-4 py-3 rounded-xl bg-muted hover:bg-muted/80 transition-colors"
-              >
-                <div className="flex items-center gap-3">
-                  {isDark ? <Moon className="h-5 w-5 text-primary" /> : <Sun className="h-5 w-5 text-amber-500" />}
-                  <span className="font-medium">
-                    {isDark 
-                      ? (language === "te" ? "డార్క్ మోడ్" : "Dark Mode") 
-                      : (language === "te" ? "లైట్ మోడ్" : "Light Mode")}
-                  </span>
-                </div>
-                <div className={`w-12 h-6 rounded-full p-1 transition-colors ${isDark ? 'bg-primary' : 'bg-gray-300'}`}>
-                  <motion.div 
-                    className="w-4 h-4 rounded-full bg-white shadow"
-                    animate={{ x: isDark ? 24 : 0 }}
-                    transition={{ type: "spring", stiffness: 500, damping: 30 }}
-                  />
-                </div>
-              </button>
-            </div>
-
             {/* Menu Items */}
             <nav className="p-2 max-h-[calc(100vh-280px)] overflow-y-auto">
               {menuItems.map((item) => (
