@@ -209,12 +209,11 @@ Key Collections:
 
 ---
 
-## Upcoming Tasks (P1)
-1. Real Twilio OTP integration
-2. Cloudinary media upload integration
-3. News page content (currently /news route placeholder)
-4. OpenGraph Meta Tags for certificate sharing
-5. Automatic fitness points rewards (connect Fitness → Gift Shop)
+## Upcoming Tasks
+1. Real Twilio OTP integration (P0)
+2. Cloudinary media upload integration (P0)
+3. Admin UI for managing templates (currently via API only)
+4. Kubernetes ingress update for /certificate/* route
 
 ## Future/Backlog (P2)
 - Native app for Health Connect/HealthKit integration
