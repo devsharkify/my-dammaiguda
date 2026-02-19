@@ -56,6 +56,13 @@ export default function KaizerFit() {
   const [todayStats, setTodayStats] = useState(null);
   const [loading, setLoading] = useState(true);
   
+  // Streaks & Badges
+  const [streakData, setStreakData] = useState(null);
+  const [badges, setBadges] = useState([]);
+  const [newBadges, setNewBadges] = useState([]);
+  const [showBadgesDialog, setShowBadgesDialog] = useState(false);
+  const [showNewBadgeDialog, setShowNewBadgeDialog] = useState(false);
+  
   // Weight tracking
   const [weightHistory, setWeightHistory] = useState([]);
   const [weightStats, setWeightStats] = useState(null);
