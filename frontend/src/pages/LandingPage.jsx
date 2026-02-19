@@ -24,7 +24,7 @@ export default function LandingPage() {
       description: language === "te" 
         ? "చెత్త, రోడ్లు, డ్రైనేజీ సమస్యలను ఫోటోతో పంపండి"
         : "Report garbage, roads, drainage issues with photos",
-      color: "bg-orange-50 text-orange-600 dark:bg-orange-900/30 dark:text-orange-400"
+      color: "bg-orange-50 text-orange-600"
     },
     {
       icon: <MapPin className="h-8 w-8" />,
@@ -32,7 +32,7 @@ export default function LandingPage() {
       description: language === "te"
         ? "కాలుష్యం, ఆరోగ్య ప్రమాదాల సమాచారం తెలుసుకోండి"
         : "Learn about pollution zones and health risks",
-      color: "bg-red-50 text-red-600 dark:bg-red-900/30 dark:text-red-400"
+      color: "bg-red-50 text-red-600"
     },
     {
       icon: <Activity className="h-8 w-8" />,
@@ -40,7 +40,7 @@ export default function LandingPage() {
       description: language === "te"
         ? "నడక, పరుగు ట్రాక్ చేయండి, బ్యాడ్జిలు గెలవండి"
         : "Track walks, runs and win badges",
-      color: "bg-teal-50 text-teal-600 dark:bg-teal-900/30 dark:text-teal-400"
+      color: "bg-teal-50 text-teal-600"
     },
     {
       icon: <Heart className="h-8 w-8" />,
@@ -48,7 +48,7 @@ export default function LandingPage() {
       description: language === "te"
         ? "ఉచిత వైద్య పరీక్షలు, విద్య వౌచర్లు, బీమా"
         : "Free health checkups, education vouchers & insurance",
-      color: "bg-emerald-50 text-emerald-600 dark:bg-emerald-900/30 dark:text-emerald-400"
+      color: "bg-emerald-50 text-emerald-600"
     },
     {
       icon: <BarChart3 className="h-8 w-8" />,
@@ -56,7 +56,7 @@ export default function LandingPage() {
       description: language === "te"
         ? "వార్డు ఖర్చులు, RTI పత్రాలు చూడండి"
         : "View ward expenditure and RTI documents",
-      color: "bg-blue-50 text-blue-600 dark:bg-blue-900/30 dark:text-blue-400"
+      color: "bg-blue-50 text-blue-600"
     },
     {
       icon: <Users className="h-8 w-8" />,
@@ -64,7 +64,7 @@ export default function LandingPage() {
       description: language === "te"
         ? "మీ అభిప్రాయం చెప్పండి, నిర్ణయాలలో పాల్గొనండి"
         : "Share opinion, participate in decisions",
-      color: "bg-purple-50 text-purple-600 dark:bg-purple-900/30 dark:text-purple-400"
+      color: "bg-purple-50 text-purple-600"
     }
   ];
 
