@@ -513,16 +513,22 @@ export default function Dashboard() {
                 </div>
                 <div className="mt-1">
                   <p className="text-sm font-semibold text-red-800 dark:text-red-300">
-                    {language === "te" ? "1,200 టన్నులు/రోజు" : "1,200 tons/day"}
+                    {language === "te" 
+                      ? `${dumpyardConfig.daily_waste_tons?.toLocaleString()} టన్నులు/రోజు` 
+                      : `${dumpyardConfig.daily_waste_tons?.toLocaleString()} tons/day`}
                   </p>
                   <p className="text-[10px] text-red-600/80 dark:text-red-400/80 mt-0.5">
-                    {language === "te" ? "350 ఎకరాలు ప్రాంతం" : "350 acres area"}
+                    {language === "te" 
+                      ? `${dumpyardConfig.area_acres} ఎకరాలు ప్రాంతం` 
+                      : `${dumpyardConfig.area_acres} acres area`}
                   </p>
                 </div>
                 <div className="flex items-center gap-1 mt-2">
                   <AlertTriangle className="h-3 w-3 text-red-500" />
                   <span className="text-[9px] text-red-600 dark:text-red-400">
-                    {language === "te" ? "2 కి.మీ. రెడ్ జోన్" : "2km Red Zone Active"}
+                    {language === "te" 
+                      ? `${dumpyardConfig.red_zone_km} కి.మీ. రెడ్ జోన్` 
+                      : `${dumpyardConfig.red_zone_km}km Red Zone Active`}
                   </span>
                 </div>
               </CardContent>
