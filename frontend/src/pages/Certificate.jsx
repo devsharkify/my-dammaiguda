@@ -22,7 +22,8 @@ import {
   Mail,
   Link2,
   Sparkles,
-  GraduationCap
+  GraduationCap,
+  Instagram
 } from "lucide-react";
 
 const API = `${process.env.REACT_APP_BACKEND_URL}/api`;
