@@ -634,67 +634,13 @@ export default function KaizerDoctor() {
           </Button>
         </div>
 
-                <div className="relative">
-                  <Search className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
-                  <Input
-                    placeholder={language === "te" ? "ఆహారం వెతకండి..." : "Search food..."}
-                    value={foodSearch}
-                    onChange={(e) => setFoodSearch(e.target.value)}
-                    className="pl-10 h-12"
-                  />
-                </div>
-
-                <div className="max-h-48 overflow-y-auto space-y-2">
-                  {filteredFoods.slice(0, 15).map((food, idx) => (
-                    <button
-                      key={idx}
-                      onClick={() => toggleFoodSelection(food)}
-                      className={`w-full p-3 rounded-xl text-left flex items-center justify-between transition-all ${
-                        selectedFoods.find(f => f.name === food.name)
-                          ? "bg-gradient-to-r from-orange-100 to-red-100 border-2 border-orange-400"
-                          : "bg-muted/50 hover:bg-muted"
-                      }`}
-                    >
-                      <div>
-                        <p className="font-medium text-sm">{language === "te" ? food.name_te : food.name}</p>
-                        <p className="text-xs text-muted-foreground">
-                          P: {food.protein}g | C: {food.carbs}g | F: {food.fat}g
-                        </p>
-                      </div>
-                      <Badge className="bg-orange-500">{food.calories} cal</Badge>
-                    </button>
-                  ))}
-                </div>
-
-                {selectedFoods.length > 0 && (
-                  <div className="p-3 bg-gradient-to-r from-orange-50 to-red-50 rounded-xl border border-orange-200">
-                    <p className="text-sm font-medium mb-2">{language === "te" ? "ఎంచుకున్నవి" : "Selected"}:</p>
-                    <div className="flex flex-wrap gap-1">
-                      {selectedFoods.map((f, i) => (
-                        <Badge key={i} variant="secondary" className="text-xs bg-orange-100">{f.name}</Badge>
-                      ))}
-                    </div>
-                    <p className="text-right font-bold mt-2 text-orange-600">
-                      {language === "te" ? "మొత్తం" : "Total"}: {selectedFoods.reduce((s, f) => s + f.calories, 0)} cal
-                    </p>
-                  </div>
-                )}
-
-                <Button onClick={logMeal} className="w-full h-12 bg-gradient-to-r from-orange-500 to-red-500 text-white rounded-full font-semibold">
-                  {language === "te" ? "నమోదు చేయండి" : "Log Meal"}
-                </Button>
-              </div>
-            </DialogContent>
-          </Dialog>
-        </div>
-
         {/* Second Row of Actions */}
         <div className="grid grid-cols-3 gap-2">
           {/* Health Metrics */}
           <Dialog open={showMetricsDialog} onOpenChange={setShowMetricsDialog}>
             <DialogTrigger asChild>
               <button className="p-4 bg-gradient-to-br from-purple-50 to-pink-50 rounded-xl flex flex-col items-center gap-1 active:scale-95 transition-all border border-purple-100" data-testid="health-metrics-btn">
-                <Scale className="h-7 w-7 text-purple-500" />
+                <Activity className="h-7 w-7 text-purple-500" />
                 <span className="text-xl font-bold text-purple-600">{healthMetrics?.current?.weight_kg || "—"}</span>
                 <span className="text-xs text-purple-600/80">{language === "te" ? "బరువు kg" : "Weight kg"}</span>
               </button>
@@ -709,7 +655,7 @@ export default function KaizerDoctor() {
               <div className="space-y-4 mt-4">
                 <div>
                   <label className="text-sm font-medium flex items-center gap-2">
-                    <Scale className="h-4 w-4 text-purple-500" />
+                    <Activity className="h-4 w-4 text-purple-500" />
                     {language === "te" ? "బరువు (kg)" : "Weight (kg)"}
                   </label>
                   <Input
