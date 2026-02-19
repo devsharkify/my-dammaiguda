@@ -6,8 +6,15 @@ from datetime import datetime, timezone
 from .utils import db, generate_id, now_iso, get_current_user
 import json
 import logging
+import os
+from pywebpush import webpush, WebPushException
 
 router = APIRouter(prefix="/notifications", tags=["Push Notifications"])
+
+# Load VAPID configuration from environment
+VAPID_PUBLIC_KEY = os.environ.get("VAPID_PUBLIC_KEY", "")
+VAPID_PRIVATE_KEY_FILE = os.environ.get("VAPID_PRIVATE_KEY_FILE", "/app/backend/private_key.pem")
+VAPID_CLAIMS_EMAIL = os.environ.get("VAPID_CLAIMS_EMAIL", "mailto:admin@mydammaiguda.com")
 
 # ============== MODELS ==============
 
