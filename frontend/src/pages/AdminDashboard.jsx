@@ -881,6 +881,155 @@ export default function AdminDashboard() {
           </DialogFooter>
         </DialogContent>
       </Dialog>
+
+      {/* Product Dialog */}
+      <Dialog open={showProductDialog} onOpenChange={setShowProductDialog}>
+        <DialogContent className="max-w-md">
+          <DialogHeader>
+            <DialogTitle>{editingProduct ? "Edit Product" : "Add Product"}</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4">
+            <div>
+              <Label>Product Name *</Label>
+              <Input
+                value={productForm.name}
+                onChange={(e) => setProductForm({...productForm, name: e.target.value})}
+                placeholder="Water Bottle"
+              />
+            </div>
+            <div>
+              <Label>Description</Label>
+              <Textarea
+                value={productForm.description}
+                onChange={(e) => setProductForm({...productForm, description: e.target.value})}
+                placeholder="Product description..."
+                rows={2}
+              />
+            </div>
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <Label>Category</Label>
+                <Select value={productForm.category} onValueChange={(v) => setProductForm({...productForm, category: v})}>
+                  <SelectTrigger>
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="Fitness">Fitness</SelectItem>
+                    <SelectItem value="Electronics">Electronics</SelectItem>
+                    <SelectItem value="Home">Home & Living</SelectItem>
+                    <SelectItem value="Fashion">Fashion</SelectItem>
+                    <SelectItem value="Books">Books</SelectItem>
+                    <SelectItem value="Other">Other</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              <div>
+                <Label>MRP (₹)</Label>
+                <Input
+                  type="number"
+                  value={productForm.mrp}
+                  onChange={(e) => setProductForm({...productForm, mrp: parseInt(e.target.value) || 0})}
+                />
+              </div>
+            </div>
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <Label>Points Required *</Label>
+                <Input
+                  type="number"
+                  value={productForm.points_required}
+                  onChange={(e) => setProductForm({...productForm, points_required: parseInt(e.target.value) || 0})}
+                />
+              </div>
+              <div>
+                <Label>Stock Quantity</Label>
+                <Input
+                  type="number"
+                  value={productForm.stock_quantity}
+                  onChange={(e) => setProductForm({...productForm, stock_quantity: parseInt(e.target.value) || 0})}
+                />
+              </div>
+            </div>
+            <div>
+              <Label>Image URL</Label>
+              <Input
+                value={productForm.image_url}
+                onChange={(e) => setProductForm({...productForm, image_url: e.target.value})}
+                placeholder="https://images.unsplash.com/..."
+              />
+            </div>
+            <div className="flex items-center gap-2">
+              <Switch
+                checked={productForm.is_active}
+                onCheckedChange={(v) => setProductForm({...productForm, is_active: v})}
+              />
+              <Label>Active (visible to users)</Label>
+            </div>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setShowProductDialog(false)}>Cancel</Button>
+            <Button onClick={saveProduct} disabled={savingProduct}>
+              {savingProduct && <Loader2 className="h-4 w-4 mr-2 animate-spin" />}
+              {editingProduct ? "Update" : "Create"}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Points Adjustment Dialog */}
+      <Dialog open={showPointsDialog} onOpenChange={setShowPointsDialog}>
+        <DialogContent className="max-w-sm">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <Coins className="h-5 w-5" />
+              Adjust User Points
+            </DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4">
+            <div>
+              <Label>User ID</Label>
+              <Select value={pointsForm.user_id} onValueChange={(v) => setPointsForm({...pointsForm, user_id: v})}>
+                <SelectTrigger>
+                  <SelectValue placeholder="Select user" />
+                </SelectTrigger>
+                <SelectContent>
+                  {users.map((u) => (
+                    <SelectItem key={u.id} value={u.id}>
+                      {u.name || u.phone}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+            <div>
+              <Label>Points (+/-)</Label>
+              <Input
+                type="number"
+                value={pointsForm.points}
+                onChange={(e) => setPointsForm({...pointsForm, points: e.target.value})}
+                placeholder="100 or -50"
+              />
+              <p className="text-xs text-muted-foreground mt-1">
+                Use negative number to deduct points
+              </p>
+            </div>
+            <div>
+              <Label>Reason *</Label>
+              <Input
+                value={pointsForm.reason}
+                onChange={(e) => setPointsForm({...pointsForm, reason: e.target.value})}
+                placeholder="Bonus for completing challenge"
+              />
+            </div>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setShowPointsDialog(false)}>Cancel</Button>
+            <Button onClick={adjustUserPoints}>
+              Adjust Points
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </Layout>
   );
 }
