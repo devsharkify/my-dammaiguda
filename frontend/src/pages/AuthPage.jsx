@@ -93,6 +93,7 @@ export default function AuthPage() {
       } else {
         // Existing user - logged in
         toast.success(language === "te" ? "విజయవంతంగా లాగిన్ అయ్యారు!" : "Logged in successfully!");
+        navigate("/");
       }
     } catch (error) {
       toast.error(error.response?.data?.detail || t("invalidOTP"));
