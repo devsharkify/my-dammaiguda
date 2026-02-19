@@ -28,6 +28,7 @@ from routers.shop import router as shop_router
 from routers.vouchers import router as vouchers_router
 from routers.templates import router as templates_router
 from routers.content import router as content_router
+from routers.websocket_chat import router as websocket_chat_router
 
 # Create FastAPI app
 app = FastAPI(
