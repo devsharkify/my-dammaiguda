@@ -693,11 +693,15 @@ export default function AdminDashboard() {
           <TabsContent value="users" className="space-y-4 mt-4">
             <div className="flex items-center justify-between">
               <h3 className="font-semibold">All Users ({users.length})</h3>
+              <Button size="sm" variant="outline" onClick={() => setShowPointsDialog(true)}>
+                <Coins className="h-4 w-4 mr-1" />
+                Adjust Points
+              </Button>
             </div>
             
             <div className="space-y-2">
               {users.slice(0, 20).map((u) => (
-                <Card key={u.id} className="border-border/50">
+                <Card key={u.id} className="border-border/50 hover:shadow-sm transition-shadow">
                   <CardContent className="p-3">
                     <div className="flex items-center justify-between">
                       <div className="flex items-center gap-3">
@@ -711,10 +715,10 @@ export default function AdminDashboard() {
                       </div>
                       <div className="text-right">
                         <Badge variant={u.role === "admin" ? "default" : "secondary"} className="text-[10px]">
-                          {u.role || "user"}
+                          {u.role || "citizen"}
                         </Badge>
                         <p className="text-[10px] text-muted-foreground mt-1">
-                          {u.created_at ? new Date(u.created_at).toLocaleDateString() : ""}
+                          {u.colony || u.created_at ? new Date(u.created_at).toLocaleDateString() : ""}
                         </p>
                       </div>
                     </div>
