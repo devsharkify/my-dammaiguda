@@ -56,10 +56,22 @@ export default function Profile() {
   const { user, token, updateProfile, logout } = useAuth();
   const navigate = useNavigate();
   
+  // Push notification hook
+  const { 
+    permission, 
+    isSubscribed: pushSubscribed, 
+    loading: pushLoading, 
+    supported: pushSupported,
+    subscribe: subscribePush,
+    unsubscribe: unsubscribePush,
+    sendTestNotification
+  } = usePushNotifications();
+  
   const [name, setName] = useState(user?.name || "");
   const [colony, setColony] = useState(user?.colony || "");
   const [ageRange, setAgeRange] = useState(user?.age_range || "");
   const [saving, setSaving] = useState(false);
+  const [testingSend, setTestingSend] = useState(false);
   
   // Notification preferences
   const [notifPrefs, setNotifPrefs] = useState({
@@ -72,7 +84,6 @@ export default function Profile() {
   });
   const [loadingPrefs, setLoadingPrefs] = useState(true);
   const [savingPrefs, setSavingPrefs] = useState(false);
-  const [pushSubscribed, setPushSubscribed] = useState(false);
 
   const headers = { Authorization: `Bearer ${token}` };
 
