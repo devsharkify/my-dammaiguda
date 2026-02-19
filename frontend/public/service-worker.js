@@ -1,0 +1,182 @@
+/* eslint-disable no-restricted-globals */
+
+const CACHE_NAME = 'my-dammaiguda-v1';
+const STATIC_ASSETS = [
+  '/',
+  '/index.html',
+  '/manifest.json',
+  '/static/js/bundle.js',
+  '/static/css/main.css',
+];
+
+const API_CACHE_NAME = 'my-dammaiguda-api-v1';
+const CACHEABLE_API_ROUTES = [
+  '/api/aqi/current',
+  '/api/news/categories',
+  '/api/benefits',
+];
+
+// Install event - cache static assets
+self.addEventListener('install', (event) => {
+  console.log('[SW] Installing service worker...');
+  event.waitUntil(
+    caches.open(CACHE_NAME).then((cache) => {
+      console.log('[SW] Caching static assets');
+      return cache.addAll(STATIC_ASSETS).catch((err) => {
+        console.log('[SW] Some assets failed to cache:', err);
+      });
+    })
+  );
+  self.skipWaiting();
+});
+
+// Activate event - clean old caches
+self.addEventListener('activate', (event) => {
+  console.log('[SW] Activating service worker...');
+  event.waitUntil(
+    caches.keys().then((cacheNames) => {
+      return Promise.all(
+        cacheNames
+          .filter((name) => name !== CACHE_NAME && name !== API_CACHE_NAME)
+          .map((name) => {
+            console.log('[SW] Deleting old cache:', name);
+            return caches.delete(name);
+          })
+      );
+    })
+  );
+  self.clients.claim();
+});
+
+// Fetch event - serve from cache, fallback to network
+self.addEventListener('fetch', (event) => {
+  const { request } = event;
+  const url = new URL(request.url);
+
+  // Skip non-GET requests
+  if (request.method !== 'GET') return;
+
+  // Skip chrome-extension and other non-http(s) requests
+  if (!url.protocol.startsWith('http')) return;
+
+  // API requests - Network first, cache fallback
+  if (url.pathname.startsWith('/api/')) {
+    event.respondWith(handleApiRequest(request));
+    return;
+  }
+
+  // Static assets - Cache first, network fallback
+  event.respondWith(handleStaticRequest(request));
+});
+
+// Handle API requests - Network first strategy
+async function handleApiRequest(request) {
+  const url = new URL(request.url);
+  const isCacheable = CACHEABLE_API_ROUTES.some(route => url.pathname.includes(route));
+
+  try {
+    const response = await fetch(request);
+    
+    // Cache successful GET responses for cacheable routes
+    if (response.ok && isCacheable) {
+      const cache = await caches.open(API_CACHE_NAME);
+      cache.put(request, response.clone());
+    }
+    
+    return response;
+  } catch (error) {
+    console.log('[SW] Network failed, trying cache:', url.pathname);
+    
+    // Try to get from cache
+    const cachedResponse = await caches.match(request);
+    if (cachedResponse) {
+      return cachedResponse;
+    }
+    
+    // Return offline response for API
+    return new Response(
+      JSON.stringify({ 
+        error: 'offline', 
+        message: 'You are offline. Please check your connection.',
+        message_te: 'మీరు ఆఫ్‌లైన్‌లో ఉన్నారు. దయచేసి మీ కనెక్షన్ తనిఖీ చేయండి.'
+      }),
+      { 
+        status: 503,
+        headers: { 'Content-Type': 'application/json' }
+      }
+    );
+  }
+}
+
+// Handle static requests - Cache first strategy
+async function handleStaticRequest(request) {
+  const cachedResponse = await caches.match(request);
+  
+  if (cachedResponse) {
+    // Return cached version and update cache in background
+    updateCache(request);
+    return cachedResponse;
+  }
+
+  try {
+    const response = await fetch(request);
+    
+    // Cache the new response
+    if (response.ok) {
+      const cache = await caches.open(CACHE_NAME);
+      cache.put(request, response.clone());
+    }
+    
+    return response;
+  } catch (error) {
+    console.log('[SW] Network failed for static asset:', request.url);
+    
+    // Return offline page for navigation requests
+    if (request.mode === 'navigate') {
+      const offlineResponse = await caches.match('/offline.html');
+      if (offlineResponse) return offlineResponse;
+    }
+    
+    return new Response('Offline', { status: 503 });
+  }
+}
+
+// Update cache in background
+async function updateCache(request) {
+  try {
+    const response = await fetch(request);
+    if (response.ok) {
+      const cache = await caches.open(CACHE_NAME);
+      cache.put(request, response);
+    }
+  } catch (error) {
+    // Silently fail - we already have cached version
+  }
+}
+
+// Handle messages from the app
+self.addEventListener('message', (event) => {
+  if (event.data && event.data.type === 'SKIP_WAITING') {
+    self.skipWaiting();
+  }
+  
+  if (event.data && event.data.type === 'CLEAR_CACHE') {
+    caches.keys().then((names) => {
+      names.forEach((name) => caches.delete(name));
+    });
+  }
+});
+
+// Background sync for offline form submissions
+self.addEventListener('sync', (event) => {
+  if (event.tag === 'sync-issues') {
+    event.waitUntil(syncPendingIssues());
+  }
+});
+
+async function syncPendingIssues() {
+  // Get pending issues from IndexedDB and sync
+  console.log('[SW] Syncing pending issues...');
+}
+
+console.log('[SW] Service worker loaded');
