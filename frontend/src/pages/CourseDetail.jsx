@@ -876,14 +876,15 @@ export default function CourseDetail() {
               <p className="text-2xl font-bold text-primary mt-1">₹{course?.price?.toLocaleString()}</p>
             </div>
             
-            {/* QR Code Placeholder */}
-            <div className="border-2 border-dashed border-muted-foreground/30 rounded-xl p-6 text-center">
-              <QrCode className="h-16 w-16 mx-auto text-muted-foreground/50 mb-3" />
-              <p className="text-sm text-muted-foreground">
-                {language === "te" ? "QR కోడ్ త్వరలో వస్తుంది" : "QR Code Coming Soon"}
-              </p>
-              <p className="text-xs text-muted-foreground mt-1">
-                {language === "te" ? "స్కాన్ చేసి చెల్లించండి" : "Scan to pay via UPI"}
+            {/* QR Code for Payment */}
+            <div className="bg-white rounded-xl p-4 text-center">
+              <img 
+                src="https://customer-assets.emergentagent.com/job_288e4305-7432-47c6-9abe-b5251f1a099f/artifacts/3jg33oou_1000107445.png"
+                alt="PhonePe QR Code"
+                className="w-48 h-48 mx-auto rounded-lg"
+              />
+              <p className="text-sm text-gray-600 mt-2">
+                {language === "te" ? "స్కాన్ చేసి చెల్లించండి" : "Scan to pay via PhonePe/UPI"}
               </p>
             </div>
             
