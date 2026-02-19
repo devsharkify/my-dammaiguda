@@ -71,7 +71,7 @@ export default function LandingPage() {
   return (
     <div className="min-h-screen bg-background font-body">
       {/* Header */}
-      <header className="sticky top-0 z-50 bg-white/80 backdrop-blur-md border-b border-border/50">
+      <header className="sticky top-0 z-50 bg-white/80 dark:bg-gray-900/90 backdrop-blur-md border-b border-border/50 dark:border-gray-800">
         <div className="max-w-7xl mx-auto px-4 py-3 flex items-center justify-between">
           <div className="flex items-center gap-3">
             <div className="h-10 w-10 rounded-full bg-primary flex items-center justify-center">
@@ -87,7 +87,7 @@ export default function LandingPage() {
               variant="ghost"
               size="sm"
               onClick={toggleLanguage}
-              className="flex items-center gap-1.5 text-muted-foreground"
+              className="flex items-center gap-1.5 text-muted-foreground dark:text-gray-400"
               data-testid="language-toggle"
             >
               <Globe className="h-4 w-4" />
@@ -101,7 +101,7 @@ export default function LandingPage() {
                 className="bg-primary text-white hover:bg-primary/90 rounded-full px-6 h-10"
                 data-testid="login-btn"
               >
-                {t("login")}
+                {language === "te" ? "లాగిన్" : "Login"}
               </Button>
             </Link>
           </div>
