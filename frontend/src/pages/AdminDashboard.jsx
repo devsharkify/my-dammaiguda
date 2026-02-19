@@ -1079,7 +1079,7 @@ export default function AdminDashboard() {
           </DialogHeader>
           <div className="space-y-4">
             <div>
-              <Label>User ID</Label>
+              <Label>User</Label>
               <Select value={pointsForm.user_id} onValueChange={(v) => setPointsForm({...pointsForm, user_id: v})}>
                 <SelectTrigger>
                   <SelectValue placeholder="Select user" />
@@ -1090,6 +1090,18 @@ export default function AdminDashboard() {
                       {u.name || u.phone}
                     </SelectItem>
                   ))}
+                </SelectContent>
+              </Select>
+            </div>
+            <div>
+              <Label>Point Type</Label>
+              <Select value={pointsForm.point_type} onValueChange={(v) => setPointsForm({...pointsForm, point_type: v})}>
+                <SelectTrigger>
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="normal">Normal Points</SelectItem>
+                  <SelectItem value="privilege">Privilege Points</SelectItem>
                 </SelectContent>
               </Select>
             </div>
@@ -1118,6 +1130,90 @@ export default function AdminDashboard() {
             <Button variant="outline" onClick={() => setShowPointsDialog(false)}>Cancel</Button>
             <Button onClick={adjustUserPoints}>
               Adjust Points
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Bulk Privilege Points Dialog */}
+      <Dialog open={showBulkPrivilegeDialog} onOpenChange={setShowBulkPrivilegeDialog}>
+        <DialogContent className="max-w-md max-h-[80vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <Star className="h-5 w-5 text-purple-500" />
+              Assign Bulk Privilege Points
+            </DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4">
+            <div className="flex items-center gap-2 p-3 bg-purple-50 dark:bg-purple-950 rounded-lg">
+              <input
+                type="checkbox"
+                id="selectAll"
+                checked={bulkPrivilegeForm.selectAll}
+                onChange={(e) => setBulkPrivilegeForm({...bulkPrivilegeForm, selectAll: e.target.checked, user_ids: []})}
+                className="h-4 w-4"
+              />
+              <Label htmlFor="selectAll" className="font-semibold text-purple-700 dark:text-purple-300">
+                Select ALL Users
+              </Label>
+            </div>
+            
+            {!bulkPrivilegeForm.selectAll && (
+              <div>
+                <Label>Select Users</Label>
+                <div className="max-h-40 overflow-y-auto border rounded-lg p-2 space-y-1">
+                  {users.map((u) => (
+                    <label key={u.id} className="flex items-center gap-2 p-1 hover:bg-muted rounded cursor-pointer">
+                      <input
+                        type="checkbox"
+                        checked={bulkPrivilegeForm.user_ids.includes(u.id)}
+                        onChange={(e) => {
+                          if (e.target.checked) {
+                            setBulkPrivilegeForm({...bulkPrivilegeForm, user_ids: [...bulkPrivilegeForm.user_ids, u.id]});
+                          } else {
+                            setBulkPrivilegeForm({...bulkPrivilegeForm, user_ids: bulkPrivilegeForm.user_ids.filter(id => id !== u.id)});
+                          }
+                        }}
+                        className="h-4 w-4"
+                      />
+                      <span className="text-sm">{u.name || u.phone}</span>
+                    </label>
+                  ))}
+                </div>
+                <p className="text-xs text-muted-foreground mt-1">
+                  {bulkPrivilegeForm.user_ids.length} user(s) selected
+                </p>
+              </div>
+            )}
+            
+            <div>
+              <Label>Privilege Points to Assign *</Label>
+              <Input
+                type="number"
+                value={bulkPrivilegeForm.points}
+                onChange={(e) => setBulkPrivilegeForm({...bulkPrivilegeForm, points: e.target.value})}
+                placeholder="100"
+                min="1"
+              />
+            </div>
+            <div>
+              <Label>Reason *</Label>
+              <Input
+                value={bulkPrivilegeForm.reason}
+                onChange={(e) => setBulkPrivilegeForm({...bulkPrivilegeForm, reason: e.target.value})}
+                placeholder="Special reward, event bonus, etc."
+              />
+            </div>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setShowBulkPrivilegeDialog(false)}>Cancel</Button>
+            <Button 
+              onClick={assignBulkPrivilegePoints} 
+              disabled={bulkPrivilegeLoading}
+              className="bg-purple-600 hover:bg-purple-700"
+            >
+              {bulkPrivilegeLoading && <Loader2 className="h-4 w-4 mr-2 animate-spin" />}
+              Assign Privilege Points
             </Button>
           </DialogFooter>
         </DialogContent>
