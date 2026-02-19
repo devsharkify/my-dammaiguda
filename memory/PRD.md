@@ -3,43 +3,43 @@
 ## Project Overview
 **Name:** My Dammaiguda  
 **Type:** Civic Engagement Platform (PWA)  
-**Version:** 3.2.0  
+**Version:** 3.3.0  
 **Last Updated:** February 19, 2026
 
-## What's Been Implemented (v3.2.0)
+## What's Been Implemented (v3.3.0)
 
-### ✅ Google Maps Integration for Live Activity (NEW)
-- **@vis.gl/react-google-maps** library installed
-- Map shows current position with custom marker
-- Route polyline drawn as user moves
-- GPS tracking with accuracy indicator
-- Placeholder UI when no API key configured
-- Works with: Running, Walking, Cycling, Hiking, Football
+### ✅ PWA Offline Support (NEW)
+- **Service Worker** (`/public/service-worker.js`)
+  - Caches static assets for offline access
+  - Network-first strategy for API requests
+  - Cache fallback when offline
+- **Offline Page** (`/public/offline.html`)
+  - Telugu-first offline message
+  - Auto-reconnect detection
+- **Offline Banner Component**
+  - Shows amber banner when offline: "మీరు ఆఫ్‌లైన్‌లో ఉన్నారు"
+  - Auto-hides when back online
+- **useOffline Hook**
+  - `useOnlineStatus()` - Detect online/offline
+  - `useServiceWorker()` - Manage SW registration
 
-**To enable Google Maps:**
-Add `REACT_APP_GOOGLE_MAPS_KEY=your_api_key` to `/app/frontend/.env`
+### Previous Features
+- Google Maps for live activity tracking (v3.2.0)
+- Daily Fitness Streak & 10 Badges (v3.1.0)
+- Premium Kaizer Fit with weight tracker (v3.0.0)
+- Dashboard redesign with widgets
 
-### ✅ Daily Fitness Streak & Badges (v3.1.0)
-- 10 badges available
-- Streak tracking (current/longest)
-- Badge celebration popup
-
-### ✅ Premium Kaizer Fit UI (v3.0.0)
-- Weight tracker with charts
-- Hero stats card
-- Streak & Badges cards
-
-### ✅ Dashboard Redesign
-- 2-row quick actions
-- Groups in stories bar
-- AQI, Benefits, Vouchers widgets
-- Floating AI Chat
-
-## Key Files (v3.2.0)
+## Key Files (v3.3.0)
 ```
-/app/frontend/src/pages/LiveActivity.jsx - Google Maps integration
-/app/frontend/src/pages/KaizerFit.jsx - Streaks & Badges UI
-/app/backend/routers/fitness.py - Backend endpoints
+/app/frontend/public/
+├── service-worker.js    - Caching logic
+├── offline.html         - Offline page
+├── manifest.json        - PWA manifest
+
+/app/frontend/src/
+├── hooks/useOffline.js  - Offline hooks
+├── components/OfflineBanner.jsx
+└── App.js               - SW registration
 ```
 
 ## Test Credentials
@@ -49,9 +49,9 @@ Add `REACT_APP_GOOGLE_MAPS_KEY=your_api_key` to `/app/frontend/.env`
 ## Remaining Backlog
 
 ### P1 (High Priority)
-- [ ] Real Twilio SMS for OTP
-- [ ] Cloudinary media uploads
+- [ ] Real Twilio SMS for OTP (requires API keys)
+- [ ] Cloudinary media uploads (requires API keys)
 
-### P2 (Medium Priority)
-- [ ] PWA Offline Support
+### P2 (Medium Priority)  
 - [ ] Real webpush notifications
+- [ ] Admin dashboard for ads
