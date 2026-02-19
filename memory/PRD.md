@@ -43,7 +43,24 @@ Build a production-ready, mobile-first civic engagement platform "My Dammaiguda"
   - Issue Not Found (with "Please contact us" message)
 - Status badges now have icons
 
-### 4. Two-Tier Points System for Gift Shop ✅
+### 4. Bottom Navigation Redesign ✅
+- **Home** (left) - Dashboard
+- **Education** - AIT Education platform
+- **NEWS** (center bulge) - Raised button with red-orange gradient, grabs attention
+- **Benefits** - Citizen benefits
+- **Helpline** - Emergency numbers page
+
+### 5. New Helpline Page ✅
+- Emergency numbers: Police (100), Ambulance (108), Fire (101), Women (181), Child (1098), Disaster (1078)
+- Local services: GHMC, Water Board, Electricity, Corporator
+- WhatsApp support card
+
+### 6. Family Module - Course Progress ✅
+- Parents can see child's course progress (total, completed, in-progress, certificates)
+- Course summary displayed in family member card
+- API: `/api/family/member/{member_id}/courses` for detailed progress
+
+### 7. Two-Tier Points System for Gift Shop ✅
 - **Normal Points**: Earned through activities, fitness, admin credits
 - **Privilege Points**: Exclusively assigned by admin to selected users
 - **Product Point Types**:
