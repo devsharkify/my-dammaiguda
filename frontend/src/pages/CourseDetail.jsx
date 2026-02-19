@@ -75,6 +75,20 @@ export default function CourseDetail() {
   const [myRating, setMyRating] = useState(0);
   const [myReviewText, setMyReviewText] = useState("");
   const [submittingReview, setSubmittingReview] = useState(false);
+  
+  // Scholarship Application state
+  const [showScholarshipDialog, setShowScholarshipDialog] = useState(false);
+  const [scholarshipSubmitting, setScholarshipSubmitting] = useState(false);
+  const [scholarshipForm, setScholarshipForm] = useState({
+    full_name: user?.name || "",
+    mobile: user?.phone || "",
+    email: "",
+    age: "",
+    education_level: "",
+    institution_name: "",
+    family_income: "",
+    reason: ""
+  });
 
   const headers = { Authorization: `Bearer ${token}` };
 
