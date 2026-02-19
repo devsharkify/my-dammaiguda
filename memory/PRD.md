@@ -176,7 +176,17 @@ Build a production-ready, mobile-first civic engagement platform "My Dammaiguda"
 - **CMS Integration**: Dashboard now fetches dump yard data dynamically from CMS API
 - **Admin CMS Tab**: Complete UI for editing banners, benefits, dump yard statistics
 - **AQI Web Crawl**: Real-time AQI data from aqi.in (Dammaiguda: 220, Hyderabad: 146)
-- **Testing**: 100% backend tests passed, all frontend features verified
+- **UI Improvements**:
+  - Back button visibility improved with white/transparent background
+  - Header scroll effect: gradient to solid dark (gray-900) on scroll
+  - AQI widget headline changed to "Air Quality (Pollution)"
+- **Education Module Updates**:
+  - Disabled K-12 and College categories
+  - Added "Professional Job" category
+  - Single course: Digital Marketing Mastery - ₹54,999
+  - Payment dialog with QR code placeholder
+  - "Apply for Scholarship" link to Benefits page
+- **Testing**: 100% pass rate (iteration_24: CMS/AQI, iteration_25: UI changes)
 
 ### Feb 19, 2026 - Session 1
 - **Instructor Portal**: Complete course management for instructors/admins
