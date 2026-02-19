@@ -201,7 +201,7 @@ async def websocket_endpoint(websocket: WebSocket, room_id: str, token: Optional
             import jwt
             payload = jwt.decode(token, "dammaiguda-secret-key-2024", algorithms=["HS256"])
             user = await db.users.find_one({"id": payload.get("user_id")}, {"_id": 0})
-        except:
+        except Exception:
             pass
     
     if not user:
