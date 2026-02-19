@@ -204,6 +204,18 @@ function AppRoutes() {
       {/* Leaderboard */}
       <Route path="/leaderboard" element={<Leaderboard />} />
       
+      {/* Live Chat Routes */}
+      <Route path="/live-chat" element={
+        <ProtectedRoute>
+          <LiveChat />
+        </ProtectedRoute>
+      } />
+      <Route path="/live-chat/:roomId" element={
+        <ProtectedRoute>
+          <LiveChat />
+        </ProtectedRoute>
+      } />
+      
       {/* Volunteer Routes */}
       <Route path="/volunteer" element={
         <ProtectedRoute roles={["volunteer", "admin"]}>
