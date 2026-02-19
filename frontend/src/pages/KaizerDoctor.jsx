@@ -14,12 +14,8 @@ import { toast } from "sonner";
 import Layout from "../components/Layout";
 import {
   Stethoscope,
-  Apple,
-  Droplets,
-  Moon,
   Heart,
   Brain,
-  Scale,
   Activity,
   Plus,
   TrendingUp,
@@ -28,7 +24,6 @@ import {
   Frown,
   Meh,
   Zap,
-  Utensils,
   Search,
   Sparkles,
   Star,
@@ -45,10 +40,228 @@ import {
   Send,
   Loader2,
   Phone,
-  ShieldCheck
+  ShieldCheck,
+  AlertTriangle,
+  Info,
+  Clock,
+  CheckCircle,
+  XCircle,
+  Syringe,
+  FileText,
+  BookOpen
 } from "lucide-react";
 
 const API = `${process.env.REACT_APP_BACKEND_URL}/api`;
+
+// Medicine Database - Common medicines with information
+const MEDICINE_DATABASE = [
+  {
+    name: "Paracetamol",
+    name_te: "పారాసెటమాల్",
+    brand_names: ["Crocin", "Dolo 650", "Calpol", "Panadol"],
+    category: "Pain & Fever",
+    category_te: "నొప్పి & జ్వరం",
+    uses: ["Fever", "Headache", "Body Pain", "Cold"],
+    uses_te: ["జ్వరం", "తలనొప్పి", "శరీర నొప్పి", "జలుబు"],
+    dosage: "500mg-1000mg every 4-6 hours. Max 4g/day",
+    dosage_te: "500mg-1000mg ప్రతి 4-6 గంటలకు. గరిష్టం 4g/రోజు",
+    side_effects: ["Nausea", "Allergic reaction (rare)", "Liver damage (overdose)"],
+    side_effects_te: ["వికారం", "అలెర్జీ (అరుదు)", "కాలేయ నష్టం (అధిక మోతాదు)"],
+    warnings: ["Avoid alcohol", "Don't exceed recommended dose", "Consult if liver problems"],
+    warnings_te: ["మద్యం నివారించండి", "సిఫార్సు చేసిన మోతాదు మించకూడదు", "కాలేయ సమస్యలు ఉంటే వైద్యుడిని సంప్రదించండి"],
+    interactions: ["Warfarin", "Alcohol", "Other paracetamol products"],
+    otc: true
+  },
+  {
+    name: "Ibuprofen",
+    name_te: "ఐబుప్రోఫెన్",
+    brand_names: ["Brufen", "Advil", "Combiflam"],
+    category: "NSAID / Pain Relief",
+    category_te: "ఎన్‌ఎస్‌ఏఐడి / నొప్పి నివారణ",
+    uses: ["Pain", "Inflammation", "Arthritis", "Menstrual cramps"],
+    uses_te: ["నొప్పి", "వాపు", "ఆర్థరైటిస్", "రుతుక్రమ నొప్పులు"],
+    dosage: "200-400mg every 4-6 hours. Max 1200mg/day (OTC)",
+    dosage_te: "200-400mg ప్రతి 4-6 గంటలకు. గరిష్టం 1200mg/రోజు",
+    side_effects: ["Stomach upset", "Heartburn", "Dizziness", "Kidney issues (long-term)"],
+    side_effects_te: ["కడుపు నొప్పి", "గుండె మంట", "తల తిరుగుట", "మూత్రపిండ సమస్యలు"],
+    warnings: ["Take with food", "Avoid if pregnant", "Not for children under 12"],
+    warnings_te: ["ఆహారంతో తీసుకోండి", "గర్భిణీలు వినియోగించకూడదు", "12 ఏళ్ల లోపు పిల్లలకు కాదు"],
+    interactions: ["Aspirin", "Blood thinners", "Blood pressure meds"],
+    otc: true
+  },
+  {
+    name: "Azithromycin",
+    name_te: "అజిత్రోమైసిన్",
+    brand_names: ["Azithral", "Zithromax", "Azee"],
+    category: "Antibiotic",
+    category_te: "యాంటీబయోటిక్",
+    uses: ["Respiratory infections", "Skin infections", "Ear infections", "STIs"],
+    uses_te: ["శ్వాసకోశ ఇన్ఫెక్షన్లు", "చర్మ ఇన్ఫెక్షన్లు", "చెవి ఇన్ఫెక్షన్లు"],
+    dosage: "500mg once daily for 3 days OR 500mg day 1, then 250mg for 4 days",
+    dosage_te: "500mg రోజుకు ఒకసారి 3 రోజులు",
+    side_effects: ["Diarrhea", "Nausea", "Abdominal pain", "Headache"],
+    side_effects_te: ["అతిసారం", "వికారం", "కడుపు నొప్పి", "తలనొప్పి"],
+    warnings: ["Complete full course", "May cause sun sensitivity", "Inform doctor of heart conditions"],
+    warnings_te: ["పూర్తి కోర్సు పూర్తి చేయండి", "ఎండకు సెన్సిటివిటీ కలిగించవచ్చు"],
+    interactions: ["Antacids", "Blood thinners", "Digoxin"],
+    otc: false
+  },
+  {
+    name: "Omeprazole",
+    name_te: "ఓమెప్రజోల్",
+    brand_names: ["Omez", "Prilosec", "Ocid"],
+    category: "Antacid / PPI",
+    category_te: "యాంటాసిడ్ / పీపీఐ",
+    uses: ["Acidity", "GERD", "Ulcers", "Heartburn"],
+    uses_te: ["ఆసిడిటీ", "జీఈఆర్‌డి", "అల్సర్లు", "గుండె మంట"],
+    dosage: "20mg once daily before breakfast",
+    dosage_te: "20mg రోజుకు ఒకసారి అల్పాహారానికి ముందు",
+    side_effects: ["Headache", "Stomach pain", "Vitamin B12 deficiency (long-term)"],
+    side_effects_te: ["తలనొప్పి", "కడుపు నొప్పి", "విటమిన్ B12 లోపం (దీర్ఘకాలిక)"],
+    warnings: ["Don't use long-term without supervision", "May mask serious conditions"],
+    warnings_te: ["పర్యవేక్షణ లేకుండా దీర్ఘకాలికంగా వినియోగించవద్దు"],
+    interactions: ["Clopidogrel", "Methotrexate", "HIV medications"],
+    otc: true
+  },
+  {
+    name: "Cetirizine",
+    name_te: "సెటిరిజిన్",
+    brand_names: ["Zyrtec", "Cetzine", "Alerid"],
+    category: "Antihistamine / Allergy",
+    category_te: "యాంటీహిస్టమిన్ / అలెర్జీ",
+    uses: ["Allergies", "Hay fever", "Hives", "Itching"],
+    uses_te: ["అలెర్జీలు", "గడ్డి జ్వరం", "దద్దుర్లు", "దురద"],
+    dosage: "10mg once daily",
+    dosage_te: "10mg రోజుకు ఒకసారి",
+    side_effects: ["Drowsiness", "Dry mouth", "Fatigue"],
+    side_effects_te: ["మగత", "నోరు ఎండిపోవడం", "అలసట"],
+    warnings: ["May cause drowsiness - avoid driving", "Avoid alcohol"],
+    warnings_te: ["మగత కలిగించవచ్చు - డ్రైవింగ్ చేయకండి", "మద్యం నివారించండి"],
+    interactions: ["Alcohol", "Other antihistamines", "Sedatives"],
+    otc: true
+  },
+  {
+    name: "Metformin",
+    name_te: "మెట్‌ఫార్మిన్",
+    brand_names: ["Glycomet", "Glucophage", "Obimet"],
+    category: "Diabetes",
+    category_te: "డయాబెటిస్",
+    uses: ["Type 2 Diabetes", "Blood sugar control", "PCOS"],
+    uses_te: ["టైప్ 2 డయాబెటిస్", "రక్తంలో చక్కెర నియంత్రణ", "పీసీఓఎస్"],
+    dosage: "500mg-1000mg twice daily with meals",
+    dosage_te: "500mg-1000mg రోజుకు రెండుసార్లు భోజనంతో",
+    side_effects: ["Diarrhea", "Nausea", "Stomach upset", "Vitamin B12 deficiency"],
+    side_effects_te: ["అతిసారం", "వికారం", "కడుపు నొప్పి", "విటమిన్ B12 లోపం"],
+    warnings: ["Take with food", "Monitor kidney function", "Avoid excess alcohol"],
+    warnings_te: ["ఆహారంతో తీసుకోండి", "మూత్రపిండ పనితీరు పర్యవేక్షించండి"],
+    interactions: ["Alcohol", "Contrast dye (CT scans)", "Some diabetes medications"],
+    otc: false
+  },
+  {
+    name: "Amlodipine",
+    name_te: "అమ్లోడిపిన్",
+    brand_names: ["Norvasc", "Amlong", "Amlip"],
+    category: "Blood Pressure",
+    category_te: "రక్తపోటు",
+    uses: ["High blood pressure", "Chest pain (angina)", "Heart disease prevention"],
+    uses_te: ["అధిక రక్తపోటు", "ఛాతీ నొప్పి", "గుండె జబ్బు నివారణ"],
+    dosage: "5-10mg once daily",
+    dosage_te: "5-10mg రోజుకు ఒకసారి",
+    side_effects: ["Swelling in ankles", "Headache", "Flushing", "Dizziness"],
+    side_effects_te: ["చీలమండల వాపు", "తలనొప్పి", "ముఖం ఎర్రబడడం", "తల తిరుగుట"],
+    warnings: ["Don't stop suddenly", "Avoid grapefruit", "May cause low BP"],
+    warnings_te: ["హఠాత్తుగా ఆపకూడదు", "గ్రేప్‌ఫ్రూట్ నివారించండి"],
+    interactions: ["Grapefruit", "Other BP medications", "Simvastatin (high doses)"],
+    otc: false
+  },
+  {
+    name: "Pantoprazole",
+    name_te: "పాంటోప్రజోల్",
+    brand_names: ["Pan D", "Pantop", "Protonix"],
+    category: "Antacid / PPI",
+    category_te: "యాంటాసిడ్ / పీపీఐ",
+    uses: ["GERD", "Acidity", "Stomach ulcers", "H. pylori infection"],
+    uses_te: ["జీఈఆర్‌డి", "ఆసిడిటీ", "కడుపు పూతలు"],
+    dosage: "40mg once daily before breakfast",
+    dosage_te: "40mg రోజుకు ఒకసారి అల్పాహారానికి ముందు",
+    side_effects: ["Headache", "Diarrhea", "Nausea", "Abdominal pain"],
+    side_effects_te: ["తలనొప్పి", "అతిసారం", "వికారం", "కడుపు నొప్పి"],
+    warnings: ["Not for long-term use without doctor", "May affect bone health"],
+    warnings_te: ["వైద్యుడి సలహా లేకుండా దీర్ఘకాలికంగా వినియోగించవద్దు"],
+    interactions: ["Methotrexate", "HIV medications", "Warfarin"],
+    otc: true
+  },
+  {
+    name: "Montelukast",
+    name_te: "మాంటెలుకాస్ట్",
+    brand_names: ["Montair", "Singulair", "Montek LC"],
+    category: "Asthma / Allergy",
+    category_te: "ఆస్తమా / అలెర్జీ",
+    uses: ["Asthma prevention", "Allergic rhinitis", "Exercise-induced asthma"],
+    uses_te: ["ఆస్తమా నివారణ", "అలెర్జిక్ రినైటిస్"],
+    dosage: "10mg once daily in evening",
+    dosage_te: "10mg సాయంత్రం రోజుకు ఒకసారి",
+    side_effects: ["Headache", "Stomach pain", "Mood changes (rare)"],
+    side_effects_te: ["తలనొప్పి", "కడుపు నొప్పి", "మానసిక మార్పులు (అరుదు)"],
+    warnings: ["Not for acute asthma attacks", "Report mood changes immediately"],
+    warnings_te: ["తీవ్రమైన ఆస్తమా దాడులకు కాదు", "మానసిక మార్పులు వెంటనే రిపోర్ట్ చేయండి"],
+    interactions: ["Phenobarbital", "Rifampicin"],
+    otc: false
+  },
+  {
+    name: "Amoxicillin",
+    name_te: "అమాక్సిసిలిన్",
+    brand_names: ["Mox", "Amoxil", "Novamox"],
+    category: "Antibiotic",
+    category_te: "యాంటీబయోటిక్",
+    uses: ["Bacterial infections", "Ear infections", "Throat infections", "UTI"],
+    uses_te: ["బ్యాక్టీరియల్ ఇన్ఫెక్షన్లు", "చెవి ఇన్ఫెక్షన్లు", "గొంతు ఇన్ఫెక్షన్లు"],
+    dosage: "250-500mg three times daily for 7-10 days",
+    dosage_te: "250-500mg రోజుకు మూడుసార్లు 7-10 రోజులు",
+    side_effects: ["Diarrhea", "Nausea", "Rash", "Allergic reactions"],
+    side_effects_te: ["అతిసారం", "వికారం", "దద్దుర్లు", "అలెర్జీ ప్రతిచర్యలు"],
+    warnings: ["Complete full course", "Inform if allergic to penicillin"],
+    warnings_te: ["పూర్తి కోర్సు పూర్తి చేయండి", "పెన్సిలిన్ అలెర్జీ ఉంటే చెప్పండి"],
+    interactions: ["Methotrexate", "Blood thinners", "Birth control pills"],
+    otc: false
+  }
+];
+
+// Symptom checker data
+const SYMPTOM_CHECKER = {
+  fever: {
+    name: { en: "Fever", te: "జ్వరం" },
+    common_causes: ["Viral infection", "Bacterial infection", "Flu"],
+    common_causes_te: ["వైరల్ ఇన్ఫెక్షన్", "బ్యాక్టీరియల్ ఇన్ఫెక్షన్", "ఫ్లూ"],
+    otc_medicines: ["Paracetamol", "Ibuprofen"],
+    when_to_see_doctor: ["Fever above 103°F", "Fever lasting more than 3 days", "Difficulty breathing"],
+    home_remedies: ["Rest", "Stay hydrated", "Cool compress"]
+  },
+  headache: {
+    name: { en: "Headache", te: "తలనొప్పి" },
+    common_causes: ["Tension", "Dehydration", "Eye strain", "Migraine"],
+    common_causes_te: ["టెన్షన్", "నీటి లోపం", "కంటి అలసట", "మైగ్రేన్"],
+    otc_medicines: ["Paracetamol", "Ibuprofen", "Aspirin"],
+    when_to_see_doctor: ["Severe sudden headache", "With vision changes", "After head injury"],
+    home_remedies: ["Rest in dark room", "Stay hydrated", "Cold compress"]
+  },
+  cough: {
+    name: { en: "Cough", te: "దగ్గు" },
+    common_causes: ["Common cold", "Allergies", "Asthma", "Acid reflux"],
+    common_causes_te: ["సాధారణ జలుబు", "అలెర్జీలు", "ఆస్తమా", "ఆసిడ్ రిఫ్లక్స్"],
+    otc_medicines: ["Cetirizine", "Cough syrup", "Honey"],
+    when_to_see_doctor: ["Cough with blood", "Lasting more than 3 weeks", "With chest pain"],
+    home_remedies: ["Warm water with honey", "Steam inhalation", "Ginger tea"]
+  },
+  stomach_pain: {
+    name: { en: "Stomach Pain", te: "కడుపు నొప్పి" },
+    common_causes: ["Indigestion", "Gas", "Acidity", "Food poisoning"],
+    common_causes_te: ["అజీర్ణం", "గ్యాస్", "ఆసిడిటీ", "ఫుడ్ పాయిజనింగ్"],
+    otc_medicines: ["Omeprazole", "Pantoprazole", "Antacids"],
+    when_to_see_doctor: ["Severe pain", "With vomiting blood", "Pain lasting days"],
+    home_remedies: ["Light food", "Ginger tea", "Avoid spicy food"]
+  }
+};
 
 // Health motivation quotes
 const HEALTH_QUOTES = {
@@ -84,19 +297,16 @@ export default function KaizerDoctor() {
   const { user, token } = useAuth();
   const [dashboard, setDashboard] = useState(null);
   const [healthMetrics, setHealthMetrics] = useState(null);
-  const [nutritionSummary, setNutritionSummary] = useState(null);
-  const [foods, setFoods] = useState([]);
-  const [dietPlans, setDietPlans] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  // Water tracking
-  const [waterGlasses, setWaterGlasses] = useState(0);
+  // Medicine search
+  const [medicineSearch, setMedicineSearch] = useState("");
+  const [selectedMedicine, setSelectedMedicine] = useState(null);
+  const [showMedicineDialog, setShowMedicineDialog] = useState(false);
   
-  // Meal logging
-  const [showMealDialog, setShowMealDialog] = useState(false);
-  const [mealType, setMealType] = useState("breakfast");
-  const [selectedFoods, setSelectedFoods] = useState([]);
-  const [foodSearch, setFoodSearch] = useState("");
+  // Symptom checker
+  const [selectedSymptom, setSelectedSymptom] = useState(null);
+  const [showSymptomDialog, setShowSymptomDialog] = useState(false);
   
   // Health metrics
   const [showMetricsDialog, setShowMetricsDialog] = useState(false);
@@ -141,35 +351,13 @@ export default function KaizerDoctor() {
 
   const fetchData = async () => {
     try {
-      const [dashRes, metricsRes, nutritionRes, foodsRes, plansRes, waterRes] = await Promise.all([
+      const [dashRes, metricsRes] = await Promise.all([
         axios.get(`${API}/doctor/dashboard`).catch(() => ({ data: null })),
-        axios.get(`${API}/doctor/health-metrics`).catch(() => ({ data: null })),
-        axios.get(`${API}/doctor/nutrition-summary`).catch(() => ({ data: null })),
-        axios.get(`${API}/doctor/food-database`).catch(() => ({ data: [] })),
-        axios.get(`${API}/doctor/diet-plans`).catch(() => ({ data: [] })),
-        axios.get(`${API}/doctor/water`).catch(() => ({ data: { glasses: 0 } }))
+        axios.get(`${API}/doctor/health-metrics`).catch(() => ({ data: null }))
       ]);
       
       setDashboard(dashRes.data);
       setHealthMetrics(metricsRes.data);
-      setNutritionSummary(nutritionRes.data);
-      setFoods(foodsRes.data);
-      // Convert diet plans object to array if needed
-      const plansData = plansRes.data;
-      if (plansData && typeof plansData === 'object' && !Array.isArray(plansData)) {
-        const plansArray = Object.entries(plansData).map(([id, plan]) => ({
-          id,
-          name: plan.name,
-          name_te: plan.name_te,
-          calories_target: plan.daily_calories,
-          description: `${plan.meals?.breakfast?.length || 0} breakfast, ${plan.meals?.lunch?.length || 0} lunch items`,
-          description_te: `${plan.meals?.breakfast?.length || 0} అల్పాహారం, ${plan.meals?.lunch?.length || 0} భోజనం`
-        }));
-        setDietPlans(plansArray);
-      } else {
-        setDietPlans(plansData || []);
-      }
-      setWaterGlasses(waterRes.data?.glasses || 0);
     } catch (error) {
       console.error("Error fetching doctor data:", error);
     } finally {
@@ -177,27 +365,14 @@ export default function KaizerDoctor() {
     }
   };
 
-  const logWater = async () => {
-    try {
-      const res = await axios.post(`${API}/doctor/water`, { glasses: 1 });
-      setWaterGlasses(res.data.glasses);
-      toast.success(language === "te" ? "నీరు నమోదు చేయబడింది!" : "Water logged!");
-    } catch (error) {
-      toast.error("Failed to log water");
-    }
-  };
-
-  const logMeal = async () => {
-    if (selectedFoods.length === 0) {
-      toast.error(language === "te" ? "ఆహారం ఎంచుకోండి" : "Select food items");
-      return;
-    }
-
-    try {
-      const totalCalories = selectedFoods.reduce((sum, f) => sum + f.calories, 0);
-      await axios.post(`${API}/doctor/meal`, {
-        meal_type: mealType,
-        food_items: selectedFoods,
+  // Filter medicines based on search
+  const filteredMedicines = medicineSearch.length >= 2
+    ? MEDICINE_DATABASE.filter(med => 
+        med.name.toLowerCase().includes(medicineSearch.toLowerCase()) ||
+        med.brand_names.some(b => b.toLowerCase().includes(medicineSearch.toLowerCase())) ||
+        med.category.toLowerCase().includes(medicineSearch.toLowerCase())
+      )
+    : [];
         total_calories: totalCalories
       });
       
