@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useLanguage } from "../context/LanguageContext";
 import { useAuth } from "../context/AuthContext";
+import { useTheme } from "../context/ThemeContext";
 import { usePushNotifications } from "../hooks/usePushNotifications";
 import axios from "axios";
 import { Card, CardContent, CardHeader, CardTitle } from "../components/ui/card";
@@ -32,7 +33,10 @@ import {
   Trophy,
   MapPinned,
   Loader2,
-  Send
+  Send,
+  Moon,
+  Sun,
+  Palette
 } from "lucide-react";
 
 const API = `${process.env.REACT_APP_BACKEND_URL}/api`;
