@@ -225,20 +225,36 @@ async def get_products(
     products = await db.gift_products.find(query, {"_id": 0}).sort("points_required", 1).skip(skip).limit(limit).to_list(limit)
     total = await db.gift_products.count_documents(query)
     
-    # Get user's wallet balance
-    wallet = await db.wallets.find_one({"user_id": user["id"]}, {"_id": 0, "balance": 1})
+    # Get user's wallet balance (both normal and privilege)
+    wallet = await db.wallets.find_one({"user_id": user["id"]}, {"_id": 0})
     user_balance = wallet.get("balance", 0) if wallet else 0
+    user_privilege_balance = wallet.get("privilege_balance", 0) if wallet else 0
     
-    # Mark which products user can afford
+    # Mark which products user can afford based on point_type
     for p in products:
-        p["can_afford"] = user_balance >= p["points_required"]
+        point_type = p.get("point_type", "normal")
+        normal_required = p.get("points_required", 0)
+        privilege_required = p.get("privilege_points_required", 0)
+        
+        if point_type == "normal":
+            p["can_afford"] = user_balance >= normal_required
+        elif point_type == "privilege":
+            p["can_afford"] = user_privilege_balance >= privilege_required
+        else:  # both
+            p["can_afford"] = (user_balance >= normal_required and user_privilege_balance >= privilege_required)
+        
+        # Ensure new fields have defaults for old products
+        p.setdefault("privilege_points_required", 0)
+        p.setdefault("point_type", "normal")
+        p.setdefault("delivery_fee", 0)
     
     return {
         "products": products,
         "total": total,
         "page": page,
         "pages": (total + limit - 1) // limit,
-        "user_balance": user_balance
+        "user_balance": user_balance,
+        "user_privilege_balance": user_privilege_balance
     }
 
 @router.get("/products/{product_id}")
