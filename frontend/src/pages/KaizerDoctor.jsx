@@ -531,34 +531,12 @@ export default function KaizerDoctor() {
               </div>
             </div>
             
-            {/* Water Progress Bar */}
-            <div className="mb-4">
-              <div className="flex justify-between text-sm mb-1">
-                <span className="text-white/80 flex items-center gap-1">
-                  <Droplets className="h-4 w-4" />
-                  {language === "te" ? "నీరు" : "Water"}
-                </span>
-                <span className="font-bold">{waterGlasses}/{waterGoal} {language === "te" ? "గ్లాసులు" : "glasses"}</span>
-              </div>
-              <div className="h-3 bg-white/20 rounded-full overflow-hidden">
-                <div 
-                  className="h-full bg-gradient-to-r from-cyan-300 to-blue-400 rounded-full transition-all duration-500"
-                  style={{ width: `${waterProgress}%` }}
-                />
-              </div>
-            </div>
-            
             {/* Quick Stats Grid */}
-            <div className="grid grid-cols-4 gap-2">
+            <div className="grid grid-cols-3 gap-2">
               <div className="bg-white/15 backdrop-blur-sm rounded-xl p-3 text-center">
-                <Utensils className="h-5 w-5 mx-auto mb-1 text-orange-300" />
-                <p className="font-bold text-lg">{caloriesConsumed}</p>
-                <p className="text-[10px] text-white/70">{language === "te" ? "కేలరీలు" : "Kcal"}</p>
-              </div>
-              <div className="bg-white/15 backdrop-blur-sm rounded-xl p-3 text-center">
-                <Moon className="h-5 w-5 mx-auto mb-1 text-purple-300" />
-                <p className="font-bold text-lg">{today.sleep?.duration_hours || "—"}</p>
-                <p className="text-[10px] text-white/70">{language === "te" ? "నిద్ర గం" : "Sleep h"}</p>
+                <Pill className="h-5 w-5 mx-auto mb-1 text-teal-300" />
+                <p className="font-bold text-lg">10+</p>
+                <p className="text-[10px] text-white/70">{language === "te" ? "మందులు" : "Medicines"}</p>
               </div>
               <div className="bg-white/15 backdrop-blur-sm rounded-xl p-3 text-center">
                 <Brain className="h-5 w-5 mx-auto mb-1 text-pink-300" />
@@ -566,7 +544,7 @@ export default function KaizerDoctor() {
                 <p className="text-[10px] text-white/70">{language === "te" ? "మూడ్" : "Mood"}</p>
               </div>
               <div className="bg-white/15 backdrop-blur-sm rounded-xl p-3 text-center">
-                <Scale className="h-5 w-5 mx-auto mb-1 text-green-300" />
+                <Activity className="h-5 w-5 mx-auto mb-1 text-green-300" />
                 <p className="font-bold text-lg">{healthMetrics?.current?.weight_kg || "—"}</p>
                 <p className="text-[10px] text-white/70">{language === "te" ? "కిలో" : "kg"}</p>
               </div>
