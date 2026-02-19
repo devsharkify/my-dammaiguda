@@ -70,14 +70,14 @@ export default function LandingPage() {
 
   return (
     <div className="min-h-screen bg-background font-body">
-      {/* Header */}
-      <header className="sticky top-0 z-50 bg-white/80 dark:bg-gray-900/90 backdrop-blur-md border-b border-border/50 dark:border-gray-800">
+      {/* Header - Solid Black */}
+      <header className="sticky top-0 z-50 bg-gray-900 border-b border-gray-800">
         <div className="max-w-7xl mx-auto px-4 py-3 flex items-center justify-between">
           <div className="flex items-center gap-3">
             <div className="h-10 w-10 rounded-full bg-primary flex items-center justify-center">
               <Shield className="h-6 w-6 text-white" />
             </div>
-            <span className="font-heading font-bold text-xl text-primary">
+            <span className="font-heading font-bold text-xl text-white">
               {t("appName")}
             </span>
           </div>
@@ -87,7 +87,7 @@ export default function LandingPage() {
               variant="ghost"
               size="sm"
               onClick={toggleLanguage}
-              className="flex items-center gap-1.5 text-muted-foreground dark:text-gray-400"
+              className="flex items-center gap-1.5 text-gray-300 hover:text-white"
               data-testid="language-toggle"
             >
               <Globe className="h-4 w-4" />
