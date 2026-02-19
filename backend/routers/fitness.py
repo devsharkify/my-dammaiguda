@@ -458,7 +458,10 @@ async def log_activity(activity: ActivityLog, user: dict = Depends(get_current_u
     
     await update_daily_fitness_summary(user["id"], today)
     
-    return new_activity
+    # Award fitness points
+    points_awarded = await award_fitness_points(user["id"], new_activity)
+    
+    return {**new_activity, "points_awarded": points_awarded}
 
 @router.get("/activities")
 async def get_activities(days: int = 7, activity_type: Optional[str] = None, user: dict = Depends(get_current_user)):
