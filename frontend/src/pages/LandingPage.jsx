@@ -20,51 +20,51 @@ export default function LandingPage() {
   const features = [
     {
       icon: <AlertTriangle className="h-8 w-8" />,
-      title: language === "te" ? "సమస్యలు నివేదించండి" : "Report Issues",
+      title: language === "te" ? "సమస్యలు తెలియజేయండి" : "Report Issues",
       description: language === "te" 
-        ? "చెత్త, డ్రైనేజీ, రోడ్లు వంటి సమస్యలను ఫోటోతో నివేదించండి"
-        : "Report garbage, drainage, roads issues with photos",
-      color: "bg-orange-50 text-secondary"
+        ? "చెత్త, రోడ్లు, డ్రైనేజీ సమస్యలను ఫోటోతో పంపండి"
+        : "Report garbage, roads, drainage issues with photos",
+      color: "bg-orange-50 text-orange-600 dark:bg-orange-900/30 dark:text-orange-400"
     },
     {
       icon: <MapPin className="h-8 w-8" />,
-      title: language === "te" ? "డంప్ యార్డ్ సమాచారం" : "Dump Yard Info",
+      title: language === "te" ? "డంప్ యార్డ్ వివరాలు" : "Dump Yard Info",
       description: language === "te"
-        ? "కాలుష్య జోన్లు మరియు ఆరోగ్య ప్రమాదాల గురించి తెలుసుకోండి"
-        : "Know about pollution zones and health risks",
-      color: "bg-red-50 text-red-600"
+        ? "కాలుష్యం, ఆరోగ్య ప్రమాదాల సమాచారం తెలుసుకోండి"
+        : "Learn about pollution zones and health risks",
+      color: "bg-red-50 text-red-600 dark:bg-red-900/30 dark:text-red-400"
     },
     {
       icon: <Activity className="h-8 w-8" />,
-      title: language === "te" ? "కైజర్ ఫిట్" : "Kaizer Fit",
+      title: language === "te" ? "ఆరోగ్యం & ఫిట్‌నెస్" : "Kaizer Fit",
       description: language === "te"
-        ? "మీ ఫిట్‌నెస్‌ను ట్రాక్ చేయండి, ఛాలెంజ్‌లలో పాల్గొనండి"
-        : "Track your fitness, join community challenges",
-      color: "bg-teal-50 text-primary"
+        ? "నడక, పరుగు ట్రాక్ చేయండి, బ్యాడ్జిలు గెలవండి"
+        : "Track walks, runs and win badges",
+      color: "bg-teal-50 text-teal-600 dark:bg-teal-900/30 dark:text-teal-400"
     },
     {
       icon: <Heart className="h-8 w-8" />,
-      title: language === "te" ? "పౌర ప్రయోజనాలు" : "Citizen Benefits",
+      title: language === "te" ? "ప్రభుత్వ సహాయాలు" : "Citizen Benefits",
       description: language === "te"
-        ? "ఉచిత ఆరోగ్య పరీక్షలు, విద్యా వౌచర్లు మరియు బీమా"
+        ? "ఉచిత వైద్య పరీక్షలు, విద్య వౌచర్లు, బీమా"
         : "Free health checkups, education vouchers & insurance",
-      color: "bg-emerald-50 text-emerald-600"
+      color: "bg-emerald-50 text-emerald-600 dark:bg-emerald-900/30 dark:text-emerald-400"
     },
     {
       icon: <BarChart3 className="h-8 w-8" />,
-      title: language === "te" ? "ఖర్చుల పారదర్శకత" : "Expenditure Transparency",
+      title: language === "te" ? "ఖర్చుల వివరాలు" : "Expenditure Details",
       description: language === "te"
-        ? "వార్డు ఖర్చులు మరియు RTI పత్రాలు చూడండి"
+        ? "వార్డు ఖర్చులు, RTI పత్రాలు చూడండి"
         : "View ward expenditure and RTI documents",
-      color: "bg-blue-50 text-blue-600"
+      color: "bg-blue-50 text-blue-600 dark:bg-blue-900/30 dark:text-blue-400"
     },
     {
       icon: <Users className="h-8 w-8" />,
-      title: language === "te" ? "పోల్స్ & సర్వేలు" : "Polls & Surveys",
+      title: language === "te" ? "పోల్స్ & అభిప్రాయాలు" : "Polls & Opinions",
       description: language === "te"
-        ? "మీ అభిప్రాయాన్ని తెలియజేయండి, నిర్ణయాలలో పాల్గొనండి"
-        : "Share your opinion, participate in decisions",
-      color: "bg-purple-50 text-purple-600"
+        ? "మీ అభిప్రాయం చెప్పండి, నిర్ణయాలలో పాల్గొనండి"
+        : "Share opinion, participate in decisions",
+      color: "bg-purple-50 text-purple-600 dark:bg-purple-900/30 dark:text-purple-400"
     }
   ];
 
