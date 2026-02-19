@@ -234,6 +234,57 @@ export default function KaizerFit() {
           {language === "te" ? "లైవ్ యాక్టివిటీ ప్రారంభించండి" : "Start Live Activity"}
         </Button>
 
+        {/* Streak & Badges Section */}
+        <div className="grid grid-cols-2 gap-3">
+          {/* Streak Card */}
+          <Card className="border-0 shadow-lg bg-gradient-to-br from-orange-500 to-red-500 text-white overflow-hidden">
+            <CardContent className="p-4 relative">
+              <div className="absolute -right-4 -top-4 text-6xl opacity-20">🔥</div>
+              <p className="text-orange-100 text-xs font-medium uppercase tracking-wide">
+                {language === "te" ? "స్ట్రీక్" : "Streak"}
+              </p>
+              <p className="text-4xl font-bold mt-1">
+                {streakData?.current_streak || 0}
+              </p>
+              <p className="text-orange-100 text-xs mt-1">
+                {language === "te" ? "రోజులు" : "days"}
+              </p>
+              {streakData?.current_streak > 0 && (
+                <div className="mt-2 text-[10px] text-orange-100">
+                  🏆 {language === "te" ? "అత్యధిక" : "Best"}: {streakData?.longest_streak || 0}
+                </div>
+              )}
+            </CardContent>
+          </Card>
+
+          {/* Badges Card */}
+          <Card 
+            className="border-0 shadow-lg bg-gradient-to-br from-purple-500 to-pink-500 text-white overflow-hidden cursor-pointer active:scale-[0.98] transition-transform"
+            onClick={() => setShowBadgesDialog(true)}
+            data-testid="badges-card"
+          >
+            <CardContent className="p-4 relative">
+              <div className="absolute -right-4 -top-4 text-6xl opacity-20">🏅</div>
+              <p className="text-purple-100 text-xs font-medium uppercase tracking-wide">
+                {language === "te" ? "బ్యాడ్జిలు" : "Badges"}
+              </p>
+              <p className="text-4xl font-bold mt-1">
+                {badges.filter(b => b.earned).length}
+              </p>
+              <p className="text-purple-100 text-xs mt-1">
+                / {badges.length} {language === "te" ? "సంపాదించారు" : "earned"}
+              </p>
+              <div className="mt-2 flex -space-x-2">
+                {badges.filter(b => b.earned).slice(0, 4).map((badge, i) => (
+                  <div key={badge.id} className="h-6 w-6 rounded-full bg-white/20 flex items-center justify-center text-sm">
+                    {badge.icon}
+                  </div>
+                ))}
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+
         {/* Weight Section */}
         <div className="space-y-4">
           <div className="flex items-center justify-between">
