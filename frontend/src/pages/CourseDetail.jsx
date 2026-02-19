@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams, useNavigate, Link } from "react-router-dom";
 import { useLanguage } from "../context/LanguageContext";
 import { useAuth } from "../context/AuthContext";
 import axios from "axios";
@@ -33,7 +33,10 @@ import {
   MessageSquare,
   ThumbsUp,
   Edit,
-  Trash2
+  Trash2,
+  CreditCard,
+  QrCode,
+  GraduationCap
 } from "lucide-react";
 
 const API = `${process.env.REACT_APP_BACKEND_URL}/api`;
