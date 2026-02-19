@@ -274,14 +274,14 @@ export default function KaizerFit() {
                 {language === "te" ? "బ్యాడ్జిలు" : "Badges"}
               </p>
               <p className="text-4xl font-bold mt-1">
-                {badges.filter(b => b.earned).length}
+                {badgesCount.earned}
               </p>
               <p className="text-purple-100 text-xs mt-1">
-                / {badges.length} {language === "te" ? "సంపాదించారు" : "earned"}
+                / {badgesCount.total} {language === "te" ? "సంపాదించారు" : "earned"}
               </p>
               <div className="mt-2 flex -space-x-2">
                 {badges.filter(b => b.earned).slice(0, 4).map((badge, i) => (
-                  <div key={badge.id} className="h-6 w-6 rounded-full bg-white/20 flex items-center justify-center text-sm">
+                  <div key={badge.id || i} className="h-6 w-6 rounded-full bg-white/20 flex items-center justify-center text-sm">
                     {badge.icon}
                   </div>
                 ))}
