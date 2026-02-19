@@ -8,7 +8,7 @@ import { Input } from "../components/ui/input";
 import { Label } from "../components/ui/label";
 import { Badge } from "../components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "../components/ui/tabs";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "../components/ui/dialog";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogFooter } from "../components/ui/dialog";
 import { toast } from "sonner";
 import Layout from "../components/Layout";
 import {
@@ -21,14 +21,24 @@ import {
   XCircle,
   ArrowRight,
   FileText,
-  Info
+  Info,
+  Ticket,
+  Copy,
+  Share2,
+  Tag,
+  Loader2,
+  Percent,
+  Gift,
+  ShoppingBag,
+  Utensils,
+  Sparkles
 } from "lucide-react";
 
 const API = `${process.env.REACT_APP_BACKEND_URL}/api`;
 
 export default function CitizenBenefits() {
   const { language } = useLanguage();
-  const { user } = useAuth();
+  const { user, token } = useAuth();
   const [myApplications, setMyApplications] = useState([]);
   const [loading, setLoading] = useState(true);
   const [selectedBenefit, setSelectedBenefit] = useState(null);
@@ -39,9 +49,17 @@ export default function CitizenBenefits() {
     age: "",
     address: ""
   });
+  
+  // Vouchers state
+  const [vouchers, setVouchers] = useState([]);
+  const [vouchersLoading, setVouchersLoading] = useState(false);
+  const [selectedVoucher, setSelectedVoucher] = useState(null);
+  const [showVoucherDialog, setShowVoucherDialog] = useState(false);
+  const [claimingVoucher, setClaimingVoucher] = useState(false);
 
   useEffect(() => {
     fetchMyApplications();
+    fetchVouchers();
     if (user) {
       setFormData({
         applicant_name: user.name || "",
@@ -60,6 +78,94 @@ export default function CitizenBenefits() {
       console.error("Error fetching applications:", error);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const fetchVouchers = async () => {
+    setVouchersLoading(true);
+    try {
+      const response = await axios.get(`${API}/vouchers`);
+      setVouchers(response.data?.vouchers || []);
+    } catch (error) {
+      console.error("Error fetching vouchers:", error);
+    } finally {
+      setVouchersLoading(false);
+    }
+  };
+
+  const openVoucherDetails = async (voucher) => {
+    try {
+      const response = await axios.get(`${API}/vouchers/${voucher.id}`);
+      setSelectedVoucher(response.data);
+      setShowVoucherDialog(true);
+    } catch (error) {
+      toast.error("Failed to load voucher details");
+    }
+  };
+
+  const claimVoucher = async () => {
+    if (!token) {
+      toast.error(language === "te" ? "దయచేసి లాగిన్ అవ్వండి" : "Please login first");
+      return;
+    }
+    
+    setClaimingVoucher(true);
+    try {
+      const response = await axios.post(
+        `${API}/vouchers/${selectedVoucher.id}/claim`,
+        {},
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+      toast.success(language === "te" ? "వౌచర్ క్లెయిమ్ చేయబడింది!" : "Voucher claimed!");
+      setSelectedVoucher(response.data.voucher);
+    } catch (error) {
+      toast.error(error.response?.data?.detail || "Failed to claim voucher");
+    } finally {
+      setClaimingVoucher(false);
+    }
+  };
+
+  const copyVoucherCode = () => {
+    if (selectedVoucher?.code) {
+      navigator.clipboard.writeText(selectedVoucher.code);
+      toast.success(language === "te" ? "కోడ్ కాపీ అయింది!" : "Code copied!");
+    }
+  };
+
+  const shareVoucher = () => {
+    const text = `${selectedVoucher.title} - Use code: ${selectedVoucher.code} at ${selectedVoucher.partner_name}. Get ${selectedVoucher.discount_type === 'percentage' ? selectedVoucher.discount_value + '%' : '₹' + selectedVoucher.discount_value} off!`;
+    
+    if (navigator.share) {
+      navigator.share({
+        title: selectedVoucher.title,
+        text: text,
+        url: window.location.href
+      });
+    } else {
+      navigator.clipboard.writeText(text);
+      toast.success(language === "te" ? "షేర్ టెక్స్ట్ కాపీ అయింది!" : "Share text copied!");
+    }
+  };
+
+  const getVoucherCategoryIcon = (category) => {
+    switch (category) {
+      case "food": return <Utensils className="h-5 w-5" />;
+      case "shopping": return <ShoppingBag className="h-5 w-5" />;
+      case "health": return <Heart className="h-5 w-5" />;
+      case "education": return <GraduationCap className="h-5 w-5" />;
+      case "entertainment": return <Sparkles className="h-5 w-5" />;
+      default: return <Tag className="h-5 w-5" />;
+    }
+  };
+
+  const getVoucherCategoryColor = (category) => {
+    switch (category) {
+      case "food": return "bg-orange-100 text-orange-600";
+      case "shopping": return "bg-pink-100 text-pink-600";
+      case "health": return "bg-red-100 text-red-600";
+      case "education": return "bg-blue-100 text-blue-600";
+      case "entertainment": return "bg-purple-100 text-purple-600";
+      default: return "bg-gray-100 text-gray-600";
     }
   };
 
