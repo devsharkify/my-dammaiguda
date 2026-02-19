@@ -1,4 +1,4 @@
-"""Gift Shop Router - E-commerce style gift redemption with points"""
+"""Gift Shop Router - E-commerce style gift redemption with points (Normal + Privilege)"""
 from fastapi import APIRouter, HTTPException, Depends, Query
 from pydantic import BaseModel
 from typing import Optional, List
@@ -15,7 +15,10 @@ class GiftProduct(BaseModel):
     category: str
     image_url: str
     mrp: float  # Original price
-    points_required: int
+    points_required: int  # Normal points required
+    privilege_points_required: int = 0  # Privilege points required (0 = not needed)
+    point_type: str = "normal"  # "normal", "privilege", or "both"
+    delivery_fee: float = 0  # Delivery fee in INR
     stock_quantity: int
     is_active: bool = True
 
@@ -26,6 +29,9 @@ class GiftProductUpdate(BaseModel):
     image_url: Optional[str] = None
     mrp: Optional[float] = None
     points_required: Optional[int] = None
+    privilege_points_required: Optional[int] = None
+    point_type: Optional[str] = None
+    delivery_fee: Optional[float] = None
     stock_quantity: Optional[int] = None
     is_active: Optional[bool] = None
 
