@@ -197,7 +197,13 @@ Build a production-ready, mobile-first civic engagement platform "My Dammaiguda"
 - **Education Module Updates**:
   - Disabled K-12 and College categories
   - Added "Professional Job" category
-  - Single course: Digital Marketing Mastery - ₹54,999
+  - **6 Premium Courses Added**:
+    1. Digital Marketing Mastery - ₹54,999 (Professional)
+    2. Full Stack Web Development - ₹39,999 (Tech)
+    3. Tally Prime & GST Accounting - ₹7,999 (Professional)
+    4. Spoken English Mastery - ₹4,999 (Language)
+    5. Graphic Design & Canva Pro - ₹2,999 (Skill)
+    6. Data Entry & MS Office - ₹1,999 (Skill)
   - Payment dialog with PhonePe QR code
   - "Apply for Scholarship" link to Benefits page
   - Admin can add additional courses via Admin Panel → Education tab
