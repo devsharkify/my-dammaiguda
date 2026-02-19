@@ -528,6 +528,10 @@ export default function AdminDashboard() {
                 {language === "te" ? "ఉత్పత్తులు" : "Products"}
               </h3>
               <div className="flex gap-2">
+                <Button size="sm" variant="outline" onClick={() => setShowBulkPrivilegeDialog(true)}>
+                  <Star className="h-4 w-4 mr-1" />
+                  Bulk Privilege
+                </Button>
                 <Button size="sm" variant="outline" onClick={() => setShowPointsDialog(true)}>
                   <Coins className="h-4 w-4 mr-1" />
                   Adjust Points
@@ -551,15 +555,25 @@ export default function AdminDashboard() {
                       />
                       <div className="flex-1 min-w-0">
                         <h4 className="font-medium text-sm truncate">{product.name}</h4>
-                        <div className="flex items-center gap-2 mt-1">
-                          <Badge variant="outline" className="text-xs">
-                            <Coins className="h-3 w-3 mr-1" />
+                        <div className="flex flex-wrap items-center gap-1 mt-1">
+                          <Badge variant="outline" className="text-[10px]">
+                            <Coins className="h-2.5 w-2.5 mr-0.5" />
                             {product.points_required}
                           </Badge>
-                          <span className="text-xs text-muted-foreground">
-                            Stock: {product.stock_quantity}
-                          </span>
+                          {(product.point_type === "privilege" || product.point_type === "both") && (
+                            <Badge className="bg-purple-100 text-purple-700 text-[10px]">
+                              P:{product.privilege_points_required || 0}
+                            </Badge>
+                          )}
+                          {product.delivery_fee > 0 && (
+                            <Badge variant="outline" className="text-[10px]">
+                              ₹{product.delivery_fee}
+                            </Badge>
+                          )}
                         </div>
+                        <span className="text-[10px] text-muted-foreground">
+                          Stock: {product.stock_quantity} | {product.point_type}
+                        </span>
                       </div>
                     </div>
                     <div className="flex gap-1 mt-2">
