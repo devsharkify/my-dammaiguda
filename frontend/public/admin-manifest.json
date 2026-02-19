@@ -1,0 +1,43 @@
+{
+  "short_name": "Admin Console",
+  "name": "My Dammaiguda - Admin Console",
+  "description": "Admin console for managing My Dammaiguda civic platform",
+  "icons": [
+    {
+      "src": "logo192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "logo512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "start_url": "/admin",
+  "scope": "/admin",
+  "display": "standalone",
+  "theme_color": "#1f2937",
+  "background_color": "#111827",
+  "orientation": "portrait",
+  "categories": ["business", "productivity"],
+  "shortcuts": [
+    {
+      "name": "Issues",
+      "url": "/admin?tab=issues",
+      "description": "View and manage reported issues"
+    },
+    {
+      "name": "Users",
+      "url": "/admin?tab=users",
+      "description": "Manage users"
+    },
+    {
+      "name": "Scholarships",
+      "url": "/admin?tab=scholarships",
+      "description": "Review scholarship applications"
+    }
+  ]
+}
