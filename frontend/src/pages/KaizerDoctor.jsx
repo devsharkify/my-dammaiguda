@@ -48,7 +48,10 @@ import {
   XCircle,
   Syringe,
   FileText,
-  BookOpen
+  BookOpen,
+  Moon,
+  Droplets,
+  Scale
 } from "lucide-react";
 
 const API = `${process.env.REACT_APP_BACKEND_URL}/api`;
