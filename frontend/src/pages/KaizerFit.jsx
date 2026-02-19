@@ -32,8 +32,14 @@ import {
   ChevronRight,
   Sparkles,
   History,
-  Goal
+  Goal,
+  PenSquare,
+  User,
+  Ruler,
+  PersonStanding
 } from "lucide-react";
+import { Label } from "../components/ui/label";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../components/ui/select";
 
 const API = `${process.env.REACT_APP_BACKEND_URL}/api`;
 
