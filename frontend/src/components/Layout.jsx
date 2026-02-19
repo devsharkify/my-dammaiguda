@@ -123,21 +123,6 @@ export default function Layout({ children, title, showBackButton = false }) {
                 {language === "te" ? "EN" : "తె"}
               </span>
             </Button>
-            
-            {/* Profile Avatar in Header */}
-            <Link 
-              to="/profile" 
-              className="h-8 w-8 rounded-full bg-white/20 flex items-center justify-center hover:bg-white/30 transition-colors"
-              data-testid="header-profile"
-            >
-              {user?.name ? (
-                <span className="text-sm font-bold text-white">
-                  {user.name.charAt(0).toUpperCase()}
-                </span>
-              ) : (
-                <User className="h-4 w-4 text-white" />
-              )}
-            </Link>
           </div>
         </div>
       </header>
@@ -157,48 +142,51 @@ export default function Layout({ children, title, showBackButton = false }) {
             animate={{ x: 0 }}
             exit={{ x: "-100%" }}
             transition={{ type: "spring", damping: 25, stiffness: 200 }}
-            className="absolute left-0 top-0 bottom-0 w-72 bg-background shadow-2xl"
+            className="absolute left-0 top-0 bottom-0 w-72 bg-background shadow-2xl flex flex-col"
           >
-            {/* Menu Header */}
-            <div className="p-4 bg-gradient-to-r from-primary to-purple-600 text-white">
-              <div className="flex items-center justify-between mb-4">
-                <div className="flex items-center gap-2">
-                  <div className="h-10 w-10 rounded-full bg-white/20 flex items-center justify-center">
-                    <Shield className="h-5 w-5 text-white" />
-                  </div>
-                  <span className="font-heading font-bold text-white">
-                    {t("appName")}
-                  </span>
-                </div>
+            {/* User Profile at Top - Black Header Matching */}
+            <div className="bg-gray-900 text-white p-4">
+              <div className="flex items-center justify-between">
                 <button
                   onClick={() => setMenuOpen(false)}
-                  className="p-2 text-white/80 hover:text-white"
+                  className="p-2 -ml-2 text-white/80 hover:text-white"
                   data-testid="close-menu-button"
                 >
                   <X className="h-5 w-5" />
                 </button>
-              </div>
-
-              {/* User Info in Menu */}
-              {user && (
-                <div className="bg-white/10 rounded-xl p-3">
-                  <div className="flex items-center gap-3">
-                    <div className="h-12 w-12 rounded-full bg-white/20 flex items-center justify-center">
-                      <span className="text-xl font-bold">
-                        {user.name?.charAt(0).toUpperCase() || "U"}
-                      </span>
-                    </div>
-                    <div>
-                      <p className="font-semibold">{user.name || "User"}</p>
-                      <p className="text-sm text-white/70">{user.phone}</p>
-                    </div>
+                <div className="flex items-center gap-2">
+                  <div className="h-8 w-8 rounded-full bg-white/20 flex items-center justify-center">
+                    <Shield className="h-4 w-4 text-white" />
                   </div>
+                  <span className="font-heading font-bold text-white text-sm">
+                    {t("appName")}
+                  </span>
                 </div>
+              </div>
+              
+              {/* User Info Compact */}
+              {user && (
+                <Link 
+                  to="/profile" 
+                  onClick={() => setMenuOpen(false)}
+                  className="flex items-center gap-3 mt-4 p-3 bg-white/10 rounded-xl hover:bg-white/20 transition-colors"
+                >
+                  <div className="h-12 w-12 rounded-full bg-gradient-to-br from-primary to-purple-600 flex items-center justify-center">
+                    <span className="text-xl font-bold text-white">
+                      {user.name?.charAt(0).toUpperCase() || "U"}
+                    </span>
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <p className="font-semibold truncate">{user.name || "User"}</p>
+                    <p className="text-sm text-white/70">{user.phone}</p>
+                  </div>
+                  <ArrowLeft className="h-4 w-4 rotate-180 text-white/50" />
+                </Link>
               )}
             </div>
 
-            {/* Menu Items */}
-            <nav className="p-2 max-h-[calc(100vh-280px)] overflow-y-auto">
+            {/* Menu Items - Scrollable */}
+            <nav className="flex-1 p-2 overflow-y-auto">
               {menuItems.map((item) => (
                 <Link
                   key={item.path}
@@ -219,13 +207,13 @@ export default function Layout({ children, title, showBackButton = false }) {
             </nav>
 
             {/* Logout Button */}
-            <div className="absolute bottom-0 left-0 right-0 p-4 border-t border-border bg-background">
+            <div className="p-4 border-t border-border bg-background">
               <button
                 onClick={() => {
                   logout();
                   setMenuOpen(false);
                 }}
-                className="w-full flex items-center justify-center gap-2 px-4 py-3 text-red-600 hover:bg-red-50:bg-red-950 rounded-xl transition-colors"
+                className="w-full flex items-center justify-center gap-2 px-4 py-3 text-red-600 hover:bg-red-50 rounded-xl transition-colors"
                 data-testid="logout-button"
               >
                 <LogOut className="h-5 w-5" />
