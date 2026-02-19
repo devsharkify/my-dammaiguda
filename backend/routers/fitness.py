@@ -1353,10 +1353,17 @@ async def record_manual_activity(record: ManualActivityRecord, user: dict = Depe
     # Update daily summary for that date
     await update_daily_fitness_summary(user["id"], record.date)
     
+    # Award fitness points (only for today's date)
+    today = datetime.now(timezone.utc).strftime("%Y-%m-%d")
+    points_awarded = 0
+    if record.date == today:
+        points_awarded = await award_fitness_points(user["id"], activity)
+    
     return {
         "success": True,
         "activity": activity,
-        "message": f"Activity recorded for {record.date}"
+        "points_awarded": points_awarded,
+        "message": f"Activity recorded for {record.date}" + (f" (+{points_awarded} points!)" if points_awarded else "")
     }
 
 @router.get("/records")
