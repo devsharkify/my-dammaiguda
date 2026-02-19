@@ -240,6 +240,47 @@ async def get_activity_types():
     """Get all supported activity types"""
     return ACTIVITY_TYPES
 
+@router.get("/points-config")
+async def get_fitness_points_config():
+    """Get fitness points configuration"""
+    return FITNESS_POINTS_CONFIG
+
+@router.get("/my-points")
+async def get_my_fitness_points(user: dict = Depends(get_current_user)):
+    """Get user's fitness points summary"""
+    today = datetime.now(timezone.utc).strftime("%Y-%m-%d")
+    
+    # Today's points
+    today_log = await db.fitness_points_log.aggregate([
+        {"$match": {"user_id": user["id"], "date": today}},
+        {"$group": {"_id": None, "total": {"$sum": "$points"}}}
+    ]).to_list(1)
+    today_points = today_log[0]["total"] if today_log else 0
+    
+    # This week's points
+    week_start = (datetime.now(timezone.utc) - timedelta(days=7)).strftime("%Y-%m-%d")
+    week_log = await db.fitness_points_log.aggregate([
+        {"$match": {"user_id": user["id"], "date": {"$gte": week_start}}},
+        {"$group": {"_id": None, "total": {"$sum": "$points"}}}
+    ]).to_list(1)
+    week_points = week_log[0]["total"] if week_log else 0
+    
+    # All time points from fitness
+    all_time_log = await db.fitness_points_log.aggregate([
+        {"$match": {"user_id": user["id"]}},
+        {"$group": {"_id": None, "total": {"$sum": "$points"}}}
+    ]).to_list(1)
+    all_time_points = all_time_log[0]["total"] if all_time_log else 0
+    
+    return {
+        "today": today_points,
+        "today_remaining": FITNESS_POINTS_CONFIG["max_daily_points"] - today_points,
+        "this_week": week_points,
+        "all_time": all_time_points,
+        "config": FITNESS_POINTS_CONFIG
+    }
+
+
 # ============== LIVE ACTIVITY TRACKING ==============
 
 @router.post("/live/start")
