@@ -499,6 +499,90 @@ export default function AdminDashboard() {
     }
   };
 
+  // ============== CMS FUNCTIONS ==============
+  
+  const saveDumpyardConfig = async () => {
+    setSaving(true);
+    try {
+      await axios.put(`${API}/content/dumpyard`, dumpyardConfig, { headers });
+      toast.success("Dump yard config saved");
+      setShowDumpyardDialog(false);
+      fetchData();
+    } catch (error) {
+      toast.error("Failed to save");
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const saveBanner = async () => {
+    setSaving(true);
+    try {
+      if (editingBanner) {
+        await axios.put(`${API}/content/banners/${editingBanner.id}`, { ...bannerForm, id: editingBanner.id }, { headers });
+      } else {
+        await axios.post(`${API}/content/banners`, bannerForm, { headers });
+      }
+      toast.success(editingBanner ? "Banner updated" : "Banner created");
+      setShowBannerDialog(false);
+      fetchData();
+    } catch (error) {
+      toast.error("Failed to save banner");
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const deleteBanner = async (bannerId) => {
+    if (!confirm("Delete this banner?")) return;
+    try {
+      await axios.delete(`${API}/content/banners/${bannerId}`, { headers });
+      toast.success("Banner deleted");
+      fetchData();
+    } catch (error) {
+      toast.error("Failed to delete");
+    }
+  };
+
+  const saveBenefit = async () => {
+    setSaving(true);
+    try {
+      if (editingBenefit) {
+        await axios.put(`${API}/content/benefits/${editingBenefit.id}`, { ...benefitForm, id: editingBenefit.id }, { headers });
+      } else {
+        await axios.post(`${API}/content/benefits`, benefitForm, { headers });
+      }
+      toast.success(editingBenefit ? "Benefit updated" : "Benefit created");
+      setShowBenefitDialog(false);
+      fetchData();
+    } catch (error) {
+      toast.error("Failed to save benefit");
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const deleteBenefit = async (benefitId) => {
+    if (!confirm("Delete this benefit?")) return;
+    try {
+      await axios.delete(`${API}/content/benefits/${benefitId}`, { headers });
+      toast.success("Benefit deleted");
+      fetchData();
+    } catch (error) {
+      toast.error("Failed to delete");
+    }
+  };
+
+  const seedContent = async () => {
+    try {
+      await axios.post(`${API}/content/seed`, {}, { headers });
+      toast.success("Default content seeded");
+      fetchData();
+    } catch (error) {
+      toast.error("Failed to seed content");
+    }
+  };
+
   // ============== HELPER FUNCTIONS ==============
   const getStatusColor = (status) => {
     const colors = {
