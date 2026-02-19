@@ -86,17 +86,18 @@ export default function AdminDashboard() {
 
   const fetchData = async () => {
     try {
+      // Fetch each endpoint separately to handle partial failures
       const [statsRes, heatmapRes, usersRes, coursesRes, productsRes, ordersRes] = await Promise.all([
-        axios.get(`${API}/admin/stats`),
-        axios.get(`${API}/admin/issues-heatmap`),
-        axios.get(`${API}/admin/users`),
+        axios.get(`${API}/admin/stats`).catch(() => ({ data: {} })),
+        axios.get(`${API}/admin/issues-heatmap`).catch(() => ({ data: {} })),
+        axios.get(`${API}/admin/users`).catch(() => ({ data: [] })),
         axios.get(`${API}/education/courses?limit=50`).catch(() => ({ data: { courses: [] } })),
         axios.get(`${API}/shop/admin/products?include_inactive=true`, { headers }).catch(() => ({ data: { products: [] } })),
         axios.get(`${API}/shop/admin/orders`, { headers }).catch(() => ({ data: { orders: [], stats: {} } }))
       ]);
-      setStats(statsRes.data);
-      setHeatmap(heatmapRes.data);
-      setUsers(usersRes.data);
+      setStats(statsRes.data || {});
+      setHeatmap(heatmapRes.data || {});
+      setUsers(Array.isArray(usersRes.data) ? usersRes.data : []);
       setCourses(coursesRes.data?.courses || []);
       setGiftProducts(productsRes.data?.products || []);
       setGiftOrders(ordersRes.data?.orders || []);
