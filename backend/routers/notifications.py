@@ -43,12 +43,11 @@ class BroadcastNotification(BaseModel):
 
 async def send_push_notification(subscription: dict, payload: dict) -> bool:
     """
-    Send push notification to a subscriber.
-    Note: In production, use pywebpush library with VAPID keys.
-    This is a placeholder that stores notification for client polling.
+    Send push notification to a subscriber using real web push.
+    Falls back to storing notification for client polling if push fails.
     """
     try:
-        # Store notification for the user to poll
+        # Store notification for history/polling fallback
         notification = {
             "id": generate_id(),
             "user_id": subscription.get("user_id"),
@@ -59,19 +58,37 @@ async def send_push_notification(subscription: dict, payload: dict) -> bool:
         }
         await db.pending_notifications.insert_one(notification)
         
-        # In production with real push:
-        # from pywebpush import webpush, WebPushException
-        # webpush(
-        #     subscription_info={
-        #         "endpoint": subscription["endpoint"],
-        #         "keys": subscription["keys"]
-        #     },
-        #     data=json.dumps(payload),
-        #     vapid_private_key=VAPID_PRIVATE_KEY,
-        #     vapid_claims={"sub": "mailto:admin@mydammaiguda.com"}
-        # )
-        
-        return True
+        # Send real web push notification
+        if VAPID_PUBLIC_KEY and os.path.exists(VAPID_PRIVATE_KEY_FILE):
+            try:
+                webpush(
+                    subscription_info={
+                        "endpoint": subscription["endpoint"],
+                        "keys": subscription["keys"]
+                    },
+                    data=json.dumps(payload),
+                    vapid_private_key=VAPID_PRIVATE_KEY_FILE,
+                    vapid_claims={"sub": VAPID_CLAIMS_EMAIL}
+                )
+                # Update status to sent
+                await db.pending_notifications.update_one(
+                    {"id": notification["id"]},
+                    {"$set": {"status": "sent", "sent_at": now_iso()}}
+                )
+                logging.info(f"Push notification sent to {subscription.get('user_id')}")
+                return True
+            except WebPushException as e:
+                logging.error(f"WebPush error: {str(e)}")
+                # If subscription is invalid (410 Gone), mark it inactive
+                if e.response and e.response.status_code == 410:
+                    await db.push_subscriptions.update_one(
+                        {"id": subscription.get("id")},
+                        {"$set": {"is_active": False, "deactivated_at": now_iso()}}
+                    )
+                return False
+        else:
+            logging.warning("VAPID keys not configured - notification stored for polling")
+            return True
     except Exception as e:
         logging.error(f"Push notification error: {str(e)}")
         return False
