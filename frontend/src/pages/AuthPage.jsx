@@ -118,6 +118,7 @@ export default function AuthPage() {
       });
       
       toast.success(language === "te" ? "విజయవంతంగా నమోదు అయ్యారు!" : "Registered successfully!");
+      navigate("/");
     } catch (error) {
       toast.error(error.response?.data?.detail || "Registration failed");
     } finally {
