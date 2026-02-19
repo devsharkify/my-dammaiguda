@@ -62,6 +62,77 @@ app.include_router(shop_router, prefix="/api")
 app.include_router(vouchers_router, prefix="/api")
 app.include_router(templates_router, prefix="/api")
 
+from fastapi.responses import HTMLResponse
+
+# Certificate OpenGraph preview endpoint
+@app.get("/certificate/{certificate_id}", response_class=HTMLResponse)
+async def certificate_og_page(certificate_id: str):
+    """Certificate page with OpenGraph meta tags for social sharing"""
+    certificate = await db.certificates.find_one({"id": certificate_id}, {"_id": 0})
+    
+    if not certificate:
+        return HTMLResponse(content="<html><body><h1>Certificate not found</h1></body></html>", status_code=404)
+    
+    user_name = certificate.get("user_name", "Student")
+    course_title = certificate.get("course_title", "Course")
+    cert_number = certificate.get("certificate_number", "")
+    issued_at = certificate.get("issued_at", "")[:10] if certificate.get("issued_at") else ""
+    
+    # Generate a dynamic certificate image URL (or use a placeholder)
+    og_image = "https://images.unsplash.com/photo-1589330694653-ded6df03f754?w=1200&h=630&fit=crop"
+    
+    frontend_url = "https://dammaiguda-civic.preview.emergentagent.com"
+    page_url = f"{frontend_url}/certificate/{certificate_id}"
+    
+    html = f"""
+    <!DOCTYPE html>
+    <html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>{user_name} - {course_title} Certificate | My Dammaiguda</title>
+        
+        <!-- OpenGraph Meta Tags -->
+        <meta property="og:title" content="{user_name} completed {course_title}!" />
+        <meta property="og:description" content="Certificate of Completion from AIT Education Platform. Certificate No: {cert_number}" />
+        <meta property="og:image" content="{og_image}" />
+        <meta property="og:url" content="{page_url}" />
+        <meta property="og:type" content="website" />
+        <meta property="og:site_name" content="My Dammaiguda - AIT Education" />
+        
+        <!-- Twitter Card Meta Tags -->
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:title" content="{user_name} completed {course_title}!" />
+        <meta name="twitter:description" content="Certificate of Completion from AIT Education Platform" />
+        <meta name="twitter:image" content="{og_image}" />
+        
+        <!-- Redirect to frontend app -->
+        <meta http-equiv="refresh" content="0; url={frontend_url}/education/certificate/{certificate_id}">
+        
+        <style>
+            body {{ font-family: -apple-system, BlinkMacSystemFont, sans-serif; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; background: linear-gradient(135deg, #0D9488 0%, #1e293b 100%); color: white; }}
+            .card {{ background: white; color: #333; padding: 40px; border-radius: 16px; max-width: 500px; text-align: center; box-shadow: 0 25px 50px rgba(0,0,0,0.3); }}
+            h1 {{ color: #0D9488; margin-bottom: 10px; }}
+            .cert-number {{ font-family: monospace; background: #f1f5f9; padding: 8px 16px; border-radius: 8px; display: inline-block; margin: 20px 0; }}
+            .link {{ color: #0D9488; text-decoration: none; }}
+        </style>
+    </head>
+    <body>
+        <div class="card">
+            <h1>Certificate of Completion</h1>
+            <h2>{user_name}</h2>
+            <p>has successfully completed</p>
+            <h3>{course_title}</h3>
+            <div class="cert-number">{cert_number}</div>
+            <p>Issued: {issued_at}</p>
+            <p><a href="{frontend_url}/education/certificate/{certificate_id}" class="link">View Full Certificate →</a></p>
+        </div>
+    </body>
+    </html>
+    """
+    
+    return HTMLResponse(content=html)
+
 # Health check endpoint
 @app.get("/api/health")
 async def health_check():
