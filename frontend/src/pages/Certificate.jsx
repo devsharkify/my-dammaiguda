@@ -259,50 +259,59 @@ export default function Certificate() {
             </h3>
             
             {/* Social Share Buttons */}
-            <div className="grid grid-cols-5 gap-2 mb-4">
+            <div className="grid grid-cols-6 gap-2 mb-4">
               <button
                 onClick={shareToWhatsApp}
-                className="flex flex-col items-center gap-1 p-3 rounded-xl bg-green-500 text-white hover:bg-green-600 transition-colors"
+                className="flex flex-col items-center gap-1 p-2 rounded-xl bg-green-500 text-white hover:bg-green-600 transition-colors"
                 data-testid="share-whatsapp"
               >
                 <MessageCircle className="h-5 w-5" />
-                <span className="text-[10px]">WhatsApp</span>
+                <span className="text-[9px]">WhatsApp</span>
+              </button>
+              
+              <button
+                onClick={shareToInstagram}
+                className="flex flex-col items-center gap-1 p-2 rounded-xl bg-gradient-to-br from-purple-500 via-pink-500 to-orange-400 text-white hover:opacity-90 transition-opacity"
+                data-testid="share-instagram"
+              >
+                <Instagram className="h-5 w-5" />
+                <span className="text-[9px]">Instagram</span>
               </button>
               
               <button
                 onClick={shareToTwitter}
-                className="flex flex-col items-center gap-1 p-3 rounded-xl bg-sky-500 text-white hover:bg-sky-600 transition-colors"
+                className="flex flex-col items-center gap-1 p-2 rounded-xl bg-sky-500 text-white hover:bg-sky-600 transition-colors"
                 data-testid="share-twitter"
               >
                 <Twitter className="h-5 w-5" />
-                <span className="text-[10px]">Twitter</span>
+                <span className="text-[9px]">Twitter</span>
               </button>
               
               <button
                 onClick={shareToFacebook}
-                className="flex flex-col items-center gap-1 p-3 rounded-xl bg-blue-600 text-white hover:bg-blue-700 transition-colors"
+                className="flex flex-col items-center gap-1 p-2 rounded-xl bg-blue-600 text-white hover:bg-blue-700 transition-colors"
                 data-testid="share-facebook"
               >
                 <Facebook className="h-5 w-5" />
-                <span className="text-[10px]">Facebook</span>
+                <span className="text-[9px]">Facebook</span>
               </button>
               
               <button
                 onClick={shareToLinkedIn}
-                className="flex flex-col items-center gap-1 p-3 rounded-xl bg-blue-700 text-white hover:bg-blue-800 transition-colors"
+                className="flex flex-col items-center gap-1 p-2 rounded-xl bg-blue-700 text-white hover:bg-blue-800 transition-colors"
                 data-testid="share-linkedin"
               >
                 <Linkedin className="h-5 w-5" />
-                <span className="text-[10px]">LinkedIn</span>
+                <span className="text-[9px]">LinkedIn</span>
               </button>
               
               <button
                 onClick={shareByEmail}
-                className="flex flex-col items-center gap-1 p-3 rounded-xl bg-gray-600 text-white hover:bg-gray-700 transition-colors"
+                className="flex flex-col items-center gap-1 p-2 rounded-xl bg-gray-600 text-white hover:bg-gray-700 transition-colors"
                 data-testid="share-email"
               >
                 <Mail className="h-5 w-5" />
-                <span className="text-[10px]">Email</span>
+                <span className="text-[9px]">Email</span>
               </button>
             </div>
             
