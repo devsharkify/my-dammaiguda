@@ -211,6 +211,29 @@ async def create_course(course_data: CourseCreate, user: dict = Depends(get_curr
     
     return {"success": True, "course": new_course}
 
+@router.put("/courses/{course_id}")
+async def update_course(course_id: str, updates: dict, user: dict = Depends(get_current_user)):
+    """Update a course (admin/instructor only)"""
+    if user.get("role") not in ["admin", "instructor"]:
+        raise HTTPException(status_code=403, detail="Only admins and instructors can update courses")
+    
+    # Remove protected fields
+    updates.pop("id", None)
+    updates.pop("_id", None)
+    updates.pop("created_at", None)
+    updates["updated_at"] = now_iso()
+    
+    result = await db.courses.update_one(
+        {"id": course_id},
+        {"$set": updates}
+    )
+    
+    if result.matched_count == 0:
+        raise HTTPException(status_code=404, detail="Course not found")
+    
+    updated_course = await db.courses.find_one({"id": course_id}, {"_id": 0})
+    return {"success": True, "course": updated_course}
+
 @router.put("/courses/{course_id}/publish")
 async def publish_course(course_id: str, user: dict = Depends(get_current_user)):
     """Publish a course"""
