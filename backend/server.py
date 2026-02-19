@@ -58,6 +58,7 @@ app.include_router(notifications_router, prefix="/api")
 app.include_router(stories_router, prefix="/api")
 app.include_router(education_router, prefix="/api")
 app.include_router(shop_router, prefix="/api")
+app.include_router(vouchers_router, prefix="/api")
 
 # Health check endpoint
 @app.get("/api/health")
