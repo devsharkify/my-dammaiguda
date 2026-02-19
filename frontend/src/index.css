@@ -44,32 +44,6 @@ code {
         --chart-5: 27 87% 67%;
         --radius: 0.5rem;
     }
-    .dark {
-        --background: 222 47% 6%;
-        --foreground: 210 40% 98%;
-        --card: 222 47% 9%;
-        --card-foreground: 210 40% 98%;
-        --popover: 222 47% 9%;
-        --popover-foreground: 210 40% 98%;
-        --primary: 262 83% 65%;
-        --primary-foreground: 0 0% 100%;
-        --secondary: 217 33% 17%;
-        --secondary-foreground: 210 40% 98%;
-        --muted: 217 33% 17%;
-        --muted-foreground: 215 20% 65%;
-        --accent: 262 50% 25%;
-        --accent-foreground: 262 83% 90%;
-        --destructive: 0 62% 50%;
-        --destructive-foreground: 0 0% 100%;
-        --border: 217 33% 22%;
-        --input: 217 33% 22%;
-        --ring: 262 83% 65%;
-        --chart-1: 262 83% 65%;
-        --chart-2: 160 60% 45%;
-        --chart-3: 30 80% 55%;
-        --chart-4: 280 65% 60%;
-        --chart-5: 340 75% 55%;
-    }
 }
 
 @layer base {
