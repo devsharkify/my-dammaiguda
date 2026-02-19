@@ -76,17 +76,30 @@ export default function AITEducation() {
   const fetchData = async () => {
     try {
       const [coursesRes, categoriesRes, myCoursesRes, liveRes, statsRes] = await Promise.all([
-        axios.get(`${API}/education/courses?featured=true&limit=10`),
+        axios.get(`${API}/education/courses?featured=true&limit=20`),
         axios.get(`${API}/education/courses/categories`),
         axios.get(`${API}/education/my-courses`, { headers }).catch(() => ({ data: { courses: [] } })),
         axios.get(`${API}/education/live-classes`).catch(() => ({ data: { live_classes: [] } })),
         axios.get(`${API}/education/my-stats`, { headers }).catch(() => ({ data: null }))
       ]);
 
-      // Filter to only show premium Digital Marketing course (price > 50000)
+      // Filter courses: only show published courses with price >= 1999 (premium courses)
       const allCourses = coursesRes.data.courses || [];
-      const filteredCourses = allCourses.filter(c => c.price >= 50000);
-      setCourses(filteredCourses.length > 0 ? filteredCourses : allCourses.slice(0, 1));
+      const filteredCourses = allCourses.filter(c => 
+        c.is_published !== false && 
+        c.price >= 1999 &&
+        ['professional', 'tech', 'skill', 'language'].includes(c.category)
+      );
+      
+      // Remove duplicates by title
+      const uniqueCourses = filteredCourses.reduce((acc, course) => {
+        if (!acc.find(c => c.title === course.title)) {
+          acc.push(course);
+        }
+        return acc;
+      }, []);
+      
+      setCourses(uniqueCourses);
       
       setCategories(categoriesRes.data.categories || []);
       setMyCourses(myCoursesRes.data.courses || []);
@@ -106,10 +119,23 @@ export default function AITEducation() {
       if (searchQuery) params.append("search", searchQuery);
       
       const response = await axios.get(`${API}/education/courses?${params.toString()}`);
-      // Filter to only show premium Digital Marketing course (price > 50000)
+      // Filter courses: only show published courses with price >= 1999 (premium courses)
       const allCourses = response.data.courses || [];
-      const filteredCourses = allCourses.filter(c => c.price >= 50000);
-      setCourses(filteredCourses.length > 0 ? filteredCourses : allCourses.slice(0, 1));
+      const filteredCourses = allCourses.filter(c => 
+        c.is_published !== false && 
+        c.price >= 1999 &&
+        ['professional', 'tech', 'skill', 'language'].includes(c.category)
+      );
+      
+      // Remove duplicates by title
+      const uniqueCourses = filteredCourses.reduce((acc, course) => {
+        if (!acc.find(c => c.title === course.title)) {
+          acc.push(course);
+        }
+        return acc;
+      }, []);
+      
+      setCourses(uniqueCourses);
     } catch (error) {
       console.error("Error fetching courses:", error);
     }
