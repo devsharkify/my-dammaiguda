@@ -5,8 +5,13 @@ import axios from "axios";
 import { Card, CardContent, CardHeader, CardTitle } from "../components/ui/card";
 import { Button } from "../components/ui/button";
 import { Badge } from "../components/ui/badge";
+import { Input } from "../components/ui/input";
+import { Label } from "../components/ui/label";
+import { Textarea } from "../components/ui/textarea";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "../components/ui/tabs";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../components/ui/select";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "../components/ui/dialog";
+import { Switch } from "../components/ui/switch";
 import { toast } from "sonner";
 import Layout from "../components/Layout";
 import {
@@ -20,7 +25,15 @@ import {
   Heart,
   MapPin,
   ArrowUpRight,
-  Shield
+  Shield,
+  GraduationCap,
+  Plus,
+  Edit,
+  Trash2,
+  Eye,
+  BookOpen,
+  Video,
+  Loader2
 } from "lucide-react";
 
 const API = `${process.env.REACT_APP_BACKEND_URL}/api`;
