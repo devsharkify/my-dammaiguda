@@ -296,6 +296,63 @@ export default function Profile() {
           </CardContent>
         </Card>
 
+        {/* Appearance Settings */}
+        <Card className="border-border/50">
+          <CardHeader>
+            <CardTitle className="text-lg flex items-center gap-2">
+              <Palette className="h-5 w-5" />
+              {language === "te" ? "రూపం" : "Appearance"}
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div className="flex items-center justify-between p-4 bg-gradient-to-r from-primary/10 to-purple-500/10 rounded-xl">
+              <div className="flex items-center gap-3">
+                {isDark ? (
+                  <Moon className="h-6 w-6 text-purple-500" />
+                ) : (
+                  <Sun className="h-6 w-6 text-amber-500" />
+                )}
+                <div>
+                  <p className="font-semibold">
+                    {language === "te" ? "డార్క్ మోడ్" : "Dark Mode"}
+                  </p>
+                  <p className="text-xs text-muted-foreground">
+                    {isDark 
+                      ? (language === "te" ? "డార్క్ థీమ్ యాక్టివ్" : "Dark theme active")
+                      : (language === "te" ? "లైట్ థీమ్ యాక్టివ్" : "Light theme active")
+                    }
+                  </p>
+                </div>
+              </div>
+              <Switch
+                checked={isDark}
+                onCheckedChange={toggleTheme}
+                data-testid="dark-mode-toggle"
+              />
+            </div>
+            <div className="grid grid-cols-2 gap-3">
+              <Button
+                variant={!isDark ? "default" : "outline"}
+                onClick={() => !isDark || toggleTheme()}
+                className={`h-14 ${!isDark ? "bg-amber-500 hover:bg-amber-600 text-white" : ""}`}
+                data-testid="theme-light-btn"
+              >
+                <Sun className={`h-4 w-4 mr-2 ${!isDark ? "text-white" : ""}`} />
+                {language === "te" ? "లైట్" : "Light"}
+              </Button>
+              <Button
+                variant={isDark ? "default" : "outline"}
+                onClick={() => isDark || toggleTheme()}
+                className={`h-14 ${isDark ? "bg-purple-600 hover:bg-purple-700 text-white" : ""}`}
+                data-testid="theme-dark-btn"
+              >
+                <Moon className={`h-4 w-4 mr-2 ${isDark ? "text-white" : ""}`} />
+                {language === "te" ? "డార్క్" : "Dark"}
+              </Button>
+            </div>
+          </CardContent>
+        </Card>
+
         {/* Language Settings */}
         <Card className="border-border/50">
           <CardHeader>
