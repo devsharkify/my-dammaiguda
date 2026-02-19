@@ -796,75 +796,39 @@ export default function Dashboard() {
           </div>
         </div>
 
-        {/* Discount Vouchers Widget */}
-        <div data-testid="vouchers-section">
-          <div className="flex items-center justify-between mb-3">
-            <h3 className="font-semibold text-base flex items-center gap-2">
-              <Ticket className="h-5 w-5 text-green-600" />
-              {language === "te" ? "డిస్కౌంట్ వౌచర్లు" : "Discount Vouchers"}
-            </h3>
-            <Link to="/vouchers" className="text-xs text-primary flex items-center">
-              {language === "te" ? "అన్నీ" : "All"}
-              <ChevronRight className="h-3.5 w-3.5" />
-            </Link>
-          </div>
-          <div className="flex gap-3 overflow-x-auto pb-2 scrollbar-hide -mx-4 px-4">
-            <div className="flex-shrink-0 w-44">
-              <Card className="border-green-200 bg-green-50 overflow-hidden">
-                <CardContent className="p-3">
-                  <div className="flex items-center gap-2 mb-2">
-                    <div className="h-8 w-8 rounded-lg bg-green-500 flex items-center justify-center">
-                      <span className="text-white font-bold text-sm">20%</span>
-                    </div>
-                    <span className="text-xs font-medium text-green-700">
-                      {language === "te" ? "మెడికల్" : "Medical"}
-                    </span>
-                  </div>
-                  <p className="text-sm font-semibold text-green-800">
-                    {language === "te" ? "ఔషధాల తగ్గింపు" : "Medicine Discount"}
-                  </p>
-                  <p className="text-[10px] text-green-600 mt-1">Apollo Pharmacy</p>
-                </CardContent>
-              </Card>
+        {/* Recent Issues Widget */}
+        {recentIssues.length > 0 && (
+          <div data-testid="recent-issues-section">
+            <div className="flex items-center justify-between mb-3">
+              <h3 className="font-semibold text-base flex items-center gap-2">
+                <AlertTriangle className="h-5 w-5 text-orange-500" />
+                {language === "te" ? "ఇటీవలి సమస్యలు" : "Recent Issues"}
+              </h3>
+              <Link to="/issues" className="text-xs text-primary flex items-center">
+                {language === "te" ? "అన్నీ" : "All"}
+                <ChevronRight className="h-3.5 w-3.5" />
+              </Link>
             </div>
-            <div className="flex-shrink-0 w-44">
-              <Card className="border-blue-200 bg-blue-50 overflow-hidden">
-                <CardContent className="p-3">
-                  <div className="flex items-center gap-2 mb-2">
-                    <div className="h-8 w-8 rounded-lg bg-blue-500 flex items-center justify-center">
-                      <span className="text-white font-bold text-sm">15%</span>
+            <div className="space-y-2">
+              {recentIssues.slice(0, 2).map((issue) => (
+                <Card key={issue.id} className="border-border/50">
+                  <CardContent className="p-3 flex items-center gap-3">
+                    <div className="h-10 w-10 rounded-lg bg-orange-100 flex items-center justify-center">
+                      <AlertTriangle className="h-5 w-5 text-orange-600" />
                     </div>
-                    <span className="text-xs font-medium text-blue-700">
-                      {language === "te" ? "గ్రోసరీ" : "Grocery"}
-                    </span>
-                  </div>
-                  <p className="text-sm font-semibold text-blue-800">
-                    {language === "te" ? "కిరాణా తగ్గింపు" : "Grocery Discount"}
-                  </p>
-                  <p className="text-[10px] text-blue-600 mt-1">More Supermarket</p>
-                </CardContent>
-              </Card>
-            </div>
-            <div className="flex-shrink-0 w-44">
-              <Card className="border-purple-200 bg-purple-50 overflow-hidden">
-                <CardContent className="p-3">
-                  <div className="flex items-center gap-2 mb-2">
-                    <div className="h-8 w-8 rounded-lg bg-purple-500 flex items-center justify-center">
-                      <span className="text-white font-bold text-sm">₹50</span>
+                    <div className="flex-1 min-w-0">
+                      <p className="text-sm font-medium truncate">{issue.category}</p>
+                      <p className="text-xs text-muted-foreground truncate">{issue.description}</p>
                     </div>
-                    <span className="text-xs font-medium text-purple-700">
-                      {language === "te" ? "రవాణా" : "Transport"}
-                    </span>
-                  </div>
-                  <p className="text-sm font-semibold text-purple-800">
-                    {language === "te" ? "బస్ పాస్ తగ్గింపు" : "Bus Pass Off"}
-                  </p>
-                  <p className="text-[10px] text-purple-600 mt-1">TSRTC</p>
-                </CardContent>
-              </Card>
+                    <Badge variant="secondary" className="text-[10px]">
+                      {issue.status || "pending"}
+                    </Badge>
+                  </CardContent>
+                </Card>
+              ))}
             </div>
           </div>
-        </div>
+        )}
       </div>
 
       {/* Floating AI Chat Button */}
