@@ -553,13 +553,14 @@ async def admin_push_news(news: AdminNewsPush, user: dict = Depends(get_current_
     return {"success": True, "news": new_news}
 
 @router.get("/admin/pushed")
+@router.get("/admin/all")
 async def get_admin_pushed_news(user: dict = Depends(get_current_user)):
     """Admin: Get all admin-pushed news"""
     if user.get("role") != "admin":
         raise HTTPException(status_code=403, detail="Admin access required")
     
     news = await db.admin_news.find({}, {"_id": 0}).sort("created_at", -1).to_list(100)
-    return news
+    return {"news": news, "total": len(news)}
 
 @router.put("/admin/news/{news_id}")
 async def update_admin_news(news_id: str, updates: AdminNewsUpdate, user: dict = Depends(get_current_user)):
