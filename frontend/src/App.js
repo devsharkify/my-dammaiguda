@@ -175,6 +175,13 @@ function AppRoutes() {
         </ProtectedRoute>
       } />
       
+      {/* Device Sync Route */}
+      <Route path="/devices" element={
+        <ProtectedRoute>
+          <DeviceSync />
+        </ProtectedRoute>
+      } />
+      
       {/* Volunteer Routes */}
       <Route path="/volunteer" element={
         <ProtectedRoute roles={["volunteer", "admin"]}>
