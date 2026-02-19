@@ -516,37 +516,37 @@ export default function AdminDashboard() {
 
         {/* Tabs */}
         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-          <div className="overflow-x-auto">
-            <TabsList className="inline-flex w-max min-w-full h-11">
-              <TabsTrigger value="overview" className="text-xs px-3">
+          <div className="overflow-x-auto pb-2 -mx-4 px-4">
+            <TabsList className="inline-flex w-max min-w-full h-10 gap-1 bg-muted/50 p-1 rounded-lg">
+              <TabsTrigger value="overview" className="text-xs px-2.5 data-[state=active]:bg-background data-[state=active]:shadow-sm rounded-md">
                 <BarChart3 className="h-3.5 w-3.5 mr-1" />
                 Overview
               </TabsTrigger>
-              <TabsTrigger value="users" className="text-xs px-3">
+              <TabsTrigger value="users" className="text-xs px-2.5 data-[state=active]:bg-background data-[state=active]:shadow-sm rounded-md">
                 <Users className="h-3.5 w-3.5 mr-1" />
                 Users
               </TabsTrigger>
-              <TabsTrigger value="issues" className="text-xs px-3">
+              <TabsTrigger value="issues" className="text-xs px-2.5 data-[state=active]:bg-background data-[state=active]:shadow-sm rounded-md">
                 <AlertTriangle className="h-3.5 w-3.5 mr-1" />
                 Issues
               </TabsTrigger>
-              <TabsTrigger value="education" className="text-xs px-3">
+              <TabsTrigger value="education" className="text-xs px-2.5 data-[state=active]:bg-background data-[state=active]:shadow-sm rounded-md">
                 <GraduationCap className="h-3.5 w-3.5 mr-1" />
                 Edu
               </TabsTrigger>
-              <TabsTrigger value="shop" className="text-xs px-3">
+              <TabsTrigger value="shop" className="text-xs px-2.5 data-[state=active]:bg-background data-[state=active]:shadow-sm rounded-md">
                 <Gift className="h-3.5 w-3.5 mr-1" />
                 Shop
               </TabsTrigger>
-              <TabsTrigger value="news" className="text-xs px-3">
+              <TabsTrigger value="news" className="text-xs px-2.5 data-[state=active]:bg-background data-[state=active]:shadow-sm rounded-md">
                 <Newspaper className="h-3.5 w-3.5 mr-1" />
                 News
               </TabsTrigger>
-              <TabsTrigger value="vouchers" className="text-xs px-3">
+              <TabsTrigger value="vouchers" className="text-xs px-2.5 data-[state=active]:bg-background data-[state=active]:shadow-sm rounded-md">
                 <Ticket className="h-3.5 w-3.5 mr-1" />
                 Vouchers
               </TabsTrigger>
-              <TabsTrigger value="templates" className="text-xs px-3">
+              <TabsTrigger value="templates" className="text-xs px-2.5 data-[state=active]:bg-background data-[state=active]:shadow-sm rounded-md">
                 <ImageIcon className="h-3.5 w-3.5 mr-1" />
                 Templates
               </TabsTrigger>
