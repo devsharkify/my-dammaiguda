@@ -70,6 +70,25 @@ class GoalWeight(BaseModel):
     route_polyline: Optional[str] = None
     gps_points: Optional[List[dict]] = None
 
+class FitnessProfile(BaseModel):
+    """Required profile for first-time fitness users"""
+    height_cm: float
+    weight_kg: float
+    gender: str  # male, female, other
+    age: int
+    fitness_goal: Optional[str] = None  # weight_loss, muscle_gain, maintain, general_fitness
+
+class ManualActivityRecord(BaseModel):
+    """Manual activity recording with editable dates"""
+    activity_type: str
+    duration_minutes: int
+    date: str  # YYYY-MM-DD format
+    distance_km: Optional[float] = None
+    calories_burned: Optional[int] = None
+    steps: Optional[int] = None
+    heart_rate_avg: Optional[int] = None
+    notes: Optional[str] = None
+
 # ============== HELPER ==============
 
 async def update_daily_fitness_summary(user_id: str, date: str):
