@@ -53,6 +53,7 @@ export default function Layout({ children, title, showBackButton = false }) {
 
   const menuItems = [
     { path: "/dashboard", icon: <Home className="h-5 w-5" />, label: t("dashboard") },
+    { path: "/shop", icon: <Gift className="h-5 w-5" />, label: language === "te" ? "గిఫ్ట్ షాప్" : "Gift Shop" },
     { path: "/education", icon: <GraduationCap className="h-5 w-5" />, label: language === "te" ? "AIT విద్య" : "AIT Education" },
     { path: "/wall", icon: <PenSquare className="h-5 w-5" />, label: language === "te" ? "సిటిజన్ వాల్" : "Citizen Wall" },
     { path: "/news", icon: <Newspaper className="h-5 w-5" />, label: language === "te" ? "వార్తలు" : "News" },
