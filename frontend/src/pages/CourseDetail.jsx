@@ -291,6 +291,34 @@ export default function CourseDetail() {
     }
   };
 
+  const handleScholarshipSubmit = async () => {
+    // Validate required fields
+    if (!scholarshipForm.full_name || !scholarshipForm.mobile || !scholarshipForm.email || 
+        !scholarshipForm.age || !scholarshipForm.education_level || !scholarshipForm.institution_name) {
+      toast.error(language === "te" ? "దయచేసి అన్ని అవసరమైన ఫీల్డ్‌లను పూర్తి చేయండి" : "Please fill all required fields");
+      return;
+    }
+    
+    setScholarshipSubmitting(true);
+    try {
+      await axios.post(`${API}/education/scholarships/apply`, {
+        course_id: courseId,
+        course_title: course.title,
+        ...scholarshipForm
+      }, { headers });
+      
+      toast.success(language === "te" 
+        ? "స్కాలర్‌షిప్ దరఖాస్తు విజయవంతంగా సమర్పించబడింది! మేము త్వరలో మీకు తెలియజేస్తాము." 
+        : "Scholarship application submitted successfully! We'll notify you soon.");
+      setShowScholarshipDialog(false);
+      setShowPaymentDialog(false);
+    } catch (error) {
+      toast.error(error.response?.data?.detail || "Failed to submit application");
+    } finally {
+      setScholarshipSubmitting(false);
+    }
+  };
+
   if (loading) {
     return (
       <Layout showBackButton title={language === "te" ? "కోర్సు" : "Course"}>
