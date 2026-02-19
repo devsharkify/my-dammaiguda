@@ -160,8 +160,11 @@ Key Collections:
 ## Upcoming Tasks (P1)
 1. Real Twilio OTP integration
 2. Cloudinary media upload integration
-3. OpenGraph Meta Tags for certificate sharing
-4. Automatic fitness points rewards (connect Fitness → Gift Shop)
+3. Family Module - Show child's course progress to parent
+4. Discount Vouchers System (admin creates vouchers with codes)
+5. Status Templates (admin uploads templates, users add photo/name, share to WhatsApp/Instagram)
+6. OpenGraph Meta Tags for certificate sharing
+7. Automatic fitness points rewards (connect Fitness → Gift Shop)
 
 ## Future/Backlog (P2)
 - Native app for Health Connect/HealthKit integration
