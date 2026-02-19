@@ -1073,6 +1073,243 @@ BADGES = {
     },
     "variety_master": {
         "id": "variety_master",
+
+
+# ============== FITNESS PROFILE ONBOARDING ==============
+
+@router.get("/profile")
+async def get_fitness_profile(user: dict = Depends(get_current_user)):
+    """Get user's fitness profile - required for first-time users"""
+    profile = await db.fitness_profiles.find_one({"user_id": user["id"]}, {"_id": 0})
+    
+    return {
+        "has_profile": profile is not None,
+        "profile": profile
+    }
+
+@router.post("/profile")
+async def create_fitness_profile(profile: FitnessProfile, user: dict = Depends(get_current_user)):
+    """Create or update fitness profile - required before using fitness features"""
+    # Calculate BMI
+    height_m = profile.height_cm / 100
+    bmi = round(profile.weight_kg / (height_m * height_m), 1)
+    
+    # Determine BMI category
+    if bmi < 18.5:
+        bmi_category = "underweight"
+    elif bmi < 25:
+        bmi_category = "normal"
+    elif bmi < 30:
+        bmi_category = "overweight"
+    else:
+        bmi_category = "obese"
+    
+    # Calculate recommended daily calories (Mifflin-St Jeor Equation)
+    if profile.gender == "male":
+        bmr = 10 * profile.weight_kg + 6.25 * profile.height_cm - 5 * profile.age + 5
+    else:
+        bmr = 10 * profile.weight_kg + 6.25 * profile.height_cm - 5 * profile.age - 161
+    
+    # Assume moderate activity level (multiply by 1.55)
+    recommended_calories = int(bmr * 1.55)
+    
+    fitness_profile = {
+        "id": generate_id(),
+        "user_id": user["id"],
+        "height_cm": profile.height_cm,
+        "weight_kg": profile.weight_kg,
+        "gender": profile.gender,
+        "age": profile.age,
+        "fitness_goal": profile.fitness_goal or "general_fitness",
+        "bmi": bmi,
+        "bmi_category": bmi_category,
+        "bmr": int(bmr),
+        "recommended_calories": recommended_calories,
+        "created_at": now_iso(),
+        "updated_at": now_iso()
+    }
+    
+    # Upsert
+    existing = await db.fitness_profiles.find_one({"user_id": user["id"]})
+    if existing:
+        await db.fitness_profiles.update_one(
+            {"user_id": user["id"]},
+            {"$set": {**fitness_profile, "id": existing["id"]}}
+        )
+    else:
+        await db.fitness_profiles.insert_one(fitness_profile)
+    
+    # Also update user's health_profile
+    await db.users.update_one(
+        {"id": user["id"]},
+        {"$set": {"health_profile": {
+            "height_cm": profile.height_cm,
+            "weight_kg": profile.weight_kg,
+            "gender": profile.gender,
+            "age": profile.age,
+            "bmi": bmi
+        }}}
+    )
+    
+    # Log initial weight
+    await db.weight_logs.insert_one({
+        "id": generate_id(),
+        "user_id": user["id"],
+        "weight_kg": profile.weight_kg,
+        "notes": "Initial weight from profile setup",
+        "date": datetime.now(timezone.utc).strftime("%Y-%m-%d"),
+        "created_at": now_iso()
+    })
+    
+    return {
+        "success": True,
+        "profile": {k: v for k, v in fitness_profile.items() if k != "_id"},
+        "message": "Fitness profile created successfully"
+    }
+
+# ============== MANUAL ACTIVITY RECORDING (WITH EDITABLE DATES) ==============
+
+@router.post("/record")
+async def record_manual_activity(record: ManualActivityRecord, user: dict = Depends(get_current_user)):
+    """Record a manual fitness activity with a custom date"""
+    # Validate activity type
+    if record.activity_type not in ACTIVITY_TYPES:
+        raise HTTPException(status_code=400, detail="Invalid activity type")
+    
+    # Validate date format
+    try:
+        activity_date = datetime.strptime(record.date, "%Y-%m-%d")
+        if activity_date > datetime.now():
+            raise HTTPException(status_code=400, detail="Cannot record future activities")
+    except ValueError:
+        raise HTTPException(status_code=400, detail="Invalid date format. Use YYYY-MM-DD")
+    
+    # Get user's weight for calorie calculation
+    profile = await db.fitness_profiles.find_one({"user_id": user["id"]})
+    weight = profile.get("weight_kg", 70) if profile else 70
+    
+    # Calculate calories if not provided
+    if not record.calories_burned:
+        met = ACTIVITY_TYPES[record.activity_type]["met"]
+        hours = record.duration_minutes / 60
+        record.calories_burned = int(met * weight * hours)
+    
+    # Estimate steps if not provided and applicable
+    if not record.steps and record.activity_type in ["walking", "running", "hiking"]:
+        # Estimate ~100 steps per minute for walking, ~150 for running
+        step_rate = 150 if record.activity_type == "running" else 100
+        record.steps = record.duration_minutes * step_rate
+    
+    activity = {
+        "id": generate_id(),
+        "user_id": user["id"],
+        "activity_type": record.activity_type,
+        "activity_name": ACTIVITY_TYPES[record.activity_type]["name_en"],
+        "duration_minutes": record.duration_minutes,
+        "distance_km": record.distance_km,
+        "calories_burned": record.calories_burned,
+        "steps": record.steps,
+        "heart_rate_avg": record.heart_rate_avg,
+        "notes": record.notes,
+        "source": "manual_record",
+        "date": record.date,
+        "created_at": now_iso()
+    }
+    
+    await db.activities.insert_one(activity)
+    activity.pop("_id", None)
+    
+    # Update daily summary for that date
+    await update_daily_fitness_summary(user["id"], record.date)
+    
+    return {
+        "success": True,
+        "activity": activity,
+        "message": f"Activity recorded for {record.date}"
+    }
+
+@router.get("/records")
+async def get_activity_records(
+    start_date: Optional[str] = None,
+    end_date: Optional[str] = None,
+    activity_type: Optional[str] = None,
+    limit: int = 50,
+    user: dict = Depends(get_current_user)
+):
+    """Get user's activity records with optional filters"""
+    query = {"user_id": user["id"]}
+    
+    if start_date:
+        query["date"] = {"$gte": start_date}
+    if end_date:
+        query.setdefault("date", {})["$lte"] = end_date
+    if activity_type:
+        query["activity_type"] = activity_type
+    
+    records = await db.activities.find(query, {"_id": 0}).sort("date", -1).limit(limit).to_list(limit)
+    
+    # Calculate totals
+    total_calories = sum(r.get("calories_burned", 0) for r in records)
+    total_duration = sum(r.get("duration_minutes", 0) for r in records)
+    total_steps = sum(r.get("steps", 0) or 0 for r in records)
+    
+    return {
+        "records": records,
+        "count": len(records),
+        "totals": {
+            "calories": total_calories,
+            "duration_minutes": total_duration,
+            "steps": total_steps
+        }
+    }
+
+@router.put("/records/{activity_id}")
+async def update_activity_record(activity_id: str, record: ManualActivityRecord, user: dict = Depends(get_current_user)):
+    """Update an existing activity record"""
+    existing = await db.activities.find_one({"id": activity_id, "user_id": user["id"]})
+    if not existing:
+        raise HTTPException(status_code=404, detail="Activity not found")
+    
+    if existing.get("source") not in ["manual", "manual_record"]:
+        raise HTTPException(status_code=400, detail="Can only edit manually recorded activities")
+    
+    update_data = {
+        "activity_type": record.activity_type,
+        "duration_minutes": record.duration_minutes,
+        "date": record.date,
+        "distance_km": record.distance_km,
+        "calories_burned": record.calories_burned,
+        "steps": record.steps,
+        "heart_rate_avg": record.heart_rate_avg,
+        "notes": record.notes,
+        "updated_at": now_iso()
+    }
+    
+    await db.activities.update_one({"id": activity_id}, {"$set": update_data})
+    
+    # Update summaries for both old and new dates
+    old_date = existing.get("date")
+    if old_date:
+        await update_daily_fitness_summary(user["id"], old_date)
+    await update_daily_fitness_summary(user["id"], record.date)
+    
+    return {"success": True, "message": "Activity updated"}
+
+@router.delete("/records/{activity_id}")
+async def delete_activity_record(activity_id: str, user: dict = Depends(get_current_user)):
+    """Delete an activity record"""
+    existing = await db.activities.find_one({"id": activity_id, "user_id": user["id"]})
+    if not existing:
+        raise HTTPException(status_code=404, detail="Activity not found")
+    
+    await db.activities.delete_one({"id": activity_id})
+    
+    # Update daily summary
+    if existing.get("date"):
+        await update_daily_fitness_summary(user["id"], existing["date"])
+    
+    return {"success": True, "message": "Activity deleted"}
+
         "name": "Variety Master",
         "name_te": "వెరైటీ మాస్టర్",
         "description": "Try 5 different activity types",
