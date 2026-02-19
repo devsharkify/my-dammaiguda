@@ -283,7 +283,7 @@ export default function Layout({ children, title, showBackButton = false }) {
 
       {/* Bottom Navigation Bar - PhonePe Style */}
       {!showBackButton && (
-        <nav className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 shadow-lg z-40">
+        <nav className="fixed bottom-0 left-0 right-0 bg-background border-t border-border shadow-lg z-40">
           <div className="max-w-lg mx-auto px-2">
             <div className="flex items-center justify-around py-2">
               {bottomNavItems.map((item) => {
@@ -295,19 +295,22 @@ export default function Layout({ children, title, showBackButton = false }) {
                     className={`flex flex-col items-center py-1 px-3 rounded-xl transition-all ${
                       active 
                         ? "text-primary" 
-                        : "text-gray-500 hover:text-gray-700"
+                        : "text-muted-foreground hover:text-foreground"
                     }`}
                     data-testid={`nav-${item.path.replace("/", "")}`}
                   >
-                    <div className={`p-2 rounded-xl transition-all ${
-                      active 
-                        ? "bg-primary/10 text-primary scale-110" 
-                        : "text-gray-500"
-                    }`}>
+                    <motion.div 
+                      className={`p-2 rounded-xl transition-all ${
+                        active 
+                          ? "bg-primary/10 text-primary" 
+                          : "text-muted-foreground"
+                      }`}
+                      whileTap={{ scale: 0.9 }}
+                    >
                       {item.icon}
-                    </div>
+                    </motion.div>
                     <span className={`text-[10px] mt-0.5 font-medium ${
-                      active ? "text-primary" : "text-gray-500"
+                      active ? "text-primary" : "text-muted-foreground"
                     }`}>
                       {item.label}
                     </span>
