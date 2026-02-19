@@ -304,7 +304,7 @@ export default function AITEducation() {
                         
                         <div className="flex items-center justify-between mt-2">
                           <span className={`font-bold ${course.price === 0 ? "text-green-600" : "text-primary"}`}>
-                            {course.price === 0 ? (language === "te" ? "ఉచితం" : "FREE") : `₹${course.price}`}
+                            {course.price === 0 ? (language === "te" ? "ఉచితం" : "FREE") : `₹${course.price?.toLocaleString()}`}
                           </span>
                           <ChevronRight className="h-4 w-4 text-muted-foreground" />
                         </div>
