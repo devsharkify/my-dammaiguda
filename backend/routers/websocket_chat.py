@@ -38,7 +38,7 @@ class ConnectionManager:
                 if websocket != exclude_ws:
                     try:
                         await websocket.send_json(message)
-                    except:
+                    except Exception:
                         dead_connections.append((websocket, user))
             
             # Clean up dead connections
