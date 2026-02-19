@@ -965,3 +965,336 @@ async def get_weight_stats(user: dict = Depends(get_current_user)):
         "total_entries": len(records)
     }
 
+
+
+# ============== STREAKS & BADGES ==============
+
+# Badge definitions
+BADGES = {
+    "first_workout": {
+        "id": "first_workout",
+        "name": "First Step",
+        "name_te": "మొదటి అడుగు",
+        "description": "Complete your first workout",
+        "description_te": "మీ మొదటి వ్యాయామం పూర్తి చేయండి",
+        "icon": "🎯",
+        "color": "from-blue-500 to-cyan-500"
+    },
+    "streak_3": {
+        "id": "streak_3",
+        "name": "3-Day Streak",
+        "name_te": "3 రోజుల స్ట్రీక్",
+        "description": "Work out 3 days in a row",
+        "description_te": "వరుసగా 3 రోజులు వ్యాయామం చేయండి",
+        "icon": "🔥",
+        "color": "from-orange-500 to-red-500"
+    },
+    "streak_7": {
+        "id": "streak_7",
+        "name": "Week Warrior",
+        "name_te": "వారపు యోధుడు",
+        "description": "Work out 7 days in a row",
+        "description_te": "వరుసగా 7 రోజులు వ్యాయామం చేయండి",
+        "icon": "⚡",
+        "color": "from-yellow-500 to-orange-500"
+    },
+    "streak_30": {
+        "id": "streak_30",
+        "name": "Monthly Master",
+        "name_te": "నెలవారీ మాస్టర్",
+        "description": "Work out 30 days in a row",
+        "description_te": "వరుసగా 30 రోజులు వ్యాయామం చేయండి",
+        "icon": "👑",
+        "color": "from-purple-500 to-pink-500"
+    },
+    "steps_10k": {
+        "id": "steps_10k",
+        "name": "10K Club",
+        "name_te": "10K క్లబ్",
+        "description": "Walk 10,000 steps in a day",
+        "description_te": "ఒక రోజులో 10,000 అడుగులు నడవండి",
+        "icon": "👟",
+        "color": "from-green-500 to-emerald-500"
+    },
+    "calories_500": {
+        "id": "calories_500",
+        "name": "Calorie Crusher",
+        "name_te": "కేలరీ క్రషర్",
+        "description": "Burn 500 calories in a day",
+        "description_te": "ఒక రోజులో 500 కేలరీలు బర్న్ చేయండి",
+        "icon": "🔥",
+        "color": "from-red-500 to-rose-500"
+    },
+    "weight_loss_1": {
+        "id": "weight_loss_1",
+        "name": "First Kilo Down",
+        "name_te": "మొదటి కిలో తగ్గింది",
+        "description": "Lose your first kilogram",
+        "description_te": "మీ మొదటి కిలోగ్రాము తగ్గించండి",
+        "icon": "⚖️",
+        "color": "from-teal-500 to-cyan-500"
+    },
+    "weight_loss_5": {
+        "id": "weight_loss_5",
+        "name": "5 Kilos Champion",
+        "name_te": "5 కిలోల ఛాంపియన్",
+        "description": "Lose 5 kilograms total",
+        "description_te": "మొత్తం 5 కిలోగ్రాములు తగ్గించండి",
+        "icon": "🏆",
+        "color": "from-amber-500 to-yellow-500"
+    },
+    "early_bird": {
+        "id": "early_bird",
+        "name": "Early Bird",
+        "name_te": "ఎర్లీ బర్డ్",
+        "description": "Complete a workout before 7 AM",
+        "description_te": "ఉదయం 7 గంటల ముందు వ్యాయామం పూర్తి చేయండి",
+        "icon": "🌅",
+        "color": "from-pink-500 to-orange-500"
+    },
+    "variety_master": {
+        "id": "variety_master",
+        "name": "Variety Master",
+        "name_te": "వెరైటీ మాస్టర్",
+        "description": "Try 5 different activity types",
+        "description_te": "5 వేర్వేరు యాక్టివిటీ రకాలు ప్రయత్నించండి",
+        "icon": "🎨",
+        "color": "from-indigo-500 to-purple-500"
+    }
+}
+
+@router.get("/streaks")
+async def get_user_streaks(user: dict = Depends(get_current_user)):
+    """Get user's current streak and streak history"""
+    today = datetime.now(timezone.utc).date()
+    
+    # Get all activity dates for the user
+    activities = await db.fitness_activities.find(
+        {"user_id": user["id"]},
+        {"_id": 0, "date": 1}
+    ).to_list(365)
+    
+    # Also count live activities
+    live_activities = await db.fitness_live_sessions.find(
+        {"user_id": user["id"], "status": "completed"},
+        {"_id": 0, "ended_at": 1}
+    ).to_list(365)
+    
+    # Get unique dates with activity
+    activity_dates = set()
+    for a in activities:
+        if a.get("date"):
+            try:
+                d = datetime.strptime(a["date"], "%Y-%m-%d").date()
+                activity_dates.add(d)
+            except:
+                pass
+    
+    for la in live_activities:
+        if la.get("ended_at"):
+            try:
+                d = datetime.fromisoformat(la["ended_at"].replace("Z", "+00:00")).date()
+                activity_dates.add(d)
+            except:
+                pass
+    
+    # Calculate current streak
+    current_streak = 0
+    check_date = today
+    
+    # Check if user was active today or yesterday
+    if today in activity_dates:
+        current_streak = 1
+        check_date = today - timedelta(days=1)
+    elif (today - timedelta(days=1)) in activity_dates:
+        current_streak = 1
+        check_date = today - timedelta(days=2)
+    else:
+        # Streak is broken
+        current_streak = 0
+        check_date = None
+    
+    # Count consecutive days
+    if check_date:
+        while check_date in activity_dates:
+            current_streak += 1
+            check_date -= timedelta(days=1)
+    
+    # Get longest streak ever
+    sorted_dates = sorted(activity_dates)
+    longest_streak = 0
+    temp_streak = 1
+    
+    for i in range(1, len(sorted_dates)):
+        if (sorted_dates[i] - sorted_dates[i-1]).days == 1:
+            temp_streak += 1
+        else:
+            longest_streak = max(longest_streak, temp_streak)
+            temp_streak = 1
+    longest_streak = max(longest_streak, temp_streak) if sorted_dates else 0
+    
+    # Check if streak was updated today
+    active_today = today in activity_dates
+    
+    return {
+        "current_streak": current_streak,
+        "longest_streak": longest_streak,
+        "active_today": active_today,
+        "total_active_days": len(activity_dates),
+        "streak_status": "active" if current_streak > 0 else "broken"
+    }
+
+@router.get("/badges")
+async def get_user_badges(user: dict = Depends(get_current_user)):
+    """Get all badges - earned and locked"""
+    # Get user's earned badges
+    earned_badges = await db.user_badges.find(
+        {"user_id": user["id"]},
+        {"_id": 0}
+    ).to_list(100)
+    
+    earned_ids = {b["badge_id"] for b in earned_badges}
+    
+    # Build response with all badges
+    all_badges = []
+    for badge_id, badge_info in BADGES.items():
+        badge = {**badge_info}
+        if badge_id in earned_ids:
+            earned = next((b for b in earned_badges if b["badge_id"] == badge_id), None)
+            badge["earned"] = True
+            badge["earned_at"] = earned.get("earned_at") if earned else None
+        else:
+            badge["earned"] = False
+            badge["earned_at"] = None
+        all_badges.append(badge)
+    
+    # Sort: earned first, then by name
+    all_badges.sort(key=lambda x: (not x["earned"], x["name"]))
+    
+    return {
+        "badges": all_badges,
+        "earned_count": len(earned_ids),
+        "total_count": len(BADGES)
+    }
+
+@router.post("/badges/check")
+async def check_and_award_badges(user: dict = Depends(get_current_user)):
+    """Check if user has earned any new badges"""
+    user_id = user["id"]
+    new_badges = []
+    
+    # Get existing badges
+    existing = await db.user_badges.find({"user_id": user_id}, {"badge_id": 1}).to_list(100)
+    existing_ids = {b["badge_id"] for b in existing}
+    
+    # Get user stats
+    activities = await db.fitness_activities.find({"user_id": user_id}).to_list(1000)
+    live_sessions = await db.fitness_live_sessions.find({"user_id": user_id, "status": "completed"}).to_list(1000)
+    weight_logs = await db.weight_logs.find({"user_id": user_id}).sort("date", 1).to_list(365)
+    
+    # Check first_workout
+    if "first_workout" not in existing_ids and (len(activities) > 0 or len(live_sessions) > 0):
+        new_badges.append("first_workout")
+    
+    # Check streaks
+    today = datetime.now(timezone.utc).date()
+    activity_dates = set()
+    for a in activities:
+        if a.get("date"):
+            try:
+                d = datetime.strptime(a["date"], "%Y-%m-%d").date()
+                activity_dates.add(d)
+            except:
+                pass
+    for la in live_sessions:
+        if la.get("ended_at"):
+            try:
+                d = datetime.fromisoformat(la["ended_at"].replace("Z", "+00:00")).date()
+                activity_dates.add(d)
+            except:
+                pass
+    
+    # Calculate streak
+    current_streak = 0
+    check_date = today
+    if today in activity_dates:
+        current_streak = 1
+        check_date = today - timedelta(days=1)
+    elif (today - timedelta(days=1)) in activity_dates:
+        current_streak = 1
+        check_date = today - timedelta(days=2)
+    
+    if check_date:
+        while check_date in activity_dates:
+            current_streak += 1
+            check_date -= timedelta(days=1)
+    
+    if "streak_3" not in existing_ids and current_streak >= 3:
+        new_badges.append("streak_3")
+    if "streak_7" not in existing_ids and current_streak >= 7:
+        new_badges.append("streak_7")
+    if "streak_30" not in existing_ids and current_streak >= 30:
+        new_badges.append("streak_30")
+    
+    # Check steps (10k in a day)
+    if "steps_10k" not in existing_ids:
+        for a in activities:
+            if a.get("steps", 0) >= 10000:
+                new_badges.append("steps_10k")
+                break
+    
+    # Check calories (500 in a day)
+    if "calories_500" not in existing_ids:
+        for a in activities:
+            if a.get("calories_burned", 0) >= 500:
+                new_badges.append("calories_500")
+                break
+        for ls in live_sessions:
+            if ls.get("total_calories", 0) >= 500:
+                new_badges.append("calories_500")
+                break
+    
+    # Check weight loss
+    if len(weight_logs) >= 2:
+        first_weight = weight_logs[0].get("weight_kg", 0)
+        current_weight = weight_logs[-1].get("weight_kg", 0)
+        weight_lost = first_weight - current_weight
+        
+        if "weight_loss_1" not in existing_ids and weight_lost >= 1:
+            new_badges.append("weight_loss_1")
+        if "weight_loss_5" not in existing_ids and weight_lost >= 5:
+            new_badges.append("weight_loss_5")
+    
+    # Check variety master (5 different activity types)
+    if "variety_master" not in existing_ids:
+        activity_types = set()
+        for a in activities:
+            if a.get("activity_type"):
+                activity_types.add(a.get("activity_type"))
+        for ls in live_sessions:
+            if ls.get("activity_type"):
+                activity_types.add(ls.get("activity_type"))
+        if len(activity_types) >= 5:
+            new_badges.append("variety_master")
+    
+    # Award new badges
+    awarded = []
+    for badge_id in new_badges:
+        if badge_id in existing_ids:
+            continue
+        
+        badge_doc = {
+            "id": generate_id(),
+            "user_id": user_id,
+            "badge_id": badge_id,
+            "earned_at": now_iso()
+        }
+        await db.user_badges.insert_one(badge_doc)
+        awarded.append(BADGES[badge_id])
+        existing_ids.add(badge_id)  # Prevent duplicates
+    
+    return {
+        "new_badges": awarded,
+        "new_badges_count": len(awarded)
+    }
+
