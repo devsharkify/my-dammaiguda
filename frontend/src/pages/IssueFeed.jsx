@@ -141,138 +141,210 @@ export default function IssueFeed() {
     return date.toLocaleDateString(language === "te" ? "te-IN" : "en-IN");
   };
 
+  const renderIssueCard = (issue, showMyBadge = false) => (
+    <Card 
+      key={issue.id} 
+      className="border-border/50 hover:shadow-md transition-shadow"
+      data-testid={`issue-card-${issue.id}`}
+    >
+      <CardContent className="p-4">
+        {/* Header */}
+        <div className="flex items-start justify-between mb-3">
+          <div className="flex items-center gap-2">
+            <span className="text-lg">
+              {categoryLabels[issue.category]?.icon}
+            </span>
+            <Badge variant="secondary" className="font-medium">
+              {categoryLabels[issue.category]?.[language] || issue.category}
+            </Badge>
+            {showMyBadge && (
+              <Badge variant="outline" className="text-[10px] text-primary border-primary">
+                <User className="h-2.5 w-2.5 mr-1" />
+                {language === "te" ? "నా" : "Mine"}
+              </Badge>
+            )}
+          </div>
+          <Badge className={`text-xs flex items-center gap-1 ${statusColors[issue.status]}`}>
+            {statusIcons[issue.status]}
+            {statuses.find(s => s.value === issue.status)?.label || issue.status}
+          </Badge>
+        </div>
+
+        {/* Description */}
+        <p className="text-text-primary mb-3 line-clamp-2">
+          {issue.description}
+        </p>
+
+        {/* Admin Notes (if issue_not_found) */}
+        {issue.status === "issue_not_found" && (
+          <div className="bg-gray-50 dark:bg-gray-800 p-2 rounded-lg mb-3 text-xs">
+            <p className="text-gray-600 dark:text-gray-300 flex items-center gap-1">
+              <Phone className="h-3 w-3" />
+              {language === "te" 
+                ? "దయచేసి మమ్మల్ని సంప్రదించండి వివరాల కోసం" 
+                : "Please contact us for more details"}
+            </p>
+          </div>
+        )}
+
+        {/* Media Preview */}
+        {issue.media_urls && issue.media_urls.length > 0 && (
+          <div className="flex gap-2 mb-3 overflow-x-auto">
+            {issue.media_urls.slice(0, 3).map((url, idx) => (
+              <div
+                key={idx}
+                className="h-16 w-16 rounded-lg bg-muted flex-shrink-0 overflow-hidden"
+              >
+                <img
+                  src={url}
+                  alt=""
+                  className="h-full w-full object-cover"
+                  onError={(e) => {
+                    e.target.style.display = 'none';
+                    e.target.parentElement.innerHTML = '<div class="h-full w-full flex items-center justify-center"><svg class="h-6 w-6 text-muted-foreground" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg></div>';
+                  }}
+                />
+              </div>
+            ))}
+            {issue.media_urls.length > 3 && (
+              <div className="h-16 w-16 rounded-lg bg-muted flex-shrink-0 flex items-center justify-center text-text-muted text-sm font-medium">
+                +{issue.media_urls.length - 3}
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* Footer */}
+        <div className="flex items-center justify-between text-xs text-text-muted">
+          <div className="flex items-center gap-3">
+            {issue.colony && (
+              <span className="flex items-center gap-1">
+                <MapPin className="h-3 w-3" />
+                {issue.colony}
+              </span>
+            )}
+            <span className="flex items-center gap-1">
+              <Clock className="h-3 w-3" />
+              {formatDate(issue.created_at)}
+            </span>
+          </div>
+          <span className="text-text-secondary">
+            {issue.reporter_name}
+          </span>
+        </div>
+      </CardContent>
+    </Card>
+  );
+
   return (
     <Layout showBackButton title={language === "te" ? "సమస్యలు" : "Issues"}>
       <div className="space-y-4" data-testid="issue-feed">
-        {/* Filters */}
-        <div className="flex gap-2">
-          <Select value={categoryFilter} onValueChange={setCategoryFilter}>
-            <SelectTrigger className="flex-1 h-10" data-testid="category-filter">
-              <Filter className="h-4 w-4 mr-2 text-muted-foreground" />
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent>
-              {categories.map((cat) => (
-                <SelectItem key={cat.value} value={cat.value}>
-                  {cat.label}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
+        {/* Tabs for All Issues and My Issues */}
+        <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
+          <TabsList className="grid w-full grid-cols-2 h-11">
+            <TabsTrigger value="all" className="flex items-center gap-2">
+              <FileText className="h-4 w-4" />
+              {language === "te" ? "అన్ని సమస్యలు" : "All Issues"}
+            </TabsTrigger>
+            <TabsTrigger value="my" className="flex items-center gap-2" disabled={!user}>
+              <User className="h-4 w-4" />
+              {language === "te" ? "నా సమస్యలు" : "My Issues"}
+              {myIssues.length > 0 && (
+                <Badge variant="secondary" className="ml-1 h-5 w-5 p-0 flex items-center justify-center text-[10px]">
+                  {myIssues.length}
+                </Badge>
+              )}
+            </TabsTrigger>
+          </TabsList>
 
-          <Select value={statusFilter} onValueChange={setStatusFilter}>
-            <SelectTrigger className="flex-1 h-10" data-testid="status-filter">
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent>
-              {statuses.map((status) => (
-                <SelectItem key={status.value} value={status.value}>
-                  {status.label}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-        </div>
+          {/* All Issues Tab */}
+          <TabsContent value="all" className="mt-4 space-y-4">
+            {/* Filters */}
+            <div className="flex gap-2">
+              <Select value={categoryFilter} onValueChange={setCategoryFilter}>
+                <SelectTrigger className="flex-1 h-10" data-testid="category-filter">
+                  <Filter className="h-4 w-4 mr-2 text-muted-foreground" />
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  {categories.map((cat) => (
+                    <SelectItem key={cat.value} value={cat.value}>
+                      {cat.label}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
 
-        {/* Issues List */}
-        {loading ? (
-          <div className="flex items-center justify-center py-12">
-            <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-primary"></div>
-          </div>
-        ) : issues.length === 0 ? (
-          <div className="text-center py-12">
-            <AlertTriangle className="h-16 w-16 mx-auto mb-4 text-muted-foreground/50" />
-            <p className="text-text-muted mb-4">
-              {language === "te" ? "సమస్యలు కనుగొనబడలేదు" : "No issues found"}
-            </p>
-            {user && (
-              <Link to="/report">
-                <Button className="bg-secondary text-white rounded-full" data-testid="report-issue-cta">
-                  <Plus className="h-4 w-4 mr-2" />
-                  {language === "te" ? "సమస్య నివేదించు" : "Report Issue"}
-                </Button>
-              </Link>
+              <Select value={statusFilter} onValueChange={setStatusFilter}>
+                <SelectTrigger className="flex-1 h-10" data-testid="status-filter">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  {statuses.map((status) => (
+                    <SelectItem key={status.value} value={status.value}>
+                      {status.label}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+
+            {/* Issues List */}
+            {loading ? (
+              <div className="flex items-center justify-center py-12">
+                <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-primary"></div>
+              </div>
+            ) : issues.length === 0 ? (
+              <div className="text-center py-12">
+                <AlertTriangle className="h-16 w-16 mx-auto mb-4 text-muted-foreground/50" />
+                <p className="text-text-muted mb-4">
+                  {language === "te" ? "సమస్యలు కనుగొనబడలేదు" : "No issues found"}
+                </p>
+                {user && (
+                  <Link to="/report">
+                    <Button className="bg-secondary text-white rounded-full" data-testid="report-issue-cta">
+                      <Plus className="h-4 w-4 mr-2" />
+                      {language === "te" ? "సమస్య నివేదించు" : "Report Issue"}
+                    </Button>
+                  </Link>
+                )}
+              </div>
+            ) : (
+              <div className="space-y-3">
+                {issues.map((issue) => renderIssueCard(issue))}
+              </div>
             )}
-          </div>
-        ) : (
-          <div className="space-y-3">
-            {issues.map((issue) => (
-              <Card 
-                key={issue.id} 
-                className="border-border/50 hover:shadow-md transition-shadow"
-                data-testid={`issue-card-${issue.id}`}
-              >
-                <CardContent className="p-4">
-                  {/* Header */}
-                  <div className="flex items-start justify-between mb-3">
-                    <div className="flex items-center gap-2">
-                      <span className="text-lg">
-                        {categoryLabels[issue.category]?.icon}
-                      </span>
-                      <Badge variant="secondary" className="font-medium">
-                        {categoryLabels[issue.category]?.[language] || issue.category}
-                      </Badge>
-                    </div>
-                    <Badge className={`text-xs ${statusColors[issue.status]}`}>
-                      {statuses.find(s => s.value === issue.status)?.label || issue.status}
-                    </Badge>
-                  </div>
+          </TabsContent>
 
-                  {/* Description */}
-                  <p className="text-text-primary mb-3 line-clamp-2">
-                    {issue.description}
-                  </p>
-
-                  {/* Media Preview */}
-                  {issue.media_urls && issue.media_urls.length > 0 && (
-                    <div className="flex gap-2 mb-3 overflow-x-auto">
-                      {issue.media_urls.slice(0, 3).map((url, idx) => (
-                        <div
-                          key={idx}
-                          className="h-16 w-16 rounded-lg bg-muted flex-shrink-0 overflow-hidden"
-                        >
-                          <img
-                            src={url}
-                            alt=""
-                            className="h-full w-full object-cover"
-                            onError={(e) => {
-                              e.target.style.display = 'none';
-                              e.target.parentElement.innerHTML = '<div class="h-full w-full flex items-center justify-center"><svg class="h-6 w-6 text-muted-foreground" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg></div>';
-                            }}
-                          />
-                        </div>
-                      ))}
-                      {issue.media_urls.length > 3 && (
-                        <div className="h-16 w-16 rounded-lg bg-muted flex-shrink-0 flex items-center justify-center text-text-muted text-sm font-medium">
-                          +{issue.media_urls.length - 3}
-                        </div>
-                      )}
-                    </div>
-                  )}
-
-                  {/* Footer */}
-                  <div className="flex items-center justify-between text-xs text-text-muted">
-                    <div className="flex items-center gap-3">
-                      {issue.colony && (
-                        <span className="flex items-center gap-1">
-                          <MapPin className="h-3 w-3" />
-                          {issue.colony}
-                        </span>
-                      )}
-                      <span className="flex items-center gap-1">
-                        <Clock className="h-3 w-3" />
-                        {formatDate(issue.created_at)}
-                      </span>
-                    </div>
-                    <span className="text-text-secondary">
-                      {issue.reporter_name}
-                    </span>
-                  </div>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
-        )}
+          {/* My Issues Tab */}
+          <TabsContent value="my" className="mt-4 space-y-4">
+            {!user ? (
+              <div className="text-center py-12">
+                <User className="h-16 w-16 mx-auto mb-4 text-muted-foreground/50" />
+                <p className="text-text-muted mb-4">
+                  {language === "te" ? "లాగిన్ అవసరం" : "Login required to see your issues"}
+                </p>
+              </div>
+            ) : myIssues.length === 0 ? (
+              <div className="text-center py-12">
+                <FileText className="h-16 w-16 mx-auto mb-4 text-muted-foreground/50" />
+                <p className="text-text-muted mb-4">
+                  {language === "te" ? "మీరు ఇంకా సమస్యలు నివేదించలేదు" : "You haven't reported any issues yet"}
+                </p>
+                <Link to="/report">
+                  <Button className="bg-secondary text-white rounded-full" data-testid="report-first-issue">
+                    <Plus className="h-4 w-4 mr-2" />
+                    {language === "te" ? "మొదటి సమస్య నివేదించు" : "Report Your First Issue"}
+                  </Button>
+                </Link>
+              </div>
+            ) : (
+              <div className="space-y-3">
+                {myIssues.map((issue) => renderIssueCard(issue, true))}
+              </div>
+            )}
+          </TabsContent>
+        </Tabs>
 
         {/* Report Issue FAB */}
         {user && (
