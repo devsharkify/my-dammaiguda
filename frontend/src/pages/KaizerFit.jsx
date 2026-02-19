@@ -84,18 +84,29 @@ export default function KaizerFit() {
   const fetchAllData = async () => {
     setLoading(true);
     try {
-      const [dashRes, weightRes, statsRes] = await Promise.all([
+      const [dashRes, weightRes, statsRes, streakRes, badgesRes] = await Promise.all([
         axios.get(`${API}/fitness/dashboard`, { headers }).catch(() => ({ data: null })),
         axios.get(`${API}/fitness/weight/history?days=30`, { headers }).catch(() => ({ data: { records: [] } })),
-        axios.get(`${API}/fitness/weight/stats`, { headers }).catch(() => ({ data: null }))
+        axios.get(`${API}/fitness/weight/stats`, { headers }).catch(() => ({ data: null })),
+        axios.get(`${API}/fitness/streaks`, { headers }).catch(() => ({ data: null })),
+        axios.get(`${API}/fitness/badges`, { headers }).catch(() => ({ data: { badges: [] } }))
       ]);
       
       setTodayStats(dashRes.data);
       setWeightHistory(weightRes.data?.records || []);
       setWeightStats(statsRes.data);
+      setStreakData(streakRes.data);
+      setBadges(badgesRes.data?.badges || []);
       
       if (statsRes.data?.goal_weight) {
         setGoalWeight(statsRes.data.goal_weight.toString());
+      }
+      
+      // Check for new badges
+      const checkRes = await axios.post(`${API}/fitness/badges/check`, {}, { headers }).catch(() => ({ data: { new_badges: [] } }));
+      if (checkRes.data?.new_badges?.length > 0) {
+        setNewBadges(checkRes.data.new_badges);
+        setShowNewBadgeDialog(true);
       }
     } catch (error) {
       console.error("Error fetching data:", error);
