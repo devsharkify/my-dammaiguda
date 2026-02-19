@@ -7,6 +7,7 @@ import { Card, CardContent } from "../components/ui/card";
 import { Button } from "../components/ui/button";
 import { Badge } from "../components/ui/badge";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../components/ui/select";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "../components/ui/tabs";
 import Layout from "../components/Layout";
 import {
   AlertTriangle,
@@ -15,22 +16,32 @@ import {
   Clock,
   Plus,
   Image as ImageIcon,
-  ChevronDown
+  ChevronDown,
+  User,
+  FileText,
+  CheckCircle,
+  XCircle,
+  Clock3,
+  Send,
+  Phone
 } from "lucide-react";
 
 const API = `${process.env.REACT_APP_BACKEND_URL}/api`;
 
 export default function IssueFeed() {
   const { language } = useLanguage();
-  const { user } = useAuth();
+  const { user, token, isAdmin } = useAuth();
   const [issues, setIssues] = useState([]);
+  const [myIssues, setMyIssues] = useState([]);
   const [loading, setLoading] = useState(true);
   const [categoryFilter, setCategoryFilter] = useState("all");
   const [statusFilter, setStatusFilter] = useState("all");
+  const [activeTab, setActiveTab] = useState("all");
 
   useEffect(() => {
     fetchIssues();
-  }, [categoryFilter, statusFilter]);
+    if (user) fetchMyIssues();
+  }, [categoryFilter, statusFilter, user]);
 
   const fetchIssues = async () => {
     setLoading(true);
@@ -46,6 +57,19 @@ export default function IssueFeed() {
       setIssues([]);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const fetchMyIssues = async () => {
+    if (!token) return;
+    try {
+      const response = await axios.get(`${API}/issues/my`, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      setMyIssues(response.data?.issues || response.data || []);
+    } catch (error) {
+      console.error("Error fetching my issues:", error);
+      setMyIssues([]);
     }
   };
 
