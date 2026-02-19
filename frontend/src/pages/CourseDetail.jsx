@@ -366,15 +366,18 @@ export default function CourseDetail() {
 
         {/* Tabs: About, Curriculum, Reviews */}
         <Tabs defaultValue="curriculum" className="w-full">
-          <TabsList className="w-full grid grid-cols-3 h-10">
+          <TabsList className="w-full grid grid-cols-4 h-10">
             <TabsTrigger value="about" className="text-xs">
               {language === "te" ? "గురించి" : "About"}
             </TabsTrigger>
             <TabsTrigger value="curriculum" className="text-xs">
-              {language === "te" ? "పాఠ్యప్రణాళిక" : "Curriculum"}
+              {language === "te" ? "పాఠాలు" : "Lessons"}
             </TabsTrigger>
             <TabsTrigger value="quizzes" className="text-xs">
-              {language === "te" ? "క్విజ్‌లు" : "Quizzes"}
+              {language === "te" ? "క్విజ్" : "Quiz"}
+            </TabsTrigger>
+            <TabsTrigger value="reviews" className="text-xs">
+              {language === "te" ? "రివ్యూలు" : "Reviews"}
             </TabsTrigger>
           </TabsList>
 
