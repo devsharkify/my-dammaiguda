@@ -89,6 +89,16 @@ export default function Certificate() {
     window.open(`https://www.linkedin.com/sharing/share-offsite/?url=${url}`, '_blank');
   };
 
+  const shareToInstagram = () => {
+    // Instagram doesn't support direct URL sharing, so we copy and guide user
+    navigator.clipboard.writeText(`${shareText}\n\n${shareUrl}`);
+    toast.success(
+      language === "te" 
+        ? "టెక్స్ట్ కాపీ చేయబడింది! Instagram స్టోరీలో పేస్ట్ చేయండి" 
+        : "Text copied! Paste it in your Instagram story"
+    );
+  };
+
   const shareByEmail = () => {
     const subject = encodeURIComponent(`🎓 ${certificate?.user_name} completed ${certificate?.course_title}`);
     const body = encodeURIComponent(`${shareText}\n\nView certificate: ${shareUrl}`);
