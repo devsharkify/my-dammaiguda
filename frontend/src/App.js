@@ -37,6 +37,8 @@ import DeviceSync from "./pages/DeviceSync";
 import Helpline from "./pages/Helpline";
 import StatusTemplates from "./pages/StatusTemplates";
 import NewsPage from "./pages/NewsPage";
+import InstructorPortal from "./pages/InstructorPortal";
+import Leaderboard from "./pages/Leaderboard";
 
 import "./App.css";
 
