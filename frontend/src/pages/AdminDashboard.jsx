@@ -326,6 +326,75 @@ export default function AdminDashboard() {
             </div>
           </TabsContent>
 
+          {/* Education Management Tab */}
+          <TabsContent value="education" className="mt-4 space-y-4">
+            <div className="flex items-center justify-between">
+              <h3 className="font-semibold flex items-center gap-2">
+                <GraduationCap className="h-5 w-5" />
+                {language === "te" ? "కోర్సులు నిర్వహణ" : "Course Management"}
+              </h3>
+              <Button size="sm" onClick={() => { resetCourseForm(); setShowCourseDialog(true); }}>
+                <Plus className="h-4 w-4 mr-1" />
+                {language === "te" ? "కోర్సు జోడించు" : "Add Course"}
+              </Button>
+            </div>
+            
+            <div className="space-y-3">
+              {courses.map((course) => (
+                <Card key={course.id} className="border-border/50">
+                  <CardContent className="p-4">
+                    <div className="flex gap-3">
+                      <div className="w-16 h-16 rounded-lg overflow-hidden flex-shrink-0">
+                        <img
+                          src={course.thumbnail_url || "https://images.unsplash.com/photo-1516321318423-f06f85e504b3?w=100"}
+                          alt={course.title}
+                          className="w-full h-full object-cover"
+                        />
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-start justify-between gap-2">
+                          <h4 className="font-semibold text-sm truncate">{course.title}</h4>
+                          <div className="flex items-center gap-1 flex-shrink-0">
+                            {course.is_published ? (
+                              <Badge className="bg-green-100 text-green-700 text-[10px]">Published</Badge>
+                            ) : (
+                              <Badge className="bg-yellow-100 text-yellow-700 text-[10px]">Draft</Badge>
+                            )}
+                          </div>
+                        </div>
+                        <p className="text-xs text-muted-foreground">{course.instructor_name}</p>
+                        <div className="flex items-center gap-3 mt-2 text-xs text-muted-foreground">
+                          <span>{course.category}</span>
+                          <span>₹{course.price}</span>
+                          <span>{course.enrollment_count || 0} enrolled</span>
+                        </div>
+                      </div>
+                    </div>
+                    <div className="flex gap-2 mt-3 pt-3 border-t">
+                      <Button size="sm" variant="outline" onClick={() => openEditCourse(course)} className="flex-1">
+                        <Edit className="h-3 w-3 mr-1" />
+                        Edit
+                      </Button>
+                      {!course.is_published && (
+                        <Button size="sm" onClick={() => publishCourse(course.id)} className="flex-1">
+                          <Eye className="h-3 w-3 mr-1" />
+                          Publish
+                        </Button>
+                      )}
+                    </div>
+                  </CardContent>
+                </Card>
+              ))}
+              
+              {courses.length === 0 && (
+                <div className="text-center py-8">
+                  <BookOpen className="h-10 w-10 mx-auto text-muted-foreground/50 mb-2" />
+                  <p className="text-sm text-muted-foreground">No courses yet</p>
+                </div>
+              )}
+            </div>
+          </TabsContent>
+
           {/* Heatmap Tab */}
           <TabsContent value="heatmap" className="mt-4 space-y-3">
             {heatmap.length === 0 ? (
