@@ -26,6 +26,7 @@ from routers.stories import router as stories_router
 from routers.education import router as education_router
 from routers.shop import router as shop_router
 from routers.vouchers import router as vouchers_router
+from routers.templates import router as templates_router
 
 # Create FastAPI app
 app = FastAPI(
