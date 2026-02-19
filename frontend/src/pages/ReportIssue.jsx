@@ -111,19 +111,41 @@ export default function ReportIssue() {
   };
 
   const handleFileSelect = (e) => {
-    const files = Array.from(e.target.files);
-    if (files.length + mediaFiles.length > 5) {
-      toast.error(language === "te" ? "గరిష్టంగా 5 ఫైల్‌లు అనుమతించబడతాయి" : "Maximum 5 files allowed");
-      return;
+    try {
+      const files = Array.from(e.target.files || []);
+      if (files.length === 0) return;
+      
+      if (files.length + mediaFiles.length > 5) {
+        toast.error(language === "te" ? "గరిష్టంగా 5 ఫైల్‌లు అనుమతించబడతాయి" : "Maximum 5 files allowed");
+        return;
+      }
+
+      const newFiles = [];
+      files.forEach(file => {
+        try {
+          const preview = URL.createObjectURL(file);
+          newFiles.push({
+            file,
+            preview,
+            type: file.type.startsWith("video") ? "video" : "image"
+          });
+        } catch (err) {
+          console.error("Error creating preview:", err);
+        }
+      });
+
+      if (newFiles.length > 0) {
+        setMediaFiles(prev => [...prev, ...newFiles]);
+      }
+    } catch (error) {
+      console.error("Error selecting files:", error);
+      toast.error(language === "te" ? "ఫైల్ ఎంపికలో లోపం" : "Error selecting files");
     }
-
-    const newFiles = files.map(file => ({
-      file,
-      preview: URL.createObjectURL(file),
-      type: file.type.startsWith("video") ? "video" : "image"
-    }));
-
-    setMediaFiles([...mediaFiles, ...newFiles]);
+    
+    // Reset file input
+    if (e.target) {
+      e.target.value = '';
+    }
   };
 
   const removeFile = (index) => {
