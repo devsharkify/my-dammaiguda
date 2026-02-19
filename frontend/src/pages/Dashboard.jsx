@@ -319,6 +319,44 @@ export default function Dashboard() {
   return (
     <Layout>
       <div className="space-y-3 pb-20" data-testid="dashboard">
+        
+        {/* Promotional Banner - PhonePe Style */}
+        <Link to="/education" className="block">
+          <div className="relative overflow-hidden rounded-2xl bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-500 p-4 shadow-lg">
+            {/* Background Pattern */}
+            <div className="absolute inset-0 opacity-10">
+              <div className="absolute -right-10 -top-10 h-40 w-40 rounded-full bg-white"></div>
+              <div className="absolute -left-10 -bottom-10 h-32 w-32 rounded-full bg-white"></div>
+            </div>
+            
+            <div className="relative flex items-center justify-between">
+              <div className="flex-1">
+                <p className="text-white/80 text-xs mb-1">
+                  {language === "te" ? "కొత్త కోర్సులు" : "New Courses Available"}
+                </p>
+                <h3 className="text-white font-bold text-lg leading-tight">
+                  {language === "te" ? "AIT విద్యతో నేర్చుకోండి!" : "Learn with AIT Education!"}
+                </h3>
+                <p className="text-white/70 text-xs mt-1">
+                  {language === "te" ? "ఉచిత కోర్సులు అందుబాటులో" : "Free courses available"}
+                </p>
+              </div>
+              <div className="flex-shrink-0 ml-4">
+                <div className="h-14 w-14 rounded-2xl bg-white/20 flex items-center justify-center">
+                  <GraduationCap className="h-7 w-7 text-white" />
+                </div>
+              </div>
+            </div>
+            
+            <div className="mt-3">
+              <span className="inline-flex items-center gap-1 px-4 py-2 bg-white text-indigo-600 rounded-full text-sm font-semibold shadow-md">
+                {language === "te" ? "ఇప్పుడే చూడండి" : "Explore Now"}
+                <ChevronRight className="h-4 w-4" />
+              </span>
+            </div>
+          </div>
+        </Link>
+
         {/* Stories Bar */}
         <div className="flex gap-3 overflow-x-auto pb-2 scrollbar-hide">
           {/* Add Story Button */}
