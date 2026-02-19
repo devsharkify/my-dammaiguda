@@ -190,11 +190,9 @@ Key Collections:
 ## Upcoming Tasks (P1)
 1. Real Twilio OTP integration
 2. Cloudinary media upload integration
-3. Discount Vouchers System (admin creates vouchers with codes)
-4. Status Templates (admin uploads templates, users add photo/name, share to WhatsApp)
-5. OpenGraph Meta Tags for certificate sharing
-6. Automatic fitness points rewards (connect Fitness → Gift Shop)
-7. News page content (currently /news route placeholder)
+3. News page content (currently /news route placeholder)
+4. OpenGraph Meta Tags for certificate sharing
+5. Automatic fitness points rewards (connect Fitness → Gift Shop)
 
 ## Future/Backlog (P2)
 - Native app for Health Connect/HealthKit integration
