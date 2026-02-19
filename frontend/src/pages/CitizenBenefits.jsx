@@ -285,16 +285,91 @@ export default function CitizenBenefits() {
 
   return (
     <Layout showBackButton title={language === "te" ? "పౌర ప్రయోజనాలు" : "Citizen Benefits"}>
-      <div className="space-y-6" data-testid="citizen-benefits">
-        <Tabs defaultValue="benefits" className="w-full">
-          <TabsList className="grid w-full grid-cols-2 h-12">
-            <TabsTrigger value="benefits" className="text-sm">
+      <div className="space-y-6 pb-20" data-testid="citizen-benefits">
+        <Tabs defaultValue="vouchers" className="w-full">
+          <TabsList className="grid w-full grid-cols-3 h-12">
+            <TabsTrigger value="vouchers" className="text-xs">
+              <Ticket className="h-3.5 w-3.5 mr-1" />
+              {language === "te" ? "వౌచర్లు" : "Vouchers"}
+            </TabsTrigger>
+            <TabsTrigger value="benefits" className="text-xs">
+              <Heart className="h-3.5 w-3.5 mr-1" />
               {language === "te" ? "ప్రయోజనాలు" : "Benefits"}
             </TabsTrigger>
-            <TabsTrigger value="applications" className="text-sm">
-              {language === "te" ? "నా దరఖాస్తులు" : "My Applications"}
+            <TabsTrigger value="applications" className="text-xs">
+              <FileText className="h-3.5 w-3.5 mr-1" />
+              {language === "te" ? "దరఖాస్తులు" : "Applications"}
             </TabsTrigger>
           </TabsList>
+
+          {/* Vouchers Tab */}
+          <TabsContent value="vouchers" className="mt-4 space-y-4">
+            {vouchersLoading ? (
+              <div className="flex items-center justify-center py-12">
+                <Loader2 className="h-8 w-8 animate-spin text-primary" />
+              </div>
+            ) : vouchers.length === 0 ? (
+              <div className="text-center py-12">
+                <Ticket className="h-16 w-16 mx-auto text-muted-foreground/30 mb-4" />
+                <p className="text-muted-foreground">
+                  {language === "te" ? "వౌచర్లు అందుబాటులో లేవు" : "No vouchers available"}
+                </p>
+              </div>
+            ) : (
+              <div className="grid grid-cols-1 gap-3">
+                {vouchers.map((voucher) => (
+                  <Card 
+                    key={voucher.id} 
+                    className="border-border/50 cursor-pointer hover:shadow-md transition-shadow overflow-hidden"
+                    onClick={() => openVoucherDetails(voucher)}
+                    data-testid={`voucher-${voucher.id}`}
+                  >
+                    <div className="flex">
+                      {/* Left side - discount badge */}
+                      <div className={`w-24 ${getVoucherCategoryColor(voucher.category)} flex flex-col items-center justify-center p-3`}>
+                        {getVoucherCategoryIcon(voucher.category)}
+                        <div className="mt-2 text-center">
+                          <p className="text-2xl font-bold">
+                            {voucher.discount_type === "percentage" ? voucher.discount_value : voucher.discount_value}
+                          </p>
+                          <p className="text-xs font-medium">
+                            {voucher.discount_type === "percentage" ? "% OFF" : "₹ OFF"}
+                          </p>
+                        </div>
+                      </div>
+                      
+                      {/* Right side - details */}
+                      <CardContent className="flex-1 p-4">
+                        <div className="flex items-start justify-between">
+                          <div>
+                            <h3 className="font-semibold text-sm line-clamp-1">
+                              {language === "te" && voucher.title_te ? voucher.title_te : voucher.title}
+                            </h3>
+                            <p className="text-xs text-muted-foreground mt-0.5">{voucher.partner_name}</p>
+                          </div>
+                          <Badge variant="secondary" className="text-[10px]">
+                            {voucher.category}
+                          </Badge>
+                        </div>
+                        <p className="text-xs text-muted-foreground mt-2 line-clamp-2">
+                          {language === "te" && voucher.description_te ? voucher.description_te : voucher.description}
+                        </p>
+                        <div className="flex items-center justify-between mt-3">
+                          <span className="text-[10px] text-muted-foreground">
+                            {voucher.valid_until ? `${language === "te" ? "వరకు:" : "Valid till:"} ${new Date(voucher.valid_until).toLocaleDateString()}` : (language === "te" ? "పరిమిత సమయం" : "Limited time")}
+                          </span>
+                          <Button size="sm" variant="outline" className="h-7 text-xs">
+                            {language === "te" ? "కోడ్ చూడండి" : "View Code"}
+                            <ArrowRight className="h-3 w-3 ml-1" />
+                          </Button>
+                        </div>
+                      </CardContent>
+                    </div>
+                  </Card>
+                ))}
+              </div>
+            )}
+          </TabsContent>
 
           {/* Benefits Tab */}
           <TabsContent value="benefits" className="mt-4 space-y-4">
