@@ -73,7 +73,20 @@ Build a production-ready, mobile-first civic engagement platform "My Dammaiguda"
   - Product creation with point_type, privilege_points_required, delivery_fee
 - **Wallet Display**: Shows both balances side by side
 
-### 2. Enhanced Dumpyard Section ✅
+### 8. Discount Vouchers System ✅ (P1)
+- **Admin Features**: Create vouchers with random or specific codes, set discount type (percentage/flat), partner name, category, terms, validity
+- **User Features**: Browse vouchers by category, view full details with CODE, copy code, share, claim
+- **Categories**: Food, Shopping, Health, Education, Entertainment
+- **Sample Vouchers Created**: Dominos (DAMM20, 20% off), Apollo Pharmacy (₹100 off), Emeritus (LEARN50, 50% off)
+
+### 9. Status Templates Editor ✅ (P1)
+- **Template Categories**: Festivals, Birthday, Events, Greetings
+- **Editor Features**: Upload photo (optional), enter name, generate status image
+- **Canvas-based Rendering**: Client-side image generation using HTML5 Canvas
+- **Sharing**: Download PNG or share directly to WhatsApp/Instagram
+- **Fallback Templates**: Ugadi Wishes, Birthday templates pre-loaded
+
+### 10. Enhanced Dumpyard Section ✅
 - **Pollution Zones Tab**: Red (2km), Orange (5km), Green (10km) zones with risk levels
 - **Health Risks Tab**: 
   - Respiratory Issues, Cadmium Exposure, Skin Allergies, Eye Irritation
