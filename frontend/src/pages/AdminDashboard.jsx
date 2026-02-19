@@ -580,6 +580,10 @@ export default function AdminDashboard() {
                 <ImageIcon className="h-3.5 w-3.5 mr-1" />
                 Templates
               </TabsTrigger>
+              <TabsTrigger value="content" className="text-xs px-2.5 data-[state=active]:bg-background data-[state=active]:shadow-sm rounded-md">
+                <Settings className="h-3.5 w-3.5 mr-1" />
+                CMS
+              </TabsTrigger>
             </TabsList>
           </div>
 
