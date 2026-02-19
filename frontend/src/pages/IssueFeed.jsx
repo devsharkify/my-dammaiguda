@@ -88,7 +88,11 @@ export default function IssueFeed() {
     { value: "all", label: language === "te" ? "అన్నీ" : "All" },
     { value: "reported", label: language === "te" ? "నివేదించబడింది" : "Reported" },
     { value: "verified", label: language === "te" ? "ధృవీకరించబడింది" : "Verified" },
-    { value: "escalated", label: language === "te" ? "పెంచబడింది" : "Escalated" },
+    { value: "action_taken", label: language === "te" ? "చర్య తీసుకోబడింది" : "Action Taken" },
+    { value: "filed_with_authority", label: language === "te" ? "అధికారులకు పంపబడింది" : "Filed with Authority" },
+    { value: "resolved_by_authority", label: language === "te" ? "అధికారులచే పరిష్కరించబడింది" : "Resolved by Authority" },
+    { value: "resolved_by_us", label: language === "te" ? "మా ద్వారా పరిష్కరించబడింది" : "Resolved by Us" },
+    { value: "issue_not_found", label: language === "te" ? "సమస్య కనుగొనబడలేదు" : "Issue Not Found" },
     { value: "closed", label: language === "te" ? "మూసివేయబడింది" : "Closed" }
   ];
 
