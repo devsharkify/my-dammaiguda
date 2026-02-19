@@ -1,79 +1,167 @@
-# My Dammaiguda - Civic Engagement Platform PRD
+# My Dammaiguda - Civic Engagement Platform
 
-## Project Overview
-**Name:** My Dammaiguda  
-**Type:** Civic Engagement Platform (PWA)  
-**Version:** 3.9.0  
-**Last Updated:** December 19, 2025
+## Original Problem Statement
+Build a production-ready, mobile-first civic engagement platform "My Dammaiguda". The platform must be minimalistic, fast, low-data, and trust-focused.
 
-## What's Been Implemented
+## Product Requirements
 
-### ✅ PhonePe-Style UI Redesign (v3.9.0)
-- **Promotional Banner**: Gradient banner on Dashboard for AIT Education
-- **Purple Gradient Header**: Modern header with user avatar
-- **Bottom Navigation Bar**: 5-icon nav (Home, Learn, Fit, Chat, Profile)
-- **Side Menu**: Redesigned with gradient header and user info card
-- **Instagram Sharing**: Added to certificate share options
+### Core Modules
+- **User Auth**: OTP-based authentication (currently MOCKED - static 123456)
+- **Issue Reporting**: Citizens report local issues with media support
+- **Dump Yard/Environment**: Environmental information tracking
+- **Health & Fitness (Kaizer Fit)**: Comprehensive fitness tracking with smartwatch integration
+- **Citizen Benefits**: Government scheme information
+- **Ward Expenditure Dashboard**: Local spending transparency
+- **Polls**: Community voting
+- **Volunteer Module**: Volunteer coordination
+- **Admin Dashboard**: Platform management
 
-### ✅ Certificate Sharing (v3.8.0-3.9.0)
-- WhatsApp, Instagram, Twitter, Facebook, LinkedIn, Email
-- Copy link with toast feedback
-- Native share sheet support
-- Premium certificate card design
+### Recently Implemented Features (Feb 2026)
 
-### ✅ Course Reviews & Ratings (v3.7.0)
-- 5-star rating with text reviews
-- Rating breakdown statistics
-- Helpful votes on reviews
+#### 1. Language Default Change
+- **Status**: COMPLETED
+- English is now the default language (previously Telugu)
+- Users can toggle to Telugu if desired
+- Stored in localStorage as `dammaiguda_language`
 
-### ✅ AI Chat UI/UX (v3.7.0)
-- Premium gradient design
-- Chat type selector (5 types)
-- Quick prompts, copy response
+#### 2. Gift Shop Module (E-commerce)
+- **Status**: COMPLETED
+- Points wallet system with balance tracking
+- Product catalog with categories (Fitness, Electronics)
+- MRP display and points-to-claim conversion
+- Delivery address collection with exact location
+- Order tracking (pending, approved, shipped, delivered)
+- Admin product management
+- Admin points adjustment and order approval
 
-### Previous Features (v3.0-3.6)
-- AIT Education with courses, lessons, quizzes
+#### 3. Fitness Page Enhancements
+- **Status**: COMPLETED
+- **Mandatory Onboarding**: First-time users must provide:
+  - Height (cm)
+  - Weight (kg)
+  - Gender (Male/Female/Other)
+  - Age
+  - Fitness Goal (optional)
+- BMI and calorie recommendations calculated automatically
+- **Manual Activity Recording**: Log workouts with editable dates
+  - Activity type, duration, distance, calories, notes
+  - Cannot record future activities
+- **Start Live Activity**: GPS-tracked real-time activity
+- **Record Fitness**: Manual entry option alongside live tracking
+
+#### 4. Dark Mode & Page Transitions
+- **Status**: COMPLETED
+- Global dark mode toggle in header and Profile page
+- Theme persists in localStorage
+- Smooth page transitions using framer-motion
+- CSS variables for light/dark themes
+
+#### 5. AIT Education Module
+- **Status**: COMPLETED
+- Course catalog with categories
+- Video lessons and quizzes
+- Progress tracking and certificates
+- Course reviews and ratings
 - Admin course management
-- Badge count fix, Web Push, AQI Widget
-- PWA Offline, Fitness Streaks & Badges
 
-## UI Components
-- **Header**: Gradient purple with logo, language toggle, profile avatar
-- **Bottom Nav**: Home, Learn (Education), Fit (Fitness), Chat (AI), Profile
-- **Banner**: Promotional gradient cards
-- **Side Menu**: Full-featured with all app sections
+---
+
+## Technical Architecture
+
+### Frontend (React)
+```
+/app/frontend/src/
+├── components/
+│   ├── Layout.jsx (PhonePe-style bottom nav, dark mode)
+│   └── PageTransition.jsx (framer-motion animations)
+├── context/
+│   ├── AuthContext.jsx
+│   ├── LanguageContext.jsx (default: 'en')
+│   └── ThemeContext.jsx (dark/light mode)
+├── pages/
+│   ├── Dashboard.jsx (Quick actions grid, AQI widgets)
+│   ├── GiftShop.jsx (Wallet, products, orders)
+│   ├── KaizerFit.jsx (Onboarding, live/manual tracking)
+│   ├── AITEducation.jsx, CourseDetail.jsx, Certificate.jsx
+│   └── ... (other modules)
+└── hooks/
+    └── usePushNotifications.js
+```
+
+### Backend (FastAPI)
+```
+/app/backend/
+├── server.py (main app, router registration)
+└── routers/
+    ├── auth.py (OTP auth - MOCKED)
+    ├── fitness.py (profile, activities, badges, manual recording)
+    ├── shop.py (wallet, products, orders, admin)
+    ├── education.py (courses, lessons, certificates)
+    └── ... (other modules)
+```
+
+### Database (MongoDB)
+Key Collections:
+- `users`, `wallets`, `points_transactions`
+- `gift_products`, `gift_orders`
+- `fitness_profiles`, `activities`, `fitness_daily`
+- `courses`, `lessons`, `quizzes`, `enrollments`, `certificates`
+
+---
+
+## Known Limitations
+
+### MOCKED Integrations (P0)
+- **OTP Authentication**: Uses static code `123456`
+- **Media Uploads**: Not connected to cloud storage
+
+### Requires User API Keys
+- Twilio SMS (for real OTP)
+- Cloudinary (for media storage)
+- Google Maps API (partially integrated)
+
+### Working Integrations
+- Emergent LLM Key (AI features)
+- Web Push (VAPID) - fully working
+- AQI data (real-time scraping)
+
+---
 
 ## Test Credentials
-- **Phone:** 9876543210
-- **OTP:** 123456 (MOCKED)
+- Phone: `9876543210`
+- OTP: `123456`
+- Admin: Phone `+919999999999`, role: admin
 
-## Key Files Changed
-- `/app/frontend/src/components/Layout.jsx` - New header, bottom nav, side menu
-- `/app/frontend/src/pages/Dashboard.jsx` - Added promotional banner
-- `/app/frontend/src/pages/Certificate.jsx` - Added Instagram sharing
+---
 
-## Remaining Backlog
+## Upcoming Tasks (P1)
+1. OpenGraph Meta Tags for certificate social sharing
+2. Smartwatch SDK integration (Health Connect, HealthKit)
+3. Real Twilio OTP integration
+4. Cloudinary media upload integration
 
-### P0 (Critical - Blocking Production)
-- [ ] Real Twilio SMS for OTP
-- [ ] Cloudinary Media Uploads
+## Future/Backlog (P2)
+- Instructor Portal for course management
+- Student Progress Leaderboard
+- WebSocket Real-time Chat
+- Component refactoring (large files)
 
-### P1 (High Priority)
-- [ ] Download certificate as image/PDF
-- [ ] Add more video content to lessons
+---
 
-### P2 (Medium/Future)
-- [ ] WebSocket real-time chat
-- [ ] OG meta tags for social preview
-- [ ] Course instructor portal
+## Change Log
 
-## 3rd Party Integrations
+### Feb 19, 2026
+- Changed default language from Telugu to English
+- Added Gift Shop module with wallet, products, orders
+- Added fitness profile onboarding (mandatory for first-time users)
+- Added manual activity recording with editable dates
+- Completed dark mode and page transitions
+- Added sample gift products (Water Bottle, Yoga Mat, Fitness Tracker)
+- Testing agent verified: 100% backend, 95% frontend success
 
-| Integration | Status |
-|-------------|--------|
-| Emergent LLM Key | ✅ Integrated |
-| Web Push (VAPID) | ✅ Integrated |
-| Social Sharing | ✅ WhatsApp, Instagram, Twitter, FB, LinkedIn, Email |
-| Google Maps API | ⚠️ Needs user key |
-| Twilio SMS | ❌ Mocked |
-| Cloudinary | ❌ Mocked |
+### Previous Sessions
+- Built AIT Education module with courses, quizzes, certificates
+- Implemented web push notifications
+- Created PhonePe-style UI with bottom navigation
+- Added AQI widgets with real-time data
+- Built Kaizer Fit with live activity tracking
