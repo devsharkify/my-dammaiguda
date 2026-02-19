@@ -161,11 +161,20 @@ export default function Layout({ children, title, showBackButton = false }) {
       {/* Side Menu */}
       {menuOpen && (
         <div className="fixed inset-0 z-50">
-          <div 
+          <motion.div 
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
             className="absolute inset-0 bg-black/50 backdrop-blur-sm"
             onClick={() => setMenuOpen(false)}
           />
-          <div className="absolute left-0 top-0 bottom-0 w-72 bg-white shadow-2xl animate-in slide-in-from-left">
+          <motion.div 
+            initial={{ x: "-100%" }}
+            animate={{ x: 0 }}
+            exit={{ x: "-100%" }}
+            transition={{ type: "spring", damping: 25, stiffness: 200 }}
+            className="absolute left-0 top-0 bottom-0 w-72 bg-background shadow-2xl"
+          >
             {/* Menu Header */}
             <div className="p-4 bg-gradient-to-r from-primary to-purple-600 text-white">
               <div className="flex items-center justify-between mb-4">
@@ -204,8 +213,32 @@ export default function Layout({ children, title, showBackButton = false }) {
               )}
             </div>
 
+            {/* Dark Mode Toggle in Menu */}
+            <div className="px-4 py-3 border-b border-border">
+              <button
+                onClick={toggleTheme}
+                className="w-full flex items-center justify-between px-4 py-3 rounded-xl bg-muted hover:bg-muted/80 transition-colors"
+              >
+                <div className="flex items-center gap-3">
+                  {isDark ? <Moon className="h-5 w-5 text-primary" /> : <Sun className="h-5 w-5 text-amber-500" />}
+                  <span className="font-medium">
+                    {isDark 
+                      ? (language === "te" ? "డార్క్ మోడ్" : "Dark Mode") 
+                      : (language === "te" ? "లైట్ మోడ్" : "Light Mode")}
+                  </span>
+                </div>
+                <div className={`w-12 h-6 rounded-full p-1 transition-colors ${isDark ? 'bg-primary' : 'bg-gray-300'}`}>
+                  <motion.div 
+                    className="w-4 h-4 rounded-full bg-white shadow"
+                    animate={{ x: isDark ? 24 : 0 }}
+                    transition={{ type: "spring", stiffness: 500, damping: 30 }}
+                  />
+                </div>
+              </button>
+            </div>
+
             {/* Menu Items */}
-            <nav className="p-2 max-h-[calc(100vh-200px)] overflow-y-auto">
+            <nav className="p-2 max-h-[calc(100vh-280px)] overflow-y-auto">
               {menuItems.map((item) => (
                 <Link
                   key={item.path}
@@ -214,10 +247,10 @@ export default function Layout({ children, title, showBackButton = false }) {
                   className={`flex items-center gap-3 px-4 py-3 rounded-xl mb-1 transition-colors ${
                     isActive(item.path)
                       ? "bg-primary/10 text-primary"
-                      : "text-gray-700 hover:bg-gray-100"
+                      : "text-foreground hover:bg-muted"
                   }`}
                 >
-                  <span className={isActive(item.path) ? "text-primary" : "text-gray-500"}>
+                  <span className={isActive(item.path) ? "text-primary" : "text-muted-foreground"}>
                     {item.icon}
                   </span>
                   <span className="font-medium">{item.label}</span>
@@ -226,20 +259,20 @@ export default function Layout({ children, title, showBackButton = false }) {
             </nav>
 
             {/* Logout Button */}
-            <div className="absolute bottom-0 left-0 right-0 p-4 border-t bg-white">
+            <div className="absolute bottom-0 left-0 right-0 p-4 border-t border-border bg-background">
               <button
                 onClick={() => {
                   logout();
                   setMenuOpen(false);
                 }}
-                className="w-full flex items-center justify-center gap-2 px-4 py-3 text-red-600 hover:bg-red-50 rounded-xl transition-colors"
+                className="w-full flex items-center justify-center gap-2 px-4 py-3 text-red-600 hover:bg-red-50 dark:hover:bg-red-950 rounded-xl transition-colors"
                 data-testid="logout-button"
               >
                 <LogOut className="h-5 w-5" />
                 <span className="font-medium">{language === "te" ? "లాగ్ అవుట్" : "Logout"}</span>
               </button>
             </div>
-          </div>
+          </motion.div>
         </div>
       )}
 
