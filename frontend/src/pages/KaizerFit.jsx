@@ -98,6 +98,10 @@ export default function KaizerFit() {
       setWeightStats(statsRes.data);
       setStreakData(streakRes.data);
       setBadges(badgesRes.data?.badges || []);
+      setBadgesCount({
+        earned: badgesRes.data?.earned_count || 0,
+        total: badgesRes.data?.total_count || 10
+      });
       
       if (statsRes.data?.goal_weight) {
         setGoalWeight(statsRes.data.goal_weight.toString());
