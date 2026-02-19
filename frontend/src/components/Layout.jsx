@@ -34,7 +34,7 @@ import {
   Gift,
   Phone
 } from "lucide-react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 export default function Layout({ children, title, showBackButton = false }) {
   const { t, language, toggleLanguage } = useLanguage();
