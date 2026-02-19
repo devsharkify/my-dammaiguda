@@ -373,17 +373,6 @@ export default function KaizerDoctor() {
         med.category.toLowerCase().includes(medicineSearch.toLowerCase())
       )
     : [];
-        total_calories: totalCalories
-      });
-      
-      toast.success(language === "te" ? "భోజనం నమోదు చేయబడింది!" : "Meal logged!");
-      setShowMealDialog(false);
-      setSelectedFoods([]);
-      fetchData();
-    } catch (error) {
-      toast.error("Failed to log meal");
-    }
-  };
 
   const updateHealthMetrics = async () => {
     try {
