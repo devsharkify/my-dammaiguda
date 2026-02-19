@@ -166,9 +166,9 @@ export default function LandingPage() {
       </section>
 
       {/* Features Grid */}
-      <section className="py-16 bg-background-subtle">
+      <section className="py-16 bg-background-subtle dark:bg-gray-900/50">
         <div className="max-w-7xl mx-auto px-4">
-          <h2 className="font-heading text-3xl font-semibold text-center text-text-primary mb-12">
+          <h2 className="font-heading text-3xl font-semibold text-center text-text-primary dark:text-white mb-12">
             {language === "te" ? "మీరు ఏమి చేయవచ్చు" : "What You Can Do"}
           </h2>
           
@@ -176,16 +176,16 @@ export default function LandingPage() {
             {features.map((feature, index) => (
               <div
                 key={index}
-                className="bg-white rounded-xl border border-border/50 p-6 shadow-sm hover:shadow-md transition-all duration-300 hover:border-primary/30"
+                className="bg-white dark:bg-gray-800 rounded-xl border border-border/50 dark:border-gray-700 p-6 shadow-sm hover:shadow-md transition-all duration-300 hover:border-primary/30"
                 data-testid={`feature-card-${index}`}
               >
                 <div className={`h-14 w-14 rounded-xl ${feature.color} flex items-center justify-center mb-4`}>
                   {feature.icon}
                 </div>
-                <h3 className="font-heading text-xl font-semibold text-text-primary mb-2">
+                <h3 className="font-heading text-xl font-semibold text-text-primary dark:text-white mb-2">
                   {feature.title}
                 </h3>
-                <p className="text-text-muted leading-relaxed">
+                <p className="text-text-muted dark:text-gray-400 leading-relaxed">
                   {feature.description}
                 </p>
               </div>
