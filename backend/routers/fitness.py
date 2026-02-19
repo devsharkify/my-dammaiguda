@@ -1073,6 +1073,14 @@ BADGES = {
     },
     "variety_master": {
         "id": "variety_master",
+        "name": "Variety Master",
+        "name_te": "వెరైటీ మాస్టర్",
+        "description": "Try 5 different activity types",
+        "description_te": "5 వివిధ రకాల వ్యాయామాలు ప్రయత్నించండి",
+        "icon": "🎯",
+        "color": "from-indigo-500 to-purple-500"
+    }
+}
 
 
 # ============== FITNESS PROFILE ONBOARDING ==============
