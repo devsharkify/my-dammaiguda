@@ -141,10 +141,14 @@ function AppRoutes() {
 }
 
 function App() {
+  // Register service worker for PWA
+  useServiceWorker();
+  
   return (
     <BrowserRouter>
       <LanguageProvider>
         <AuthProvider>
+          <OfflineBanner />
           <AppRoutes />
           <Toaster position="top-center" richColors />
         </AuthProvider>
