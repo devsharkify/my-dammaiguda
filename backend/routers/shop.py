@@ -139,12 +139,13 @@ async def get_transactions(
         "pages": (total + limit - 1) // limit
     }
 
-async def add_points_transaction(user_id: str, points: int, trans_type: str, description: str, reference_id: str = None):
-    """Helper to add points transaction and update wallet"""
+async def add_points_transaction(user_id: str, points: int, trans_type: str, description: str, reference_id: str = None, point_type: str = "normal"):
+    """Helper to add points transaction and update wallet (supports normal and privilege points)"""
     transaction = {
         "id": generate_id(),
         "user_id": user_id,
         "points": points,
+        "point_type": point_type,  # "normal" or "privilege"
         "transaction_type": trans_type,
         "description": description,
         "reference_id": reference_id,
@@ -159,19 +160,36 @@ async def add_points_transaction(user_id: str, points: int, trans_type: str, des
             "id": generate_id(),
             "user_id": user_id,
             "balance": 0,
+            "privilege_balance": 0,
             "total_earned": 0,
+            "total_privilege_earned": 0,
             "total_spent": 0,
             "created_at": now_iso()
         }
         await db.wallets.insert_one(wallet)
     
+    # Ensure privilege fields exist
+    if "privilege_balance" not in wallet:
+        await db.wallets.update_one(
+            {"user_id": user_id},
+            {"$set": {"privilege_balance": 0, "total_privilege_earned": 0}}
+        )
+    
     update = {"updated_at": now_iso()}
-    if trans_type in ["earned", "admin_credit"]:
-        update["$inc"] = {"balance": points, "total_earned": points}
-    else:
-        update["$inc"] = {"balance": -points, "total_spent": points}
+    if point_type == "privilege":
+        if trans_type in ["earned", "admin_credit"]:
+            update["$inc"] = {"privilege_balance": points, "total_privilege_earned": points}
+        else:
+            update["$inc"] = {"privilege_balance": -points, "total_spent": points}
+    else:  # normal points
+        if trans_type in ["earned", "admin_credit"]:
+            update["$inc"] = {"balance": points, "total_earned": points}
+        else:
+            update["$inc"] = {"balance": -points, "total_spent": points}
     
     await db.wallets.update_one({"user_id": user_id}, {"$set": {"updated_at": now_iso()}, "$inc": update.get("$inc", {})})
+    
+    return transaction
     
     return transaction
 
