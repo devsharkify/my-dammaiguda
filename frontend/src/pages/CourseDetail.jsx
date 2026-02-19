@@ -440,14 +440,14 @@ export default function CourseDetail() {
               
               {/* Scholarship Option */}
               {course.price > 0 && (
-                <Link 
-                  to="/benefits" 
+                <button 
+                  onClick={() => setShowScholarshipDialog(true)}
                   className="flex items-center justify-center gap-2 w-full py-2 bg-white/10 rounded-lg text-sm hover:bg-white/20 transition-colors"
                 >
                   <GraduationCap className="h-4 w-4" />
                   {language === "te" ? "స్కాలర్‌షిప్ కోసం అప్లై చేయండి" : "Apply for Scholarship"}
                   <ChevronRight className="h-4 w-4" />
-                </Link>
+                </button>
               )}
             </CardContent>
           </Card>
