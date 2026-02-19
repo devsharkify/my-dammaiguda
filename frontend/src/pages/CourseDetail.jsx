@@ -858,6 +858,72 @@ export default function CourseDetail() {
           )}
         </DialogContent>
       </Dialog>
+
+      {/* Payment Dialog */}
+      <Dialog open={showPaymentDialog} onOpenChange={setShowPaymentDialog}>
+        <DialogContent className="max-w-md">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <CreditCard className="h-5 w-5" />
+              {language === "te" ? "చెల్లింపు" : "Payment"}
+            </DialogTitle>
+          </DialogHeader>
+          
+          <div className="space-y-4">
+            {/* Course Info */}
+            <div className="bg-muted rounded-lg p-3">
+              <h4 className="font-medium text-sm">{course?.title}</h4>
+              <p className="text-2xl font-bold text-primary mt-1">₹{course?.price?.toLocaleString()}</p>
+            </div>
+            
+            {/* QR Code Placeholder */}
+            <div className="border-2 border-dashed border-muted-foreground/30 rounded-xl p-6 text-center">
+              <QrCode className="h-16 w-16 mx-auto text-muted-foreground/50 mb-3" />
+              <p className="text-sm text-muted-foreground">
+                {language === "te" ? "QR కోడ్ త్వరలో వస్తుంది" : "QR Code Coming Soon"}
+              </p>
+              <p className="text-xs text-muted-foreground mt-1">
+                {language === "te" ? "స్కాన్ చేసి చెల్లించండి" : "Scan to pay via UPI"}
+              </p>
+            </div>
+            
+            {/* Payment Instructions */}
+            <div className="bg-amber-50 dark:bg-amber-950/30 rounded-lg p-3 text-sm">
+              <p className="font-medium text-amber-800 dark:text-amber-200">
+                {language === "te" ? "చెల్లింపు తర్వాత:" : "After Payment:"}
+              </p>
+              <ol className="list-decimal list-inside text-amber-700 dark:text-amber-300 mt-2 space-y-1 text-xs">
+                <li>{language === "te" ? "స్క్రీన్‌షాట్ తీయండి" : "Take a screenshot"}</li>
+                <li>{language === "te" ? "క్రింద కన్ఫర్మ్ నొక్కండి" : "Click Confirm below"}</li>
+                <li>{language === "te" ? "24 గంటల్లో యాక్సెస్ పొందండి" : "Get access within 24 hours"}</li>
+              </ol>
+            </div>
+            
+            {/* Scholarship Option */}
+            <div className="border-t pt-4">
+              <p className="text-center text-sm text-muted-foreground mb-2">
+                {language === "te" ? "చెల్లించలేకపోతున్నారా?" : "Can't afford?"}
+              </p>
+              <Link to="/benefits" onClick={() => setShowPaymentDialog(false)}>
+                <Button variant="outline" className="w-full">
+                  <GraduationCap className="h-4 w-4 mr-2" />
+                  {language === "te" ? "స్కాలర్‌షిప్ కోసం అప్లై చేయండి" : "Apply for Scholarship"}
+                </Button>
+              </Link>
+            </div>
+          </div>
+          
+          <DialogFooter className="flex-col gap-2 sm:flex-col">
+            <Button onClick={handlePaymentConfirm} disabled={enrolling} className="w-full">
+              {enrolling && <Loader2 className="h-4 w-4 mr-2 animate-spin" />}
+              {language === "te" ? "చెల్లింపు కన్ఫర్మ్ చేయండి" : "Confirm Payment"}
+            </Button>
+            <Button variant="ghost" onClick={() => setShowPaymentDialog(false)} className="w-full">
+              {language === "te" ? "రద్దు చేయి" : "Cancel"}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </Layout>
   );
 }
