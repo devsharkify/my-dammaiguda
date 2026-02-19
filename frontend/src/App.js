@@ -167,6 +167,13 @@ function AppRoutes() {
       } />
       <Route path="/education/certificate/:certificateId" element={<Certificate />} />
       
+      {/* Gift Shop Route */}
+      <Route path="/shop" element={
+        <ProtectedRoute>
+          <GiftShop />
+        </ProtectedRoute>
+      } />
+      
       {/* Volunteer Routes */}
       <Route path="/volunteer" element={
         <ProtectedRoute roles={["volunteer", "admin"]}>
