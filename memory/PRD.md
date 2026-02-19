@@ -107,6 +107,21 @@ Build a production-ready, mobile-first civic engagement platform "My Dammaiguda"
 
 ## Key API Endpoints
 
+### CMS (Content Management)
+- `GET /api/content/dumpyard` - Fetch dump yard configuration
+- `PUT /api/content/dumpyard` - Update dump yard config (admin)
+- `GET /api/content/banners` - Get active banners
+- `GET/POST/PUT/DELETE /api/content/banners/{id}` - Banner CRUD (admin)
+- `GET/POST/PUT/DELETE /api/content/benefits/{id}` - Benefits CRUD (admin)
+- `GET /api/content/all` - Get all editable content
+- `POST /api/content/seed` - Seed default content (admin)
+
+### AQI (Live Air Quality)
+- `GET /api/aqi/dammaiguda` - Dammaiguda AQI from aqi.in
+- `GET /api/aqi/hyderabad` - Hyderabad AQI from aqi.in
+- `GET /api/aqi/both` - Both locations combined
+- `GET /api/aqi/current` - Multiple Hyderabad locations
+
 ### Gamification (Enhanced)
 - `GET /api/education/leaderboard` - Enhanced with XP, badges, quiz stats
 - `GET /api/education/my-stats` - User stats with level, badge, rank, XP progress
