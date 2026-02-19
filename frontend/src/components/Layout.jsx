@@ -229,9 +229,9 @@ export default function Layout({ children, title, showBackButton = false }) {
         {children}
       </main>
 
-      {/* Bottom Navigation Bar - PhonePe Style with Center Bulge */}
+      {/* Bottom Navigation Bar - Black to Match Header */}
       {!showBackButton && (
-        <nav className="fixed bottom-0 left-0 right-0 bg-white[#0e1115] border-t border-border shadow-lg z-40">
+        <nav className="fixed bottom-0 left-0 right-0 bg-gray-900 border-t border-gray-800 shadow-lg z-40">
           <div className="max-w-lg mx-auto px-2">
             <div className="flex items-center justify-around py-2">
               {bottomNavItems.map((item, index) => {
@@ -249,7 +249,7 @@ export default function Layout({ children, title, showBackButton = false }) {
                       <motion.div 
                         className={`p-4 rounded-full shadow-lg transition-all ${
                           active 
-                            ? "bg-gradient-to-br from-primary to-purple-600 text-white" 
+                            ? "bg-white text-gray-900" 
                             : "bg-gradient-to-br from-red-500 to-orange-500 text-white"
                         }`}
                         whileTap={{ scale: 0.9 }}
@@ -258,7 +258,7 @@ export default function Layout({ children, title, showBackButton = false }) {
                         {item.icon}
                       </motion.div>
                       <span className={`text-[10px] mt-1 font-semibold ${
-                        active ? "text-primary" : "text-foreground"
+                        active ? "text-white" : "text-gray-400"
                       }`}>
                         {item.label}
                       </span>
@@ -272,23 +272,23 @@ export default function Layout({ children, title, showBackButton = false }) {
                     to={item.path}
                     className={`flex flex-col items-center py-1 px-3 rounded-xl transition-all ${
                       active 
-                        ? "text-primary" 
-                        : "text-muted-foreground hover:text-foreground"
+                        ? "text-white" 
+                        : "text-gray-400 hover:text-gray-200"
                     }`}
                     data-testid={`nav-${item.path.replace("/", "")}`}
                   >
                     <motion.div 
                       className={`p-2 rounded-xl transition-all ${
                         active 
-                          ? "bg-primary/10 text-primary" 
-                          : "text-muted-foreground"
+                          ? "bg-white/10 text-white" 
+                          : "text-gray-400"
                       }`}
                       whileTap={{ scale: 0.9 }}
                     >
                       {item.icon}
                     </motion.div>
                     <span className={`text-[10px] mt-0.5 font-medium ${
-                      active ? "text-primary" : "text-muted-foreground"
+                      active ? "text-white" : "text-gray-400"
                     }`}>
                       {item.label}
                     </span>
