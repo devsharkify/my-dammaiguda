@@ -517,6 +517,7 @@ async def get_all_news(
 # ============== ADMIN ROUTES ==============
 
 @router.post("/admin/push")
+@router.post("/admin/create")
 async def admin_push_news(news: AdminNewsPush, user: dict = Depends(get_current_user)):
     """Admin: Push/create a news article"""
     if user.get("role") != "admin":
