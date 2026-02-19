@@ -88,12 +88,8 @@ export default function Layout({ children, title, showBackButton = false }) {
 
   return (
     <div className="min-h-screen bg-background pb-20">
-      {/* Header - Scroll-responsive background */}
-      <header className={`sticky top-0 z-50 text-white shadow-lg transition-all duration-300 ${
-        scrolled 
-          ? "bg-gray-900" 
-          : "bg-gradient-to-r from-primary via-primary to-purple-600"
-      }`}>
+      {/* Header - Solid Black */}
+      <header className="sticky top-0 z-50 bg-gray-900 text-white shadow-lg">
         <div className="max-w-lg mx-auto px-4 py-3 flex items-center justify-between">
           {showBackButton ? (
             <button 
