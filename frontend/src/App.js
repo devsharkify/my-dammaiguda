@@ -259,6 +259,10 @@ function AppRoutes() {
         </ProtectedRoute>
       } />
       
+      {/* Manager App - Separate Login */}
+      <Route path="/manager" element={<ManagerApp />} />
+      <Route path="/manager/*" element={<ManagerApp />} />
+      
       {/* Public Routes */}
       <Route path="/privacy-policy" element={<PrivacyPolicy />} />
       <Route path="/terms-of-service" element={<TermsOfService />} />
