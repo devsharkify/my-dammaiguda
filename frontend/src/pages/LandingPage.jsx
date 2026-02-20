@@ -94,11 +94,11 @@ export default function LandingPage() {
             Powered by
           </p>
           <div className="flex items-center gap-2 opacity-80">
-            <span className="text-slate-400 text-[10px]">Sharkify Technology Pvt. Ltd.</span>
+            <span className="text-slate-400 text-[10px]">{config.company.name}</span>
             <span className="text-slate-600 text-[10px]">&</span>
             <img 
-              src="https://customer-assets.emergentagent.com/job_b415d412-3e65-4362-a62f-f8bab1368136/artifacts/zoaa3k1e_Untitled%20design%20%2823%29.png" 
-              alt="Kaizer News" 
+              src={config.branding.partnerLogo} 
+              alt={config.branding.partnerName} 
               className="h-5 object-contain"
             />
           </div>
@@ -107,35 +107,41 @@ export default function LandingPage() {
         {/* ===== HERO SECTION: Logo & Title ===== */}
         <div className="flex flex-col items-center text-center mb-8">
           <img 
-            src="https://static.prod-images.emergentagent.com/jobs/b415d412-3e65-4362-a62f-f8bab1368136/images/fd09263f1ffaceb3dad575cd85696c5fbff1a43edc5d0829bc8e76785518ca64.png"
-            alt="My Dammaiguda"
+            src={config.branding.logo}
+            alt={config.branding.appName}
             className="w-20 h-20 rounded-2xl shadow-2xl shadow-emerald-900/40 mb-4"
           />
           <h1 className="text-2xl font-bold text-white tracking-tight mb-1">
-            My Dammaiguda
+            {config.branding.appName}
           </h1>
           <p className="text-slate-400 text-sm max-w-[220px]">
-            Track Issues. Protect Health. Claim Benefits.
+            {localizedConfig.tagline}
           </p>
         </div>
 
         {/* ===== STATS SECTION: Our Commitment ===== */}
         <div className="w-full max-w-sm mx-auto mb-8">
           <p className="text-center text-slate-500 text-[10px] uppercase tracking-widest mb-3">
-            Our Commitment to Dammaiguda
+            {language === "te" ? `${localizedConfig.areaName} పట్ల మా నిబద్ధత` : `Our Commitment to ${localizedConfig.areaName}`}
           </p>
           <div className="grid grid-cols-3 gap-3">
             <div className="flex flex-col items-center justify-center p-3 rounded-2xl bg-white/5 border border-white/5 backdrop-blur-sm">
-              <p className="text-xl font-bold text-teal-400">₹10Cr+</p>
-              <p className="text-[9px] text-slate-400 text-center leading-tight mt-1">Benefits to be<br/>Availed</p>
+              <p className="text-xl font-bold text-teal-400">{config.stats.benefitsAmount}</p>
+              <p className="text-[9px] text-slate-400 text-center leading-tight mt-1">
+                {language === "te" ? "ప్రయోజనాలు" : "Benefits to be"}<br/>{language === "te" ? "పొందబడతాయి" : "Availed"}
+              </p>
             </div>
             <div className="flex flex-col items-center justify-center p-3 rounded-2xl bg-white/5 border border-white/5 backdrop-blur-sm">
-              <p className="text-xl font-bold text-emerald-400">100+</p>
-              <p className="text-[9px] text-slate-400 text-center leading-tight mt-1">Local Problems<br/>to be Solved</p>
+              <p className="text-xl font-bold text-emerald-400">{config.stats.problemsSolved}</p>
+              <p className="text-[9px] text-slate-400 text-center leading-tight mt-1">
+                {language === "te" ? "స్థానిక సమస్యలు" : "Local Problems"}<br/>{language === "te" ? "పరిష్కరించబడతాయి" : "to be Solved"}
+              </p>
             </div>
             <div className="flex flex-col items-center justify-center p-3 rounded-2xl bg-white/5 border border-white/5 backdrop-blur-sm">
-              <p className="text-xl font-bold text-cyan-400">50K+</p>
-              <p className="text-[9px] text-slate-400 text-center leading-tight mt-1">People to be<br/>Benefited</p>
+              <p className="text-xl font-bold text-cyan-400">{config.stats.peopleBenefited}</p>
+              <p className="text-[9px] text-slate-400 text-center leading-tight mt-1">
+                {language === "te" ? "ప్రజలు" : "People to be"}<br/>{language === "te" ? "ప్రయోజనం పొందుతారు" : "Benefited"}
+              </p>
             </div>
           </div>
         </div>
