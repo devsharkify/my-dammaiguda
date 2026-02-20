@@ -399,6 +399,20 @@ export default function Dashboard() {
             </span>
           </button>
 
+          {/* Status Templates Button */}
+          <Link
+            to="/status-templates"
+            className="flex flex-col items-center flex-shrink-0"
+            data-testid="templates-btn"
+          >
+            <div className="h-14 w-14 rounded-full bg-gradient-to-br from-amber-400 to-orange-500 flex items-center justify-center shadow-lg shadow-orange-500/30">
+              <Sparkles className="h-6 w-6 text-white" />
+            </div>
+            <span className="text-[9px] mt-1 text-text-muted">
+              {language === "te" ? "టెంప్లేట్స్" : "Templates"}
+            </span>
+          </Link>
+
           {/* My Stories */}
           {myStories && (
             <button
