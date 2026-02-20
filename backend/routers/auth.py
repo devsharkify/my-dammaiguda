@@ -43,7 +43,7 @@ class UserUpdate(BaseModel):
 # ============== ROUTES ==============
 
 # Test phone numbers that always use dev OTP (123456)
-TEST_PHONES = ["+919876543210", "+919999999999", "+918888888888", "9876543210", "9999999999", "8888888888"]
+TEST_PHONES = ["+919876543210", "+919999999999", "+918888888888", "+919876543211", "9876543210", "9999999999", "8888888888", "9876543211"]
 
 async def send_authkey_otp(phone: str) -> dict:
     """Send OTP via Authkey.io API using SID template"""
