@@ -464,10 +464,10 @@ export default function KaizerFit() {
                     try {
                       const res = await axios.post(`${API}/doctor/water`, { glasses: 1 }, { headers });
                       setWaterGlasses(res.data.glasses);
-                      toast.success(language === "te" ? "నీరు నమోదు!" : "Water logged!");
+                      toast.success(language === "te" ? "నీరు నమోదు అయింది!" : "Water logged!");
                     } catch (err) {
-                      setWaterGlasses(prev => Math.min(prev + 1, 12));
-                      toast.success(language === "te" ? "నీరు నమోదు!" : "Water logged!");
+                      console.error("Water log error:", err);
+                      toast.error(language === "te" ? "నమోదు విఫలం" : "Failed to log");
                     }
                   }}
                   className="h-8 w-8 rounded-full bg-white/20 flex items-center justify-center hover:bg-white/30 transition-colors"
