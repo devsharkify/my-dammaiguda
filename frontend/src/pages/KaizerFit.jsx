@@ -511,26 +511,67 @@ export default function KaizerFit() {
           </Button>
         </div>
 
-        {/* Connect Smartwatch Card - Added margin top for spacing */}
+        {/* Connect Smartwatch Card - Google Fit Integration */}
         <div className="mt-2">
-          <Link to="/devices" data-testid="connect-devices-link">
-            <Card className="border-0 bg-gradient-to-r from-violet-500/10 to-purple-500/10 border border-violet-200 hover:shadow-md transition-all">
-              <CardContent className="p-4 flex items-center gap-3">
-                <div className="h-12 w-12 rounded-xl bg-gradient-to-br from-violet-500 to-purple-600 flex items-center justify-center text-white">
+          <Card className={`border-0 ${googleFitConnected ? 'bg-gradient-to-r from-green-500/10 to-emerald-500/10 border border-green-200' : 'bg-gradient-to-r from-violet-500/10 to-purple-500/10 border border-violet-200'} hover:shadow-md transition-all`}>
+            <CardContent className="p-4 flex items-center gap-3">
+              <div className={`h-12 w-12 rounded-xl ${googleFitConnected ? 'bg-gradient-to-br from-green-500 to-emerald-600' : 'bg-gradient-to-br from-violet-500 to-purple-600'} flex items-center justify-center text-white`}>
+                {googleFitConnected ? (
+                  <svg viewBox="0 0 24 24" className="h-6 w-6 fill-current">
+                    <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
+                  </svg>
+                ) : (
                   <Watch className="h-6 w-6" />
-                </div>
-                <div className="flex-1">
-                  <p className="font-semibold text-sm">
-                    {language === "te" ? "స్మార్ట్ వాచ్ జోడించండి" : "Connect Smartwatch"}
-                  </p>
-                  <p className="text-xs text-muted-foreground">
-                    {language === "te" ? "Apple Watch, Fitbit, Mi Band..." : "Apple Watch, Fitbit, Mi Band & more..."}
-                  </p>
-                </div>
-                <ChevronRight className="h-5 w-5 text-muted-foreground" />
-              </CardContent>
-            </Card>
-          </Link>
+                )}
+              </div>
+              <div className="flex-1">
+                <p className="font-semibold text-sm">
+                  {googleFitConnected 
+                    ? (language === "te" ? "Google Fit కనెక్ట్ అయింది" : "Google Fit Connected")
+                    : (language === "te" ? "Google Fit కనెక్ట్ చేయండి" : "Connect Google Fit")
+                  }
+                </p>
+                <p className="text-xs text-muted-foreground">
+                  {googleFitConnected 
+                    ? (language === "te" ? "స్టెప్స్, కేలరీలు సింక్ అవుతున్నాయి" : "Syncing steps, calories & more")
+                    : (language === "te" ? "అడుగులు, గుండె, నిద్ర డేటా పొందండి" : "Get steps, heart rate, sleep data")
+                  }
+                </p>
+                {googleFitConnected && googleFitData && (
+                  <div className="flex gap-3 mt-2 text-xs">
+                    <span className="text-green-600 font-medium">
+                      👟 {googleFitData.steps?.toLocaleString() || 0}
+                    </span>
+                    <span className="text-orange-600 font-medium">
+                      🔥 {googleFitData.calories_burned || 0} cal
+                    </span>
+                    <span className="text-blue-600 font-medium">
+                      📍 {googleFitData.distance_km || 0} km
+                    </span>
+                  </div>
+                )}
+              </div>
+              {googleFitConnected ? (
+                <Button 
+                  size="sm" 
+                  variant="ghost"
+                  className="text-red-500 hover:text-red-700 hover:bg-red-50"
+                  onClick={disconnectGoogleFit}
+                >
+                  {language === "te" ? "తొలగించు" : "Disconnect"}
+                </Button>
+              ) : (
+                <Button 
+                  size="sm" 
+                  className="bg-gradient-to-r from-violet-500 to-purple-600 text-white"
+                  onClick={connectGoogleFit}
+                  disabled={googleFitLoading}
+                >
+                  {googleFitLoading ? "..." : (language === "te" ? "కనెక్ట్" : "Connect")}
+                </Button>
+              )}
+            </CardContent>
+          </Card>
         </div>
 
         {/* Streak & Badges Section */}
