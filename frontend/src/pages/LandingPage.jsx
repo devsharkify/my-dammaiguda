@@ -265,7 +265,7 @@ export default function LandingPage() {
         </div>
 
         {/* ===== ACTION CARDS: Quick Actions ===== */}
-        <div className="grid grid-cols-2 gap-3 w-full max-w-sm mx-auto mb-6">
+        <div className="grid grid-cols-2 gap-3 w-full max-w-sm mx-auto">
           <div className="flex items-center gap-3 p-3 rounded-xl bg-slate-900/50 border border-slate-800 hover:border-emerald-500/30 transition-colors cursor-pointer group">
             <AlertTriangle className="w-5 h-5 text-red-400 group-hover:scale-110 transition-transform" />
             <span className="text-xs text-slate-300">Report a Problem</span>
@@ -281,22 +281,6 @@ export default function LandingPage() {
           <div className="flex items-center gap-3 p-3 rounded-xl bg-slate-900/50 border border-slate-800 hover:border-emerald-500/30 transition-colors cursor-pointer group">
             <HandCoins className="w-5 h-5 text-emerald-400 group-hover:scale-110 transition-transform" />
             <span className="text-xs text-slate-300">Claim Benefits</span>
-          </div>
-        </div>
-
-        {/* ===== FOOTER: Powered By ===== */}
-        <div className="mt-auto pt-4 flex flex-col items-center justify-center">
-          <p className="text-[9px] uppercase tracking-widest text-slate-600 mb-1.5">
-            Powered by
-          </p>
-          <div className="flex items-center gap-2 opacity-70">
-            <span className="text-slate-500 text-[10px]">Rohan Kulkarni Foundation</span>
-            <span className="text-slate-600 text-[10px]">&</span>
-            <img 
-              src="https://customer-assets.emergentagent.com/job_b415d412-3e65-4362-a62f-f8bab1368136/artifacts/zoaa3k1e_Untitled%20design%20%2823%29.png" 
-              alt="Kaizer News" 
-              className="h-5 object-contain opacity-80"
-            />
           </div>
         </div>
       </div>
