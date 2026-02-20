@@ -38,6 +38,17 @@
   font-family: 'Noto Sans Telugu', sans-serif;
 }
 
+
+/* Hide scrollbar utility */
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+
+
 /* Apply Telugu font when language is Telugu */
 [lang="te"], 
 .te-text {
