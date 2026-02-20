@@ -220,7 +220,13 @@ class TestManagerList:
     
     def test_01_list_managers(self):
         """Test listing all managers"""
-        # First login as admin
+        # First send OTP to admin
+        requests.post(
+            f"{BASE_URL}/api/auth/send-otp",
+            json={"phone": ADMIN_PHONE}
+        )
+        
+        # Then verify OTP
         response = requests.post(
             f"{BASE_URL}/api/auth/verify-otp",
             json={"phone": ADMIN_PHONE, "otp": TEST_OTP}
