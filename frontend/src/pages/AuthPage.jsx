@@ -311,9 +311,31 @@ export default function AuthPage() {
                   )}
                 </Button>
 
+                {/* Resend OTP with Timer */}
+                <div className="text-center">
+                  {resendTimer > 0 ? (
+                    <p className="text-text-muted text-sm flex items-center justify-center gap-2">
+                      <Timer className="h-4 w-4" />
+                      {language === "te" 
+                        ? `${resendTimer} సెకన్లలో OTP మళ్ళీ పంపవచ్చు` 
+                        : `Resend OTP in ${resendTimer}s`}
+                    </p>
+                  ) : (
+                    <Button
+                      variant="link"
+                      onClick={handleResendOTP}
+                      disabled={loading}
+                      className="text-primary hover:text-primary/80"
+                      data-testid="resend-otp-btn"
+                    >
+                      {language === "te" ? "OTP రాలేదా? మళ్ళీ పంపండి" : "Didn't receive OTP? Resend"}
+                    </Button>
+                  )}
+                </div>
+
                 <Button
                   variant="ghost"
-                  onClick={() => { setStep(1); setOtp(""); }}
+                  onClick={() => { setStep(1); setOtp(""); setResendTimer(0); setCanResend(false); }}
                   className="w-full text-text-muted"
                   data-testid="change-phone-btn"
                 >
