@@ -706,30 +706,52 @@ function ManagerDashboard({ user, token, onLogout }) {
 
       {/* Banner Dialog */}
       <Dialog open={showBannerDialog} onOpenChange={setShowBannerDialog}>
-        <DialogContent>
+        <DialogContent className="max-w-lg">
           <DialogHeader>
             <DialogTitle>Change Banner Image</DialogTitle>
           </DialogHeader>
           <div className="space-y-4">
+            {bannerUrl && (
+              <div>
+                <label className="text-sm font-medium mb-1.5 block text-muted-foreground">Current Banner</label>
+                <div className="aspect-video bg-muted rounded-lg overflow-hidden">
+                  <img src={bannerUrl} alt="Current banner" className="w-full h-full object-cover" />
+                </div>
+              </div>
+            )}
             <div>
-              <label className="text-sm font-medium mb-1.5 block">Banner Image URL</label>
+              <label className="text-sm font-medium mb-1.5 block">New Banner Image URL</label>
               <Input
                 placeholder="https://example.com/banner.jpg"
                 value={bannerImage}
                 onChange={(e) => setBannerImage(e.target.value)}
               />
+              <p className="text-xs text-muted-foreground mt-1">
+                Recommended size: 1920x600 pixels. Use high-quality images for best results.
+              </p>
             </div>
             {bannerImage && (
-              <div className="aspect-video bg-muted rounded-lg overflow-hidden">
-                <img src={bannerImage} alt="Banner preview" className="w-full h-full object-cover" />
+              <div>
+                <label className="text-sm font-medium mb-1.5 block text-muted-foreground">Preview</label>
+                <div className="aspect-video bg-muted rounded-lg overflow-hidden border-2 border-dashed border-blue-300">
+                  <img 
+                    src={bannerImage} 
+                    alt="Banner preview" 
+                    className="w-full h-full object-cover"
+                    onError={(e) => {
+                      e.target.style.display = 'none';
+                      toast.error("Invalid image URL");
+                    }}
+                  />
+                </div>
               </div>
             )}
           </div>
           <DialogFooter>
-            <Button variant="outline" onClick={() => setShowBannerDialog(false)}>
+            <Button variant="outline" onClick={() => { setShowBannerDialog(false); setBannerImage(""); }}>
               Cancel
             </Button>
-            <Button onClick={handleUpdateBanner}>
+            <Button onClick={handleUpdateBanner} disabled={!bannerImage.trim()}>
               <Image className="h-4 w-4 mr-2" />
               Update Banner
             </Button>
