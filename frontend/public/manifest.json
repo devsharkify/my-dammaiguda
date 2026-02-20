@@ -185,13 +185,10 @@
   ],
   "scope_extensions": [
     {
-      "origin": "https://*.emergentagent.com"
+      "origin": "https://www.mydammaiguda.in"
     },
     {
-      "origin": "https://emergentagent.com"
-    },
-    {
-      "origin": "https://civic-nexus-1.preview.emergentagent.com"
+      "origin": "https://mydammaiguda.in"
     }
   ],
   "edge_side_panel": {
