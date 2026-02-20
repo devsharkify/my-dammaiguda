@@ -42,6 +42,7 @@ import Leaderboard from "./pages/Leaderboard";
 import LiveChat from "./pages/LiveChat";
 import AdminConsole from "./pages/AdminConsole";
 import Astrology from "./pages/Astrology";
+import PrivacyPolicy from "./pages/PrivacyPolicy";
 
 import "./App.css";
 
