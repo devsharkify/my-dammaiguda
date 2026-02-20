@@ -5,7 +5,6 @@ import { Button } from "../components/ui/button";
 import { Input } from "../components/ui/input";
 import { Label } from "../components/ui/label";
 import { Badge } from "../components/ui/badge";
-import { Switch } from "../components/ui/switch";
 import { toast } from "sonner";
 import Layout from "../components/Layout";
 import {
@@ -13,14 +12,13 @@ import {
   Download,
   Check,
   Palette,
-  MapPin,
   Building,
-  Trash2,
   Eye,
   Code,
   FileJson,
   Smartphone,
-  RefreshCw
+  RefreshCw,
+  GraduationCap
 } from "lucide-react";
 
 // Area presets matching the CLI tool
