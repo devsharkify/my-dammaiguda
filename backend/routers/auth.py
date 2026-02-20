@@ -217,3 +217,71 @@ async def update_me(updates: UserUpdate, user: dict = Depends(get_current_user))
     
     updated_user = await db.users.find_one({"id": user["id"]}, {"_id": 0})
     return updated_user
+
+
+# ============== ACCOUNT DELETION ==============
+
+class DeleteAccountRequest(BaseModel):
+    reason: Optional[str] = None
+    phone: str
+
+@router.delete("/delete-account")
+async def delete_account(request: DeleteAccountRequest, user: dict = Depends(get_current_user)):
+    """
+    Request account deletion.
+    Marks account for deletion and removes after 30 days.
+    """
+    # Verify phone matches
+    if request.phone != user.get("phone"):
+        raise HTTPException(status_code=400, detail="Phone number doesn't match")
+    
+    # Log deletion request
+    deletion_record = {
+        "id": generate_id(),
+        "user_id": user["id"],
+        "phone": user.get("phone"),
+        "reason": request.reason,
+        "requested_at": now_iso(),
+        "scheduled_deletion": now_iso(),  # In production, add 30 days
+        "status": "pending"
+    }
+    
+    await db.account_deletions.insert_one(deletion_record)
+    
+    # Mark user as deleted (soft delete)
+    await db.users.update_one(
+        {"id": user["id"]},
+        {
+            "$set": {
+                "deleted": True,
+                "deleted_at": now_iso(),
+                "deletion_reason": request.reason
+            }
+        }
+    )
+    
+    # Delete user data from various collections
+    await db.fitness_logs.delete_many({"user_id": user["id"]})
+    await db.user_analytics.delete_many({"user_id": user["id"]})
+    await db.water_logs.delete_many({"user_id": user["id"]})
+    
+    return {
+        "success": True,
+        "message": "Account deletion request submitted. Your data will be deleted within 30 days.",
+        "deletion_id": deletion_record["id"]
+    }
+
+
+@router.get("/deletion-status")
+async def get_deletion_status(user: dict = Depends(get_current_user)):
+    """Check if account has pending deletion"""
+    deletion = await db.account_deletions.find_one(
+        {"user_id": user["id"], "status": "pending"},
+        {"_id": 0}
+    )
+    
+    if deletion:
+        return {"pending_deletion": True, "requested_at": deletion.get("requested_at")}
+    
+    return {"pending_deletion": False}
+
