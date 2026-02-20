@@ -1,10 +1,9 @@
-import { useState, useEffect, useRef, useCallback } from "react";
+import { useState, useEffect, useCallback } from "react";
+import { useNavigate } from "react-router-dom";
 import { useLanguage } from "../context/LanguageContext";
 import { useAuth } from "../context/AuthContext";
 import axios from "axios";
-import Layout from "../components/Layout";
-import { Button } from "../components/ui/button";
-import { Badge } from "../components/ui/badge";
+import { motion, AnimatePresence, useMotionValue, useTransform } from "framer-motion";
 import { toast } from "sonner";
 import { trackFeature, trackAction, FEATURES, ACTIONS } from "../utils/analytics";
 import {
@@ -22,552 +21,493 @@ import {
   Bookmark,
   Share2,
   Loader2,
-  ChevronUp,
-  ChevronDown,
-  X,
+  ChevronLeft,
+  ArrowLeft,
+  ArrowRight,
+  ArrowUp,
+  ArrowDown,
   ExternalLink,
-  Megaphone,
   Play,
   Volume2,
-  VolumeX
+  VolumeX,
+  X
 } from "lucide-react";
 
 const API = `${process.env.REACT_APP_BACKEND_URL}/api`;
 
 const CATEGORY_CONFIG = {
-  local: { icon: <MapPin className="h-4 w-4" />, gradient: "from-green-600 to-emerald-700" },
-  city: { icon: <Building2 className="h-4 w-4" />, gradient: "from-blue-600 to-cyan-700" },
-  state: { icon: <Landmark className="h-4 w-4" />, gradient: "from-purple-600 to-violet-700" },
-  national: { icon: <Globe className="h-4 w-4" />, gradient: "from-orange-600 to-red-600" },
-  international: { icon: <Globe className="h-4 w-4" />, gradient: "from-red-600 to-pink-700" },
-  sports: { icon: <Trophy className="h-4 w-4" />, gradient: "from-yellow-600 to-amber-700" },
-  entertainment: { icon: <Tv className="h-4 w-4" />, gradient: "from-pink-600 to-rose-700" },
-  tech: { icon: <Cpu className="h-4 w-4" />, gradient: "from-indigo-600 to-blue-700" },
-  health: { icon: <Heart className="h-4 w-4" />, gradient: "from-teal-600 to-cyan-700" },
-  business: { icon: <Briefcase className="h-4 w-4" />, gradient: "from-slate-600 to-gray-700" }
+  local: { icon: MapPin, label: "Local", labelTe: "స్థానిక", gradient: "from-green-600 to-emerald-700" },
+  city: { icon: Building2, label: "City", labelTe: "నగరం", gradient: "from-blue-600 to-cyan-700" },
+  state: { icon: Landmark, label: "State", labelTe: "రాష్ట్రం", gradient: "from-purple-600 to-violet-700" },
+  national: { icon: Globe, label: "National", labelTe: "జాతీయ", gradient: "from-orange-600 to-red-600" },
+  sports: { icon: Trophy, label: "Sports", labelTe: "క్రీడలు", gradient: "from-yellow-600 to-amber-700" },
+  entertainment: { icon: Tv, label: "Entertainment", labelTe: "వినోదం", gradient: "from-pink-600 to-rose-700" },
+  tech: { icon: Cpu, label: "Tech", labelTe: "టెక్", gradient: "from-indigo-600 to-blue-700" },
+  health: { icon: Heart, label: "Health", labelTe: "ఆరోగ్యం", gradient: "from-teal-600 to-cyan-700" },
+  business: { icon: Briefcase, label: "Business", labelTe: "వ్యాపారం", gradient: "from-slate-600 to-gray-700" }
+};
+
+// Spring animation config for smooth physics
+const springConfig = {
+  type: "spring",
+  stiffness: 300,
+  damping: 30
 };
 
 export default function NewsShorts() {
   const { language } = useLanguage();
   const { token } = useAuth();
-  const [categories, setCategories] = useState({});
+  const navigate = useNavigate();
+  
   const [activeCategory, setActiveCategory] = useState("local");
   const [news, setNews] = useState([]);
-  const [newsAds, setNewsAds] = useState([]);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [loading, setLoading] = useState(true);
-  const [refreshing, setRefreshing] = useState(false);
+  const [direction, setDirection] = useState(0); // -1 = prev, 1 = next
+  const [showSwipeHint, setShowSwipeHint] = useState(true);
+  const [bookmarked, setBookmarked] = useState({});
   
-  // Swipe state
-  const [touchStartY, setTouchStartY] = useState(0);
-  const [touchDeltaY, setTouchDeltaY] = useState(0);
-  const [isAnimating, setIsAnimating] = useState(false);
-  const [swipeDirection, setSwipeDirection] = useState(null); // 'up' or 'down'
+  // Video state
+  const [isMuted, setIsMuted] = useState(true);
   
-  const containerRef = useRef(null);
   const headers = token ? { Authorization: `Bearer ${token}` } : {};
 
-  useEffect(() => {
-    fetchCategories();
-    fetchNewsAds();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  // Motion values for drag
+  const x = useMotionValue(0);
+  const y = useMotionValue(0);
+  
+  // Transform for visual feedback
+  const rotateZ = useTransform(x, [-200, 0, 200], [-10, 0, 10]);
+  const scale = useTransform(
+    [x, y],
+    ([latestX, latestY]) => {
+      const distance = Math.sqrt(latestX * latestX + latestY * latestY);
+      return Math.max(0.95, 1 - distance / 1000);
+    }
+  );
 
   useEffect(() => {
     fetchNews(activeCategory);
     setCurrentIndex(0);
+    trackFeature(FEATURES.NEWS_SHORTS, token);
+    
+    // Hide swipe hint after 3 seconds
+    const timer = setTimeout(() => setShowSwipeHint(false), 3000);
+    return () => clearTimeout(timer);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [activeCategory]);
-
-  const fetchCategories = async () => {
-    try {
-      const response = await axios.get(`${API}/news/categories`);
-      setCategories(response.data);
-    } catch (error) {
-      console.error("Error fetching categories:", error);
-    }
-  };
-
-  const fetchNewsAds = async () => {
-    if (!token) return;
-    try {
-      const response = await axios.get(`${API}/stories/ads/news`, { headers });
-      setNewsAds(response.data?.ads || []);
-    } catch (error) {
-      console.error("Error fetching ads:", error);
-    }
-  };
-
-  // Inject ads into news feed (every 5 articles)
-  const getMergedFeed = useCallback(() => {
-    if (newsAds.length === 0) return news.map(n => ({ ...n, isAd: false }));
-    
-    const merged = [];
-    let adIndex = 0;
-    
-    news.forEach((article, idx) => {
-      merged.push({ ...article, isAd: false });
-      
-      // Insert ad after every 5 articles
-      if ((idx + 1) % 5 === 0 && adIndex < newsAds.length) {
-        merged.push({ ...newsAds[adIndex], isAd: true });
-        adIndex++;
-      }
-    });
-    
-    return merged;
-  }, [news, newsAds]);
-
-  const mergedFeed = getMergedFeed();
 
   const fetchNews = async (category) => {
     setLoading(true);
     try {
-      const response = await axios.get(`${API}/news/${category}?limit=20`);
-      setNews(response.data.news || []);
+      const response = await axios.get(`${API}/news/local`, {
+        params: { category, limit: 30 },
+        headers
+      });
+      const newsItems = response.data?.news || [];
+      setNews(newsItems);
     } catch (error) {
       console.error("Error fetching news:", error);
-      setNews([]);
+      toast.error("Failed to load news");
     } finally {
       setLoading(false);
     }
   };
 
-  const refreshNews = async () => {
-    setRefreshing(true);
-    await fetchNews(activeCategory);
-    setCurrentIndex(0);
-    setRefreshing(false);
-    toast.success(language === "te" ? "వార్తలు రిఫ్రెష్ అయ్యాయి" : "News refreshed");
-  };
-
-  // Swipe handlers
-  const handleTouchStart = (e) => {
-    if (isAnimating) return;
-    setTouchStartY(e.touches[0].clientY);
-    setTouchDeltaY(0);
-  };
-
-  const handleTouchMove = (e) => {
-    if (isAnimating) return;
-    const delta = touchStartY - e.touches[0].clientY;
-    setTouchDeltaY(delta);
-  };
-
-  const handleTouchEnd = () => {
-    if (isAnimating) return;
-    
-    const threshold = 80;
-    
-    if (touchDeltaY > threshold) {
-      // Swipe up - next article
-      goToNext();
-    } else if (touchDeltaY < -threshold) {
-      // Swipe down - previous article
-      goToPrev();
-    }
-    
-    setTouchDeltaY(0);
-  };
-
   const goToNext = useCallback(() => {
-    if (currentIndex < mergedFeed.length - 1 && !isAnimating) {
-      setIsAnimating(true);
-      setSwipeDirection('up');
-      setTimeout(() => {
-        setCurrentIndex(prev => prev + 1);
-        setSwipeDirection(null);
-        setIsAnimating(false);
-      }, 300);
+    if (currentIndex < news.length - 1) {
+      setDirection(1);
+      setCurrentIndex(prev => prev + 1);
+      trackAction(ACTIONS.VIEW_CONTENT, { type: 'news_swipe', direction: 'next' }, token);
     }
-  }, [currentIndex, mergedFeed.length, isAnimating]);
+  }, [currentIndex, news.length, token]);
 
   const goToPrev = useCallback(() => {
-    if (currentIndex > 0 && !isAnimating) {
-      setIsAnimating(true);
-      setSwipeDirection('down');
-      setTimeout(() => {
-        setCurrentIndex(prev => prev - 1);
-        setSwipeDirection(null);
-        setIsAnimating(false);
-      }, 300);
+    if (currentIndex > 0) {
+      setDirection(-1);
+      setCurrentIndex(prev => prev - 1);
+      trackAction(ACTIONS.VIEW_CONTENT, { type: 'news_swipe', direction: 'prev' }, token);
     }
-  }, [currentIndex, isAnimating]);
+  }, [currentIndex, token]);
 
-  // Keyboard navigation
-  useEffect(() => {
-    const handleKeyDown = (e) => {
-      if (e.key === 'ArrowUp' || e.key === 'k') goToPrev();
-      if (e.key === 'ArrowDown' || e.key === 'j') goToNext();
-    };
+  const handleDragEnd = (event, info) => {
+    const { offset, velocity } = info;
+    const swipeThreshold = 50;
+    const velocityThreshold = 500;
     
-    window.addEventListener('keydown', handleKeyDown);
-    return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [goToNext, goToPrev]);
-
-  const shareArticle = async (article) => {
-    const title = language === "te" ? (article.title_te || article.title) : article.title;
+    // Determine swipe direction based on dominant axis
+    const absX = Math.abs(offset.x);
+    const absY = Math.abs(offset.y);
     
-    // Track share action
-    trackAction(ACTIONS.SHARE, 'news_article', '/news', { category: activeCategory, is_video: isVideoNews(article) });
-    
-    if (navigator.share) {
-      try {
-        await navigator.share({
-          title: title,
-          text: article.summary,
-          url: article.link !== "#" ? article.link : window.location.href
-        });
-      } catch (error) {
-        // User cancelled
+    if (absX > absY) {
+      // Horizontal swipe
+      if (offset.x > swipeThreshold || velocity.x > velocityThreshold) {
+        // Swipe RIGHT = Next
+        goToNext();
+      } else if (offset.x < -swipeThreshold || velocity.x < -velocityThreshold) {
+        // Swipe LEFT = Previous
+        goToPrev();
       }
     } else {
-      navigator.clipboard.writeText(title);
-      toast.success(language === "te" ? "కాపీ చేయబడింది" : "Copied to clipboard");
+      // Vertical swipe
+      if (offset.y < -swipeThreshold || velocity.y < -velocityThreshold) {
+        // Swipe UP = Next
+        goToNext();
+      } else if (offset.y > swipeThreshold || velocity.y > velocityThreshold) {
+        // Swipe DOWN = Previous
+        goToPrev();
+      }
     }
   };
 
-  // Track news category change
-  useEffect(() => {
-    trackFeature(FEATURES.NEWS, activeCategory, ACTIONS.VIEW);
-  }, [activeCategory]);
+  const handleShare = async (item) => {
+    const shareData = {
+      title: item.title,
+      text: item.summary || item.title,
+      url: item.link || window.location.href
+    };
 
-  const currentItem = mergedFeed[currentIndex];
-  const config = currentItem?.isAd ? null : (CATEGORY_CONFIG[activeCategory] || CATEGORY_CONFIG.local);
-
-  // Get localized content
-  const getTitle = (article) => {
-    if (article.isAd) {
-      return language === "te" ? (article.title_te || article.title) : article.title;
+    try {
+      if (navigator.share) {
+        await navigator.share(shareData);
+      } else {
+        await navigator.clipboard.writeText(`${item.title}\n${item.link || window.location.href}`);
+        toast.success(language === "te" ? "లింక్ కాపీ అయింది" : "Link copied!");
+      }
+      trackAction(ACTIONS.SHARE, { type: 'news' }, token);
+    } catch (err) {
+      console.error("Share failed:", err);
     }
-    if (language === "te") {
-      return article.title_te || article.title;
-    }
-    return article.title;
   };
 
-  const getSummary = (article) => {
-    if (article.isAd) return null;
-    if (language === "te") {
-      return article.summary_te || article.summary;
-    }
-    return article.summary;
+  const toggleBookmark = (itemId) => {
+    setBookmarked(prev => ({
+      ...prev,
+      [itemId]: !prev[itemId]
+    }));
+    toast.success(
+      bookmarked[itemId] 
+        ? (language === "te" ? "బుక్‌మార్క్ తీసివేయబడింది" : "Bookmark removed")
+        : (language === "te" ? "బుక్‌మార్క్ చేయబడింది" : "Bookmarked!")
+    );
   };
 
-  const getCTA = (ad) => {
-    return language === "te" ? (ad.cta_text_te || ad.cta_text) : ad.cta_text;
+  const currentNews = news[currentIndex];
+
+  // Card variants for animations
+  const cardVariants = {
+    enter: (dir) => ({
+      x: dir > 0 ? 300 : dir < 0 ? -300 : 0,
+      y: dir === 0 ? 100 : 0,
+      opacity: 0,
+      scale: 0.9
+    }),
+    center: {
+      x: 0,
+      y: 0,
+      opacity: 1,
+      scale: 1,
+      transition: springConfig
+    },
+    exit: (dir) => ({
+      x: dir > 0 ? -300 : dir < 0 ? 300 : 0,
+      y: dir === 0 ? -100 : 0,
+      opacity: 0,
+      scale: 0.9,
+      transition: { duration: 0.3 }
+    })
   };
 
-  const getCategoryLabel = () => {
-    const catInfo = categories[activeCategory];
-    if (!catInfo) return activeCategory;
-    return language === "te" ? catInfo.te : catInfo.en;
-  };
-
-  // Extract YouTube video ID from URL (supports regular, shorts, embed, youtu.be)
-  const getYouTubeVideoId = (url) => {
+  // Check if current item is a video
+  const isVideo = currentNews?.video_url;
+  const getYouTubeEmbedUrl = (url) => {
     if (!url) return null;
-    
-    // Handle YouTube Shorts
-    const shortsMatch = url.match(/youtube\.com\/shorts\/([a-zA-Z0-9_-]{11})/);
-    if (shortsMatch) return shortsMatch[1];
-    
-    // Handle youtu.be
-    const shortMatch = url.match(/youtu\.be\/([a-zA-Z0-9_-]{11})/);
-    if (shortMatch) return shortMatch[1];
-    
-    // Handle regular YouTube URLs with watch?v=
-    const watchMatch = url.match(/[?&]v=([a-zA-Z0-9_-]{11})/);
-    if (watchMatch) return watchMatch[1];
-    
-    // Handle embed URLs
-    const embedMatch = url.match(/embed\/([a-zA-Z0-9_-]{11})/);
-    if (embedMatch) return embedMatch[1];
-    
+    const videoIdMatch = url.match(/(?:youtube\.com\/(?:watch\?v=|shorts\/)|youtu\.be\/)([^&\n?#]+)/);
+    if (videoIdMatch) {
+      return `https://www.youtube.com/embed/${videoIdMatch[1]}?autoplay=1&mute=${isMuted ? 1 : 0}&loop=1&controls=0&modestbranding=1&playsinline=1`;
+    }
     return null;
   };
 
-  // Check if item is a video news
-  const isVideoNews = (item) => {
-    return item.content_type === 'video' || item.video_url;
-  };
+  if (loading) {
+    return (
+      <div className="h-screen w-screen bg-zinc-950 flex items-center justify-center">
+        <div className="text-center">
+          <Loader2 className="h-12 w-12 animate-spin text-white mx-auto mb-4" />
+          <p className="text-white/60 font-medium">
+            {language === "te" ? "వార్తలు లోడ్ అవుతున్నాయి..." : "Loading news..."}
+          </p>
+        </div>
+      </div>
+    );
+  }
+
+  if (!news.length) {
+    return (
+      <div className="h-screen w-screen bg-zinc-950 flex items-center justify-center p-6">
+        <div className="text-center">
+          <Newspaper className="h-16 w-16 text-white/30 mx-auto mb-4" />
+          <p className="text-white/60 text-lg">
+            {language === "te" ? "వార్తలు అందుబాటులో లేవు" : "No news available"}
+          </p>
+          <button 
+            onClick={() => fetchNews(activeCategory)}
+            className="mt-4 px-6 py-2 bg-white/10 hover:bg-white/20 rounded-full text-white transition-all"
+          >
+            {language === "te" ? "రిఫ్రెష్" : "Refresh"}
+          </button>
+        </div>
+      </div>
+    );
+  }
 
   return (
-    <Layout showBackButton title={language === "te" ? "వార్తలు" : "News"}>
-      <div className="flex flex-col h-[calc(100vh-140px)]" data-testid="news-shorts">
-        {/* Category Pills - Horizontal Scroll */}
-        <div className="flex gap-2 overflow-x-auto pb-3 scrollbar-hide flex-shrink-0">
-          {Object.keys(categories).map((cat) => (
-            <button
-              key={cat}
-              onClick={() => setActiveCategory(cat)}
-              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium whitespace-nowrap transition-all ${
-                activeCategory === cat
-                  ? `bg-gradient-to-r ${CATEGORY_CONFIG[cat]?.gradient || "from-gray-600 to-gray-700"} text-white shadow-md`
-                  : "bg-muted text-muted-foreground hover:bg-muted/80"
-              }`}
-              data-testid={`cat-${cat}`}
-            >
-              {CATEGORY_CONFIG[cat]?.icon}
-              {language === "te" ? categories[cat]?.te : categories[cat]?.en}
-            </button>
-          ))}
-        </div>
+    <div className="h-screen w-screen bg-zinc-950 overflow-hidden relative" data-testid="news-shorts">
+      {/* Back Button */}
+      <button
+        onClick={() => navigate(-1)}
+        className="absolute top-4 left-4 z-50 p-2 bg-black/40 backdrop-blur-md rounded-full text-white hover:bg-black/60 transition-all"
+        data-testid="news-back-btn"
+      >
+        <ChevronLeft className="h-6 w-6" />
+      </button>
 
-        {/* News Card Container - Tinder Style */}
-        <div 
-          ref={containerRef}
-          className="flex-1 relative overflow-hidden rounded-2xl"
-          onTouchStart={handleTouchStart}
-          onTouchMove={handleTouchMove}
-          onTouchEnd={handleTouchEnd}
-        >
-          {loading ? (
-            <div className="absolute inset-0 flex items-center justify-center bg-gradient-to-br from-gray-800 to-gray-900">
-              <Loader2 className="h-10 w-10 animate-spin text-white" />
-            </div>
-          ) : mergedFeed.length === 0 ? (
-            <div className="absolute inset-0 flex flex-col items-center justify-center bg-gradient-to-br from-gray-800 to-gray-900 text-white">
-              <Newspaper className="h-16 w-16 opacity-50 mb-4" />
-              <p className="text-lg">{language === "te" ? "వార్తలు లేవు" : "No news available"}</p>
-              <Button onClick={refreshNews} variant="outline" className="mt-4 text-white border-white/50">
-                <RefreshCw className="h-4 w-4 mr-2" />
-                {language === "te" ? "రిఫ్రెష్" : "Refresh"}
-              </Button>
-            </div>
-          ) : currentItem ? (
-            <div
-              className={`absolute inset-0 transition-transform duration-300 ease-out ${
-                swipeDirection === 'up' ? '-translate-y-full' :
-                swipeDirection === 'down' ? 'translate-y-full' : ''
-              }`}
-              style={{
-                transform: !isAnimating && touchDeltaY ? `translateY(${-touchDeltaY * 0.3}px)` : undefined
-              }}
-            >
-              {/* Check if it's an Ad */}
-              {currentItem.isAd ? (
-                // AD CARD
-                <div className="absolute inset-0 bg-gradient-to-br from-purple-600 to-pink-600">
-                  {currentItem.media_url && (
-                    currentItem.ad_type === 'video' ? (
-                      <video
-                        src={currentItem.media_url}
-                        autoPlay
-                        muted
-                        loop
-                        playsInline
-                        className="absolute inset-0 w-full h-full object-cover"
-                      />
-                    ) : (
-                      <img
-                        src={currentItem.media_url}
-                        alt=""
-                        className="absolute inset-0 w-full h-full object-cover"
-                      />
-                    )
-                  )}
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-transparent" />
-                  
-                  {/* Ad Content */}
-                  <div className="absolute inset-0 flex flex-col justify-end p-5 text-white">
-                    <Badge className="w-fit mb-3 bg-yellow-500/90 text-black border-0">
-                      <Megaphone className="h-3 w-3 mr-1" />
-                      {language === "te" ? "ప్రచారం" : "Sponsored"}
-                    </Badge>
-                    
-                    <h2 className="text-xl font-bold leading-tight mb-4">
-                      {getTitle(currentItem)}
-                    </h2>
-                    
-                    {currentItem.click_url && (
-                      <a
-                        href={currentItem.click_url}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="inline-flex items-center gap-2 px-4 py-2 bg-white text-black rounded-full font-semibold text-sm w-fit"
-                      >
-                        {getCTA(currentItem) || (language === "te" ? "మరింత తెలుసుకోండి" : "Learn More")}
-                        <ExternalLink className="h-4 w-4" />
-                      </a>
-                    )}
-                  </div>
-                </div>
-              ) : isVideoNews(currentItem) ? (
-                // VIDEO NEWS CARD
-                <>
-                  {/* YouTube Embed */}
-                  <div className="absolute inset-0 bg-black">
-                    {getYouTubeVideoId(currentItem.video_url) ? (
-                      <iframe
-                        src={`https://www.youtube.com/embed/${getYouTubeVideoId(currentItem.video_url)}?autoplay=1&mute=1&controls=1&modestbranding=1&rel=0`}
-                        title={getTitle(currentItem)}
-                        className="absolute inset-0 w-full h-full"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                        allowFullScreen
-                      />
-                    ) : (
-                      <div className="absolute inset-0 flex items-center justify-center">
-                        <Play className="h-16 w-16 text-white/50" />
-                      </div>
-                    )}
-                    {/* Overlay for title */}
-                    <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/90 via-black/60 to-transparent p-5">
-                      <Badge className="w-fit mb-2 bg-red-500/90 text-white border-0">
-                        <Play className="h-3 w-3 mr-1" />
-                        {language === "te" ? "వీడియో వార్త" : "Video News"}
-                      </Badge>
-                      <h2 className="text-lg font-bold text-white leading-tight">
-                        {getTitle(currentItem)}
-                      </h2>
-                      <div className="flex items-center gap-3 mt-3">
-                        <Button
-                          size="sm"
-                          variant="ghost"
-                          className="text-white hover:bg-white/20"
-                          onClick={() => shareArticle(currentItem)}
-                        >
-                          <Share2 className="h-4 w-4 mr-1" />
-                          {language === "te" ? "షేర్" : "Share"}
-                        </Button>
-                      </div>
-                    </div>
-                  </div>
-                </>
-              ) : (
-                // NEWS ARTICLE CARD
-                <>
-                  {/* Background Image or Gradient */}
-                  <div className={`absolute inset-0 bg-gradient-to-br ${config?.gradient || "from-gray-700 to-gray-800"}`}>
-                    {currentItem.image && (
-                      <img
-                        src={currentItem.image}
-                        alt=""
-                        className="absolute inset-0 w-full h-full object-cover opacity-30"
-                      />
-                    )}
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/50 to-transparent" />
-                  </div>
-
-                  {/* Content */}
-                  <div className="absolute inset-0 flex flex-col justify-end p-5 text-white">
-                    {/* Category Badge - No Source */}
-                    <Badge className={`w-fit mb-3 bg-white/20 backdrop-blur-sm text-white border-0`}>
-                      {CATEGORY_CONFIG[activeCategory]?.icon}
-                      <span className="ml-1">{getCategoryLabel()}</span>
-                    </Badge>
-
-                    {/* Title */}
-                    <h2 className="text-xl font-bold leading-tight mb-3">
-                      {getTitle(currentItem)}
-                    </h2>
-
-                    {/* Summary */}
-                    <p className="text-white/80 text-sm leading-relaxed mb-4 line-clamp-4">
-                      {getSummary(currentItem)}
-                    </p>
-
-                    {/* Actions */}
-                    <div className="flex items-center gap-3">
-                      <Button
-                        size="sm"
-                        variant="ghost"
-                        className="text-white hover:bg-white/20"
-                        onClick={() => shareArticle(currentItem)}
-                      >
-                        <Share2 className="h-4 w-4 mr-1" />
-                        {language === "te" ? "షేర్" : "Share"}
-                      </Button>
-                      {/* Only show Read More for admin-pushed news with links */}
-                      {currentItem.is_admin_pushed && currentItem.link && currentItem.link !== "#" && (
-                        <a
-                          href={currentItem.link}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="inline-flex items-center gap-1 text-sm text-white bg-white/20 px-3 py-1.5 rounded-full hover:bg-white/30"
-                        >
-                          <ExternalLink className="h-3.5 w-3.5" />
-                          {language === "te" ? "మరింత చదవండి" : "Read more"}
-                        </a>
-                      )}
-                    </div>
-
-                    {/* Pinned indicator */}
-                    {currentItem.is_pinned && (
-                      <div className="absolute top-4 right-4">
-                        <Badge className="bg-yellow-500 text-black text-xs">
-                          {language === "te" ? "ప్రధాన" : "Featured"}
-                        </Badge>
-                      </div>
-                    )}
-                  </div>
-                </>
-              )}
-
-              {/* Swipe Hint */}
-              <div className="absolute top-4 left-1/2 -translate-x-1/2 flex flex-col items-center text-white/50 animate-bounce">
-                <ChevronUp className="h-5 w-5" />
-                <span className="text-[10px]">{language === "te" ? "స్వైప్ అప్" : "Swipe up"}</span>
-              </div>
-            </div>
-          ) : null}
-        </div>
-
-        {/* Progress & Navigation */}
-        <div className="flex items-center justify-between pt-3 flex-shrink-0">
-          <div className="flex items-center gap-2">
-            <Button
-              size="sm"
-              variant="ghost"
-              onClick={goToPrev}
-              disabled={currentIndex === 0 || isAnimating}
-              className="h-8 w-8 p-0"
-            >
-              <ChevronUp className="h-5 w-5" />
-            </Button>
-            <span className="text-sm text-muted-foreground font-mono">
-              {mergedFeed.length > 0 ? `${currentIndex + 1}/${mergedFeed.length}` : "0/0"}
-            </span>
-            <Button
-              size="sm"
-              variant="ghost"
-              onClick={goToNext}
-              disabled={currentIndex >= mergedFeed.length - 1 || isAnimating}
-              className="h-8 w-8 p-0"
-            >
-              <ChevronDown className="h-5 w-5" />
-            </Button>
-          </div>
-
-          <Button
-            size="sm"
-            variant="outline"
-            onClick={refreshNews}
-            disabled={refreshing}
-            className="h-8"
-          >
-            <RefreshCw className={`h-4 w-4 mr-1 ${refreshing ? "animate-spin" : ""}`} />
-            {language === "te" ? "రిఫ్రెష్" : "Refresh"}
-          </Button>
-        </div>
-
-        {/* Progress Dots */}
-        <div className="flex justify-center gap-1 py-2">
-          {mergedFeed.slice(Math.max(0, currentIndex - 3), Math.min(mergedFeed.length, currentIndex + 4)).map((item, idx) => {
-            const actualIndex = Math.max(0, currentIndex - 3) + idx;
+      {/* Category Pills - Floating */}
+      <div className="absolute top-4 left-16 right-4 z-40 overflow-x-auto scrollbar-hide">
+        <div className="flex gap-2 pb-2">
+          {Object.entries(CATEGORY_CONFIG).map(([key, config]) => {
+            const Icon = config.icon;
+            const isActive = activeCategory === key;
             return (
-              <div
-                key={actualIndex}
-                className={`h-1.5 rounded-full transition-all ${
-                  actualIndex === currentIndex
-                    ? item.isAd ? "w-6 bg-yellow-500" : "w-6 bg-primary"
-                    : item.isAd ? "w-1.5 bg-yellow-500/30" : "w-1.5 bg-muted-foreground/30"
+              <button
+                key={key}
+                onClick={() => setActiveCategory(key)}
+                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm font-medium whitespace-nowrap transition-all ${
+                  isActive 
+                    ? `bg-gradient-to-r ${config.gradient} text-white shadow-lg` 
+                    : 'bg-white/10 backdrop-blur-md text-white/80 hover:bg-white/20'
                 }`}
-              />
+                data-testid={`category-${key}`}
+              >
+                <Icon className="h-3.5 w-3.5" />
+                <span>{language === "te" ? config.labelTe : config.label}</span>
+              </button>
             );
           })}
         </div>
       </div>
-    </Layout>
+
+      {/* Progress Indicator */}
+      <div className="absolute top-16 left-4 right-4 z-40 flex gap-1">
+        {news.slice(0, 10).map((_, idx) => (
+          <div
+            key={idx}
+            className={`h-0.5 flex-1 rounded-full transition-all ${
+              idx === currentIndex ? 'bg-white' : idx < currentIndex ? 'bg-white/50' : 'bg-white/20'
+            }`}
+          />
+        ))}
+      </div>
+
+      {/* Swipe Hint Overlay */}
+      <AnimatePresence>
+        {showSwipeHint && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="absolute inset-0 z-30 bg-black/60 flex items-center justify-center pointer-events-none"
+          >
+            <div className="text-center text-white">
+              <div className="flex items-center justify-center gap-8 mb-4">
+                <div className="flex flex-col items-center">
+                  <ArrowLeft className="h-8 w-8 animate-pulse" />
+                  <span className="text-xs mt-1 opacity-70">Prev</span>
+                </div>
+                <div className="flex flex-col items-center">
+                  <ArrowUp className="h-8 w-8 animate-bounce" />
+                  <span className="text-xs mt-1 opacity-70">Next</span>
+                </div>
+                <div className="flex flex-col items-center">
+                  <ArrowRight className="h-8 w-8 animate-pulse" />
+                  <span className="text-xs mt-1 opacity-70">Next</span>
+                </div>
+              </div>
+              <p className="text-sm opacity-80">
+                {language === "te" ? "స్వైప్ చేయండి" : "Swipe to navigate"}
+              </p>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* News Card Container */}
+      <AnimatePresence mode="wait" custom={direction}>
+        <motion.div
+          key={currentIndex}
+          custom={direction}
+          variants={cardVariants}
+          initial="enter"
+          animate="center"
+          exit="exit"
+          drag
+          dragConstraints={{ left: 0, right: 0, top: 0, bottom: 0 }}
+          dragElastic={0.7}
+          onDragEnd={handleDragEnd}
+          style={{ x, y, rotateZ, scale }}
+          className="absolute inset-0 cursor-grab active:cursor-grabbing"
+        >
+          {/* Background Image/Video */}
+          <div className="absolute inset-0">
+            {isVideo ? (
+              <iframe
+                src={getYouTubeEmbedUrl(currentNews.video_url)}
+                className="w-full h-full object-cover"
+                allow="autoplay; encrypted-media"
+                allowFullScreen
+                title={currentNews.title}
+              />
+            ) : (
+              <img
+                src={currentNews.image || "https://images.unsplash.com/photo-1504711434969-e33886168f5c?w=800"}
+                alt={currentNews.title}
+                className="w-full h-full object-cover"
+                draggable={false}
+              />
+            )}
+            
+            {/* Gradient Overlay */}
+            <div className="absolute inset-0 bg-gradient-to-t from-black via-black/40 to-transparent" />
+          </div>
+
+          {/* Content */}
+          <div className="absolute bottom-0 left-0 right-0 p-6 pb-24 z-20">
+            {/* Category Badge */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.1 }}
+            >
+              {currentNews.category && CATEGORY_CONFIG[currentNews.category] && (
+                <span className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium bg-gradient-to-r ${CATEGORY_CONFIG[currentNews.category].gradient} text-white mb-3`}>
+                  {(() => {
+                    const Icon = CATEGORY_CONFIG[currentNews.category].icon;
+                    return <Icon className="h-3 w-3" />;
+                  })()}
+                  {language === "te" 
+                    ? CATEGORY_CONFIG[currentNews.category].labelTe 
+                    : CATEGORY_CONFIG[currentNews.category].label}
+                </span>
+              )}
+            </motion.div>
+
+            {/* Title */}
+            <motion.h1
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.2 }}
+              className="text-2xl md:text-3xl font-bold text-white leading-tight mb-3 drop-shadow-lg"
+              style={{ fontFamily: "'Merriweather', serif" }}
+            >
+              {currentNews.title}
+            </motion.h1>
+
+            {/* Summary */}
+            <motion.p
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.3 }}
+              className="text-white/80 text-sm md:text-base leading-relaxed line-clamp-3 mb-4"
+              style={{ fontFamily: "'DM Sans', sans-serif" }}
+            >
+              {currentNews.summary}
+            </motion.p>
+
+            {/* Source & Time */}
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 0.4 }}
+              className="flex items-center gap-3 text-white/60 text-xs"
+            >
+              <span>{currentNews.source}</span>
+              <span>•</span>
+              <span>{currentNews.time_ago || "Just now"}</span>
+              {currentNews.link && (
+                <>
+                  <span>•</span>
+                  <a 
+                    href={currentNews.link} 
+                    target="_blank" 
+                    rel="noopener noreferrer"
+                    className="flex items-center gap-1 text-blue-400 hover:text-blue-300"
+                    onClick={(e) => e.stopPropagation()}
+                  >
+                    <ExternalLink className="h-3 w-3" />
+                    <span>Read full</span>
+                  </a>
+                </>
+              )}
+            </motion.div>
+          </div>
+        </motion.div>
+      </AnimatePresence>
+
+      {/* Action Sidebar */}
+      <div className="absolute right-4 bottom-32 z-30 flex flex-col gap-4">
+        {/* Bookmark */}
+        <motion.button
+          whileTap={{ scale: 0.9 }}
+          onClick={() => toggleBookmark(currentNews?.id || currentIndex)}
+          className={`p-3 rounded-full backdrop-blur-md transition-all ${
+            bookmarked[currentNews?.id || currentIndex] 
+              ? 'bg-yellow-500 text-white' 
+              : 'bg-white/10 text-white hover:bg-white/20'
+          }`}
+          data-testid="bookmark-btn"
+        >
+          <Bookmark className={`h-6 w-6 ${bookmarked[currentNews?.id || currentIndex] ? 'fill-current' : ''}`} />
+        </motion.button>
+
+        {/* Share */}
+        <motion.button
+          whileTap={{ scale: 0.9 }}
+          onClick={() => handleShare(currentNews)}
+          className="p-3 rounded-full bg-white/10 backdrop-blur-md text-white hover:bg-white/20 transition-all"
+          data-testid="share-btn"
+        >
+          <Share2 className="h-6 w-6" />
+        </motion.button>
+
+        {/* Mute/Unmute for video */}
+        {isVideo && (
+          <motion.button
+            whileTap={{ scale: 0.9 }}
+            onClick={() => setIsMuted(!isMuted)}
+            className="p-3 rounded-full bg-white/10 backdrop-blur-md text-white hover:bg-white/20 transition-all"
+            data-testid="mute-btn"
+          >
+            {isMuted ? <VolumeX className="h-6 w-6" /> : <Volume2 className="h-6 w-6" />}
+          </motion.button>
+        )}
+
+        {/* Refresh */}
+        <motion.button
+          whileTap={{ scale: 0.9 }}
+          onClick={() => fetchNews(activeCategory)}
+          className="p-3 rounded-full bg-white/10 backdrop-blur-md text-white hover:bg-white/20 transition-all"
+          data-testid="refresh-btn"
+        >
+          <RefreshCw className="h-6 w-6" />
+        </motion.button>
+      </div>
+
+      {/* Bottom Navigation Dots */}
+      <div className="absolute bottom-6 left-0 right-0 z-30 flex justify-center items-center gap-4">
+        <span className="text-white/60 text-sm font-medium">
+          {currentIndex + 1} / {news.length}
+        </span>
+      </div>
+    </div>
   );
 }
