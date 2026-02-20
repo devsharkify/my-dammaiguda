@@ -244,12 +244,12 @@ export default function LandingPage() {
               </>
             ) : (
               <>
-                <div className="text-center py-2">
-                  <p className="text-slate-400 text-sm">Enter OTP sent to</p>
-                  <p className="text-white font-medium">+91 {phone}</p>
+                <div className="text-center py-1">
+                  <p className="text-slate-400 text-xs">Enter OTP sent to</p>
+                  <p className="text-white text-sm font-medium">+91 {phone}</p>
                 </div>
                 
-                <div className="py-3">
+                <div className="py-2">
                   <div className="flex justify-center">
                     <InputOTP
                       maxLength={6}
@@ -257,12 +257,12 @@ export default function LandingPage() {
                       onChange={setOtp}
                       data-testid="otp-input"
                     >
-                      <InputOTPGroup className="gap-2">
+                      <InputOTPGroup className="gap-1.5">
                         {[0, 1, 2, 3, 4, 5].map((idx) => (
                           <InputOTPSlot
                             key={idx}
                             index={idx}
-                            className="w-10 h-12 text-xl bg-white/10 border-white/20 text-white rounded-xl"
+                            className="w-9 h-11 text-lg bg-white/10 border-white/20 text-white rounded-lg"
                           />
                         ))}
                       </InputOTPGroup>
@@ -273,14 +273,14 @@ export default function LandingPage() {
                 <Button 
                   onClick={handleVerifyOTP}
                   disabled={loading || otp.length !== 6}
-                  className="w-full h-12 text-base font-semibold bg-gradient-to-r from-teal-500 to-emerald-500 hover:from-teal-400 hover:to-emerald-400 rounded-2xl disabled:opacity-50"
+                  className="w-full h-11 text-sm font-semibold bg-gradient-to-r from-teal-500 to-emerald-500 hover:from-teal-400 hover:to-emerald-400 rounded-xl disabled:opacity-50"
                   data-testid="verify-btn"
                 >
                   {loading ? "Verifying..." : "Verify & Enter"}
                 </Button>
                 <button 
                   onClick={() => { setStep(1); setOtp(""); }}
-                  className="w-full text-sm text-slate-400 hover:text-white transition-colors"
+                  className="w-full text-xs text-slate-400 hover:text-white transition-colors mt-2"
                 >
                   Change details
                 </button>
