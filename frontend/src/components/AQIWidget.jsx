@@ -95,23 +95,33 @@ export default function AQIWidget({ onViewFullReport }) {
   return (
     <Card className="border-border/50 overflow-hidden" data-testid="aqi-widget">
       {/* Header */}
-      <div className="bg-gradient-to-r from-sky-500 to-blue-600 px-4 py-3 flex items-center justify-between">
-        <div className="flex items-center gap-2 text-white">
-          <Wind className="h-5 w-5" />
-          <span className="font-semibold">
-            {language === "te" ? "గాలి నాణ్యత" : "Air Quality"}
-          </span>
+      <div className="bg-gradient-to-r from-sky-500 to-blue-600 px-4 py-3">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-2 text-white">
+            <Wind className="h-5 w-5" />
+            <span className="font-semibold">
+              {language === "te" ? "గాలి నాణ్యత" : "Air Quality"}
+            </span>
+          </div>
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={fetchAQI}
+            disabled={refreshing}
+            className="text-white hover:bg-white/20 h-8 px-2 gap-1"
+            data-testid="aqi-refresh-btn"
+          >
+            <RefreshCw className={`h-4 w-4 ${refreshing ? "animate-spin" : ""}`} />
+            <span className="text-xs">{language === "te" ? "రిఫ్రెష్" : "Refresh"}</span>
+          </Button>
         </div>
-        <Button
-          variant="ghost"
-          size="sm"
-          onClick={fetchAQI}
-          disabled={refreshing}
-          className="text-white hover:bg-white/20 h-8 w-8 p-0"
-          data-testid="aqi-refresh-btn"
-        >
-          <RefreshCw className={`h-4 w-4 ${refreshing ? "animate-spin" : ""}`} />
-        </Button>
+        {/* Last Updated */}
+        {lastUpdated && (
+          <div className="flex items-center gap-1 mt-1 text-white/70 text-xs">
+            <Clock className="h-3 w-3" />
+            <span>{language === "te" ? "చివరిగా నవీకరించబడింది" : "Last updated"}: {formatLastUpdated()}</span>
+          </div>
+        )}
       </div>
 
       <CardContent className="p-0">
