@@ -263,6 +263,15 @@ Build a production-ready, mobile-first civic engagement platform "My Dammaiguda"
 - `POST /api/upload/image-base64` - Upload base64 encoded image
 - `DELETE /api/upload/image/{public_id}` - Delete image from Cloudinary
 
+### Analytics (User Behavior Tracking)
+- `POST /api/analytics/page-view` - Track page view event
+- `POST /api/analytics/action` - Track user actions (clicks, shares, etc.)
+- `POST /api/analytics/feature` - Track feature usage for personalization
+- `GET /api/analytics/admin/summary` - Admin: Analytics summary (DAU, feature popularity)
+- `GET /api/analytics/admin/active-users` - Admin: Recently active users
+- `GET /api/analytics/admin/user/{user_id}` - Admin: Specific user analytics
+- `GET /api/analytics/admin/export` - Admin: Export raw analytics data
+
 ### CMS (Content Management)
 - `GET /api/content/dumpyard` - Fetch dump yard configuration
 - `PUT /api/content/dumpyard` - Update dump yard config (admin)
