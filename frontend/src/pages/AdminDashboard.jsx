@@ -1760,7 +1760,7 @@ export default function AdminDashboard() {
 
         {/* Template Dialog */}
         <Dialog open={showTemplateDialog} onOpenChange={setShowTemplateDialog}>
-          <DialogContent className="max-w-md max-h-[80vh] overflow-y-auto">
+          <DialogContent className="max-w-md max-h-[85vh] overflow-y-auto">
             <DialogHeader>
               <DialogTitle>Add Status Template</DialogTitle>
             </DialogHeader>
@@ -1771,7 +1771,7 @@ export default function AdminDashboard() {
               </div>
               <div>
                 <Label>Title (Telugu)</Label>
-                <Input value={templateForm.title_te} onChange={(e) => setTemplateForm({...templateForm, title_te: e.target.value})} />
+                <Input value={templateForm.title_te} onChange={(e) => setTemplateForm({...templateForm, title_te: e.target.value})} placeholder="ఉగాది శుభాకాంక్షలు" />
               </div>
               <div>
                 <Label>Category</Label>
@@ -1791,19 +1791,171 @@ export default function AdminDashboard() {
                 <Input value={templateForm.background_url} onChange={(e) => setTemplateForm({...templateForm, background_url: e.target.value})} placeholder="https://..." />
               </div>
               {templateForm.background_url && (
-                <div className="aspect-square rounded-lg overflow-hidden bg-muted">
+                <div className="aspect-square rounded-lg overflow-hidden bg-muted relative">
                   <img src={templateForm.background_url} alt="Preview" className="w-full h-full object-cover" />
+                  {/* Photo position indicator */}
+                  <div 
+                    className="absolute border-2 border-dashed border-blue-400 bg-blue-400/20 rounded-full"
+                    style={{
+                      left: `${(templateForm.photo_position.x / 400) * 100}%`,
+                      top: `${(templateForm.photo_position.y / 400) * 100}%`,
+                      width: `${(templateForm.photo_position.width / 400) * 100}%`,
+                      height: `${(templateForm.photo_position.height / 400) * 100}%`,
+                    }}
+                  >
+                    <span className="text-[8px] text-blue-600 absolute inset-0 flex items-center justify-center">Photo</span>
+                  </div>
+                  {/* Name position indicator */}
+                  <div 
+                    className="absolute text-center"
+                    style={{
+                      left: `${(templateForm.name_position.x / 400) * 100}%`,
+                      top: `${(templateForm.name_position.y / 400) * 100}%`,
+                      transform: 'translateX(-50%)',
+                      color: templateForm.name_position.color,
+                      fontSize: `${templateForm.name_position.fontSize * 0.5}px`,
+                      textShadow: '0 1px 2px rgba(0,0,0,0.5)'
+                    }}
+                  >
+                    Name Here
+                  </div>
                 </div>
               )}
-              <p className="text-xs text-muted-foreground">
-                Photo and name positions are set to defaults. Users can place their photo and name on the template.
-              </p>
+              
+              {/* Editable Options */}
+              <div className="border rounded-lg p-3 space-y-3 bg-muted/30">
+                <p className="text-xs font-medium text-muted-foreground">User Editable Options</p>
+                <div className="flex items-center justify-between">
+                  <Label className="text-sm">Photo Editable</Label>
+                  <Switch 
+                    checked={templateForm.photo_editable} 
+                    onCheckedChange={(v) => setTemplateForm({...templateForm, photo_editable: v})} 
+                  />
+                </div>
+                <div className="flex items-center justify-between">
+                  <Label className="text-sm">Name Editable</Label>
+                  <Switch 
+                    checked={templateForm.name_editable} 
+                    onCheckedChange={(v) => setTemplateForm({...templateForm, name_editable: v})} 
+                  />
+                </div>
+              </div>
+
+              {/* Photo Position Settings */}
+              <div className="border rounded-lg p-3 space-y-2 bg-muted/30">
+                <p className="text-xs font-medium text-muted-foreground">Photo Position (drag area on preview)</p>
+                <div className="grid grid-cols-2 gap-2">
+                  <div>
+                    <Label className="text-xs">X Position</Label>
+                    <Input 
+                      type="number" 
+                      value={templateForm.photo_position.x} 
+                      onChange={(e) => setTemplateForm({
+                        ...templateForm, 
+                        photo_position: {...templateForm.photo_position, x: parseInt(e.target.value) || 0}
+                      })} 
+                      className="h-8"
+                    />
+                  </div>
+                  <div>
+                    <Label className="text-xs">Y Position</Label>
+                    <Input 
+                      type="number" 
+                      value={templateForm.photo_position.y} 
+                      onChange={(e) => setTemplateForm({
+                        ...templateForm, 
+                        photo_position: {...templateForm.photo_position, y: parseInt(e.target.value) || 0}
+                      })} 
+                      className="h-8"
+                    />
+                  </div>
+                  <div>
+                    <Label className="text-xs">Width</Label>
+                    <Input 
+                      type="number" 
+                      value={templateForm.photo_position.width} 
+                      onChange={(e) => setTemplateForm({
+                        ...templateForm, 
+                        photo_position: {...templateForm.photo_position, width: parseInt(e.target.value) || 100}
+                      })} 
+                      className="h-8"
+                    />
+                  </div>
+                  <div>
+                    <Label className="text-xs">Height</Label>
+                    <Input 
+                      type="number" 
+                      value={templateForm.photo_position.height} 
+                      onChange={(e) => setTemplateForm({
+                        ...templateForm, 
+                        photo_position: {...templateForm.photo_position, height: parseInt(e.target.value) || 100}
+                      })} 
+                      className="h-8"
+                    />
+                  </div>
+                </div>
+              </div>
+
+              {/* Name Position Settings */}
+              <div className="border rounded-lg p-3 space-y-2 bg-muted/30">
+                <p className="text-xs font-medium text-muted-foreground">Name Position</p>
+                <div className="grid grid-cols-2 gap-2">
+                  <div>
+                    <Label className="text-xs">X Position</Label>
+                    <Input 
+                      type="number" 
+                      value={templateForm.name_position.x} 
+                      onChange={(e) => setTemplateForm({
+                        ...templateForm, 
+                        name_position: {...templateForm.name_position, x: parseInt(e.target.value) || 0}
+                      })} 
+                      className="h-8"
+                    />
+                  </div>
+                  <div>
+                    <Label className="text-xs">Y Position</Label>
+                    <Input 
+                      type="number" 
+                      value={templateForm.name_position.y} 
+                      onChange={(e) => setTemplateForm({
+                        ...templateForm, 
+                        name_position: {...templateForm.name_position, y: parseInt(e.target.value) || 0}
+                      })} 
+                      className="h-8"
+                    />
+                  </div>
+                  <div>
+                    <Label className="text-xs">Font Size</Label>
+                    <Input 
+                      type="number" 
+                      value={templateForm.name_position.fontSize} 
+                      onChange={(e) => setTemplateForm({
+                        ...templateForm, 
+                        name_position: {...templateForm.name_position, fontSize: parseInt(e.target.value) || 24}
+                      })} 
+                      className="h-8"
+                    />
+                  </div>
+                  <div>
+                    <Label className="text-xs">Text Color</Label>
+                    <Input 
+                      type="color" 
+                      value={templateForm.name_position.color} 
+                      onChange={(e) => setTemplateForm({
+                        ...templateForm, 
+                        name_position: {...templateForm.name_position, color: e.target.value}
+                      })} 
+                      className="h-8 p-1"
+                    />
+                  </div>
+                </div>
+              </div>
             </div>
             <DialogFooter>
               <Button variant="outline" onClick={() => setShowTemplateDialog(false)}>Cancel</Button>
               <Button onClick={saveTemplate} disabled={saving}>
                 {saving && <Loader2 className="h-4 w-4 mr-2 animate-spin" />}
-                Create
+                Create Template
               </Button>
             </DialogFooter>
           </DialogContent>
