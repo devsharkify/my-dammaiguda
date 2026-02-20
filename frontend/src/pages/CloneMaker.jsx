@@ -225,9 +225,15 @@ const APP_CONFIG = {
     appName: "My ${cfg.name}",
     primaryColor: "${cfg.primaryColor}",
   },
-  features: {
-    dumpYard: ${cfg.dumpYard},
-    // ... all other features: true
+  company: {
+    name: "${cfg.company?.name || 'Sharkify Technology Pvt. Ltd.'}",
+  },
+  partner: {
+    name: "${cfg.partner?.name || 'Kaizer News'}",
+    logo: "${cfg.partner?.logo || ''}",
+  },
+  education: {
+    partnerName: "${cfg.education?.partnerName || 'Bose American Academy'}",
   },
   stats: {
     benefitsAmount: "${cfg.stats?.benefitsAmount || '₹5Cr+'}",
