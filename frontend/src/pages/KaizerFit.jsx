@@ -454,7 +454,7 @@ export default function KaizerFit() {
           {/* Water Tracking */}
           <Card className="border-0 shadow-lg bg-gradient-to-br from-cyan-500 to-blue-500 text-white overflow-hidden">
             <CardContent className="p-4 relative">
-              <div className="absolute -right-4 -top-4 text-6xl opacity-20">💧</div>
+              <div className="absolute -right-4 -top-4 text-6xl opacity-20 pointer-events-none">💧</div>
               <div className="flex items-center justify-between mb-2">
                 <p className="text-cyan-100 text-xs font-medium uppercase tracking-wide">
                   {language === "te" ? "నీరు" : "Water"}
@@ -490,7 +490,7 @@ export default function KaizerFit() {
           {/* Calories Tracking */}
           <Card className="border-0 shadow-lg bg-gradient-to-br from-orange-500 to-red-500 text-white overflow-hidden">
             <CardContent className="p-4 relative">
-              <div className="absolute -right-4 -top-4 text-6xl opacity-20">🍎</div>
+              <div className="absolute -right-4 -top-4 text-6xl opacity-20 pointer-events-none">🍎</div>
               <div className="flex items-center justify-between mb-2">
                 <p className="text-orange-100 text-xs font-medium uppercase tracking-wide">
                   {language === "te" ? "కేలరీలు" : "Calories"}
