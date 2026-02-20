@@ -157,12 +157,12 @@ export default function LandingPage() {
             </p>
           </div>
         ) : (
-          <div className="w-full max-w-xs space-y-3 animate-in fade-in slide-in-from-bottom-4 duration-300 mb-4">
+          <div className="w-full max-w-xs space-y-4 animate-in fade-in slide-in-from-bottom-4 duration-300 mb-4">
             {step === 1 ? (
               <>
                 {/* Show Name & Colony only for new users */}
                 {isNewUser && (
-                  <>
+                  <div className="space-y-3">
                     {/* Name Input */}
                     <div className="relative">
                       <div className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400">
@@ -192,11 +192,11 @@ export default function LandingPage() {
                         data-testid="colony-input"
                       />
                     </div>
-                  </>
+                  </div>
                 )}
 
                 {/* Phone Input - Always shown */}
-                <div className="relative">
+                <div className="relative mt-4">
                   <div className="absolute left-4 top-1/2 -translate-y-1/2 flex items-center gap-1 text-slate-400">
                     <Phone className="w-4 h-4" />
                     <span className="text-sm font-medium">+91</span>
@@ -214,7 +214,7 @@ export default function LandingPage() {
                 <Button 
                   onClick={handleSendOTP}
                   disabled={loading || phone.length < 10 || (isNewUser && (!name.trim() || !colony.trim()))}
-                  className="w-full h-12 text-base font-semibold bg-gradient-to-r from-teal-500 to-emerald-500 hover:from-teal-400 hover:to-emerald-400 rounded-2xl disabled:opacity-50"
+                  className="w-full h-12 text-base font-semibold bg-gradient-to-r from-teal-500 to-emerald-500 hover:from-teal-400 hover:to-emerald-400 rounded-2xl disabled:opacity-50 mt-4"
                   data-testid="send-otp-btn"
                 >
                   {loading ? "Sending..." : (isNewUser ? "Register & Send OTP" : "Send OTP")}
@@ -224,7 +224,7 @@ export default function LandingPage() {
                 {isNewUser && (
                   <button 
                     onClick={() => { setIsNewUser(false); }}
-                    className="w-full text-sm text-slate-400 hover:text-white transition-colors"
+                    className="w-full text-sm text-slate-400 hover:text-white transition-colors mt-3"
                     data-testid="switch-to-login"
                   >
                     Already registered? <span className="text-teal-400 font-medium">Login</span>
@@ -235,7 +235,7 @@ export default function LandingPage() {
                 {!isNewUser && (
                   <button 
                     onClick={() => { setIsNewUser(true); }}
-                    className="w-full text-sm text-slate-400 hover:text-white transition-colors"
+                    className="w-full text-sm text-slate-400 hover:text-white transition-colors mt-3"
                     data-testid="switch-to-register"
                   >
                     New user? <span className="text-teal-400 font-medium">Register</span>
