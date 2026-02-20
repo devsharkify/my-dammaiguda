@@ -114,6 +114,18 @@ export default function KaizerFit() {
   const [caloriesGoal] = useState(2000);
   const [todayMeals, setTodayMeals] = useState([]);
   
+  // Food search
+  const [foodSearch, setFoodSearch] = useState("");
+  const [searchResults, setSearchResults] = useState([]);
+  const [searchLoading, setSearchLoading] = useState(false);
+  const [foodCategories, setFoodCategories] = useState([]);
+  const [selectedCategory, setSelectedCategory] = useState("");
+  
+  // Google Fit connection
+  const [googleFitConnected, setGoogleFitConnected] = useState(false);
+  const [googleFitLoading, setGoogleFitLoading] = useState(false);
+  const [googleFitData, setGoogleFitData] = useState(null);
+  
   // Live activity
   const [showActivityPicker, setShowActivityPicker] = useState(false);
   
