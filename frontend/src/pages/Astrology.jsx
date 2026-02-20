@@ -879,10 +879,6 @@ export default function Astrology() {
         ) : activeTab === "kundali" ? (
           /* Kundali Section */
           <div className="space-y-4">
-            <button onClick={() => { setActiveTab("home"); setKundaliStep(1); setKundali(null); }} className="flex items-center gap-2 text-sm text-gray-600">
-              <ArrowLeft className="w-4 h-4" /> Back
-            </button>
-
             {kundaliStep === 1 ? (
               /* Input Form */
               <>
