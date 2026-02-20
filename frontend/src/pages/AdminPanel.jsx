@@ -122,6 +122,24 @@ export default function AdminPanel() {
     name: "",
     assigned_area: "",
   });
+  
+  // Site Settings states
+  const [siteSettings, setSiteSettings] = useState({
+    app_name: "",
+    app_name_short: "",
+    tagline: "",
+    tagline_te: "",
+    primary_color: "#0F766E",
+    logo_url: "",
+    partner_logo: "",
+    partner_name: "",
+    company_name: "",
+    benefits_amount: "",
+    problems_solved: "",
+    people_benefited: "",
+    banner_url: ""
+  });
+  const [savingSettings, setSavingSettings] = useState(false);
 
   // Update URL when area or tab changes
   useEffect(() => {
