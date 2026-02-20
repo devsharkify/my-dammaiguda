@@ -138,7 +138,8 @@ async def verify_otp(request: OTPVerify):
             "success": True,
             "is_new_user": False,
             "user": user,
-            "token": token
+            "token": token,
+            "access_token": token  # For compatibility with manager portal
         }
     else:
         # If registration data is provided, create user directly
