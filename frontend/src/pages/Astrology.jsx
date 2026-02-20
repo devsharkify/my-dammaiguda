@@ -770,7 +770,20 @@ export default function Astrology() {
       <div className="p-4 pb-24 space-y-4" data-testid="astrology-page">
         {/* Header */}
         <div className="flex items-center gap-3 mb-4">
-          <button onClick={() => navigate(-1)} className="p-2 hover:bg-gray-100 rounded-full">
+          <button 
+            onClick={() => {
+              if (activeTab !== "home") {
+                // Go back to main astrology menu
+                setActiveTab("home");
+                setKundaliStep(1);
+                setKundali(null);
+              } else {
+                // Go back to previous page (dashboard)
+                navigate(-1);
+              }
+            }} 
+            className="p-2 hover:bg-gray-100 rounded-full"
+          >
             <ArrowLeft className="w-5 h-5" />
           </button>
           <div className="flex items-center gap-2">
