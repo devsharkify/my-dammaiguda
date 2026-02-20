@@ -246,6 +246,7 @@ function AppRoutes() {
       {/* Public Routes */}
       <Route path="/privacy-policy" element={<PrivacyPolicy />} />
       <Route path="/share" element={<ShareHandler />} />
+      <Route path="/delete-account" element={<DeleteAccount />} />
       
       {/* Catch all */}
       <Route path="*" element={<Navigate to="/" replace />} />
