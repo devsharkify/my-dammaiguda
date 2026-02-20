@@ -5,7 +5,7 @@ import { Button } from "../components/ui/button";
 import { Input } from "../components/ui/input";
 import { InputOTP, InputOTPGroup, InputOTPSlot } from "../components/ui/input-otp";
 import { toast } from "sonner";
-import { Phone, ChevronRight, Sparkles, User, MapPin, AlertTriangle, Heart, Trash2, HandCoins } from "lucide-react";
+import { Phone, ChevronRight, Sparkles, User, MapPin, AlertTriangle, Heart, Trash2, Star } from "lucide-react";
 
 export default function LandingPage() {
   const { sendOTP, verifyOTP } = useAuth();
