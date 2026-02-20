@@ -72,6 +72,7 @@ export default function StatusTemplates() {
     if (user) {
       setDisplayName(user.name || "");
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user, categoryFilter]);
 
   // Sample fallback templates when DB is empty
