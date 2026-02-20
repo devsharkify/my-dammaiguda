@@ -133,14 +133,15 @@ export default function TermsOfService() {
             }
           </p>
           <div className="text-sm text-gray-600 space-y-1">
-            <p><strong>Email:</strong> support@mydammaiguda.in</p>
-            <p><strong>Website:</strong> https://www.mydammaiguda.in</p>
+            <p><strong>Email:</strong> support@sharkify.ai</p>
+            <p><strong>Address:</strong> Flat 501, SM Plaza, AS Rao Nagar, Hyderabad 500062</p>
+            <p><strong>Company:</strong> Sharkify Technology Pvt Ltd</p>
           </div>
         </section>
 
         {/* Footer */}
         <div className="text-center text-xs text-gray-400 pt-4">
-          <p>© 2026 Sharkify Technology Private Limited</p>
+          <p>© 2026 Sharkify Technology Pvt Ltd</p>
           <p>{language === "te" ? "అన్ని హక్కులు రిజర్వ్ చేయబడ్డాయి" : "All rights reserved"}</p>
         </div>
       </div>
