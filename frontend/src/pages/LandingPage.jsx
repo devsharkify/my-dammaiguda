@@ -68,44 +68,67 @@ export default function LandingPage() {
       </div>
 
       {/* Main Content - No Scroll */}
-      <div className="relative flex-1 flex flex-col items-center justify-center px-6 py-8">
+      <div className="relative flex-1 flex flex-col items-center justify-center px-6 py-6">
         
         {/* Logo & Title */}
-        <div className="text-center mb-5">
-          <div className="inline-flex items-center justify-center w-20 h-20 rounded-2xl bg-gradient-to-br from-teal-400 to-emerald-500 mb-4 shadow-lg shadow-teal-500/30">
-            <span className="text-4xl font-black text-white">M</span>
-          </div>
+        <div className="text-center mb-4">
+          <img 
+            src="https://static.prod-images.emergentagent.com/jobs/b415d412-3e65-4362-a62f-f8bab1368136/images/fd09263f1ffaceb3dad575cd85696c5fbff1a43edc5d0829bc8e76785518ca64.png"
+            alt="My Dammaiguda"
+            className="w-16 h-16 mx-auto mb-3 rounded-2xl shadow-lg shadow-teal-500/30"
+          />
           <h1 className="text-3xl font-bold text-white tracking-tight">
             My Dammaiguda
           </h1>
-          <p className="text-slate-400 text-sm mt-2 font-medium">
+          <p className="text-slate-400 text-sm mt-1.5 font-medium">
             Track Issues. Protect Health. Claim Benefits.
           </p>
         </div>
 
+        {/* Our Commitment Section */}
+        <div className="w-full max-w-xs mb-5">
+          <p className="text-center text-slate-500 text-[10px] uppercase tracking-widest mb-3">
+            Our Commitment to Dammaiguda
+          </p>
+          <div className="grid grid-cols-3 gap-2">
+            <div className="text-center py-2 px-1 rounded-xl bg-white/5 border border-white/10">
+              <p className="text-lg font-bold text-teal-400">₹10Cr+</p>
+              <p className="text-[9px] text-slate-500 leading-tight">Benefits to be Availed</p>
+            </div>
+            <div className="text-center py-2 px-1 rounded-xl bg-white/5 border border-white/10">
+              <p className="text-lg font-bold text-emerald-400">100+</p>
+              <p className="text-[9px] text-slate-500 leading-tight">Local Problems to Solve</p>
+            </div>
+            <div className="text-center py-2 px-1 rounded-xl bg-white/5 border border-white/10">
+              <p className="text-lg font-bold text-cyan-400">50K+</p>
+              <p className="text-[9px] text-slate-500 leading-tight">People to be Benefited</p>
+            </div>
+          </div>
+        </div>
+
         {/* Primary Actions - 2x2 Grid */}
-        <div className="grid grid-cols-2 gap-3 w-full max-w-xs mb-6">
-          <div className="flex items-center gap-2.5 px-4 py-3 rounded-xl bg-white/5 border border-white/10 hover:bg-white/10 transition-colors cursor-pointer">
-            <span className="text-xl">🚨</span>
-            <span className="text-xs text-slate-300 font-medium">Report a Problem</span>
+        <div className="grid grid-cols-2 gap-2.5 w-full max-w-xs mb-5">
+          <div className="flex items-center gap-2 px-3 py-2.5 rounded-xl bg-white/5 border border-white/10 hover:bg-white/10 transition-colors cursor-pointer">
+            <span className="text-lg">🚨</span>
+            <span className="text-[11px] text-slate-300 font-medium">Report a Problem</span>
           </div>
-          <div className="flex items-center gap-2.5 px-4 py-3 rounded-xl bg-white/5 border border-white/10 hover:bg-white/10 transition-colors cursor-pointer">
-            <span className="text-xl">❤️</span>
-            <span className="text-xs text-slate-300 font-medium">Health & Fitness</span>
+          <div className="flex items-center gap-2 px-3 py-2.5 rounded-xl bg-white/5 border border-white/10 hover:bg-white/10 transition-colors cursor-pointer">
+            <span className="text-lg">❤️</span>
+            <span className="text-[11px] text-slate-300 font-medium">Health & Fitness</span>
           </div>
-          <div className="flex items-center gap-2.5 px-4 py-3 rounded-xl bg-white/5 border border-white/10 hover:bg-white/10 transition-colors cursor-pointer">
-            <span className="text-xl">🌿</span>
-            <span className="text-xs text-slate-300 font-medium">Dump Yard & Environment</span>
+          <div className="flex items-center gap-2 px-3 py-2.5 rounded-xl bg-white/5 border border-white/10 hover:bg-white/10 transition-colors cursor-pointer">
+            <span className="text-lg">🌿</span>
+            <span className="text-[11px] text-slate-300 font-medium">Dump Yard & Env</span>
           </div>
-          <div className="flex items-center gap-2.5 px-4 py-3 rounded-xl bg-white/5 border border-white/10 hover:bg-white/10 transition-colors cursor-pointer">
-            <span className="text-xl">👥</span>
-            <span className="text-xs text-slate-300 font-medium">Citizen Benefits</span>
+          <div className="flex items-center gap-2 px-3 py-2.5 rounded-xl bg-white/5 border border-white/10 hover:bg-white/10 transition-colors cursor-pointer">
+            <span className="text-lg">👥</span>
+            <span className="text-[11px] text-slate-300 font-medium">Citizen Benefits</span>
           </div>
         </div>
 
         {/* Login Section */}
         {!showLogin ? (
-          <div className="w-full max-w-xs space-y-2">
+          <div className="w-full max-w-xs space-y-1.5">
             <Button 
               onClick={() => setShowLogin(true)}
               className="w-full h-14 text-base font-semibold bg-gradient-to-r from-teal-500 to-emerald-500 hover:from-teal-400 hover:to-emerald-400 rounded-2xl shadow-lg shadow-teal-500/30 transition-all"
@@ -120,7 +143,7 @@ export default function LandingPage() {
             </p>
           </div>
         ) : (
-          <div className="w-full max-w-xs space-y-4 animate-in fade-in slide-in-from-bottom-4 duration-300">
+          <div className="w-full max-w-xs space-y-3 animate-in fade-in slide-in-from-bottom-4 duration-300">
             {step === 1 ? (
               <>
                 <div className="relative">
@@ -148,7 +171,7 @@ export default function LandingPage() {
               </>
             ) : (
               <>
-                <div className="text-center mb-2">
+                <div className="text-center mb-1">
                   <p className="text-slate-400 text-sm">Enter OTP sent to</p>
                   <p className="text-white font-medium">+91 {phone}</p>
                 </div>
@@ -164,7 +187,7 @@ export default function LandingPage() {
                         <InputOTPSlot
                           key={idx}
                           index={idx}
-                          className="w-11 h-14 text-xl bg-white/10 border-white/20 text-white rounded-xl"
+                          className="w-10 h-12 text-xl bg-white/10 border-white/20 text-white rounded-xl"
                         />
                       ))}
                     </InputOTPGroup>
@@ -191,18 +214,16 @@ export default function LandingPage() {
       </div>
 
       {/* Footer with Kaizer News Logo */}
-      <div className="relative pb-6 px-6">
-        <div className="flex flex-col items-center gap-3">
+      <div className="relative pb-5 px-6">
+        <div className="flex flex-col items-center gap-2">
           <p className="text-slate-500 text-[10px] uppercase tracking-wider">
             Powered by Rohan Kulkarni Foundation
           </p>
-          <div className="flex items-center gap-2">
-            <img 
-              src="https://customer-assets.emergentagent.com/job_b415d412-3e65-4362-a62f-f8bab1368136/artifacts/x1zovr9l_kaizer%20logo.png" 
-              alt="Kaizer News" 
-              className="h-8 object-contain"
-            />
-          </div>
+          <img 
+            src="https://customer-assets.emergentagent.com/job_b415d412-3e65-4362-a62f-f8bab1368136/artifacts/x1zovr9l_kaizer%20logo.png" 
+            alt="Kaizer News" 
+            className="h-7 object-contain"
+          />
         </div>
       </div>
     </div>
