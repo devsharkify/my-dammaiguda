@@ -10,41 +10,9 @@ from data.food_database import FOOD_DATABASE, FOOD_CATEGORIES, search_foods, get
 
 router = APIRouter(prefix="/doctor", tags=["Kaizer Doctor"])
 
-# ============== SOUTH INDIAN FOOD DATABASE ==============
-
-FOOD_DATABASE = {
-    "idli": {"name_te": "ఇడ్లీ", "calories": 39, "protein": 2, "carbs": 8, "fat": 0.2, "category": "breakfast"},
-    "dosa": {"name_te": "దోస", "calories": 168, "protein": 4, "carbs": 28, "fat": 4, "category": "breakfast"},
-    "pesarattu": {"name_te": "పెసరట్టు", "calories": 150, "protein": 8, "carbs": 20, "fat": 4, "category": "breakfast"},
-    "upma": {"name_te": "ఉప్మా", "calories": 200, "protein": 5, "carbs": 30, "fat": 7, "category": "breakfast"},
-    "pongal": {"name_te": "పొంగల్", "calories": 180, "protein": 5, "carbs": 32, "fat": 4, "category": "breakfast"},
-    "vada": {"name_te": "వడ", "calories": 97, "protein": 4, "carbs": 10, "fat": 5, "category": "breakfast"},
-    "uttapam": {"name_te": "ఉత్తపం", "calories": 150, "protein": 4, "carbs": 25, "fat": 4, "category": "breakfast"},
-    "poori": {"name_te": "పూరీ", "calories": 70, "protein": 2, "carbs": 10, "fat": 3, "category": "breakfast"},
-    "rice": {"name_te": "అన్నం", "calories": 130, "protein": 3, "carbs": 28, "fat": 0.3, "category": "lunch"},
-    "sambar": {"name_te": "సాంబార్", "calories": 80, "protein": 4, "carbs": 12, "fat": 2, "category": "lunch"},
-    "rasam": {"name_te": "రసం", "calories": 40, "protein": 2, "carbs": 6, "fat": 1, "category": "lunch"},
-    "dal": {"name_te": "పప్పు", "calories": 120, "protein": 8, "carbs": 18, "fat": 2, "category": "lunch"},
-    "biryani": {"name_te": "బిర్యానీ", "calories": 350, "protein": 15, "carbs": 45, "fat": 12, "category": "lunch"},
-    "chicken_curry": {"name_te": "చికెన్ కర్రీ", "calories": 250, "protein": 25, "carbs": 8, "fat": 14, "category": "lunch"},
-    "mutton_curry": {"name_te": "మటన్ కర్రీ", "calories": 300, "protein": 28, "carbs": 6, "fat": 18, "category": "lunch"},
-    "fish_curry": {"name_te": "చేపల పులుసు", "calories": 200, "protein": 22, "carbs": 5, "fat": 10, "category": "lunch"},
-    "vegetable_curry": {"name_te": "కూరగాయల కర్రీ", "calories": 100, "protein": 3, "carbs": 15, "fat": 4, "category": "lunch"},
-    "curd_rice": {"name_te": "పెరుగు అన్నం", "calories": 180, "protein": 6, "carbs": 30, "fat": 4, "category": "lunch"},
-    "roti": {"name_te": "రోటీ", "calories": 71, "protein": 3, "carbs": 15, "fat": 0.4, "category": "dinner"},
-    "paratha": {"name_te": "పరాటా", "calories": 180, "protein": 5, "carbs": 25, "fat": 7, "category": "dinner"},
-    "pulao": {"name_te": "పులావ్", "calories": 200, "protein": 5, "carbs": 35, "fat": 5, "category": "dinner"},
-    "egg_curry": {"name_te": "గుడ్డు కర్రీ", "calories": 180, "protein": 12, "carbs": 5, "fat": 12, "category": "dinner"},
-    "paneer_curry": {"name_te": "పనీర్ కర్రీ", "calories": 220, "protein": 14, "carbs": 8, "fat": 15, "category": "dinner"},
-    "haleem": {"name_te": "హలీమ్", "calories": 350, "protein": 20, "carbs": 30, "fat": 16, "category": "dinner"},
-    "gulab_jamun": {"name_te": "గులాబ్ జామూన్", "calories": 150, "protein": 2, "carbs": 25, "fat": 5, "category": "dessert"},
-    "payasam": {"name_te": "పాయసం", "calories": 200, "protein": 5, "carbs": 35, "fat": 5, "category": "dessert"},
-    "laddu": {"name_te": "లడ్డూ", "calories": 180, "protein": 4, "carbs": 25, "fat": 8, "category": "dessert"},
-    "chai": {"name_te": "చాయ్", "calories": 40, "protein": 1, "carbs": 6, "fat": 1, "category": "beverage"},
-    "filter_coffee": {"name_te": "ఫిల్టర్ కాఫీ", "calories": 50, "protein": 1, "carbs": 8, "fat": 2, "category": "beverage"},
-    "buttermilk": {"name_te": "మజ్జిగ", "calories": 30, "protein": 2, "carbs": 4, "fat": 1, "category": "beverage"},
-    "coconut_water": {"name_te": "కొబ్బరి నీళ్లు", "calories": 45, "protein": 0.5, "carbs": 9, "fat": 0.5, "category": "beverage"}
-}
+# ============== FOOD DATABASE (NOW IMPORTED FROM data/food_database.py) ==============
+# 500+ foods with complete nutritional information
+# See /app/backend/data/food_database.py for full database
 
 DIET_PLANS = {
     "weight_loss": {
