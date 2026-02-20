@@ -1042,7 +1042,7 @@ export default function Astrology() {
                 <p className="text-sm text-purple-600">{language === "te" ? "మీ రాశిని ఎంచుకోండి" : "Select your zodiac sign"}</p>
               </CardContent>
             </Card>
-            <ZodiacHoroscope language={language} />
+            <ZodiacHoroscope language={language} selectedSign={selectedZodiacSign} setSelectedSign={setSelectedZodiacSign} />
           </div>
         ) : null}
       </div>
