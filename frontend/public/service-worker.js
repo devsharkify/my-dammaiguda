@@ -256,4 +256,87 @@ async function syncPendingIssues() {
   console.log('[SW] Syncing pending issues...');
 }
 
+// Periodic Background Sync - fetch fresh data periodically
+self.addEventListener('periodicsync', (event) => {
+  console.log('[SW] Periodic sync event:', event.tag);
+  
+  if (event.tag === 'update-aqi') {
+    event.waitUntil(updateAQIData());
+  }
+  
+  if (event.tag === 'update-news') {
+    event.waitUntil(updateNewsData());
+  }
+  
+  if (event.tag === 'sync-content') {
+    event.waitUntil(syncAllContent());
+  }
+});
+
+// Update AQI data in background
+async function updateAQIData() {
+  try {
+    const response = await fetch('/api/aqi/current');
+    if (response.ok) {
+      const cache = await caches.open(API_CACHE_NAME);
+      cache.put('/api/aqi/current', response.clone());
+      console.log('[SW] AQI data updated in background');
+    }
+  } catch (error) {
+    console.log('[SW] Failed to update AQI:', error);
+  }
+}
+
+// Update news data in background
+async function updateNewsData() {
+  try {
+    const response = await fetch('/api/news/local?limit=10');
+    if (response.ok) {
+      const cache = await caches.open(API_CACHE_NAME);
+      cache.put('/api/news/local?limit=10', response.clone());
+      console.log('[SW] News data updated in background');
+    }
+  } catch (error) {
+    console.log('[SW] Failed to update news:', error);
+  }
+}
+
+// Sync all content
+async function syncAllContent() {
+  await Promise.all([
+    updateAQIData(),
+    updateNewsData()
+  ]);
+  console.log('[SW] All content synced');
+}
+
+// Register periodic sync when service worker activates
+self.addEventListener('activate', (event) => {
+  event.waitUntil(
+    (async () => {
+      // Clean old caches
+      const cacheNames = await caches.keys();
+      await Promise.all(
+        cacheNames
+          .filter((name) => name !== CACHE_NAME && name !== API_CACHE_NAME)
+          .map((name) => caches.delete(name))
+      );
+      
+      // Register periodic sync if supported
+      if ('periodicSync' in self.registration) {
+        try {
+          await self.registration.periodicSync.register('sync-content', {
+            minInterval: 12 * 60 * 60 * 1000 // 12 hours
+          });
+          console.log('[SW] Periodic sync registered');
+        } catch (error) {
+          console.log('[SW] Periodic sync not available:', error);
+        }
+      }
+      
+      self.clients.claim();
+    })()
+  );
+});
+
 console.log('[SW] Service worker loaded');
