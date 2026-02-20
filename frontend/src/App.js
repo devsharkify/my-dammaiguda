@@ -50,6 +50,7 @@ import TermsOfService from "./pages/TermsOfService";
 import ChildSafety from "./pages/ChildSafety";
 import CloneMaker from "./pages/CloneMaker";
 import AdminPanel from "./pages/AdminPanel";
+import ManagerApp from "./pages/ManagerApp";
 
 import "./App.css";
 
