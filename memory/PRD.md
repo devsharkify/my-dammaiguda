@@ -218,15 +218,45 @@ The app now supports easy replication for different areas (e.g., "My AS Rao Naga
 ### Admin Panel Features (`/admin/panel`):
 - **Area Filter (Top Right):** Select which area to manage (All Areas, Dammaiguda, AS Rao Nagar, etc.)
 - **Quick Links:** User App, Clone Maker, News/Course/User Manager, Analytics, Issues
-- **Tabs:** Overview, Courses, News, Templates, Announcements
+- **Tabs:** Overview, Site Settings, Managers, Courses, News, Templates, Announcements
+- **Site Settings Tab (NEW):** Edit branding (App Name, Tagline, Colors, Logos) and Stats (Benefits Amount, Problems Solved, People Benefited) - stored in MongoDB for runtime changes
+- **Managers Tab:** Create and manage area-specific managers
 - **Area Distribution Chart:** Shows all 7 areas with domains
 - **Apply to Areas:** When creating content, select which areas it applies to (specific or all)
+
+### Manager Portal (`/manager`):
+- **Separate Login:** Managers login with OTP using their assigned phone number
+- **Dashboard:** Shows stats for assigned area only (Total Members, Active Members, Pending Issues, Course Enrollments, Wall Posts)
+- **Tabs:** Overview, Grievances, Enrollments, Wall, Members
+- **Wall Posts:** Create, view, and delete announcements for their area
+- **Banner Update:** Change the area banner via dialog with preview
+- **Access Control:** Managers can only see data for their assigned area
+
+### Manager API Endpoints (`/api/manager/*`):
+- `POST /api/manager/create` - Admin creates manager (phone, name, assigned_area)
+- `GET /api/manager/list` - Admin lists all managers
+- `DELETE /api/manager/{id}` - Admin removes manager
+- `GET /api/manager/stats` - Manager's area stats
+- `GET /api/manager/grievances` - Area grievances
+- `GET /api/manager/enrollments` - Area enrollments
+- `GET /api/manager/members` - Area members
+- `GET /api/manager/wall` - Area wall posts
+- `POST /api/manager/wall` - Create wall post
+- `DELETE /api/manager/wall/{id}` - Delete wall post
+- `GET /api/manager/banner` - Get area banner
+- `PUT /api/manager/banner` - Update area banner
+
+### Settings API Endpoints (`/api/settings/*`):
+- `GET /api/settings/branding?area_id=X` - Public endpoint for frontend config
+- `PUT /api/settings/branding` - Admin-only endpoint to update branding/stats
+- `GET /api/settings/config/{area_id}` - Public endpoint for full area config
 
 ---
 
 ## Test Credentials (Development Only)
 - **Test Phone:** 9876543210
 - **Admin Phone:** 9999999999
+- **Manager Phone:** 9876543211 (assigned to Dammaiguda)
 - **Test OTP:** 123456 (REMOVE IN PRODUCTION)
 
 ---
