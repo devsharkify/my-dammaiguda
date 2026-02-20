@@ -83,8 +83,24 @@ export default function LandingPage() {
       {/* Main Content */}
       <div className="relative z-10 flex-1 flex flex-col px-6 py-6">
         
+        {/* ===== HEADER: Powered By ===== */}
+        <div className="flex flex-col items-center justify-center pt-2 pb-6">
+          <p className="text-[9px] uppercase tracking-widest text-slate-600 mb-1.5">
+            Powered by
+          </p>
+          <div className="flex items-center gap-2 opacity-80">
+            <span className="text-slate-400 text-[10px]">Rohan Kulkarni Foundation</span>
+            <span className="text-slate-600 text-[10px]">&</span>
+            <img 
+              src="https://customer-assets.emergentagent.com/job_b415d412-3e65-4362-a62f-f8bab1368136/artifacts/zoaa3k1e_Untitled%20design%20%2823%29.png" 
+              alt="Kaizer News" 
+              className="h-5 object-contain"
+            />
+          </div>
+        </div>
+        
         {/* ===== HERO SECTION: Logo & Title ===== */}
-        <div className="flex flex-col items-center text-center mt-8 mb-8">
+        <div className="flex flex-col items-center text-center mb-8">
           <img 
             src="https://static.prod-images.emergentagent.com/jobs/b415d412-3e65-4362-a62f-f8bab1368136/images/fd09263f1ffaceb3dad575cd85696c5fbff1a43edc5d0829bc8e76785518ca64.png"
             alt="My Dammaiguda"
