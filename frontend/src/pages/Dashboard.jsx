@@ -472,6 +472,10 @@ export default function Dashboard() {
         <Link to="/aqi" data-testid="aqi-widget">
           <Card className="bg-white rounded-xl border border-gray-100 shadow-sm overflow-hidden">
             <CardContent className="p-4">
+              {/* Heading */}
+              <p className="text-[11px] text-gray-400 font-medium mb-3">
+                {language === "te" ? "గాలి నాణ్యత (కాలుష్యం)" : "Air Quality (Pollution)"}
+              </p>
               {/* Dammaiguda - Main Row */}
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-3">
