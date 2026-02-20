@@ -182,6 +182,31 @@ export default function AdminPanel() {
         // Manager API might not be available
       }
       
+      // Fetch site settings for selected area
+      if (selectedArea !== "all") {
+        try {
+          const settingsRes = await axios.get(`${API}/settings/branding?area_id=${selectedArea}`, { headers });
+          const data = settingsRes.data;
+          setSiteSettings({
+            app_name: data.branding?.app_name || "",
+            app_name_short: data.branding?.app_name_short || "",
+            tagline: data.branding?.tagline || "",
+            tagline_te: data.branding?.tagline_te || "",
+            primary_color: data.branding?.primary_color || "#0F766E",
+            logo_url: data.branding?.logo_url || "",
+            partner_logo: data.branding?.partner_logo || "",
+            partner_name: data.branding?.partner_name || "",
+            company_name: data.branding?.company_name || "",
+            benefits_amount: data.stats?.benefits_amount || "",
+            problems_solved: data.stats?.problems_solved || "",
+            people_benefited: data.stats?.people_benefited || "",
+            banner_url: data.banner_url || ""
+          });
+        } catch (e) {
+          // Settings API might not have data yet
+        }
+      }
+      
     } catch (err) {
       console.error("Error fetching data:", err);
     } finally {
