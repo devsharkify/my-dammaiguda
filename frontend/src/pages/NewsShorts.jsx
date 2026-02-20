@@ -206,6 +206,9 @@ export default function NewsShorts() {
   const shareArticle = async (article) => {
     const title = language === "te" ? (article.title_te || article.title) : article.title;
     
+    // Track share action
+    trackAction(ACTIONS.SHARE, 'news_article', '/news', { category: activeCategory, is_video: isVideoNews(article) });
+    
     if (navigator.share) {
       try {
         await navigator.share({
@@ -221,6 +224,11 @@ export default function NewsShorts() {
       toast.success(language === "te" ? "కాపీ చేయబడింది" : "Copied to clipboard");
     }
   };
+
+  // Track news category change
+  useEffect(() => {
+    trackFeature(FEATURES.NEWS, activeCategory, ACTIONS.VIEW);
+  }, [activeCategory]);
 
   const currentItem = mergedFeed[currentIndex];
   const config = currentItem?.isAd ? null : (CATEGORY_CONFIG[activeCategory] || CATEGORY_CONFIG.local);
