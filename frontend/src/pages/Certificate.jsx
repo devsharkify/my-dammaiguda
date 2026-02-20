@@ -55,9 +55,9 @@ export default function Certificate() {
   };
 
   const shareUrl = typeof window !== 'undefined' ? window.location.href : '';
-  const shareTitle = certificate ? `I completed "${certificate.course_title}" on AIT Education! 🎓` : '';
+  const shareTitle = certificate ? `I completed "${certificate.course_title}" on Bose American Academy! 🎓` : '';
   const shareText = certificate 
-    ? `I just earned my certificate for completing "${certificate.course_title}" on AIT Education! Check out my achievement.`
+    ? `I just earned my certificate for completing "${certificate.course_title}" on Bose American Academy! Check out my achievement.`
     : '';
 
   const copyLink = () => {
@@ -196,7 +196,7 @@ export default function Certificate() {
               </div>
               <div>
                 <h1 className="text-2xl font-bold bg-gradient-to-r from-amber-600 to-orange-600 bg-clip-text text-transparent">
-                  AIT Education
+                  Bose American Academy
                 </h1>
                 <p className="text-amber-600 text-xs uppercase tracking-[0.3em] mt-1">
                   {language === "te" ? "పూర్తి చేసిన సర్టిఫికెట్" : "Certificate of Completion"}

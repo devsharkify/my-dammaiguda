@@ -162,7 +162,7 @@ export default function AITEducation() {
 
   if (loading) {
     return (
-      <Layout showBackButton title={language === "te" ? "AIT విద్య" : "AIT Education"}>
+      <Layout showBackButton title={language === "te" ? "బోస్ అమెరికన్ అకాడమీ" : "Bose American Academy"}>
         <div className="flex items-center justify-center min-h-[50vh]">
           <Loader2 className="h-10 w-10 animate-spin text-primary" />
         </div>
@@ -171,7 +171,7 @@ export default function AITEducation() {
   }
 
   return (
-    <Layout showBackButton title={language === "te" ? "AIT విద్య" : "AIT Education"}>
+    <Layout showBackButton title={language === "te" ? "బోస్ అమెరికన్ అకాడమీ" : "Bose American Academy"}>
       <div className="space-y-4 pb-20" data-testid="ait-education">
         
         {/* Hero Stats Card */}

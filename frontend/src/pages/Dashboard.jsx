@@ -352,7 +352,7 @@ export default function Dashboard() {
                   {language === "te" ? "కొత్త కోర్సులు" : "New Courses Available"}
                 </p>
                 <h3 className="text-white font-bold text-lg leading-tight">
-                  {language === "te" ? "AIT విద్యతో నేర్చుకోండి!" : "Learn with AIT Education!"}
+                  {language === "te" ? "బోస్ అమెరికన్ అకాడమీతో నేర్చుకోండి!" : "Learn with Bose American Academy!"}
                 </h3>
                 <p className="text-white/70 text-xs mt-1">
                   {language === "te" ? "ఉచిత కోర్సులు అందుబాటులో" : "Free courses available"}
