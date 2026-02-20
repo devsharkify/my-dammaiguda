@@ -193,11 +193,24 @@ The app now supports easy replication for different areas (e.g., "My AS Rao Naga
 | Uppal | Cyan | ❌ No | myuppal.in |
 
 ### How to Clone for New Area:
-1. Run `node scripts/create-area.js <area-id>`
-2. Copy generated files to `/src/config/` and `/public/`
-3. Update logo files
-4. Update .env with new backend URL
-5. Build and deploy
+1. **CLI Method (Developers):**
+   ```bash
+   node scripts/create-area.js --list          # See all presets
+   node scripts/create-area.js kapra --deploy  # Deploy Kapra instantly
+   node scripts/create-area.js kompally --new  # Create new custom area
+   ```
+
+2. **Admin UI Method (Non-technical):**
+   - Navigate to `/admin/clone`
+   - Select preset or create custom area
+   - Download appConfig.js and manifest.json
+   - Replace files and rebuild
+
+### Key Files:
+- **CLI Tool:** `/frontend/scripts/create-area.js`
+- **Admin UI:** `/frontend/src/pages/CloneMaker.jsx` (route: `/admin/clone`)
+- **Config:** `/frontend/src/config/appConfig.js`
+- **Context:** `/frontend/src/context/AppConfigContext.jsx`
 
 ---
 
