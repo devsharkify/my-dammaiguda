@@ -262,9 +262,15 @@ export default function NewsShorts() {
     return language === "te" ? catInfo.te : catInfo.en;
   };
 
-  // Extract YouTube video ID from URL
+  // Extract YouTube video ID from URL (supports regular, shorts, embed, youtu.be)
   const getYouTubeVideoId = (url) => {
     if (!url) return null;
+    
+    // Handle YouTube Shorts
+    const shortsMatch = url.match(/youtube\.com\/shorts\/([a-zA-Z0-9_-]{11})/);
+    if (shortsMatch) return shortsMatch[1];
+    
+    // Handle regular YouTube URLs
     const regExp = /^.*((youtu.be\/)|(v\/)|(\/u\/\w\/)|(embed\/)|(watch\?))\??v?=?([^#&?]*).*/;
     const match = url.match(regExp);
     return (match && match[7].length === 11) ? match[7] : null;
