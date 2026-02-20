@@ -498,41 +498,41 @@ export default function Dashboard() {
               <p className="text-[11px] text-gray-400 font-medium mb-3">
                 {language === "te" ? "గాలి నాణ్యత (కాలుష్యం)" : "Air Quality (Pollution)"}
               </p>
-              {/* Dammaiguda Row */}
+              {/* Primary Area Row */}
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-3">
-                  <div className={`h-10 w-10 rounded-xl ${getAqiInfo(aqiData?.dammaiguda?.aqi).bg} ${getAqiInfo(aqiData?.dammaiguda?.aqi).text} flex items-center justify-center`}>
+                  <div className={`h-10 w-10 rounded-xl ${getAqiInfo(aqiData?.dammaiguda?.aqi || aqiData?.primary?.aqi).bg} ${getAqiInfo(aqiData?.dammaiguda?.aqi || aqiData?.primary?.aqi).text} flex items-center justify-center`}>
                     <Wind className="h-5 w-5" />
                   </div>
                   <p className="text-base font-bold text-gray-800">
-                    {language === "te" ? "దమ్మాయిగూడ" : "Dammaiguda"}
+                    {localizedConfig.primaryAqi}
                   </p>
                 </div>
                 <div className="flex items-center gap-3">
-                  <p className="font-bold text-2xl text-gray-800">{aqiData?.dammaiguda?.aqi || "—"}</p>
-                  <div className={`px-2.5 py-1 rounded-lg ${getAqiInfo(aqiData?.dammaiguda?.aqi).bg}`}>
-                    <span className={`text-xs font-semibold ${getAqiInfo(aqiData?.dammaiguda?.aqi).text}`}>
-                      {language === "te" ? getAqiInfo(aqiData?.dammaiguda?.aqi).status_te : getAqiInfo(aqiData?.dammaiguda?.aqi).status}
+                  <p className="font-bold text-2xl text-gray-800">{aqiData?.dammaiguda?.aqi || aqiData?.primary?.aqi || "—"}</p>
+                  <div className={`px-2.5 py-1 rounded-lg ${getAqiInfo(aqiData?.dammaiguda?.aqi || aqiData?.primary?.aqi).bg}`}>
+                    <span className={`text-xs font-semibold ${getAqiInfo(aqiData?.dammaiguda?.aqi || aqiData?.primary?.aqi).text}`}>
+                      {language === "te" ? getAqiInfo(aqiData?.dammaiguda?.aqi || aqiData?.primary?.aqi).status_te : getAqiInfo(aqiData?.dammaiguda?.aqi || aqiData?.primary?.aqi).status}
                     </span>
                   </div>
                 </div>
               </div>
               
-              {/* Hyderabad Row - Same size as Dammaiguda */}
+              {/* Secondary Area Row */}
               <div className="flex items-center justify-between mt-3 pt-3 border-t border-gray-100">
                 <div className="flex items-center gap-3">
-                  <div className={`h-10 w-10 rounded-xl ${getAqiInfo(aqiData?.hyderabad?.aqi).bg} ${getAqiInfo(aqiData?.hyderabad?.aqi).text} flex items-center justify-center`}>
+                  <div className={`h-10 w-10 rounded-xl ${getAqiInfo(aqiData?.hyderabad?.aqi || aqiData?.secondary?.aqi).bg} ${getAqiInfo(aqiData?.hyderabad?.aqi || aqiData?.secondary?.aqi).text} flex items-center justify-center`}>
                     <Wind className="h-5 w-5" />
                   </div>
                   <p className="text-base font-bold text-gray-800">
-                    {language === "te" ? "హైదరాబాద్" : "Hyderabad"}
+                    {localizedConfig.secondaryAqi}
                   </p>
                 </div>
                 <div className="flex items-center gap-3">
-                  <p className="font-bold text-2xl text-gray-800">{aqiData?.hyderabad?.aqi || "—"}</p>
-                  <div className={`px-2.5 py-1 rounded-lg ${getAqiInfo(aqiData?.hyderabad?.aqi).bg}`}>
-                    <span className={`text-xs font-semibold ${getAqiInfo(aqiData?.hyderabad?.aqi).text}`}>
-                      {language === "te" ? getAqiInfo(aqiData?.hyderabad?.aqi).status_te : getAqiInfo(aqiData?.hyderabad?.aqi).status}
+                  <p className="font-bold text-2xl text-gray-800">{aqiData?.hyderabad?.aqi || aqiData?.secondary?.aqi || "—"}</p>
+                  <div className={`px-2.5 py-1 rounded-lg ${getAqiInfo(aqiData?.hyderabad?.aqi || aqiData?.secondary?.aqi).bg}`}>
+                    <span className={`text-xs font-semibold ${getAqiInfo(aqiData?.hyderabad?.aqi || aqiData?.secondary?.aqi).text}`}>
+                      {language === "te" ? getAqiInfo(aqiData?.hyderabad?.aqi || aqiData?.secondary?.aqi).status_te : getAqiInfo(aqiData?.hyderabad?.aqi || aqiData?.secondary?.aqi).status}
                     </span>
                   </div>
                 </div>
@@ -541,43 +541,44 @@ export default function Dashboard() {
           </Card>
         </Link>
 
-        {/* Dump Yard Alert - Grey Card */}
-        <Link to="/dumpyard" data-testid="dumpyard-widget">
-          <Card className="bg-gray-800 rounded-xl overflow-hidden">
-            <CardContent className="p-3.5">
-              <div className="flex items-start justify-between text-white">
-                <div className="flex items-center gap-2.5">
-                  <div className="h-10 w-10 rounded-lg bg-white/10 flex items-center justify-center">
-                    <AlertTriangle className="h-5 w-5 text-red-400" />
+        {/* Dump Yard Alert - Only show if feature enabled */}
+        {features.dumpYard && config.dumpYard?.enabled && (
+          <Link to="/dumpyard" data-testid="dumpyard-widget">
+            <Card className="bg-gray-800 rounded-xl overflow-hidden">
+              <CardContent className="p-3.5">
+                <div className="flex items-start justify-between text-white">
+                  <div className="flex items-center gap-2.5">
+                    <div className="h-10 w-10 rounded-lg bg-white/10 flex items-center justify-center">
+                      <AlertTriangle className="h-5 w-5 text-red-400" />
+                    </div>
+                    <div>
+                      <p className="text-[10px] text-gray-400 font-medium uppercase tracking-wide">
+                        {localizedConfig.dumpYardName || (language === "te" ? "డంప్ యార్డ్" : "Dump Yard")}
+                      </p>
+                      <p className="text-lg font-bold text-white">
+                        {(dumpyardConfig.daily_waste_tons || config.dumpYard?.dailyWasteTons)?.toLocaleString() || "10,000"} <span className="text-xs font-normal text-gray-400">{language === "te" ? "టన్నులు/రోజు" : "tonnes/day"}</span>
+                      </p>
+                    </div>
                   </div>
-                  <div>
-                    <p className="text-[10px] text-gray-400 font-medium uppercase tracking-wide">
-                      {language === "te" ? "జవహర్ నగర్ డంప్ యార్డ్" : "Jawahar Nagar Dump Yard"}
-                    </p>
-                    <p className="text-lg font-bold text-white">
-                      {(dumpyardConfig.daily_waste_tons)?.toLocaleString() || "10,000"} <span className="text-xs font-normal text-gray-400">{language === "te" ? "టన్నులు/రోజు" : "tonnes/day"}</span>
-                    </p>
-                  </div>
+                  <ChevronRight className="h-4 w-4 text-gray-500 mt-1" />
                 </div>
-                <ChevronRight className="h-4 w-4 text-gray-500 mt-1" />
-              </div>
-              
-              {/* Health Risk Tags */}
-              <div className="flex flex-wrap gap-1.5 mt-2.5">
-                {[
-                  { en: "Respiratory", te: "శ్వాసకోశం", icon: "🫁" },
-                  { en: "Water", te: "నీరు", icon: "💧" },
-                  { en: "Cancer", te: "క్యాన్సర్", icon: "⚠️" },
-                  { en: "Skin", te: "చర్మం", icon: "🩹" },
-                  { en: "Eyes", te: "కళ్ళు", icon: "👁️" }
-                ].map((tag, idx) => (
-                  <span key={idx} className="inline-flex items-center gap-0.5 px-1.5 py-0.5 bg-white/10 rounded text-[9px] font-medium text-gray-300">
-                    <span className="text-[10px]">{tag.icon}</span>
-                    {language === "te" ? tag.te : tag.en}
-                  </span>
-                ))}
-              </div>
-            </CardContent>
+                
+                {/* Health Risk Tags */}
+                <div className="flex flex-wrap gap-1.5 mt-2.5">
+                  {[
+                    { en: "Respiratory", te: "శ్వాసకోశం", icon: "🫁" },
+                    { en: "Water", te: "నీరు", icon: "💧" },
+                    { en: "Cancer", te: "క్యాన్సర్", icon: "⚠️" },
+                    { en: "Skin", te: "చర్మం", icon: "🩹" },
+                    { en: "Eyes", te: "కళ్ళు", icon: "👁️" }
+                  ].map((tag, idx) => (
+                    <span key={idx} className="inline-flex items-center gap-0.5 px-1.5 py-0.5 bg-white/10 rounded text-[9px] font-medium text-gray-300">
+                      <span className="text-[10px]">{tag.icon}</span>
+                      {language === "te" ? tag.te : tag.en}
+                    </span>
+                  ))}
+                </div>
+              </CardContent>
           </Card>
         </Link>
 
