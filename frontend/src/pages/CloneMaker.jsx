@@ -137,12 +137,17 @@ export default function CloneMaker() {
     name_te: "",
     primaryColor: "#0F766E",
     domain: "",
-    dumpYard: false,
     lat: "17.45",
     lon: "78.50",
     benefitsAmount: "₹5Cr+",
     problemsSolved: "50+",
     peopleBenefited: "25K+",
+    // Company & Partner (Powered By)
+    companyName: "Sharkify Technology Pvt. Ltd.",
+    partnerName: "Kaizer News",
+    partnerLogo: "",
+    // Education partner
+    educationPartner: "Bose American Academy",
   });
 
   const handlePresetSelect = (presetId) => {
