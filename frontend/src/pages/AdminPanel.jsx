@@ -137,7 +137,6 @@ export default function AdminPanel() {
     
     try {
       const headers = { Authorization: `Bearer ${token}` };
-      const headers = { Authorization: `Bearer ${token}` };
       const areaParam = selectedArea !== "all" ? `?area=${selectedArea}` : "";
       
       // Fetch stats
@@ -152,10 +151,47 @@ export default function AdminPanel() {
       const newsRes = await axios.get(`${API}/news/admin${areaParam}`, { headers });
       setNews(newsRes.data?.items || []);
       
+      // Fetch managers
+      try {
+        const managersRes = await axios.get(`${API}/manager/list`, { headers });
+        setManagers(managersRes.data?.managers || []);
+      } catch (e) {
+        // Manager API might not be available
+      }
+      
     } catch (err) {
       console.error("Error fetching data:", err);
     } finally {
       setLoading(false);
+    }
+  };
+  
+  const createManager = async () => {
+    if (!managerForm.phone || !managerForm.name || !managerForm.assigned_area) {
+      toast.error("Please fill all fields");
+      return;
+    }
+    
+    try {
+      const headers = { Authorization: `Bearer ${token}` };
+      await axios.post(`${API}/manager/create`, managerForm, { headers });
+      toast.success("Manager created successfully");
+      setShowManagerDialog(false);
+      setManagerForm({ phone: "", name: "", assigned_area: "" });
+      fetchData();
+    } catch (err) {
+      toast.error(err.response?.data?.detail || "Failed to create manager");
+    }
+  };
+  
+  const removeManager = async (managerId) => {
+    try {
+      const headers = { Authorization: `Bearer ${token}` };
+      await axios.delete(`${API}/manager/${managerId}`, { headers });
+      toast.success("Manager removed");
+      fetchData();
+    } catch (err) {
+      toast.error("Failed to remove manager");
     }
   };
 
