@@ -280,10 +280,12 @@ Build a production-ready, mobile-first civic engagement platform "My Dammaiguda"
 ---
 
 ## Known Limitations / MOCKED Features
-- **Media Uploads**: Not connected to cloud storage (Cloudinary integration needed)
+- None currently - all features are using real integrations
 
 ## REAL Integrations Completed
 - **SMS OTP via Authkey.io**: Real SMS OTP delivery using Authkey.io API. Random 6-digit OTPs sent via SMS.
+- **Cloudinary Image Upload**: Admin panel uploads images to Cloudinary cloud storage. Real URLs returned.
+- **Google Fit Integration**: OAuth flow implemented, pending user verification.
 
 ---
 
