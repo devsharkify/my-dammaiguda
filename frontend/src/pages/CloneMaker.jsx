@@ -455,17 +455,7 @@ export default APP_CONFIG;`;
                 </div>
               </div>
 
-              <div className="flex items-center justify-between p-3 bg-muted/50 rounded-lg">
-                <div className="flex items-center gap-2">
-                  <Trash2 className="w-4 h-4 text-orange-500" />
-                  <span className="text-sm">Has Dump Yard?</span>
-                </div>
-                <Switch
-                  checked={customArea.dumpYard}
-                  onCheckedChange={(checked) => handleCustomChange('dumpYard', checked)}
-                />
-              </div>
-
+              {/* Stats */}
               <div className="grid grid-cols-3 gap-2">
                 <div>
                   <Label className="text-xs">Benefits</Label>
@@ -489,6 +479,43 @@ export default APP_CONFIG;`;
                     placeholder="25K+"
                     value={customArea.peopleBenefited}
                     onChange={(e) => handleCustomChange('peopleBenefited', e.target.value)}
+                  />
+                </div>
+              </div>
+
+              {/* Powered By Section */}
+              <div className="pt-3 border-t space-y-3">
+                <p className="text-sm font-medium flex items-center gap-2">
+                  <Building className="w-4 h-4" />
+                  Powered By
+                </p>
+                <div className="grid grid-cols-2 gap-3">
+                  <div>
+                    <Label className="text-xs">Company Name</Label>
+                    <Input
+                      placeholder="Sharkify Technology Pvt. Ltd."
+                      value={customArea.companyName}
+                      onChange={(e) => handleCustomChange('companyName', e.target.value)}
+                    />
+                  </div>
+                  <div>
+                    <Label className="text-xs">Partner Name</Label>
+                    <Input
+                      placeholder="Kaizer News"
+                      value={customArea.partnerName}
+                      onChange={(e) => handleCustomChange('partnerName', e.target.value)}
+                    />
+                  </div>
+                </div>
+                <div>
+                  <Label className="text-xs flex items-center gap-1">
+                    <GraduationCap className="w-3 h-3" />
+                    Education Partner
+                  </Label>
+                  <Input
+                    placeholder="Bose American Academy"
+                    value={customArea.educationPartner}
+                    onChange={(e) => handleCustomChange('educationPartner', e.target.value)}
                   />
                 </div>
               </div>
