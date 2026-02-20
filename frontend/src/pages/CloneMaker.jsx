@@ -174,8 +174,23 @@ export default function CloneMaker() {
         benefitsAmount: customArea.benefitsAmount,
         problemsSolved: customArea.problemsSolved,
         peopleBenefited: customArea.peopleBenefited,
-      }
-    } : AREA_PRESETS[selectedPreset];
+      },
+      company: {
+        name: customArea.companyName,
+      },
+      partner: {
+        name: customArea.partnerName,
+        logo: customArea.partnerLogo,
+      },
+      education: {
+        partnerName: customArea.educationPartner,
+      },
+    } : {
+      ...AREA_PRESETS[selectedPreset],
+      company: { name: customArea.companyName || "Sharkify Technology Pvt. Ltd." },
+      partner: { name: customArea.partnerName || "Kaizer News", logo: customArea.partnerLogo || "" },
+      education: { partnerName: customArea.educationPartner || "Bose American Academy" },
+    };
 
     if (!config) {
       toast.error("Please select a preset or fill custom area details");
