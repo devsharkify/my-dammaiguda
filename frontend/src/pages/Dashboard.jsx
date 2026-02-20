@@ -2,6 +2,7 @@ import { useState, useEffect, useRef } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useLanguage } from "../context/LanguageContext";
 import { useAuth } from "../context/AuthContext";
+import { useAppConfig, useFeatureFlags, useLocalizedConfig } from "../context/AppConfigContext";
 import axios from "axios";
 import { Card, CardContent } from "../components/ui/card";
 import { Button } from "../components/ui/button";
@@ -49,6 +50,10 @@ export default function Dashboard() {
   const { language } = useLanguage();
   const { user, token } = useAuth();
   const navigate = useNavigate();
+  const config = useAppConfig();
+  const features = useFeatureFlags();
+  const localizedConfig = useLocalizedConfig(language);
+  
   const [recentIssues, setRecentIssues] = useState([]);
   const [loading, setLoading] = useState(true);
   
