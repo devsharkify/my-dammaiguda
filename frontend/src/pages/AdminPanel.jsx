@@ -369,6 +369,10 @@ export default function AdminPanel() {
               <BarChart3 className="h-4 w-4" />
               Overview
             </TabsTrigger>
+            <TabsTrigger value="managers" className="gap-2">
+              <Shield className="h-4 w-4" />
+              Managers
+            </TabsTrigger>
             <TabsTrigger value="courses" className="gap-2">
               <GraduationCap className="h-4 w-4" />
               Courses
