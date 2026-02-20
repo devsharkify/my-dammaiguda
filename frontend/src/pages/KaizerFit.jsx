@@ -204,12 +204,14 @@ export default function KaizerFit() {
   const fetchAllData = async () => {
     setLoading(true);
     try {
-      const [dashRes, weightRes, statsRes, streakRes, badgesRes] = await Promise.all([
+      const [dashRes, weightRes, statsRes, streakRes, badgesRes, waterRes, mealsRes] = await Promise.all([
         axios.get(`${API}/fitness/dashboard`, { headers }).catch(() => ({ data: null })),
         axios.get(`${API}/fitness/weight/history?days=30`, { headers }).catch(() => ({ data: { records: [] } })),
         axios.get(`${API}/fitness/weight/stats`, { headers }).catch(() => ({ data: null })),
         axios.get(`${API}/fitness/streaks`, { headers }).catch(() => ({ data: null })),
-        axios.get(`${API}/fitness/badges`, { headers }).catch(() => ({ data: { badges: [] } }))
+        axios.get(`${API}/fitness/badges`, { headers }).catch(() => ({ data: { badges: [] } })),
+        axios.get(`${API}/doctor/water`, { headers }).catch(() => ({ data: { glasses: 0 } })),
+        axios.get(`${API}/doctor/meals`, { headers }).catch(() => ({ data: { meals: [], summary: { total_calories: 0 } } }))
       ]);
       
       setTodayStats(dashRes.data);
@@ -221,6 +223,11 @@ export default function KaizerFit() {
         earned: badgesRes.data?.earned_count || 0,
         total: badgesRes.data?.total_count || 10
       });
+      
+      // Set water and meals data
+      setWaterGlasses(waterRes.data?.glasses || 0);
+      setTodayMeals(mealsRes.data?.meals || []);
+      setCaloriesConsumed(mealsRes.data?.summary?.total_calories || 0);
       
       if (statsRes.data?.goal_weight) {
         setGoalWeight(statsRes.data.goal_weight.toString());
