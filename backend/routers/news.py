@@ -453,11 +453,11 @@ async def get_news_by_category(
             seen_titles.add(title_key)
             unique_news.append(news)
     
-    # Sort: pinned first, then by date
+    # Sort: pinned first, then admin-pushed, then by date (newest first)
     unique_news.sort(key=lambda x: (
-        not x.get("is_pinned", False), 
-        not x.get("is_admin_pushed", False), 
-        x.get("published_at", "")
+        x.get("is_pinned", False),  # True = 1, False = 0 (pinned first)
+        x.get("is_admin_pushed", False),  # Admin pushed second
+        x.get("published_at", "") or ""
     ), reverse=True)
     
     return {
