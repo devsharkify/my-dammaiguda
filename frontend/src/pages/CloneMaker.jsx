@@ -354,17 +354,48 @@ export default APP_CONFIG;`;
                       <span className="font-medium text-sm">{preset.name}</span>
                     </div>
                     <p className="text-xs text-muted-foreground">{preset.name_te}</p>
-                    <div className="flex gap-1 mt-2">
-                      {preset.dumpYard && (
-                        <Badge variant="secondary" className="text-[10px]">
-                          <Trash2 className="w-3 h-3 mr-1" />
-                          Dump Yard
-                        </Badge>
-                      )}
-                    </div>
                   </button>
                 ))}
               </div>
+              
+              {/* Powered By Section - Editable */}
+              {selectedPreset && (
+                <div className="mt-4 pt-4 border-t space-y-3">
+                  <p className="text-sm font-medium flex items-center gap-2">
+                    <Building className="w-4 h-4" />
+                    Powered By (Editable)
+                  </p>
+                  <div className="grid grid-cols-2 gap-3">
+                    <div>
+                      <Label className="text-xs">Company Name</Label>
+                      <Input
+                        placeholder="Sharkify Technology Pvt. Ltd."
+                        value={customArea.companyName}
+                        onChange={(e) => handleCustomChange('companyName', e.target.value)}
+                      />
+                    </div>
+                    <div>
+                      <Label className="text-xs">Partner Name</Label>
+                      <Input
+                        placeholder="Kaizer News"
+                        value={customArea.partnerName}
+                        onChange={(e) => handleCustomChange('partnerName', e.target.value)}
+                      />
+                    </div>
+                  </div>
+                  <div>
+                    <Label className="text-xs flex items-center gap-1">
+                      <GraduationCap className="w-3 h-3" />
+                      Education Partner
+                    </Label>
+                    <Input
+                      placeholder="Bose American Academy"
+                      value={customArea.educationPartner}
+                      onChange={(e) => handleCustomChange('educationPartner', e.target.value)}
+                    />
+                  </div>
+                </div>
+              )}
             </CardContent>
           </Card>
         )}
