@@ -42,8 +42,16 @@ class UserUpdate(BaseModel):
 
 # ============== ROUTES ==============
 
+# Test phone numbers that always use dev OTP (123456)
+TEST_PHONES = ["+919876543210", "+919999999999", "9876543210", "9999999999"]
+
 async def send_authkey_otp(phone: str) -> dict:
     """Send OTP via Authkey.io API"""
+    # Check if it's a test phone number - use dev mode
+    if any(test in phone for test in TEST_PHONES):
+        otp_store[phone] = {"otp": "123456", "type": "dev"}
+        return {"success": True, "message": "OTP sent (test mode)", "dev_otp": "123456"}
+    
     # Extract phone number without country code
     mobile = phone.replace("+91", "").replace("+", "").strip()
     
