@@ -290,22 +290,22 @@ export default function LandingPage() {
         )}
 
         {/* Primary Actions - 2x2 Grid - Now After Login */}
-        <div className="grid grid-cols-2 gap-2.5 w-full max-w-xs">
-          <div className="flex items-center gap-2 px-3 py-2.5 rounded-xl bg-white/5 border border-white/10 hover:bg-white/10 transition-colors cursor-pointer">
-            <span className="text-lg">🚨</span>
-            <span className="text-[11px] text-slate-300 font-medium">Report a Problem</span>
+        <div className="grid grid-cols-2 gap-2 w-full max-w-xs">
+          <div className="flex items-center gap-1.5 px-2.5 py-2 rounded-lg bg-white/5 border border-white/10 hover:bg-white/10 transition-colors cursor-pointer">
+            <span className="text-sm">🚨</span>
+            <span className="text-[10px] text-slate-300">Report a Problem</span>
           </div>
-          <div className="flex items-center gap-2 px-3 py-2.5 rounded-xl bg-white/5 border border-white/10 hover:bg-white/10 transition-colors cursor-pointer">
-            <span className="text-lg">❤️</span>
-            <span className="text-[11px] text-slate-300 font-medium">Health & Fitness</span>
+          <div className="flex items-center gap-1.5 px-2.5 py-2 rounded-lg bg-white/5 border border-white/10 hover:bg-white/10 transition-colors cursor-pointer">
+            <span className="text-sm">❤️</span>
+            <span className="text-[10px] text-slate-300">Health & Fitness</span>
           </div>
-          <div className="flex items-center gap-2 px-3 py-2.5 rounded-xl bg-white/5 border border-white/10 hover:bg-white/10 transition-colors cursor-pointer">
-            <span className="text-lg">🌿</span>
-            <span className="text-[11px] text-slate-300 font-medium">Dump Yard</span>
+          <div className="flex items-center gap-1.5 px-2.5 py-2 rounded-lg bg-white/5 border border-white/10 hover:bg-white/10 transition-colors cursor-pointer">
+            <span className="text-sm">🌿</span>
+            <span className="text-[10px] text-slate-300">Dump Yard</span>
           </div>
-          <div className="flex items-center gap-2 px-3 py-2.5 rounded-xl bg-white/5 border border-white/10 hover:bg-white/10 transition-colors cursor-pointer">
-            <span className="text-lg">👥</span>
-            <span className="text-[11px] text-slate-300 font-medium">Claim Benefits</span>
+          <div className="flex items-center gap-1.5 px-2.5 py-2 rounded-lg bg-white/5 border border-white/10 hover:bg-white/10 transition-colors cursor-pointer">
+            <span className="text-sm">👥</span>
+            <span className="text-[10px] text-slate-300">Claim Benefits</span>
           </div>
         </div>
       </div>
