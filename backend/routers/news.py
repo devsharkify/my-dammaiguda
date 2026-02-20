@@ -513,6 +513,74 @@ def generate_placeholder_news(category: str, limit: int = 10) -> List[Dict]:
 
 # ============== ROUTES ==============
 
+@router.get("/local")
+async def get_local_news(
+    category: str = Query("local", description="News category"),
+    limit: int = Query(30, description="Number of items")
+):
+    """Get local news feed with YouTube shorts integration - optimized for NewsShorts UI"""
+    all_news = []
+    
+    # 1. Get admin-pushed/pinned news first (highest priority)
+    admin_news = await db.admin_news.find(
+        {"is_active": True, "$or": [{"category": category}, {"is_pinned": True}]},
+        {"_id": 0}
+    ).sort([("is_pinned", -1), ("priority", 1), ("created_at", -1)]).to_list(10)
+    
+    for news in admin_news:
+        news["is_admin_pushed"] = True
+        news["time_ago"] = "Admin"
+        all_news.append(news)
+    
+    # 2. Get YouTube shorts from Kaizer Nigha (for video content)
+    try:
+        youtube_shorts = await fetch_youtube_shorts(limit=5)
+        all_news.extend(youtube_shorts)
+    except Exception as e:
+        logging.error(f"YouTube shorts fetch failed: {e}")
+    
+    # 3. Scrape fresh news from Siasat
+    try:
+        siasat_news = await scrape_siasat_news(limit=15)
+        all_news.extend(siasat_news)
+    except Exception as e:
+        logging.error(f"Siasat scrape failed: {e}")
+    
+    # 4. Get from RSS feeds for the category
+    feeds = RSS_FEEDS.get(category, RSS_FEEDS.get("national", []))
+    if feeds:
+        tasks = [scrape_rss_feed(url, category, limit=5, use_ai=False) for url in feeds[:2]]
+        results = await asyncio.gather(*tasks, return_exceptions=True)
+        for result in results:
+            if isinstance(result, list):
+                all_news.extend(result)
+    
+    # 5. Add placeholder if not enough news
+    if len(all_news) < 10:
+        all_news.extend(generate_placeholder_news(category, 10))
+    
+    # Remove duplicates and format
+    seen = set()
+    unique_news = []
+    for item in all_news:
+        title_key = (item.get("title", ""))[:40].lower()
+        if title_key and title_key not in seen:
+            seen.add(title_key)
+            # Ensure required fields
+            item.setdefault("time_ago", "Recently")
+            item.setdefault("source", "Local News")
+            item.setdefault("content_type", "text")
+            unique_news.append(item)
+    
+    # Sort: admin pinned first, then videos, then by time
+    unique_news.sort(key=lambda x: (
+        not x.get("is_pinned", False),
+        not x.get("is_admin_pushed", False),
+        x.get("content_type") != "video"
+    ))
+    
+    return {"news": unique_news[:limit], "total": len(unique_news)}
+
 @router.get("/categories")
 async def get_news_categories():
     """Get all news categories"""
