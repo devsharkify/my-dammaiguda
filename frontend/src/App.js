@@ -285,15 +285,17 @@ function App() {
   
   return (
     <BrowserRouter>
-      <ThemeProvider>
-        <LanguageProvider>
-          <AuthProvider>
-            <OfflineBanner />
-            <AnimatedRoutes />
-            <Toaster position="top-center" richColors />
-          </AuthProvider>
-        </LanguageProvider>
-      </ThemeProvider>
+      <AppConfigProvider>
+        <ThemeProvider>
+          <LanguageProvider>
+            <AuthProvider>
+              <OfflineBanner />
+              <AnimatedRoutes />
+              <Toaster position="top-center" richColors />
+            </AuthProvider>
+          </LanguageProvider>
+        </ThemeProvider>
+      </AppConfigProvider>
     </BrowserRouter>
   );
 }
