@@ -243,8 +243,7 @@ export default function PrivacyPolicy() {
 
         {/* Footer */}
         <div className="text-center text-sm text-gray-500 pt-4">
-          <p>© 2026 My Dammaiguda. {language === "te" ? "అన్ని హక్కులు రిజర్వ్ చేయబడ్డాయి." : "All rights reserved."}</p>
-          <p className="mt-1">{language === "te" ? "షార్కిఫై టెక్నాలజీ ప్రైవేట్ లిమిటెడ్ ద్వారా" : "By Sharkify Technology Pvt. Ltd."}</p>
+          <p>© 2026 Sharkify Technology Pvt Ltd. {language === "te" ? "అన్ని హక్కులు రిజర్వ్ చేయబడ్డాయి." : "All rights reserved."}</p>
         </div>
       </div>
     </Layout>
