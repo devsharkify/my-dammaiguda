@@ -37,7 +37,8 @@ import {
   Trash,
   Ticket,
   FileText,
-  GraduationCap
+  GraduationCap,
+  Sparkles
 } from "lucide-react";
 
 const API = `${process.env.REACT_APP_BACKEND_URL}/api`;
