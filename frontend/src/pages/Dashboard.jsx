@@ -9,6 +9,7 @@ import { Badge } from "../components/ui/badge";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "../components/ui/dialog";
 import { toast } from "sonner";
 import Layout from "../components/Layout";
+import { trackPageView, trackFeature, FEATURES, ACTIONS } from "../utils/analytics";
 import {
   AlertTriangle,
   Activity,
