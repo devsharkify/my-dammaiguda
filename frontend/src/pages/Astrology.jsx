@@ -742,7 +742,7 @@ export default function Astrology() {
     place_of_birth: ""
   });
 
-  const cities = ["Dammaiguda", "Hyderabad", "Secunderabad", "Vijayawada", "Visakhapatnam", "Chennai", "Bangalore", "Mumbai", "Delhi", "Kolkata", "Tirupati", "Warangal"];
+  // City is now free-text input
 
   const handleGenerateKundali = async () => {
     if (!form.name || !form.gender || !form.date_of_birth || !form.time_of_birth || !form.place_of_birth) {
