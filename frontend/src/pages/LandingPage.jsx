@@ -225,12 +225,12 @@ export default function LandingPage() {
                 </>
               ) : (
                 <>
-                  <div className="text-center py-2">
+                  <div className="text-center py-3 mb-2">
                     <p className="text-slate-400 text-xs">Enter OTP sent to</p>
                     <p className="text-white text-sm font-medium">+91 {phone}</p>
                   </div>
                   
-                  <div className="flex justify-center py-2">
+                  <div className="flex justify-center py-3 mb-4">
                     <InputOTP maxLength={6} value={otp} onChange={setOtp} data-testid="otp-input">
                       <InputOTPGroup className="gap-2">
                         {[0, 1, 2, 3, 4, 5].map((idx) => (
