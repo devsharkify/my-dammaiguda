@@ -77,9 +77,9 @@ export default function LandingPage() {
             <span className="text-slate-300 text-[11px] font-medium">Rohan Kulkarni Foundation</span>
             <span className="text-slate-500 text-[11px]">&</span>
             <img 
-              src="https://customer-assets.emergentagent.com/job_b415d412-3e65-4362-a62f-f8bab1368136/artifacts/gu1ur1cb_kaizer%20logo%20transparent.png" 
+              src="https://customer-assets.emergentagent.com/job_b415d412-3e65-4362-a62f-f8bab1368136/artifacts/zoaa3k1e_Untitled%20design%20%2823%29.png" 
               alt="Kaizer News" 
-              className="h-6 object-contain"
+              className="h-7 object-contain"
             />
           </div>
         </div>
