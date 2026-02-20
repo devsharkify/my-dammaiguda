@@ -588,28 +588,54 @@ function ManagerDashboard({ user, token, onLogout }) {
                 </Button>
               </CardHeader>
               <CardContent>
-                <div className="space-y-4">
-                  {wallPosts.map((post) => (
-                    <div key={post.id} className="p-4 bg-muted/50 rounded-lg">
-                      <div className="flex items-start justify-between">
-                        <div>
-                          <p className="text-sm">{post.content}</p>
-                          <p className="text-xs text-muted-foreground mt-2">
-                            {post.author} • {post.date} • {post.likes} likes
-                          </p>
+                {wallPosts.length === 0 ? (
+                  <div className="text-center py-8 text-muted-foreground">
+                    <MessageSquare className="h-12 w-12 mx-auto mb-2 opacity-20" />
+                    <p>No posts yet</p>
+                    <p className="text-sm">Be the first to post an announcement!</p>
+                  </div>
+                ) : (
+                  <div className="space-y-4">
+                    {wallPosts.map((post) => (
+                      <div key={post.id} className="p-4 bg-muted/50 rounded-lg border">
+                        <div className="flex items-start justify-between gap-3">
+                          <div className="flex-1">
+                            <div className="flex items-center gap-2 mb-2">
+                              <div className="h-8 w-8 bg-blue-100 rounded-full flex items-center justify-center">
+                                <Shield className="h-4 w-4 text-blue-600" />
+                              </div>
+                              <div>
+                                <p className="text-sm font-medium">{post.author_name || post.author || "Manager"}</p>
+                                <p className="text-xs text-muted-foreground">
+                                  {post.created_at ? new Date(post.created_at).toLocaleDateString() : post.date}
+                                </p>
+                              </div>
+                            </div>
+                            <p className="text-sm whitespace-pre-wrap">{post.content}</p>
+                            <div className="flex items-center gap-4 mt-3 text-xs text-muted-foreground">
+                              <span className="flex items-center gap-1">
+                                <Heart className="h-3 w-3" /> {post.likes || 0} likes
+                              </span>
+                              <span className="flex items-center gap-1">
+                                <MessageSquare className="h-3 w-3" /> {post.comments?.length || 0} comments
+                              </span>
+                            </div>
+                          </div>
+                          {(post.author_role === 'manager' || post.author_id === user?.id) && (
+                            <Button 
+                              size="sm" 
+                              variant="ghost" 
+                              className="text-red-500 hover:text-red-600 shrink-0"
+                              onClick={() => handleDeletePost(post.id)}
+                            >
+                              <Trash2 className="h-4 w-4" />
+                            </Button>
+                          )}
                         </div>
-                        <Button 
-                          size="sm" 
-                          variant="ghost" 
-                          className="text-red-500 hover:text-red-600"
-                          onClick={() => handleDeletePost(post.id)}
-                        >
-                          <Trash2 className="h-4 w-4" />
-                        </Button>
                       </div>
-                    </div>
-                  ))}
-                </div>
+                    ))}
+                  </div>
+                )}
               </CardContent>
             </Card>
           </TabsContent>
