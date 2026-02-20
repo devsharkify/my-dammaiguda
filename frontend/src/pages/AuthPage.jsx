@@ -44,10 +44,31 @@ export default function AuthPage() {
   const [loading, setLoading] = useState(false);
   const [isNewUser, setIsNewUser] = useState(false);
   
+  // Resend OTP timer
+  const [resendTimer, setResendTimer] = useState(0);
+  const [canResend, setCanResend] = useState(false);
+  
   // Registration fields
   const [name, setName] = useState("");
   const [colony, setColony] = useState("");
   const [ageRange, setAgeRange] = useState("");
+
+  // Timer effect for resend OTP
+  useEffect(() => {
+    let interval;
+    if (resendTimer > 0) {
+      interval = setInterval(() => {
+        setResendTimer((prev) => {
+          if (prev <= 1) {
+            setCanResend(true);
+            return 0;
+          }
+          return prev - 1;
+        });
+      }, 1000);
+    }
+    return () => clearInterval(interval);
+  }, [resendTimer]);
 
   const handleSendOTP = async () => {
     if (!phone || phone.length < 10) {
@@ -67,9 +88,39 @@ export default function AuthPage() {
           toast.info(`Dev OTP: ${result.dev_otp}`);
         }
         setStep(2);
+        // Start 30 second timer
+        setResendTimer(30);
+        setCanResend(false);
       }
     } catch (error) {
       toast.error(error.response?.data?.detail || "Failed to send OTP");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleResendOTP = async () => {
+    if (!canResend && resendTimer > 0) {
+      toast.error(language === "te" ? `${resendTimer} సెకన్లలో మళ్లీ ప్రయత్నించండి` : `Please wait ${resendTimer} seconds`);
+      return;
+    }
+    
+    setLoading(true);
+    try {
+      const formattedPhone = phone.startsWith("+91") ? phone : `+91${phone}`;
+      const result = await sendOTP(formattedPhone);
+      
+      if (result.success) {
+        toast.success(language === "te" ? "OTP మళ్ళీ పంపబడింది" : "OTP resent successfully");
+        if (result.dev_otp) {
+          toast.info(`Dev OTP: ${result.dev_otp}`);
+        }
+        // Reset timer
+        setResendTimer(30);
+        setCanResend(false);
+      }
+    } catch (error) {
+      toast.error(error.response?.data?.detail || "Failed to resend OTP");
     } finally {
       setLoading(false);
     }
