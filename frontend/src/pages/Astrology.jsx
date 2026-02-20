@@ -582,8 +582,7 @@ function calculateCompatibility(k1, k2) {
 }
 
 // Daily/Weekly/Monthly Horoscope Component
-const ZodiacHoroscope = ({ language }) => {
-  const [selectedSign, setSelectedSign] = useState(null);
+const ZodiacHoroscope = ({ language, selectedSign, setSelectedSign }) => {
   const [period, setPeriod] = useState("daily");
 
   const getHoroscope = (sign, period) => {
