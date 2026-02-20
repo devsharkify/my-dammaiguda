@@ -253,6 +253,19 @@ export default function NewsShorts() {
     return language === "te" ? catInfo.te : catInfo.en;
   };
 
+  // Extract YouTube video ID from URL
+  const getYouTubeVideoId = (url) => {
+    if (!url) return null;
+    const regExp = /^.*((youtu.be\/)|(v\/)|(\/u\/\w\/)|(embed\/)|(watch\?))\??v?=?([^#&?]*).*/;
+    const match = url.match(regExp);
+    return (match && match[7].length === 11) ? match[7] : null;
+  };
+
+  // Check if item is a video news
+  const isVideoNews = (item) => {
+    return item.content_type === 'video' || item.video_url;
+  };
+
   return (
     <Layout showBackButton title={language === "te" ? "వార్తలు" : "News"}>
       <div className="flex flex-col h-[calc(100vh-140px)]" data-testid="news-shorts">
