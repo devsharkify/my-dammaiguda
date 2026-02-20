@@ -281,7 +281,14 @@ Build a production-ready, mobile-first civic engagement platform "My Dammaiguda"
 
 ## Change Log
 
-### Feb 19, 2026 - Session 2 (Latest)
+### Feb 20, 2026 - Admin Console Login Fix
+- **Bug Fix**: Fixed Admin Console login failure
+  - Root Cause: `login` function was missing from AuthContext exports
+  - Solution: Added `login(newUser, newToken)` function to AuthContext to allow AdminConsole to directly set auth state
+  - Admin can now successfully login via `/admin` route and access Admin Dashboard
+  - Tested: Full flow working (Send OTP → Verify OTP → Redirect to Admin Dashboard)
+
+### Feb 19, 2026 - Session 2
 - **CMS Integration**: Dashboard now fetches dump yard data dynamically from CMS API
 - **Admin CMS Tab**: Complete UI for editing banners, benefits, dump yard statistics
 - **AQI Web Crawl**: Real-time AQI data from aqi.in (Dammaiguda: 220, Hyderabad: 146)
