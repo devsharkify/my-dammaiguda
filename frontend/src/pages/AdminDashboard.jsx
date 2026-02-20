@@ -54,10 +54,126 @@ import {
   Check,
   ChevronRight,
   Send,
-  Copy
+  Copy,
+  Upload,
+  Link as LinkIcon
 } from "lucide-react";
 
 const API = `${process.env.REACT_APP_BACKEND_URL}/api`;
+
+// Reusable Image Input Component with URL or Upload options
+const ImageInput = ({ value, onChange, label = "Image", aspectRatio = "video" }) => {
+  const [mode, setMode] = useState("url"); // "url" or "upload"
+  const [uploading, setUploading] = useState(false);
+
+  const handleFileUpload = async (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    // Check file size (max 5MB)
+    if (file.size > 5 * 1024 * 1024) {
+      toast.error("File too large. Max 5MB allowed.");
+      return;
+    }
+
+    setUploading(true);
+    try {
+      // Convert to base64 and use as data URL for now
+      // In production, you'd upload to a cloud service
+      const reader = new FileReader();
+      reader.onload = (event) => {
+        onChange(event.target.result);
+        setUploading(false);
+        toast.success("Image uploaded!");
+      };
+      reader.onerror = () => {
+        toast.error("Failed to read file");
+        setUploading(false);
+      };
+      reader.readAsDataURL(file);
+    } catch (err) {
+      toast.error("Upload failed");
+      setUploading(false);
+    }
+  };
+
+  return (
+    <div className="space-y-2">
+      <Label>{label}</Label>
+      
+      {/* Toggle between URL and Upload */}
+      <div className="flex gap-1 p-1 bg-muted rounded-lg w-fit">
+        <button
+          type="button"
+          onClick={() => setMode("url")}
+          className={`flex items-center gap-1.5 px-3 py-1.5 text-xs rounded-md transition-colors ${
+            mode === "url" ? "bg-background shadow-sm" : "text-muted-foreground hover:text-foreground"
+          }`}
+        >
+          <LinkIcon className="w-3 h-3" />
+          URL
+        </button>
+        <button
+          type="button"
+          onClick={() => setMode("upload")}
+          className={`flex items-center gap-1.5 px-3 py-1.5 text-xs rounded-md transition-colors ${
+            mode === "upload" ? "bg-background shadow-sm" : "text-muted-foreground hover:text-foreground"
+          }`}
+        >
+          <Upload className="w-3 h-3" />
+          Upload
+        </button>
+      </div>
+
+      {mode === "url" ? (
+        <Input 
+          value={value || ""} 
+          onChange={(e) => onChange(e.target.value)} 
+          placeholder="https://example.com/image.jpg" 
+        />
+      ) : (
+        <div className="border-2 border-dashed border-muted-foreground/25 rounded-lg p-4 text-center hover:border-primary/50 transition-colors">
+          <input
+            type="file"
+            accept="image/*"
+            onChange={handleFileUpload}
+            className="hidden"
+            id="image-upload"
+            disabled={uploading}
+          />
+          <label htmlFor="image-upload" className="cursor-pointer">
+            {uploading ? (
+              <div className="flex flex-col items-center gap-2">
+                <Loader2 className="w-8 h-8 animate-spin text-muted-foreground" />
+                <span className="text-sm text-muted-foreground">Uploading...</span>
+              </div>
+            ) : (
+              <div className="flex flex-col items-center gap-2">
+                <Upload className="w-8 h-8 text-muted-foreground" />
+                <span className="text-sm text-muted-foreground">Click to upload image</span>
+                <span className="text-xs text-muted-foreground/70">Max 5MB</span>
+              </div>
+            )}
+          </label>
+        </div>
+      )}
+
+      {/* Preview */}
+      {value && (
+        <div className={`${aspectRatio === "video" ? "aspect-video" : "aspect-square"} rounded-lg overflow-hidden bg-muted relative`}>
+          <img src={value} alt="Preview" className="w-full h-full object-cover" />
+          <button
+            type="button"
+            onClick={() => onChange("")}
+            className="absolute top-2 right-2 p-1 bg-black/50 rounded-full hover:bg-black/70 transition-colors"
+          >
+            <X className="w-4 h-4 text-white" />
+          </button>
+        </div>
+      )}
+    </div>
+  );
+};
 
 export default function AdminDashboard() {
   const { language } = useLanguage();
