@@ -125,13 +125,19 @@ RSS_FEEDS = {
     ]
 }
 
-# Telugu news sources for web scraping
+# Telugu news sources for web scraping - Prioritize Siasat
 TELUGU_SOURCES = {
-    "eenadu": {"name": "Eenadu", "url": "https://www.eenadu.net/telangana", "selector": ".news-item"},
-    "sakshi": {"name": "Sakshi", "url": "https://www.sakshi.com/telugu/telangana", "selector": ".story-card"},
-    "tv9": {"name": "TV9 Telugu", "url": "https://tv9telugu.com/telangana", "selector": ".news-card"},
-    "siasat": {"name": "Siasat", "url": "https://www.siasat.com/", "selector": "article"}
+    "siasat": {"name": "Siasat", "url": "https://www.siasat.com/hyderabad/", "selector": "article", "priority": 1},
+    "siasat_telangana": {"name": "Siasat Telangana", "url": "https://www.siasat.com/telangana/", "selector": "article", "priority": 1},
+    "eenadu": {"name": "Eenadu", "url": "https://www.eenadu.net/telangana", "selector": ".news-item", "priority": 2},
+    "sakshi": {"name": "Sakshi", "url": "https://www.sakshi.com/telugu/telangana", "selector": ".story-card", "priority": 3},
 }
+
+# YouTube Shorts channel to fetch videos from
+YOUTUBE_SHORTS_CHANNEL = "https://www.youtube.com/@KaizerNigha/shorts"
+
+# Scheduled extraction times (IST): 7 AM, 11 AM, 4 PM, 8 PM
+EXTRACTION_SCHEDULE = ["07:00", "11:00", "16:00", "20:00"]
 
 # ============== MODELS ==============
 
