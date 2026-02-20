@@ -11,43 +11,26 @@ import { Textarea } from "../components/ui/textarea";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "../components/ui/tabs";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../components/ui/select";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogDescription } from "../components/ui/dialog";
-import { Switch } from "../components/ui/switch";
-import { Checkbox } from "../components/ui/checkbox";
 import { toast } from "sonner";
 import {
   BarChart3,
   Users,
   AlertTriangle,
   CheckCircle,
-  Clock,
-  TrendingUp,
-  Activity,
-  MapPin,
   Shield,
   GraduationCap,
   Plus,
   Edit,
   Trash2,
-  Eye,
-  BookOpen,
-  Video,
   Loader2,
-  Gift,
   Newspaper,
-  Settings,
   FileText,
-  RefreshCw,
-  Search,
   Filter,
-  Download,
   ExternalLink,
   Copy,
-  Globe,
   Building,
-  ChevronDown,
   LayoutDashboard,
   Megaphone,
-  Calendar,
   Link as LinkIcon,
   Home
 } from "lucide-react";
