@@ -48,6 +48,7 @@ import ShareHandler from "./pages/ShareHandler";
 import DeleteAccount from "./pages/DeleteAccount";
 import TermsOfService from "./pages/TermsOfService";
 import ChildSafety from "./pages/ChildSafety";
+import CloneMaker from "./pages/CloneMaker";
 
 import "./App.css";
 
