@@ -474,6 +474,69 @@ export default function AdminPanel() {
             </Card>
           </TabsContent>
 
+          {/* Managers Tab */}
+          <TabsContent value="managers">
+            <Card>
+              <CardHeader className="flex flex-row items-center justify-between">
+                <div>
+                  <CardTitle className="text-base">Area Managers</CardTitle>
+                  <CardDescription>Assign managers to each area</CardDescription>
+                </div>
+                <Button onClick={() => setShowManagerDialog(true)}>
+                  <Plus className="h-4 w-4 mr-2" />
+                  Add Manager
+                </Button>
+              </CardHeader>
+              <CardContent>
+                {managers.length === 0 ? (
+                  <div className="text-center py-8 text-muted-foreground">
+                    <Shield className="h-12 w-12 mx-auto mb-2 opacity-20" />
+                    <p>No managers assigned yet</p>
+                    <p className="text-sm">Add managers to help manage specific areas</p>
+                  </div>
+                ) : (
+                  <div className="divide-y">
+                    {managers.map((manager) => (
+                      <div key={manager.id} className="py-3 flex items-center justify-between">
+                        <div className="flex items-center gap-3">
+                          <div className="h-10 w-10 bg-blue-100 rounded-full flex items-center justify-center">
+                            <Shield className="h-5 w-5 text-blue-600" />
+                          </div>
+                          <div>
+                            <p className="font-medium">{manager.name}</p>
+                            <p className="text-sm text-muted-foreground flex items-center gap-2">
+                              <Phone className="h-3 w-3" />
+                              {manager.phone}
+                            </p>
+                          </div>
+                        </div>
+                        <div className="flex items-center gap-3">
+                          <div className="flex items-center gap-2">
+                            <div
+                              className="w-3 h-3 rounded-full"
+                              style={{ backgroundColor: AREAS[manager.assigned_area]?.color }}
+                            />
+                            <span className="text-sm font-medium">
+                              {AREAS[manager.assigned_area]?.name || manager.assigned_area}
+                            </span>
+                          </div>
+                          <Button
+                            size="sm"
+                            variant="ghost"
+                            className="text-red-500 hover:text-red-600"
+                            onClick={() => removeManager(manager.id)}
+                          >
+                            <Trash2 className="h-4 w-4" />
+                          </Button>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+          </TabsContent>
+
           {/* Courses Tab */}
           <TabsContent value="courses">
             <Card>
