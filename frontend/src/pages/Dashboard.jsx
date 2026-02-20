@@ -472,7 +472,7 @@ export default function Dashboard() {
         <Link to="/aqi" data-testid="aqi-widget">
           <Card className="bg-white rounded-xl border border-gray-100 shadow-sm overflow-hidden">
             <CardContent className="p-4">
-              <div className="flex items-center justify-between">
+              <div className="flex items-start justify-between">
                 <div className="flex items-center gap-3">
                   <div className={`h-11 w-11 rounded-xl ${getAqiInfo(aqiData?.dammaiguda?.aqi).bg} ${getAqiInfo(aqiData?.dammaiguda?.aqi).text} flex items-center justify-center`}>
                     <Wind className="h-5 w-5" />
@@ -493,19 +493,15 @@ export default function Dashboard() {
                       {language === "te" ? getAqiInfo(aqiData?.dammaiguda?.aqi).status_te : getAqiInfo(aqiData?.dammaiguda?.aqi).status}
                     </span>
                   </div>
-                </div>
-              </div>
-              <div className="flex items-center justify-between mt-2.5 pt-2.5 border-t border-gray-50">
-                <div className="flex items-center gap-1">
-                  <MapPin className="h-3 w-3 text-gray-300" />
-                  <span className="text-[10px] text-gray-400">
-                    {language === "te" ? "హైదరాబాద్" : "Hyderabad"}: <span className="font-bold text-gray-700 text-sm">{aqiData?.hyderabad?.aqi || "—"}</span>
-                    <span className={`ml-1 px-1.5 py-0.5 rounded text-[8px] font-semibold ${getAqiInfo(aqiData?.hyderabad?.aqi).bg} ${getAqiInfo(aqiData?.hyderabad?.aqi).text}`}>
+                  {/* Hyderabad reading below */}
+                  <div className="mt-2 pt-2 border-t border-gray-100">
+                    <p className="text-[10px] text-gray-400">{language === "te" ? "హైదరాబాద్" : "Hyderabad"}</p>
+                    <p className="font-bold text-lg text-gray-700">{aqiData?.hyderabad?.aqi || "—"}</p>
+                    <span className={`px-1.5 py-0.5 rounded text-[8px] font-semibold ${getAqiInfo(aqiData?.hyderabad?.aqi).bg} ${getAqiInfo(aqiData?.hyderabad?.aqi).text}`}>
                       {language === "te" ? getAqiInfo(aqiData?.hyderabad?.aqi).status_te : getAqiInfo(aqiData?.hyderabad?.aqi).status}
                     </span>
-                  </span>
+                  </div>
                 </div>
-                <ChevronRight className="h-4 w-4 text-gray-300" />
               </div>
             </CardContent>
           </Card>
