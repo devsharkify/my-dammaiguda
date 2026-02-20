@@ -70,6 +70,7 @@ app.include_router(content_router, prefix="/api")
 app.include_router(websocket_chat_router, prefix="/api")
 app.include_router(google_fit_router, prefix="/api")
 app.include_router(astrology_router, prefix="/api")
+app.include_router(upload_router, prefix="/api")
 
 from fastapi.responses import HTMLResponse
 
