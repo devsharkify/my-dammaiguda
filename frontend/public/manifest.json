@@ -1,8 +1,8 @@
 {
-  "name": "My Dammaiguda - Civic Engagement Platform",
-  "short_name": "My Dammaiguda",
+  "name": "My AS Rao Nagar - Civic Engagement Platform",
+  "short_name": "My AS Rao Nagar",
   "version": "1.0.0",
-  "description": "Track Issues. Protect Health. Claim Benefits. Your civic engagement platform for Dammaiguda ward, Telangana.",
+  "description": "Track Issues. Protect Health. Claim Benefits. Your civic engagement platform for AS Rao Nagar, Telangana.",
   "icons": [
     {
       "src": "/icons/icon-72x72.png",
@@ -67,164 +67,17 @@
   ],
   "start_url": "/",
   "display": "standalone",
-  "display_override": ["tabbed", "window-controls-overlay", "standalone", "minimal-ui"],
-  "theme_color": "#0F766E",
+  "theme_color": "#2563EB",
   "background_color": "#0a0a0a",
   "orientation": "portrait",
   "scope": "/",
   "lang": "en",
-  "dir": "ltr",
-  "id": "my-dammaiguda-app",
-  "categories": ["government", "utilities", "lifestyle", "health"],
-  "prefer_related_applications": false,
-  "iarc_rating_id": "e84b072d-71b3-4d3e-86ae-31a8ce4e53b7",
-  "screenshots": [
-    {
-      "src": "/screenshots/dashboard.png",
-      "sizes": "390x844",
-      "type": "image/png",
-      "form_factor": "narrow",
-      "label": "Dashboard - Track AQI, Report Issues, Access Benefits"
-    },
-    {
-      "src": "/screenshots/fitness.png",
-      "sizes": "390x844",
-      "type": "image/png",
-      "form_factor": "narrow",
-      "label": "Kaizer Fit - Health & Fitness Tracking"
-    },
-    {
-      "src": "/screenshots/news.png",
-      "sizes": "390x844",
-      "type": "image/png",
-      "form_factor": "narrow",
-      "label": "News Shorts - Local & National Updates"
-    },
-    {
-      "src": "/screenshots/dashboard-wide.png",
-      "sizes": "1280x720",
-      "type": "image/png",
-      "form_factor": "wide",
-      "label": "Dashboard on Desktop"
-    }
+  "id": "my-asraonagar-app",
+  "categories": [
+    "government",
+    "utilities",
+    "lifestyle",
+    "health"
   ],
-  "shortcuts": [
-    {
-      "name": "Report Issue",
-      "short_name": "Report",
-      "description": "Report a civic issue in your area",
-      "url": "/report",
-      "icons": [{ "src": "/icons/icon-192x192.png", "sizes": "192x192" }]
-    },
-    {
-      "name": "Kaizer Fit",
-      "short_name": "Fitness",
-      "description": "Track your health and fitness",
-      "url": "/fitness",
-      "icons": [{ "src": "/icons/icon-192x192.png", "sizes": "192x192" }]
-    },
-    {
-      "name": "News",
-      "short_name": "News",
-      "description": "Read latest local news",
-      "url": "/news",
-      "icons": [{ "src": "/icons/icon-192x192.png", "sizes": "192x192" }]
-    },
-    {
-      "name": "Astrology",
-      "short_name": "Astrology",
-      "description": "Check your horoscope",
-      "url": "/astrology",
-      "icons": [{ "src": "/icons/icon-192x192.png", "sizes": "192x192" }]
-    }
-  ],
-  "related_applications": [
-    {
-      "platform": "play",
-      "url": "https://play.google.com/store/apps/details?id=com.mydammaiguda.app",
-      "id": "com.mydammaiguda.app"
-    }
-  ],
-  "handle_links": "preferred",
-  "launch_handler": {
-    "client_mode": "navigate-existing"
-  },
-  "share_target": {
-    "action": "/share",
-    "method": "POST",
-    "enctype": "multipart/form-data",
-    "params": {
-      "title": "title",
-      "text": "text",
-      "url": "url",
-      "files": [
-        {
-          "name": "media",
-          "accept": ["image/*", "video/*"]
-        }
-      ]
-    }
-  },
-  "protocol_handlers": [
-    {
-      "protocol": "web+dammaiguda",
-      "url": "/?action=%s"
-    },
-    {
-      "protocol": "web+report",
-      "url": "/report?data=%s"
-    }
-  ],
-  "file_handlers": [
-    {
-      "action": "/report",
-      "accept": {
-        "image/*": [".jpg", ".jpeg", ".png", ".gif", ".webp"]
-      }
-    }
-  ],
-  "scope_extensions": [
-    {
-      "origin": "https://www.mydammaiguda.in"
-    },
-    {
-      "origin": "https://mydammaiguda.in"
-    }
-  ],
-  "edge_side_panel": {
-    "preferred_width": 400
-  },
-  "widgets": [
-    {
-      "name": "AQI Widget",
-      "description": "Shows current air quality index",
-      "tag": "aqi",
-      "template": "aqi-widget",
-      "ms_ac_template": "aqi-widget-ac",
-      "data": "/api/aqi/current",
-      "type": "application/json",
-      "screenshots": [
-        {
-          "src": "/screenshots/widget-aqi.png",
-          "sizes": "300x200",
-          "label": "AQI Widget Preview"
-        }
-      ],
-      "icons": [
-        {
-          "src": "/icons/icon-192x192.png",
-          "sizes": "192x192"
-        }
-      ],
-      "backgrounds": [
-        {
-          "src": "/icons/icon-512x512.png",
-          "sizes": "512x512"
-        }
-      ]
-    }
-  ],
-  "note_taking": {
-    "new_note_url": "/report"
-  }
+  "prefer_related_applications": false
 }
