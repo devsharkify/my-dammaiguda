@@ -395,13 +395,15 @@ export default function NewsShorts() {
                         <Share2 className="h-4 w-4 mr-1" />
                         {language === "te" ? "షేర్" : "Share"}
                       </Button>
-                      {currentItem.link && currentItem.link !== "#" && (
+                      {/* Only show Read More for admin-pushed news with links */}
+                      {currentItem.is_admin_pushed && currentItem.link && currentItem.link !== "#" && (
                         <a
                           href={currentItem.link}
                           target="_blank"
                           rel="noopener noreferrer"
-                          className="text-sm text-white/70 hover:text-white underline"
+                          className="inline-flex items-center gap-1 text-sm text-white bg-white/20 px-3 py-1.5 rounded-full hover:bg-white/30"
                         >
+                          <ExternalLink className="h-3.5 w-3.5" />
                           {language === "te" ? "మరింత చదవండి" : "Read more"}
                         </a>
                       )}
