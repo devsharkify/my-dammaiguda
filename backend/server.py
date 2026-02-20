@@ -34,6 +34,7 @@ from routers.astrology import router as astrology_router
 from routers.upload import router as upload_router
 from routers.analytics import router as analytics_router
 from routers.user import router as user_router
+from routers.manager import router as manager_router
 
 # Create FastAPI app
 app = FastAPI(
