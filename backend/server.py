@@ -89,7 +89,7 @@ async def certificate_og_page(certificate_id: str):
     # Generate a dynamic certificate image URL (or use a placeholder)
     og_image = "https://images.unsplash.com/photo-1589330694653-ded6df03f754?w=1200&h=630&fit=crop"
     
-    frontend_url = "https://civic-engagement-7.preview.emergentagent.com"
+    frontend_url = "https://civic-trust-platform.preview.emergentagent.com"
     page_url = f"{frontend_url}/certificate/{certificate_id}"
     
     html = f"""
