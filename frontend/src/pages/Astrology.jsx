@@ -399,8 +399,6 @@ const MarriageCompatibility = ({ language }) => {
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState(null);
 
-  const cities = ["Dammaiguda", "Hyderabad", "Chennai", "Bangalore", "Mumbai", "Delhi", "Vijayawada"];
-
   const checkCompatibility = async () => {
     if (!person1.name || !person1.dob || !person2.name || !person2.dob) {
       toast.error("Please fill all required details");
@@ -456,66 +454,38 @@ const MarriageCompatibility = ({ language }) => {
         </CardContent>
       </Card>
 
-      {/* Person 1 */}
-      <Card>
+      {/* Boy Details */}
+      <Card className="border-blue-200">
         <CardContent className="p-4">
           <h4 className="font-bold text-blue-700 mb-3 flex items-center gap-2">
             <User className="w-4 h-4" /> 
-            {language === "te" ? "వరుడు/వధువు 1" : "Person 1 (Groom/Bride)"}
+            {language === "te" ? "అబ్బాయి వివరాలు" : "Boy Details"}
           </h4>
           <div className="space-y-3">
-            <Input placeholder="Name" value={person1.name} onChange={(e) => setPerson1({...person1, name: e.target.value})} />
+            <Input placeholder="Boy's Name" value={person1.name} onChange={(e) => setPerson1({...person1, name: e.target.value})} />
             <div className="grid grid-cols-2 gap-2">
-              <Select value={person1.gender} onValueChange={(v) => setPerson1({...person1, gender: v})}>
-                <SelectTrigger><SelectValue /></SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="male">Male</SelectItem>
-                  <SelectItem value="female">Female</SelectItem>
-                </SelectContent>
-              </Select>
-              <Input type="date" value={person1.dob} onChange={(e) => setPerson1({...person1, dob: e.target.value})} />
+              <Input type="date" placeholder="Date of Birth" value={person1.dob} onChange={(e) => setPerson1({...person1, dob: e.target.value})} />
+              <Input type="time" placeholder="Time of Birth" value={person1.tob} onChange={(e) => setPerson1({...person1, tob: e.target.value})} />
             </div>
-            <div className="grid grid-cols-2 gap-2">
-              <Input type="time" placeholder="Time" value={person1.tob} onChange={(e) => setPerson1({...person1, tob: e.target.value})} />
-              <Select value={person1.pob} onValueChange={(v) => setPerson1({...person1, pob: v})}>
-                <SelectTrigger><SelectValue placeholder="City" /></SelectTrigger>
-                <SelectContent>
-                  {cities.map(c => <SelectItem key={c} value={c.toLowerCase()}>{c}</SelectItem>)}
-                </SelectContent>
-              </Select>
-            </div>
+            <Input placeholder="Place of Birth (City)" value={person1.pob} onChange={(e) => setPerson1({...person1, pob: e.target.value})} />
           </div>
         </CardContent>
       </Card>
 
-      {/* Person 2 */}
-      <Card>
+      {/* Girl Details */}
+      <Card className="border-pink-200">
         <CardContent className="p-4">
           <h4 className="font-bold text-pink-700 mb-3 flex items-center gap-2">
             <User className="w-4 h-4" /> 
-            {language === "te" ? "వరుడు/వధువు 2" : "Person 2 (Groom/Bride)"}
+            {language === "te" ? "అమ్మాయి వివరాలు" : "Girl Details"}
           </h4>
           <div className="space-y-3">
-            <Input placeholder="Name" value={person2.name} onChange={(e) => setPerson2({...person2, name: e.target.value})} />
+            <Input placeholder="Girl's Name" value={person2.name} onChange={(e) => setPerson2({...person2, name: e.target.value})} />
             <div className="grid grid-cols-2 gap-2">
-              <Select value={person2.gender} onValueChange={(v) => setPerson2({...person2, gender: v})}>
-                <SelectTrigger><SelectValue /></SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="male">Male</SelectItem>
-                  <SelectItem value="female">Female</SelectItem>
-                </SelectContent>
-              </Select>
-              <Input type="date" value={person2.dob} onChange={(e) => setPerson2({...person2, dob: e.target.value})} />
+              <Input type="date" placeholder="Date of Birth" value={person2.dob} onChange={(e) => setPerson2({...person2, dob: e.target.value})} />
+              <Input type="time" placeholder="Time of Birth" value={person2.tob} onChange={(e) => setPerson2({...person2, tob: e.target.value})} />
             </div>
-            <div className="grid grid-cols-2 gap-2">
-              <Input type="time" placeholder="Time" value={person2.tob} onChange={(e) => setPerson2({...person2, tob: e.target.value})} />
-              <Select value={person2.pob} onValueChange={(v) => setPerson2({...person2, pob: v})}>
-                <SelectTrigger><SelectValue placeholder="City" /></SelectTrigger>
-                <SelectContent>
-                  {cities.map(c => <SelectItem key={c} value={c.toLowerCase()}>{c}</SelectItem>)}
-                </SelectContent>
-              </Select>
-            </div>
+            <Input placeholder="Place of Birth (City)" value={person2.pob} onChange={(e) => setPerson2({...person2, pob: e.target.value})} />
           </div>
         </CardContent>
       </Card>
