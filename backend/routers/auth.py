@@ -111,7 +111,6 @@ async def verify_otp(request: OTPVerify):
     
     # Clear OTP after successful verification
     otp_store.pop(request.phone, None)
-        raise HTTPException(status_code=400, detail="Invalid OTP")
     
     # Check if user exists
     user = await db.users.find_one({"phone": request.phone}, {"_id": 0})
