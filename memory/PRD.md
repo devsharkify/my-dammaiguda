@@ -142,6 +142,8 @@ DISABLE_ESLINT_PLUGIN=true
 - [x] ✅ Clone Generator Tool - CLI + Admin UI (COMPLETED - Feb 20, 2026)
 - [x] ✅ Multi-Area Admin Panel with Area Filter (COMPLETED - Feb 20, 2026)
 - [x] ✅ Manager Portal with Backend APIs (COMPLETED - Feb 20, 2026)
+- [x] ✅ Admin Panel Site Settings Tab - Editable Branding (COMPLETED - Feb 20, 2026)
+- [x] ✅ Manager Portal Wall Posts & Banner Update (COMPLETED - Feb 20, 2026)
 - [ ] Enhanced WebSocket Chat features
 - [ ] User analytics dashboard
 
