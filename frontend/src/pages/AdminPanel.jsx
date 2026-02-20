@@ -32,7 +32,9 @@ import {
   LayoutDashboard,
   Megaphone,
   Link as LinkIcon,
-  Home
+  Home,
+  UserPlus,
+  Phone
 } from "lucide-react";
 
 const API = `${process.env.REACT_APP_BACKEND_URL}/api`;
@@ -53,6 +55,7 @@ const AREAS = {
 const ADMIN_LINKS = [
   { name: "User App", icon: Home, url: "/dashboard", description: "Main user-facing app" },
   { name: "Admin Panel", icon: LayoutDashboard, url: "/admin/panel", description: "Multi-area management" },
+  { name: "Manager Portal", icon: Shield, url: "/manager", description: "Manager login", external: true },
   { name: "Clone Maker", icon: Copy, url: "/admin/clone", description: "Generate area configs" },
   { name: "News Manager", icon: Newspaper, url: "/admin-dashboard?tab=news", description: "Manage news content" },
   { name: "Course Manager", icon: GraduationCap, url: "/admin-dashboard?tab=courses", description: "Manage courses" },
