@@ -252,8 +252,10 @@ Build a production-ready, mobile-first civic engagement platform "My Dammaiguda"
 ---
 
 ## Known Limitations / MOCKED Features
-- **OTP Authentication**: Uses static code `123456` (Twilio integration needed)
 - **Media Uploads**: Not connected to cloud storage (Cloudinary integration needed)
+
+## REAL Integrations Completed
+- **SMS OTP via Authkey.io**: Real SMS OTP delivery using Authkey.io API. Random 6-digit OTPs sent via SMS.
 
 ---
 
@@ -280,6 +282,18 @@ Build a production-ready, mobile-first civic engagement platform "My Dammaiguda"
 ---
 
 ## Change Log
+
+### Feb 20, 2026 - Session 2: Logo Zoom, Registration Fix & Authkey.io SMS Integration
+- **UI Enhancement**: Logo on landing page zoomed from 16x16 to 24x24 (larger and more visible)
+- **Bug Fix - Registration Backend**: Fixed critical bug where name & colony fields were not saved
+  - Updated `OTPVerify` model to accept name, colony, age_range fields
+  - Backend `verify-otp` endpoint now creates user with all registration fields
+  - New users are auto-registered during OTP verification if name is provided
+- **Real SMS Integration - Authkey.io**:
+  - Replaced mock OTP with real Authkey.io SMS API
+  - Random 6-digit OTPs generated and sent via SMS
+  - Fallback to dev mode (123456) if API fails
+  - API Key configured in backend/.env
 
 ### Feb 20, 2026 - Admin Console Login Fix & Kaizer Fit Backend Integration
 - **Bug Fix**: Fixed Admin Console login failure
