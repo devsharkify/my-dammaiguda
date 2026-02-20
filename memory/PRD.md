@@ -226,6 +226,12 @@ Build a production-ready, mobile-first civic engagement platform "My Dammaiguda"
 
 ## Key API Endpoints
 
+### Astrology (Vedic Astrology)
+- `POST /api/astrology/kundali` - Generate South Indian Kundali/Birth Chart
+- `GET /api/astrology/cities` - Get list of available cities with coordinates
+- `GET /api/astrology/rashis` - Get all Rashi (zodiac signs) information
+- `GET /api/astrology/nakshatras` - Get all Nakshatra (birth stars) information
+
 ### CMS (Content Management)
 - `GET /api/content/dumpyard` - Fetch dump yard configuration
 - `PUT /api/content/dumpyard` - Update dump yard config (admin)
