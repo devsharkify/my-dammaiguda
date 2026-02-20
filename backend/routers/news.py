@@ -541,6 +541,8 @@ async def admin_push_news(news: AdminNewsPush, user: dict = Depends(get_current_
         "category_label": NEWS_CATEGORIES[news.category]["en"],
         "category_label_te": NEWS_CATEGORIES[news.category]["te"],
         "image": news.image_url,
+        "video_url": news.video_url,
+        "content_type": news.content_type,
         "link": news.link,
         "is_pinned": news.is_pinned,
         "priority": news.priority,
