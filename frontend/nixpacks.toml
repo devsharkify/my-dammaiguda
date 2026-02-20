@@ -5,7 +5,7 @@ nixPkgs = ["nodejs_18", "yarn"]
 cmds = ["yarn install"]
 
 [phases.build]
-cmds = ["DISABLE_ESLINT_PLUGIN=true yarn build"]
+cmds = ["CI=false DISABLE_ESLINT_PLUGIN=true yarn build"]
 
 [start]
 cmd = "npx serve -s build -l ${PORT:-3000}"
