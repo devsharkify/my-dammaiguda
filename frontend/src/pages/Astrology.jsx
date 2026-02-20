@@ -907,12 +907,11 @@ export default function Astrology() {
                     </div>
                     <div>
                       <Label className="flex items-center gap-2 mb-2"><MapPin className="w-4 h-4 text-orange-500" />{language === "te" ? "పుట్టిన ప్రదేశం" : "Place of Birth"}</Label>
-                      <Select value={form.place_of_birth} onValueChange={(v) => setForm({...form, place_of_birth: v})}>
-                        <SelectTrigger><SelectValue placeholder="Select city" /></SelectTrigger>
-                        <SelectContent>
-                          {cities.map(city => <SelectItem key={city} value={city.toLowerCase()}>{city}</SelectItem>)}
-                        </SelectContent>
-                      </Select>
+                      <Input 
+                        value={form.place_of_birth} 
+                        onChange={(e) => setForm({...form, place_of_birth: e.target.value})} 
+                        placeholder={language === "te" ? "నగరం పేరు టైప్ చేయండి" : "Type city name (e.g., Hyderabad)"}
+                      />
                     </div>
                     <Button onClick={handleGenerateKundali} disabled={loading} className="w-full h-12 bg-gradient-to-r from-orange-500 to-amber-500">
                       {loading ? <Loader2 className="w-5 h-5 animate-spin mr-2" /> : <Star className="w-5 h-5 mr-2" />}
