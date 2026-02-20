@@ -789,17 +789,7 @@ export default function Astrology() {
         {/* Header */}
         <div className="flex items-center gap-3 mb-4">
           <button 
-            onClick={() => {
-              if (activeTab !== "home") {
-                // Go back to main astrology menu
-                setActiveTab("home");
-                setKundaliStep(1);
-                setKundali(null);
-              } else {
-                // Go back to previous page (dashboard)
-                navigate(-1);
-              }
-            }} 
+            onClick={handleBack} 
             className="p-2 hover:bg-gray-100 rounded-full"
           >
             <ArrowLeft className="w-5 h-5" />
