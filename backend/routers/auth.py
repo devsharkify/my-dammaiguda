@@ -42,18 +42,59 @@ class UserUpdate(BaseModel):
 
 # ============== ROUTES ==============
 
+async def send_authkey_otp(phone: str) -> dict:
+    """Send OTP via Authkey.io API"""
+    # Extract phone number without country code
+    mobile = phone.replace("+91", "").replace("+", "").strip()
+    
+    # Generate a 6-digit OTP
+    otp = str(random.randint(100000, 999999))
+    
+    # Use Authkey.io SMS API
+    url = "https://api.authkey.io/request"
+    params = {
+        "authkey": AUTHKEY_API_KEY,
+        "mobile": mobile,
+        "country_code": "91",
+        "sms": f"Your My Dammaiguda verification code is {otp}. Do not share with anyone.",
+        "sender": "MYDAMM"
+    }
+    
+    try:
+        async with httpx.AsyncClient() as client:
+            response = await client.get(url, params=params, timeout=30.0)
+            result = response.json() if response.text else {}
+            
+            if response.status_code == 200:
+                # Store OTP for verification
+                otp_store[phone] = {"otp": otp, "type": "authkey"}
+                return {"success": True, "message": "OTP sent via SMS"}
+            else:
+                # Fallback to dev mode
+                otp_store[phone] = {"otp": "123456", "type": "dev"}
+                return {"success": True, "message": "OTP sent (dev mode)", "dev_otp": "123456", "error": str(result)}
+    except Exception as e:
+        # Fallback to dev mode on error
+        otp_store[phone] = {"otp": "123456", "type": "dev"}
+        return {"success": True, "message": "OTP sent (dev mode)", "dev_otp": "123456", "error": str(e)}
+
 @router.post("/otp")
 @router.post("/send-otp")
 async def send_otp(request: OTPRequest):
-    """Send OTP to phone number (mock for development)"""
-    otp = "123456"  # Fixed OTP for testing
-    otp_store[request.phone] = otp
-    
-    return {
-        "success": True,
-        "message": "OTP sent successfully",
-        "dev_otp": otp  # Remove in production
-    }
+    """Send OTP to phone number"""
+    if AUTHKEY_ENABLED:
+        # Use Authkey.io for real SMS
+        result = await send_authkey_otp(request.phone)
+        return result
+    else:
+        # Dev mode - fixed OTP
+        otp = "123456"
+        otp_store[request.phone] = {"otp": otp, "type": "dev"}
+        return {
+            "success": True,
+            "message": "OTP sent successfully",
+            "dev_otp": otp
+        }
 
 @router.post("/verify")
 @router.post("/verify-otp")
