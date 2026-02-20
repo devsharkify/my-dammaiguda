@@ -921,6 +921,72 @@ export default function AdminPanel() {
           </DialogFooter>
         </DialogContent>
       </Dialog>
+
+      {/* Manager Dialog */}
+      <Dialog open={showManagerDialog} onOpenChange={setShowManagerDialog}>
+        <DialogContent className="max-w-md">
+          <DialogHeader>
+            <DialogTitle>Add Area Manager</DialogTitle>
+            <DialogDescription>
+              Assign a manager to handle a specific area
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-4">
+            <div>
+              <Label>Manager Name</Label>
+              <Input
+                value={managerForm.name}
+                onChange={(e) => setManagerForm(f => ({ ...f, name: e.target.value }))}
+                placeholder="Full name"
+              />
+            </div>
+            <div>
+              <Label>Phone Number</Label>
+              <div className="flex gap-2">
+                <div className="flex items-center px-3 bg-muted rounded-l-lg border border-r-0">
+                  <span className="text-sm text-muted-foreground">+91</span>
+                </div>
+                <Input
+                  value={managerForm.phone}
+                  onChange={(e) => setManagerForm(f => ({ ...f, phone: `+91${e.target.value.replace(/\D/g, '').slice(0, 10)}` }))}
+                  placeholder="10-digit number"
+                  className="rounded-l-none"
+                />
+              </div>
+            </div>
+            <div>
+              <Label>Assigned Area</Label>
+              <Select value={managerForm.assigned_area} onValueChange={(v) => setManagerForm(f => ({ ...f, assigned_area: v }))}>
+                <SelectTrigger>
+                  <SelectValue placeholder="Select area" />
+                </SelectTrigger>
+                <SelectContent>
+                  {Object.entries(AREAS).filter(([id]) => id !== "all").map(([id, area]) => (
+                    <SelectItem key={id} value={id}>
+                      <div className="flex items-center gap-2">
+                        <div
+                          className="w-3 h-3 rounded-full"
+                          style={{ backgroundColor: area.color }}
+                        />
+                        {area.name}
+                      </div>
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setShowManagerDialog(false)}>
+              Cancel
+            </Button>
+            <Button onClick={createManager}>
+              <UserPlus className="h-4 w-4 mr-2" />
+              Create Manager
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
