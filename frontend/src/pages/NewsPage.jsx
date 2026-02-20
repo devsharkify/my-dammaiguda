@@ -49,6 +49,7 @@ export default function NewsPage() {
 
   useEffect(() => {
     fetchNews();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [activeCategory]);
 
   const fetchNews = async (isRefresh = false) => {

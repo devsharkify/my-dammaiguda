@@ -70,11 +70,13 @@ export default function NewsShorts() {
   useEffect(() => {
     fetchCategories();
     fetchNewsAds();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEffect(() => {
     fetchNews(activeCategory);
     setCurrentIndex(0);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [activeCategory]);
 
   const fetchCategories = async () => {
