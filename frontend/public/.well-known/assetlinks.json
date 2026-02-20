@@ -1,0 +1,8 @@
+[{
+      "relation": ["delegate_permission/common.handle_all_urls"],
+      "target": {
+        "namespace": "android_app",
+        "package_name": "in.mydammaiguda.www.twa",
+        "sha256_cert_fingerprints": ["35:93:AA:55:E2:28:45:91:C6:B1:91:A2:8D:65:93:75:75:CF:1D:66:E9:42:B1:61:8A:A2:3E:1B:89:45:AD:73"]
+      }
+    }]
