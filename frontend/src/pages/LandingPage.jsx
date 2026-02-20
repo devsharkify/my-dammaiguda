@@ -285,14 +285,22 @@ export default function LandingPage() {
           </div>
         </div>
         
-        {/* Privacy Policy Link */}
-        <div className="mt-6 text-center">
+        {/* Privacy Policy & Terms Links */}
+        <div className="mt-6 text-center space-x-4">
           <a 
             href="/privacy-policy" 
             className="text-xs text-slate-500 hover:text-slate-400 underline"
             onClick={(e) => { e.preventDefault(); navigate('/privacy-policy'); }}
           >
             Privacy Policy
+          </a>
+          <span className="text-slate-600">|</span>
+          <a 
+            href="/terms-of-service" 
+            className="text-xs text-slate-500 hover:text-slate-400 underline"
+            onClick={(e) => { e.preventDefault(); navigate('/terms-of-service'); }}
+          >
+            Terms of Service
           </a>
         </div>
       </div>
