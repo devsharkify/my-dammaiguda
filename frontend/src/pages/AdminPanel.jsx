@@ -34,7 +34,12 @@ import {
   Link as LinkIcon,
   Home,
   UserPlus,
-  Phone
+  Phone,
+  Settings,
+  Palette,
+  Image,
+  Type,
+  Save
 } from "lucide-react";
 
 const API = `${process.env.REACT_APP_BACKEND_URL}/api`;
