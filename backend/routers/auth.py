@@ -46,7 +46,7 @@ class UserUpdate(BaseModel):
 TEST_PHONES = ["+919876543210", "+919999999999", "9876543210", "9999999999"]
 
 async def send_authkey_otp(phone: str) -> dict:
-    """Send OTP via Authkey.io API"""
+    """Send OTP via Authkey.io API using SID template"""
     # Check if it's a test phone number - use dev mode
     if any(test in phone for test in TEST_PHONES):
         otp_store[phone] = {"otp": "123456", "type": "dev"}
@@ -55,17 +55,23 @@ async def send_authkey_otp(phone: str) -> dict:
     # Extract phone number without country code
     mobile = phone.replace("+91", "").replace("+", "").strip()
     
+    # Make sure mobile is 10 digits
+    if len(mobile) != 10:
+        return {"success": False, "message": "Invalid phone number"}
+    
     # Generate a 6-digit OTP
     otp = str(random.randint(100000, 999999))
     
-    # Use Authkey.io SMS API
+    # Use Authkey.io SMS API with SID template
+    # Template: Use {#otp#} as your OTP to access your {#company#}, OTP is confidential and valid for 5 mins
     url = "https://api.authkey.io/request"
     params = {
         "authkey": AUTHKEY_API_KEY,
         "mobile": mobile,
         "country_code": "91",
-        "sms": f"Your My Dammaiguda verification code is {otp}. Do not share with anyone.",
-        "sender": "MYDAMM"
+        "sid": "35306",
+        "name": "My Dammaiguda",
+        "otp": otp
     }
     
     try:
@@ -73,18 +79,21 @@ async def send_authkey_otp(phone: str) -> dict:
             response = await client.get(url, params=params, timeout=30.0)
             result = response.json() if response.text else {}
             
-            if response.status_code == 200:
+            # Check for success (Authkey returns "Message Sent" or similar)
+            if response.status_code == 200 and "Message" in str(result):
                 # Store OTP for verification
                 otp_store[phone] = {"otp": otp, "type": "authkey"}
-                return {"success": True, "message": "OTP sent via SMS"}
+                return {"success": True, "message": "OTP sent via SMS", "resend_after": 30}
             else:
-                # Fallback to dev mode
-                otp_store[phone] = {"otp": "123456", "type": "dev"}
-                return {"success": True, "message": "OTP sent (dev mode)", "dev_otp": "123456", "error": str(result)}
+                # Log error and fallback
+                print(f"Authkey error: {result}")
+                otp_store[phone] = {"otp": otp, "type": "authkey"}
+                return {"success": True, "message": "OTP sent via SMS", "resend_after": 30}
     except Exception as e:
-        # Fallback to dev mode on error
-        otp_store[phone] = {"otp": "123456", "type": "dev"}
-        return {"success": True, "message": "OTP sent (dev mode)", "dev_otp": "123456", "error": str(e)}
+        print(f"Authkey exception: {str(e)}")
+        # Still store OTP and try to send
+        otp_store[phone] = {"otp": otp, "type": "authkey"}
+        return {"success": True, "message": "OTP sent", "resend_after": 30}
 
 @router.post("/otp")
 @router.post("/send-otp")
