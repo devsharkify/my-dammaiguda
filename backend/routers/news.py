@@ -168,6 +168,112 @@ class AdminNewsUpdate(BaseModel):
 
 # ============== HELPER FUNCTIONS ==============
 
+async def fetch_youtube_shorts(channel_url: str = YOUTUBE_SHORTS_CHANNEL, limit: int = 10) -> List[Dict]:
+    """Fetch latest YouTube Shorts from Kaizer Nigha channel"""
+    shorts = []
+    try:
+        async with httpx.AsyncClient() as client:
+            headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36'}
+            response = await client.get(channel_url, headers=headers, timeout=20.0, follow_redirects=True)
+            
+            if response.status_code == 200:
+                # Extract video IDs from shorts page
+                import re
+                video_ids = re.findall(r'"videoId":"([^"]+)"', response.text)
+                seen = set()
+                
+                for vid in video_ids[:limit * 2]:  # Get more to filter
+                    if vid not in seen and len(shorts) < limit:
+                        seen.add(vid)
+                        shorts.append({
+                            "id": f"yt_{vid}",
+                            "title": "Kaizer News Short",
+                            "summary": "Watch the latest news update from Kaizer News",
+                            "video_url": f"https://www.youtube.com/shorts/{vid}",
+                            "image": f"https://img.youtube.com/vi/{vid}/maxresdefault.jpg",
+                            "source": "Kaizer News",
+                            "category": "local",
+                            "content_type": "video",
+                            "time_ago": "Just now",
+                            "is_video": True
+                        })
+    except Exception as e:
+        logging.error(f"Error fetching YouTube shorts: {str(e)}")
+    
+    return shorts
+
+async def scrape_siasat_news(limit: int = 15) -> List[Dict]:
+    """Scrape latest news from Siasat.com with AI summarization"""
+    news_items = []
+    openai_key = os.environ.get("OPENAI_API_KEY")
+    
+    try:
+        urls = [
+            "https://www.siasat.com/hyderabad/",
+            "https://www.siasat.com/telangana/"
+        ]
+        
+        async with httpx.AsyncClient() as client:
+            headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36'}
+            
+            for url in urls:
+                try:
+                    response = await client.get(url, headers=headers, timeout=20.0, follow_redirects=True)
+                    
+                    if response.status_code == 200:
+                        soup = BeautifulSoup(response.text, 'html.parser')
+                        articles = soup.find_all('article', limit=limit // 2)
+                        
+                        for article in articles:
+                            try:
+                                title_el = article.find(['h2', 'h3', 'h4'])
+                                link_el = article.find('a', href=True)
+                                img_el = article.find('img')
+                                
+                                if title_el and link_el:
+                                    title = title_el.get_text(strip=True)
+                                    link = link_el['href']
+                                    if not link.startswith('http'):
+                                        link = f"https://www.siasat.com{link}"
+                                    
+                                    image = None
+                                    if img_el:
+                                        image = img_el.get('data-src') or img_el.get('src')
+                                    
+                                    # Create concise summary
+                                    summary = title[:150] + "..." if len(title) > 150 else title
+                                    
+                                    # Use AI to create better summary if available
+                                    if openai_key and len(news_items) < 5:
+                                        try:
+                                            result = await rephrase_with_ai(title, summary)
+                                            title = result.get("title", title)
+                                            summary = result.get("summary", summary)
+                                        except:
+                                            pass
+                                    
+                                    news_items.append({
+                                        "id": generate_id(),
+                                        "title": title,
+                                        "summary": summary,
+                                        "link": link,
+                                        "image": image,
+                                        "source": "Siasat",
+                                        "category": "city" if "hyderabad" in url else "state",
+                                        "time_ago": "Just now",
+                                        "content_type": "text"
+                                    })
+                            except Exception as e:
+                                logging.error(f"Error parsing Siasat article: {e}")
+                                continue
+                except Exception as e:
+                    logging.error(f"Error fetching {url}: {e}")
+                    continue
+    except Exception as e:
+        logging.error(f"Error in scrape_siasat_news: {str(e)}")
+    
+    return news_items[:limit]
+
 async def scrape_rss_feed(url: str, category: str, limit: int = 10, use_ai: bool = False) -> List[Dict]:
     """Scrape news from RSS feed with optional AI rephrasing"""
     news_items = []
