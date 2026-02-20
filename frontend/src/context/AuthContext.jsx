@@ -99,6 +99,7 @@ export function AuthProvider({ children }) {
       verifyOTP,
       updateProfile,
       logout,
+      login,
       isAuthenticated: !!user,
       isVolunteer: user?.role === "volunteer" || user?.role === "admin",
       isAdmin: user?.role === "admin"
