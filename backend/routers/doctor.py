@@ -1,9 +1,12 @@
 """Kaizer Doctor Router - Health tracking, diet plans, recommendations"""
-from fastapi import APIRouter, HTTPException, Depends
+from fastapi import APIRouter, HTTPException, Depends, Query
 from pydantic import BaseModel
 from typing import Optional, List
 from datetime import datetime, timezone, timedelta
 from .utils import db, generate_id, now_iso, get_current_user
+
+# Import extensive food database
+from data.food_database import FOOD_DATABASE, FOOD_CATEGORIES, search_foods, get_foods_by_category, get_food_by_id
 
 router = APIRouter(prefix="/doctor", tags=["Kaizer Doctor"])
 
