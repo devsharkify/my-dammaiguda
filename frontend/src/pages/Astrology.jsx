@@ -770,6 +770,8 @@ export default function Astrology() {
       if (response.data.success) {
         setKundali(response.data.kundali);
         setKundaliStep(2);
+        // Track kundali generation
+        trackFeature(FEATURES.ASTROLOGY, 'kundali', ACTIONS.GENERATE, { gender: form.gender, place: form.place_of_birth });
         toast.success(language === "te" ? "కుండలి రూపొందించబడింది" : "Kundali generated!");
       }
     } catch (error) {
