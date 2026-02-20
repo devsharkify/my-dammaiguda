@@ -252,11 +252,10 @@ function ManagerDashboard({ user, token, onLogout }) {
 
   const handleGrievanceAction = async (id, action) => {
     try {
-      // API call would go here
-      toast.success(`Grievance ${action}ed successfully`);
-      setGrievances(prev => prev.map(g => 
-        g.id === id ? { ...g, status: action } : g
-      ));
+      await axios.put(`${API}/manager/grievances/${id}`, { action }, { headers });
+      toast.success(`Grievance ${action} successfully`);
+      // Refresh data
+      fetchData();
     } catch (err) {
       toast.error(`Failed to ${action} grievance`);
     }
@@ -269,15 +268,9 @@ function ManagerDashboard({ user, token, onLogout }) {
     }
     
     try {
-      // API call would go here
+      const res = await axios.post(`${API}/manager/wall`, { content: newPost }, { headers });
       toast.success("Posted to wall successfully");
-      setWallPosts(prev => [{
-        id: Date.now(),
-        content: newPost,
-        author: "Manager",
-        date: new Date().toISOString().split('T')[0],
-        likes: 0,
-      }, ...prev]);
+      setWallPosts(prev => [res.data.post, ...prev]);
       setNewPost("");
       setShowPostDialog(false);
     } catch (err) {
@@ -287,7 +280,7 @@ function ManagerDashboard({ user, token, onLogout }) {
 
   const handleDeletePost = async (id) => {
     try {
-      // API call would go here
+      await axios.delete(`${API}/manager/wall/${id}`, { headers });
       toast.success("Post deleted");
       setWallPosts(prev => prev.filter(p => p.id !== id));
     } catch (err) {
@@ -302,8 +295,9 @@ function ManagerDashboard({ user, token, onLogout }) {
     }
     
     try {
-      // API call would go here
+      await axios.put(`${API}/manager/banner`, { banner_url: bannerImage }, { headers });
       toast.success("Banner updated successfully");
+      setBannerUrl(bannerImage);
       setShowBannerDialog(false);
       setBannerImage("");
     } catch (err) {
