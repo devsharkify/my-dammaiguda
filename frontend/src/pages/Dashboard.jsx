@@ -640,12 +640,12 @@ export default function Dashboard() {
               <span className="text-[11px] font-semibold text-orange-700">{language === "te" ? "సమస్యలు" : "Issues"}</span>
             </div>
           </Link>
-          <Link to="/benefits" data-testid="quick-action-benefits">
-            <div className="h-20 rounded-2xl bg-green-50 flex flex-col items-center justify-center shadow-sm active:scale-95 transition-all border border-green-100 hover:bg-green-100">
-              <div className="h-10 w-10 rounded-xl bg-green-100 flex items-center justify-center mb-1">
-                <Heart className="h-5 w-5 text-green-600" />
+          <Link to="/astrology" data-testid="quick-action-astrology">
+            <div className="h-20 rounded-2xl bg-amber-50 flex flex-col items-center justify-center shadow-sm active:scale-95 transition-all border border-amber-100 hover:bg-amber-100">
+              <div className="h-10 w-10 rounded-xl bg-amber-100 flex items-center justify-center mb-1">
+                <Star className="h-5 w-5 text-amber-600" />
               </div>
-              <span className="text-[11px] font-semibold text-green-700">{language === "te" ? "సహాయాలు" : "Benefits"}</span>
+              <span className="text-[11px] font-semibold text-amber-700">{language === "te" ? "జ్యోతిష్యం" : "Astrology"}</span>
             </div>
           </Link>
         </div>
