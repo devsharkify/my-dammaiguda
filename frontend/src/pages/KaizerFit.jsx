@@ -1323,9 +1323,15 @@ export default function KaizerFit() {
         </DialogContent>
       </Dialog>
 
-      {/* Meal Logging Dialog */}
-      <Dialog open={showMealDialog} onOpenChange={setShowMealDialog}>
-        <DialogContent className="max-w-md">
+      {/* Meal Logging Dialog with Food Search */}
+      <Dialog open={showMealDialog} onOpenChange={(open) => {
+        setShowMealDialog(open);
+        if (!open) {
+          setFoodSearch("");
+          setSearchResults([]);
+        }
+      }}>
+        <DialogContent className="max-w-md max-h-[85vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2">
               <Apple className="h-5 w-5 text-orange-500" />
@@ -1333,6 +1339,7 @@ export default function KaizerFit() {
             </DialogTitle>
           </DialogHeader>
           <div className="space-y-4 pt-2">
+            {/* Meal Type Selection */}
             <Select value={mealType} onValueChange={setMealType}>
               <SelectTrigger className="h-12">
                 <SelectValue />
@@ -1345,57 +1352,127 @@ export default function KaizerFit() {
               </SelectContent>
             </Select>
             
-            <p className="text-sm text-muted-foreground">
-              {language === "te" ? "త్వరిత కేలరీ జోడించండి:" : "Quick add calories:"}
-            </p>
-            
-            <div className="grid grid-cols-4 gap-2">
-              {[200, 300, 500, 700].map(cal => (
-                <Button
-                  key={cal}
-                  variant="outline"
-                  size="sm"
-                  className="h-10"
-                  onClick={async () => {
-                    try {
-                      await axios.post(`${API}/doctor/meal`, {
-                        food_item: "custom",
-                        meal_type: mealType,
-                        quantity: 1,
-                        custom_calories: cal
-                      }, { headers });
-                      setCaloriesConsumed(prev => prev + cal);
-                      toast.success(`+${cal} ${language === "te" ? "కేలరీలు జోడించబడ్డాయి" : "calories added"}`);
-                      setShowMealDialog(false);
-                    } catch (err) {
-                      console.error("Meal log error:", err);
-                      toast.error(language === "te" ? "నమోదు విఫలం" : "Failed to log");
-                    }
-                  }}
-                >
-                  +{cal}
-                </Button>
-              ))}
+            {/* Food Search */}
+            <div className="space-y-2">
+              <Label className="text-sm font-medium">
+                {language === "te" ? "🔍 ఆహారం వెతకండి (500+ ఆహారాలు)" : "🔍 Search Food (500+ foods)"}
+              </Label>
+              <Input
+                type="text"
+                placeholder={language === "te" ? "బిర్యానీ, దోస, ఆపిల్..." : "biryani, dosa, apple..."}
+                value={foodSearch}
+                onChange={(e) => setFoodSearch(e.target.value)}
+                className="h-11"
+                data-testid="food-search-input"
+              />
+              
+              {/* Category Filter */}
+              {foodCategories.length > 0 && (
+                <Select value={selectedCategory} onValueChange={setSelectedCategory}>
+                  <SelectTrigger className="h-9 text-xs">
+                    <SelectValue placeholder={language === "te" ? "అన్ని రకాలు" : "All categories"} />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="">{language === "te" ? "అన్ని రకాలు" : "All categories"}</SelectItem>
+                    {foodCategories.map(cat => (
+                      <SelectItem key={cat.id} value={cat.id}>{cat.name}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              )}
+              
+              {/* Search Results */}
+              {searchLoading && (
+                <div className="text-center py-4 text-muted-foreground text-sm">
+                  {language === "te" ? "వెతుకుతోంది..." : "Searching..."}
+                </div>
+              )}
+              
+              {searchResults.length > 0 && (
+                <div className="max-h-48 overflow-y-auto space-y-1 border rounded-lg p-2 bg-muted/30">
+                  {searchResults.map(food => (
+                    <button
+                      key={food.id}
+                      className="w-full flex items-center justify-between p-2 rounded-lg hover:bg-accent transition-colors text-left"
+                      onClick={() => logFoodFromSearch(food)}
+                    >
+                      <div>
+                        <p className="font-medium text-sm">{food.name}</p>
+                        <p className="text-xs text-muted-foreground">{food.name_te} • {food.serving}</p>
+                      </div>
+                      <div className="text-right">
+                        <p className="font-semibold text-sm text-orange-600">{food.calories} cal</p>
+                        <p className="text-[10px] text-muted-foreground">
+                          P:{food.protein}g C:{food.carbs}g F:{food.fat}g
+                        </p>
+                      </div>
+                    </button>
+                  ))}
+                </div>
+              )}
+              
+              {foodSearch && !searchLoading && searchResults.length === 0 && (
+                <p className="text-center py-2 text-muted-foreground text-sm">
+                  {language === "te" ? "ఫలితాలు లేవు" : "No results found"}
+                </p>
+              )}
             </div>
             
-            <div className="border-t pt-4">
+            {/* Quick Add Calories */}
+            <div className="border-t pt-3">
               <p className="text-sm font-medium mb-2">
-                {language === "te" ? "సాధారణ ఆహారాలు:" : "Common foods:"}
+                {language === "te" ? "త్వరిత కేలరీ జోడించండి:" : "Quick add calories:"}
+              </p>
+              <div className="grid grid-cols-4 gap-2">
+                {[100, 200, 300, 500].map(cal => (
+                  <Button
+                    key={cal}
+                    variant="outline"
+                    size="sm"
+                    className="h-9"
+                    onClick={async () => {
+                      try {
+                        await axios.post(`${API}/doctor/meal`, {
+                          food_item: "custom",
+                          meal_type: mealType,
+                          quantity: 1,
+                          custom_calories: cal
+                        }, { headers });
+                        setCaloriesConsumed(prev => prev + cal);
+                        toast.success(`+${cal} cal`);
+                        setShowMealDialog(false);
+                      } catch (err) {
+                        toast.error(language === "te" ? "నమోదు విఫలం" : "Failed");
+                      }
+                    }}
+                  >
+                    +{cal}
+                  </Button>
+                ))}
+              </div>
+            </div>
+            
+            {/* Popular Foods */}
+            <div className="border-t pt-3">
+              <p className="text-sm font-medium mb-2">
+                {language === "te" ? "ప్రసిద్ధ ఆహారాలు:" : "Popular foods:"}
               </p>
               <div className="grid grid-cols-2 gap-2">
                 {[
                   { id: "idli", name: language === "te" ? "ఇడ్లీ (2)" : "Idli (2)", cal: 78 },
                   { id: "dosa", name: language === "te" ? "దోస" : "Dosa", cal: 168 },
                   { id: "rice", name: language === "te" ? "అన్నం" : "Rice", cal: 130 },
+                  { id: "chicken_biryani", name: language === "te" ? "చికెన్ బిర్యానీ" : "Chicken Biryani", cal: 350 },
                   { id: "roti", name: language === "te" ? "రోటీ (2)" : "Roti (2)", cal: 142 },
-                  { id: "biryani", name: language === "te" ? "బిర్యానీ" : "Biryani", cal: 350 },
-                  { id: "chai", name: language === "te" ? "చాయ్" : "Tea", cal: 40 }
+                  { id: "samosa", name: language === "te" ? "సమోసా" : "Samosa", cal: 150 },
+                  { id: "chai", name: language === "te" ? "చాయ్" : "Tea", cal: 40 },
+                  { id: "banana", name: language === "te" ? "అరటిపండు" : "Banana", cal: 105 }
                 ].map(food => (
                   <Button
                     key={food.id}
                     variant="outline"
                     size="sm"
-                    className="h-10 justify-between text-xs"
+                    className="h-9 justify-between text-xs"
                     onClick={async () => {
                       try {
                         await axios.post(`${API}/doctor/meal`, {
@@ -1404,16 +1481,15 @@ export default function KaizerFit() {
                           quantity: food.id === "idli" || food.id === "roti" ? 2 : 1
                         }, { headers });
                         setCaloriesConsumed(prev => prev + food.cal);
-                        toast.success(`${food.name} ${language === "te" ? "జోడించబడింది" : "added"} (+${food.cal})`);
+                        toast.success(`${food.name} (+${food.cal})`);
                         setShowMealDialog(false);
                       } catch (err) {
-                        console.error("Meal log error:", err);
-                        toast.error(language === "te" ? "నమోదు విఫలం" : "Failed to log");
+                        toast.error(language === "te" ? "నమోదు విఫలం" : "Failed");
                       }
                     }}
                   >
-                    <span>{food.name}</span>
-                    <span className="text-muted-foreground">{food.cal}</span>
+                    <span className="truncate">{food.name}</span>
+                    <span className="text-orange-600 ml-1">{food.cal}</span>
                   </Button>
                 ))}
               </div>
