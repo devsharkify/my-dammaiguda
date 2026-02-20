@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useLanguage } from "../context/LanguageContext";
 import { useAuth } from "../context/AuthContext";
@@ -9,7 +9,7 @@ import { Input } from "../components/ui/input";
 import { Label } from "../components/ui/label";
 import { Card, CardContent } from "../components/ui/card";
 import { toast } from "sonner";
-import { Trash2, AlertTriangle, Shield, CheckCircle, Loader2 } from "lucide-react";
+import { Trash2, AlertTriangle, Shield, CheckCircle, Loader2, Timer } from "lucide-react";
 
 const API = process.env.REACT_APP_BACKEND_URL;
 
@@ -24,6 +24,18 @@ export default function DeleteAccount() {
   const [reason, setReason] = useState("");
   const [loading, setLoading] = useState(false);
   const [otpSent, setOtpSent] = useState(false);
+  const [resendTimer, setResendTimer] = useState(0);
+
+  // Timer effect for resend OTP
+  useEffect(() => {
+    let interval;
+    if (resendTimer > 0) {
+      interval = setInterval(() => {
+        setResendTimer((prev) => prev <= 1 ? 0 : prev - 1);
+      }, 1000);
+    }
+    return () => clearInterval(interval);
+  }, [resendTimer]);
 
   const handleSendOtp = async () => {
     if (!phone || phone.length < 10) {
@@ -35,6 +47,7 @@ export default function DeleteAccount() {
     try {
       await axios.post(`${API}/api/auth/send-otp`, { phone });
       setOtpSent(true);
+      setResendTimer(30);
       toast.success(language === "te" ? "OTP పంపబడింది" : "OTP sent to your phone");
     } catch (error) {
       toast.error("Failed to send OTP");
