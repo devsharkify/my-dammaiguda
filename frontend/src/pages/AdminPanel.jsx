@@ -69,12 +69,12 @@ const AREAS = {
 // Quick Links for Admin
 const ADMIN_LINKS = [
   { name: "User App", icon: Home, url: "/dashboard", description: "Main user-facing app" },
+  { name: "Admin Panel", icon: LayoutDashboard, url: "/admin/panel", description: "Multi-area management" },
   { name: "Clone Maker", icon: Copy, url: "/admin/clone", description: "Generate area configs" },
   { name: "News Manager", icon: Newspaper, url: "/admin-dashboard?tab=news", description: "Manage news content" },
   { name: "Course Manager", icon: GraduationCap, url: "/admin-dashboard?tab=courses", description: "Manage courses" },
   { name: "User Manager", icon: Users, url: "/admin-dashboard?tab=users", description: "Manage users" },
   { name: "Analytics", icon: BarChart3, url: "/admin-dashboard?tab=overview", description: "View analytics" },
-  { name: "Gift Shop", icon: Gift, url: "/admin-dashboard?tab=shop", description: "Manage products" },
   { name: "Issues", icon: AlertTriangle, url: "/admin-dashboard?tab=issues", description: "Manage issues" },
 ];
 
