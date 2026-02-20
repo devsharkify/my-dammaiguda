@@ -484,12 +484,11 @@ class MentalHealthAssessment(BaseModel):
 @router.post("/psychologist/chat")
 async def psychologist_chat(msg: PsychologistMessage, user: dict = Depends(get_current_user)):
     """Chat with the AI Psychologist (Kaizer Mind)"""
-    if not EMERGENT_LLM_KEY:
+    openai_key = os.environ.get("OPENAI_API_KEY")
+    if not openai_key:
         raise HTTPException(status_code=503, detail="AI service not configured")
     
     try:
-        from emergentintegrations.llm.chat import LlmChat, UserMessage
-        
         # Create or use session
         session_id = msg.session_id or f"psych_{user['id']}_{datetime.now(timezone.utc).strftime('%Y%m%d')}"
         
@@ -501,21 +500,22 @@ async def psychologist_chat(msg: PsychologistMessage, user: dict = Depends(get_c
         
         history = list(reversed(history))  # Chronological order
         
-        # Build context with history
-        context = PSYCHOLOGIST_SYSTEM_PROMPT
-        if history:
-            context += "\n\nPrevious conversation:\n"
-            for h in history[-5:]:  # Last 5 exchanges
-                context += f"User: {h.get('user_message', '')}\nKaizer Mind: {h.get('ai_response', '')}\n"
+        # Build messages for OpenAI
+        openai_messages = [{"role": "system", "content": PSYCHOLOGIST_SYSTEM_PROMPT}]
+        for h in history[-5:]:  # Last 5 exchanges
+            openai_messages.append({"role": "user", "content": h.get('user_message', '')})
+            openai_messages.append({"role": "assistant", "content": h.get('ai_response', '')})
+        openai_messages.append({"role": "user", "content": msg.message})
         
-        chat = LlmChat(
-            api_key=EMERGENT_LLM_KEY,
-            session_id=session_id,
-            system_message=context
-        ).with_model("openai", "gpt-4o-mini")
-        
-        user_message = UserMessage(text=msg.message)
-        response = await chat.send_message(user_message)
+        async with httpx.AsyncClient() as client:
+            resp = await client.post(
+                "https://api.openai.com/v1/chat/completions",
+                headers={"Authorization": f"Bearer {openai_key}", "Content-Type": "application/json"},
+                json={"model": "gpt-4o-mini", "messages": openai_messages, "max_tokens": 1000},
+                timeout=30.0
+            )
+            resp.raise_for_status()
+            response = resp.json()["choices"][0]["message"]["content"]
         
         # Store in DB
         chat_entry = {
@@ -540,13 +540,23 @@ async def psychologist_chat(msg: PsychologistMessage, user: dict = Depends(get_c
             }}
             User's message: {msg.message}"""
             
-            assessment_chat = LlmChat(
-                api_key=EMERGENT_LLM_KEY,
-                session_id=f"assess_{session_id}",
-                system_message="You are a mental health assessment assistant. Respond only with valid JSON."
-            ).with_model("openai", "gpt-4o-mini")
+            async with httpx.AsyncClient() as client:
+                assess_resp = await client.post(
+                    "https://api.openai.com/v1/chat/completions",
+                    headers={"Authorization": f"Bearer {openai_key}", "Content-Type": "application/json"},
+                    json={
+                        "model": "gpt-4o-mini",
+                        "messages": [
+                            {"role": "system", "content": "You are a mental health assessment assistant. Respond only with valid JSON."},
+                            {"role": "user", "content": assessment_prompt}
+                        ],
+                        "max_tokens": 200
+                    },
+                    timeout=30.0
+                )
+                assess_resp.raise_for_status()
+                assessment_response = assess_resp.json()["choices"][0]["message"]["content"]
             
-            assessment_response = await assessment_chat.send_message(UserMessage(text=assessment_prompt))
             try:
                 import json
                 assessment = json.loads(assessment_response)
@@ -560,8 +570,6 @@ async def psychologist_chat(msg: PsychologistMessage, user: dict = Depends(get_c
             "timestamp": now_iso()
         }
         
-    except ImportError:
-        raise HTTPException(status_code=503, detail="AI library not available")
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"AI service error: {str(e)}")
 
