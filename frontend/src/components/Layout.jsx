@@ -1,6 +1,7 @@
 import { Link, useLocation } from "react-router-dom";
 import { useLanguage } from "../context/LanguageContext";
 import { useAuth } from "../context/AuthContext";
+import { useAppConfig, useFeatureFlags } from "../context/AppConfigContext";
 import { Button } from "../components/ui/button";
 import { motion, AnimatePresence } from "framer-motion";
 import {
@@ -31,13 +32,15 @@ import {
   Gift,
   Phone
 } from "lucide-react";
-import { useState } from "react";
+import { useState, useMemo } from "react";
 
 export default function Layout({ children, title, showBackButton = false }) {
   const { t, language, toggleLanguage } = useLanguage();
   const { user, logout, isVolunteer, isAdmin } = useAuth();
   const location = useLocation();
   const [menuOpen, setMenuOpen] = useState(false);
+  const config = useAppConfig();
+  const features = useFeatureFlags();
 
   // Bottom navigation items - main features (5 items with center bulge for NEWS)
   const bottomNavItems = [
@@ -48,27 +51,34 @@ export default function Layout({ children, title, showBackButton = false }) {
     { path: "/helpline", icon: <Phone className="h-5 w-5" />, label: language === "te" ? "హెల్ప్‌లైన్" : "Helpline" }
   ];
 
-  const menuItems = [
-    { path: "/dashboard", icon: <Home className="h-5 w-5" />, label: t("dashboard") },
-    { path: "/shop", icon: <Gift className="h-5 w-5" />, label: language === "te" ? "గిఫ్ట్ షాప్" : "Gift Shop" },
-    { path: "/education", icon: <GraduationCap className="h-5 w-5" />, label: language === "te" ? "బోస్ అమెరికన్ అకాడమీ" : "Bose American Academy" },
-    { path: "/wall", icon: <PenSquare className="h-5 w-5" />, label: language === "te" ? "సిటిజన్ వాల్" : "Citizen Wall" },
-    { path: "/news", icon: <Newspaper className="h-5 w-5" />, label: language === "te" ? "వార్తలు" : "News" },
-    { path: "/issues", icon: <AlertTriangle className="h-5 w-5" />, label: t("issues") },
-    { path: "/report", icon: <AlertTriangle className="h-5 w-5" />, label: t("reportIssue") },
-    { path: "/aqi", icon: <Wind className="h-5 w-5" />, label: language === "te" ? "గాలి నాణ్యత" : "Air Quality" },
-    { path: "/dumpyard", icon: <MapPin className="h-5 w-5" />, label: t("dumpYard") },
-    { path: "/fitness", icon: <Activity className="h-5 w-5" />, label: t("fitness") },
-    { path: "/doctor", icon: <Stethoscope className="h-5 w-5" />, label: language === "te" ? "కైజర్ డాక్టర్" : "Kaizer Doctor" },
-    { path: "/chat", icon: <MessageCircle className="h-5 w-5" />, label: language === "te" ? "AI చాట్" : "AI Chat" },
-    { path: "/family", icon: <Users className="h-5 w-5" />, label: language === "te" ? "నా కుటుంబం" : "My Family" },
-    { path: "/benefits", icon: <Heart className="h-5 w-5" />, label: t("benefits") },
-    { path: "/expenditure", icon: <BarChart3 className="h-5 w-5" />, label: t("expenditure") },
-    { path: "/polls", icon: <FileText className="h-5 w-5" />, label: t("polls") },
-    ...(isVolunteer ? [{ path: "/volunteer", icon: <Users className="h-5 w-5" />, label: language === "te" ? "వలంటీర్" : "Volunteer" }] : []),
-    ...(isAdmin ? [{ path: "/admin", icon: <Settings className="h-5 w-5" />, label: language === "te" ? "అడ్మిన్" : "Admin" }] : []),
-    { path: "/profile", icon: <User className="h-5 w-5" />, label: t("profile") }
-  ];
+  // Build menu items based on feature flags
+  const menuItems = useMemo(() => {
+    const items = [
+      { path: "/dashboard", icon: <Home className="h-5 w-5" />, label: t("dashboard") },
+      features.shop && { path: "/shop", icon: <Gift className="h-5 w-5" />, label: language === "te" ? "గిఫ్ట్ షాప్" : "Gift Shop" },
+      features.education && { path: "/education", icon: <GraduationCap className="h-5 w-5" />, label: language === "te" ? "బోస్ అమెరికన్ అకాడమీ" : "Bose American Academy" },
+      features.wall && { path: "/wall", icon: <PenSquare className="h-5 w-5" />, label: language === "te" ? "సిటిజన్ వాల్" : "Citizen Wall" },
+      features.news && { path: "/news", icon: <Newspaper className="h-5 w-5" />, label: language === "te" ? "వార్తలు" : "News" },
+      features.issues && { path: "/issues", icon: <AlertTriangle className="h-5 w-5" />, label: t("issues") },
+      features.issues && { path: "/report", icon: <AlertTriangle className="h-5 w-5" />, label: t("reportIssue") },
+      features.aqi && { path: "/aqi", icon: <Wind className="h-5 w-5" />, label: language === "te" ? "గాలి నాణ్యత" : "Air Quality" },
+      // Only show dumpyard if feature is enabled
+      features.dumpYard && { path: "/dumpyard", icon: <MapPin className="h-5 w-5" />, label: t("dumpYard") },
+      features.fitness && { path: "/fitness", icon: <Activity className="h-5 w-5" />, label: t("fitness") },
+      features.doctor && { path: "/doctor", icon: <Stethoscope className="h-5 w-5" />, label: language === "te" ? "కైజర్ డాక్టర్" : "Kaizer Doctor" },
+      features.chat && { path: "/chat", icon: <MessageCircle className="h-5 w-5" />, label: language === "te" ? "AI చాట్" : "AI Chat" },
+      features.family && { path: "/family", icon: <Users className="h-5 w-5" />, label: language === "te" ? "నా కుటుంబం" : "My Family" },
+      features.benefits && { path: "/benefits", icon: <Heart className="h-5 w-5" />, label: t("benefits") },
+      features.wardExpenditure && { path: "/expenditure", icon: <BarChart3 className="h-5 w-5" />, label: t("expenditure") },
+      features.polls && { path: "/polls", icon: <FileText className="h-5 w-5" />, label: t("polls") },
+      isVolunteer && { path: "/volunteer", icon: <Users className="h-5 w-5" />, label: language === "te" ? "వలంటీర్" : "Volunteer" },
+      isAdmin && { path: "/admin", icon: <Settings className="h-5 w-5" />, label: language === "te" ? "అడ్మిన్" : "Admin" },
+      { path: "/profile", icon: <User className="h-5 w-5" />, label: t("profile") }
+    ];
+    
+    // Filter out falsy values
+    return items.filter(Boolean);
+  }, [features, language, t, isVolunteer, isAdmin]);
 
   const isActive = (path) => location.pathname === path;
 
