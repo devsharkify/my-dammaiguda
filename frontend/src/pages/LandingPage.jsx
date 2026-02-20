@@ -152,13 +152,9 @@ export default function LandingPage() {
               Get Started
               <ChevronRight className="w-5 h-5 ml-2" />
             </Button>
-            <button 
-              onClick={() => { setShowLogin(true); setIsNewUser(false); }}
-              className="w-full text-sm text-slate-400 hover:text-white transition-colors"
-              data-testid="login-btn"
-            >
-              Already registered? <span className="text-teal-400 font-medium">Login</span>
-            </button>
+            <p className="text-slate-500 text-xs text-center">
+              Takes less than 30 seconds
+            </p>
           </div>
         ) : (
           <div className="w-full max-w-xs space-y-3 animate-in fade-in slide-in-from-bottom-4 duration-300 mb-4">
@@ -221,19 +217,30 @@ export default function LandingPage() {
                   className="w-full h-12 text-base font-semibold bg-gradient-to-r from-teal-500 to-emerald-500 hover:from-teal-400 hover:to-emerald-400 rounded-2xl disabled:opacity-50"
                   data-testid="send-otp-btn"
                 >
-                  {loading ? "Sending..." : "Send OTP"}
+                  {loading ? "Sending..." : (isNewUser ? "Register & Send OTP" : "Send OTP")}
                 </Button>
 
-                {/* Switch between login and register */}
-                <button 
-                  onClick={() => { setIsNewUser(!isNewUser); }}
-                  className="w-full text-sm text-slate-400 hover:text-white transition-colors"
-                >
-                  {isNewUser 
-                    ? <>Already registered? <span className="text-teal-400 font-medium">Login</span></>
-                    : <>New user? <span className="text-teal-400 font-medium">Register</span></>
-                  }
-                </button>
+                {/* Show "Already registered? Login" only when in registration mode */}
+                {isNewUser && (
+                  <button 
+                    onClick={() => { setIsNewUser(false); }}
+                    className="w-full text-sm text-slate-400 hover:text-white transition-colors"
+                    data-testid="switch-to-login"
+                  >
+                    Already registered? <span className="text-teal-400 font-medium">Login</span>
+                  </button>
+                )}
+                
+                {/* Show "New user? Register" only when in login mode */}
+                {!isNewUser && (
+                  <button 
+                    onClick={() => { setIsNewUser(true); }}
+                    className="w-full text-sm text-slate-400 hover:text-white transition-colors"
+                    data-testid="switch-to-register"
+                  >
+                    New user? <span className="text-teal-400 font-medium">Register</span>
+                  </button>
+                )}
               </>
             ) : (
               <>
