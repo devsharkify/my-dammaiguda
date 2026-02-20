@@ -5,7 +5,7 @@ import { Button } from "../components/ui/button";
 import { Input } from "../components/ui/input";
 import { InputOTP, InputOTPGroup, InputOTPSlot } from "../components/ui/input-otp";
 import { toast } from "sonner";
-import { Phone, ChevronRight, Sparkles } from "lucide-react";
+import { Phone, ChevronRight, Sparkles, User, MapPin } from "lucide-react";
 
 export default function LandingPage() {
   const { sendOTP, verifyOTP } = useAuth();
@@ -14,12 +14,22 @@ export default function LandingPage() {
   const [showLogin, setShowLogin] = useState(false);
   const [step, setStep] = useState(1);
   const [phone, setPhone] = useState("");
+  const [name, setName] = useState("");
+  const [colony, setColony] = useState("");
   const [otp, setOtp] = useState("");
   const [loading, setLoading] = useState(false);
 
   const handleSendOTP = async () => {
     if (!phone || phone.length < 10) {
       toast.error("Enter valid phone number");
+      return;
+    }
+    if (!name.trim()) {
+      toast.error("Enter your name");
+      return;
+    }
+    if (!colony.trim()) {
+      toast.error("Enter your colony");
       return;
     }
     setLoading(true);
@@ -46,7 +56,7 @@ export default function LandingPage() {
     setLoading(true);
     try {
       const formattedPhone = phone.startsWith("+91") ? phone : `+91${phone}`;
-      const result = await verifyOTP(formattedPhone, otp);
+      const result = await verifyOTP(formattedPhone, otp, name, colony);
       if (result.success) {
         toast.success("Welcome!");
         navigate("/dashboard");
@@ -104,7 +114,7 @@ export default function LandingPage() {
         </div>
 
         {/* Our Commitment Section */}
-        <div className="w-full max-w-xs mb-5">
+        <div className="w-full max-w-xs mb-4">
           <p className="text-center text-slate-500 text-[10px] uppercase tracking-widest mb-3">
             Our Commitment to Dammaiguda
           </p>
@@ -124,29 +134,9 @@ export default function LandingPage() {
           </div>
         </div>
 
-        {/* Primary Actions - 2x2 Grid */}
-        <div className="grid grid-cols-2 gap-2.5 w-full max-w-xs mb-5">
-          <div className="flex items-center gap-2 px-3 py-2.5 rounded-xl bg-white/5 border border-white/10 hover:bg-white/10 transition-colors cursor-pointer">
-            <span className="text-lg">🚨</span>
-            <span className="text-[11px] text-slate-300 font-medium">Report a Problem</span>
-          </div>
-          <div className="flex items-center gap-2 px-3 py-2.5 rounded-xl bg-white/5 border border-white/10 hover:bg-white/10 transition-colors cursor-pointer">
-            <span className="text-lg">❤️</span>
-            <span className="text-[11px] text-slate-300 font-medium">Health & Fitness</span>
-          </div>
-          <div className="flex items-center gap-2 px-3 py-2.5 rounded-xl bg-white/5 border border-white/10 hover:bg-white/10 transition-colors cursor-pointer">
-            <span className="text-lg">🌿</span>
-            <span className="text-[11px] text-slate-300 font-medium">Dump Yard & Env</span>
-          </div>
-          <div className="flex items-center gap-2 px-3 py-2.5 rounded-xl bg-white/5 border border-white/10 hover:bg-white/10 transition-colors cursor-pointer">
-            <span className="text-lg">👥</span>
-            <span className="text-[11px] text-slate-300 font-medium">Citizen Benefits</span>
-          </div>
-        </div>
-
-        {/* Login Section */}
+        {/* Login Section - Now After Numbers */}
         {!showLogin ? (
-          <div className="w-full max-w-xs space-y-1.5">
+          <div className="w-full max-w-xs space-y-1.5 mb-4">
             <Button 
               onClick={() => setShowLogin(true)}
               className="w-full h-14 text-base font-semibold bg-gradient-to-r from-teal-500 to-emerald-500 hover:from-teal-400 hover:to-emerald-400 rounded-2xl shadow-lg shadow-teal-500/30 transition-all"
@@ -161,9 +151,25 @@ export default function LandingPage() {
             </p>
           </div>
         ) : (
-          <div className="w-full max-w-xs space-y-3 animate-in fade-in slide-in-from-bottom-4 duration-300">
+          <div className="w-full max-w-xs space-y-3 animate-in fade-in slide-in-from-bottom-4 duration-300 mb-4">
             {step === 1 ? (
               <>
+                {/* Name Input */}
+                <div className="relative">
+                  <div className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400">
+                    <User className="w-4 h-4" />
+                  </div>
+                  <Input
+                    type="text"
+                    placeholder="Your Name"
+                    value={name}
+                    onChange={(e) => setName(e.target.value)}
+                    className="h-12 pl-12 text-base bg-white/10 border-white/20 text-white placeholder:text-slate-500 rounded-2xl focus:ring-2 focus:ring-teal-500"
+                    data-testid="name-input"
+                  />
+                </div>
+
+                {/* Phone Input */}
                 <div className="relative">
                   <div className="absolute left-4 top-1/2 -translate-y-1/2 flex items-center gap-1 text-slate-400">
                     <Phone className="w-4 h-4" />
@@ -174,14 +180,30 @@ export default function LandingPage() {
                     placeholder="98765 43210"
                     value={phone}
                     onChange={(e) => setPhone(e.target.value.replace(/\D/g, "").slice(0, 10))}
-                    className="h-14 pl-20 text-lg bg-white/10 border-white/20 text-white placeholder:text-slate-500 rounded-2xl focus:ring-2 focus:ring-teal-500"
+                    className="h-12 pl-20 text-base bg-white/10 border-white/20 text-white placeholder:text-slate-500 rounded-2xl focus:ring-2 focus:ring-teal-500"
                     data-testid="phone-input"
                   />
                 </div>
+
+                {/* Colony Input */}
+                <div className="relative">
+                  <div className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400">
+                    <MapPin className="w-4 h-4" />
+                  </div>
+                  <Input
+                    type="text"
+                    placeholder="Your Colony/Area"
+                    value={colony}
+                    onChange={(e) => setColony(e.target.value)}
+                    className="h-12 pl-12 text-base bg-white/10 border-white/20 text-white placeholder:text-slate-500 rounded-2xl focus:ring-2 focus:ring-teal-500"
+                    data-testid="colony-input"
+                  />
+                </div>
+
                 <Button 
                   onClick={handleSendOTP}
-                  disabled={loading || phone.length < 10}
-                  className="w-full h-14 text-base font-semibold bg-gradient-to-r from-teal-500 to-emerald-500 hover:from-teal-400 hover:to-emerald-400 rounded-2xl disabled:opacity-50"
+                  disabled={loading || phone.length < 10 || !name.trim() || !colony.trim()}
+                  className="w-full h-12 text-base font-semibold bg-gradient-to-r from-teal-500 to-emerald-500 hover:from-teal-400 hover:to-emerald-400 rounded-2xl disabled:opacity-50"
                   data-testid="send-otp-btn"
                 >
                   {loading ? "Sending..." : "Send OTP"}
@@ -189,32 +211,36 @@ export default function LandingPage() {
               </>
             ) : (
               <>
-                <div className="text-center mb-1">
+                <div className="text-center py-2">
                   <p className="text-slate-400 text-sm">Enter OTP sent to</p>
                   <p className="text-white font-medium">+91 {phone}</p>
                 </div>
-                <div className="flex justify-center">
-                  <InputOTP
-                    maxLength={6}
-                    value={otp}
-                    onChange={setOtp}
-                    data-testid="otp-input"
-                  >
-                    <InputOTPGroup className="gap-2">
-                      {[0, 1, 2, 3, 4, 5].map((idx) => (
-                        <InputOTPSlot
-                          key={idx}
-                          index={idx}
-                          className="w-10 h-12 text-xl bg-white/10 border-white/20 text-white rounded-xl"
-                        />
-                      ))}
-                    </InputOTPGroup>
-                  </InputOTP>
+                
+                <div className="py-3">
+                  <div className="flex justify-center">
+                    <InputOTP
+                      maxLength={6}
+                      value={otp}
+                      onChange={setOtp}
+                      data-testid="otp-input"
+                    >
+                      <InputOTPGroup className="gap-2">
+                        {[0, 1, 2, 3, 4, 5].map((idx) => (
+                          <InputOTPSlot
+                            key={idx}
+                            index={idx}
+                            className="w-10 h-12 text-xl bg-white/10 border-white/20 text-white rounded-xl"
+                          />
+                        ))}
+                      </InputOTPGroup>
+                    </InputOTP>
+                  </div>
                 </div>
+
                 <Button 
                   onClick={handleVerifyOTP}
                   disabled={loading || otp.length !== 6}
-                  className="w-full h-14 text-base font-semibold bg-gradient-to-r from-teal-500 to-emerald-500 hover:from-teal-400 hover:to-emerald-400 rounded-2xl disabled:opacity-50"
+                  className="w-full h-12 text-base font-semibold bg-gradient-to-r from-teal-500 to-emerald-500 hover:from-teal-400 hover:to-emerald-400 rounded-2xl disabled:opacity-50"
                   data-testid="verify-btn"
                 >
                   {loading ? "Verifying..." : "Verify & Enter"}
@@ -223,12 +249,32 @@ export default function LandingPage() {
                   onClick={() => { setStep(1); setOtp(""); }}
                   className="w-full text-sm text-slate-400 hover:text-white transition-colors"
                 >
-                  Change number
+                  Change details
                 </button>
               </>
             )}
           </div>
         )}
+
+        {/* Primary Actions - 2x2 Grid - Now After Login */}
+        <div className="grid grid-cols-2 gap-2.5 w-full max-w-xs">
+          <div className="flex items-center gap-2 px-3 py-2.5 rounded-xl bg-white/5 border border-white/10 hover:bg-white/10 transition-colors cursor-pointer">
+            <span className="text-lg">🚨</span>
+            <span className="text-[11px] text-slate-300 font-medium">Report a Problem</span>
+          </div>
+          <div className="flex items-center gap-2 px-3 py-2.5 rounded-xl bg-white/5 border border-white/10 hover:bg-white/10 transition-colors cursor-pointer">
+            <span className="text-lg">❤️</span>
+            <span className="text-[11px] text-slate-300 font-medium">Health & Fitness</span>
+          </div>
+          <div className="flex items-center gap-2 px-3 py-2.5 rounded-xl bg-white/5 border border-white/10 hover:bg-white/10 transition-colors cursor-pointer">
+            <span className="text-lg">🌿</span>
+            <span className="text-[11px] text-slate-300 font-medium">Dump Yard</span>
+          </div>
+          <div className="flex items-center gap-2 px-3 py-2.5 rounded-xl bg-white/5 border border-white/10 hover:bg-white/10 transition-colors cursor-pointer">
+            <span className="text-lg">👥</span>
+            <span className="text-[11px] text-slate-300 font-medium">Claim Benefits</span>
+          </div>
+        </div>
       </div>
     </div>
   );
