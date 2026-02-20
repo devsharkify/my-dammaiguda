@@ -2,11 +2,18 @@
 from fastapi import APIRouter, HTTPException, Depends
 from pydantic import BaseModel
 from typing import Optional
+import httpx
+import os
+import random
 from .utils import db, generate_id, now_iso, create_token, get_current_user
 
 router = APIRouter(prefix="/auth", tags=["Authentication"])
 
-# OTP store (in-memory for demo)
+# Authkey.io configuration
+AUTHKEY_API_KEY = os.environ.get("AUTHKEY_API_KEY", "")
+AUTHKEY_ENABLED = bool(AUTHKEY_API_KEY)
+
+# OTP store (stores LogID from Authkey for verification, or OTP for dev mode)
 otp_store = {}
 
 # ============== MODELS ==============
