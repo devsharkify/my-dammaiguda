@@ -499,7 +499,10 @@ export default function Dashboard() {
                 <div className="flex items-center gap-1">
                   <MapPin className="h-3 w-3 text-gray-300" />
                   <span className="text-[10px] text-gray-400">
-                    {language === "te" ? "హైదరాబాద్" : "Hyderabad"}: <span className="font-medium text-gray-500">{aqiData?.hyderabad?.aqi || "—"}</span>
+                    {language === "te" ? "హైదరాబాద్" : "Hyderabad"}: <span className="font-bold text-gray-700 text-sm">{aqiData?.hyderabad?.aqi || "—"}</span>
+                    <span className={`ml-1 px-1.5 py-0.5 rounded text-[8px] font-semibold ${getAqiInfo(aqiData?.hyderabad?.aqi).bg} ${getAqiInfo(aqiData?.hyderabad?.aqi).text}`}>
+                      {language === "te" ? getAqiInfo(aqiData?.hyderabad?.aqi).status_te : getAqiInfo(aqiData?.hyderabad?.aqi).status}
+                    </span>
                   </span>
                 </div>
                 <ChevronRight className="h-4 w-4 text-gray-300" />
