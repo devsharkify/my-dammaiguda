@@ -5,7 +5,7 @@ import { Button } from "../components/ui/button";
 import { Input } from "../components/ui/input";
 import { InputOTP, InputOTPGroup, InputOTPSlot } from "../components/ui/input-otp";
 import { toast } from "sonner";
-import { Shield, Phone, Users, AlertTriangle, Heart, Leaf, ChevronRight, Sparkles } from "lucide-react";
+import { Phone, ChevronRight, Sparkles } from "lucide-react";
 
 export default function LandingPage() {
   const { sendOTP, verifyOTP } = useAuth();
@@ -71,62 +71,54 @@ export default function LandingPage() {
       <div className="relative flex-1 flex flex-col items-center justify-center px-6 py-8">
         
         {/* Logo & Title */}
-        <div className="text-center mb-6">
-          <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-gradient-to-br from-teal-400 to-emerald-500 mb-4 shadow-lg shadow-teal-500/30">
-            <Shield className="w-8 h-8 text-white" />
+        <div className="text-center mb-5">
+          <div className="inline-flex items-center justify-center w-20 h-20 rounded-2xl bg-gradient-to-br from-teal-400 to-emerald-500 mb-4 shadow-lg shadow-teal-500/30">
+            <span className="text-4xl font-black text-white">M</span>
           </div>
           <h1 className="text-3xl font-bold text-white tracking-tight">
             My Dammaiguda
           </h1>
-          <p className="text-slate-400 text-sm mt-1">
-            Your Voice. Your Ward. Your Power.
+          <p className="text-slate-400 text-sm mt-2 font-medium">
+            Track Issues. Protect Health. Claim Benefits.
           </p>
         </div>
 
-        {/* Stats Row */}
-        <div className="flex items-center justify-center gap-6 mb-6">
-          <div className="text-center">
-            <p className="text-2xl font-bold text-teal-400">2.5L+</p>
-            <p className="text-[10px] text-slate-500 uppercase tracking-wider">Citizens</p>
+        {/* Primary Actions - 2x2 Grid */}
+        <div className="grid grid-cols-2 gap-3 w-full max-w-xs mb-6">
+          <div className="flex items-center gap-2.5 px-4 py-3 rounded-xl bg-white/5 border border-white/10 hover:bg-white/10 transition-colors cursor-pointer">
+            <span className="text-xl">🚨</span>
+            <span className="text-xs text-slate-300 font-medium">Report a Problem</span>
           </div>
-          <div className="h-8 w-px bg-slate-700"></div>
-          <div className="text-center">
-            <p className="text-2xl font-bold text-emerald-400">1.2K</p>
-            <p className="text-[10px] text-slate-500 uppercase tracking-wider">Issues Fixed</p>
+          <div className="flex items-center gap-2.5 px-4 py-3 rounded-xl bg-white/5 border border-white/10 hover:bg-white/10 transition-colors cursor-pointer">
+            <span className="text-xl">❤️</span>
+            <span className="text-xs text-slate-300 font-medium">Health & Fitness</span>
           </div>
-          <div className="h-8 w-px bg-slate-700"></div>
-          <div className="text-center">
-            <p className="text-2xl font-bold text-cyan-400">₹4Cr</p>
-            <p className="text-[10px] text-slate-500 uppercase tracking-wider">Tracked</p>
+          <div className="flex items-center gap-2.5 px-4 py-3 rounded-xl bg-white/5 border border-white/10 hover:bg-white/10 transition-colors cursor-pointer">
+            <span className="text-xl">🌿</span>
+            <span className="text-xs text-slate-300 font-medium">Dump Yard & Environment</span>
           </div>
-        </div>
-
-        {/* Features Grid - Compact */}
-        <div className="grid grid-cols-2 gap-2 w-full max-w-xs mb-6">
-          {[
-            { icon: AlertTriangle, label: "Report Issues", color: "text-red-400" },
-            { icon: Heart, label: "Health & Fitness", color: "text-pink-400" },
-            { icon: Leaf, label: "Environment", color: "text-green-400" },
-            { icon: Users, label: "Community", color: "text-blue-400" }
-          ].map((item, idx) => (
-            <div key={idx} className="flex items-center gap-2 px-3 py-2 rounded-xl bg-white/5 border border-white/10">
-              <item.icon className={`w-4 h-4 ${item.color}`} />
-              <span className="text-xs text-slate-300">{item.label}</span>
-            </div>
-          ))}
+          <div className="flex items-center gap-2.5 px-4 py-3 rounded-xl bg-white/5 border border-white/10 hover:bg-white/10 transition-colors cursor-pointer">
+            <span className="text-xl">👥</span>
+            <span className="text-xs text-slate-300 font-medium">Citizen Benefits</span>
+          </div>
         </div>
 
         {/* Login Section */}
         {!showLogin ? (
-          <Button 
-            onClick={() => setShowLogin(true)}
-            className="w-full max-w-xs h-14 text-base font-semibold bg-gradient-to-r from-teal-500 to-emerald-500 hover:from-teal-400 hover:to-emerald-400 rounded-2xl shadow-lg shadow-teal-500/30 transition-all"
-            data-testid="get-started-btn"
-          >
-            <Sparkles className="w-5 h-5 mr-2" />
-            Get Started
-            <ChevronRight className="w-5 h-5 ml-2" />
-          </Button>
+          <div className="w-full max-w-xs space-y-2">
+            <Button 
+              onClick={() => setShowLogin(true)}
+              className="w-full h-14 text-base font-semibold bg-gradient-to-r from-teal-500 to-emerald-500 hover:from-teal-400 hover:to-emerald-400 rounded-2xl shadow-lg shadow-teal-500/30 transition-all"
+              data-testid="get-started-btn"
+            >
+              <Sparkles className="w-5 h-5 mr-2" />
+              Get Started
+              <ChevronRight className="w-5 h-5 ml-2" />
+            </Button>
+            <p className="text-slate-500 text-xs text-center">
+              Takes less than 30 seconds
+            </p>
+          </div>
         ) : (
           <div className="w-full max-w-xs space-y-4 animate-in fade-in slide-in-from-bottom-4 duration-300">
             {step === 1 ? (
@@ -196,18 +188,22 @@ export default function LandingPage() {
             )}
           </div>
         )}
-
-        {/* Tagline */}
-        <p className="text-slate-500 text-xs text-center mt-6 max-w-xs">
-          Join 2.5 lakh citizens making Dammaiguda better. Report issues, track health, claim benefits.
-        </p>
       </div>
 
-      {/* Bottom Badge */}
-      <div className="relative pb-6 text-center">
-        <p className="text-slate-600 text-[10px] uppercase tracking-widest">
-          Powered by Citizens of Ward 127
-        </p>
+      {/* Footer with Kaizer News Logo */}
+      <div className="relative pb-6 px-6">
+        <div className="flex flex-col items-center gap-3">
+          <p className="text-slate-500 text-[10px] uppercase tracking-wider">
+            Powered by Rohan Kulkarni Foundation
+          </p>
+          <div className="flex items-center gap-2">
+            <img 
+              src="https://customer-assets.emergentagent.com/job_b415d412-3e65-4362-a62f-f8bab1368136/artifacts/x1zovr9l_kaizer%20logo.png" 
+              alt="Kaizer News" 
+              className="h-8 object-contain"
+            />
+          </div>
+        </div>
       </div>
     </div>
   );
