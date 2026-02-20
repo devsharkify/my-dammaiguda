@@ -354,6 +354,79 @@ async def get_doctor_dashboard(user: dict = Depends(get_current_user)):
         }
     }
 
+# ============== FOOD SEARCH API ==============
+
+@router.get("/foods/search")
+async def search_foods_api(
+    q: str = Query(..., min_length=1, description="Search query"),
+    category: Optional[str] = Query(None, description="Filter by category"),
+    limit: int = Query(20, le=50, description="Max results")
+):
+    """
+    Search foods by name (English or Telugu)
+    Returns matching foods with nutrition info
+    """
+    results = search_foods(q, category, limit)
+    return {
+        "query": q,
+        "count": len(results),
+        "foods": results
+    }
+
+@router.get("/foods/categories")
+async def get_food_categories_api():
+    """Get all food categories"""
+    return {
+        "categories": [
+            {"id": cat_id, "name": name}
+            for cat_id, name in FOOD_CATEGORIES.items()
+        ]
+    }
+
+@router.get("/foods/category/{category}")
+async def get_foods_by_category_api(category: str):
+    """Get all foods in a category"""
+    if category not in FOOD_CATEGORIES:
+        raise HTTPException(status_code=404, detail="Category not found")
+    
+    foods = get_foods_by_category(category)
+    return {
+        "category": category,
+        "category_name": FOOD_CATEGORIES[category],
+        "count": len(foods),
+        "foods": foods
+    }
+
+@router.get("/foods/{food_id}")
+async def get_food_api(food_id: str):
+    """Get nutrition info for a specific food"""
+    food = get_food_by_id(food_id)
+    if not food:
+        raise HTTPException(status_code=404, detail="Food not found")
+    return food
+
+@router.get("/foods")
+async def get_all_foods(
+    limit: int = Query(50, le=200),
+    offset: int = Query(0),
+    category: Optional[str] = None
+):
+    """Get all foods with pagination"""
+    foods_list = list(FOOD_DATABASE.items())
+    
+    if category:
+        foods_list = [(k, v) for k, v in foods_list if v.get("category") == category]
+    
+    total = len(foods_list)
+    foods_list = foods_list[offset:offset + limit]
+    
+    return {
+        "total": total,
+        "offset": offset,
+        "limit": limit,
+        "foods": [{"id": k, **v} for k, v in foods_list]
+    }
+
 # ============== PSYCHOLOGIST AI ==============
 
 import os
