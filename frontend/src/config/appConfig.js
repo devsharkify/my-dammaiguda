@@ -173,7 +173,8 @@ const APP_CONFIG = {
 };
 
 // ============== AREA PRESETS ==============
-// Use these to quickly switch between areas
+// Use these to quickly create new area clones
+// Run: node scripts/create-area.js <area-id>
 
 const AREA_PRESETS = {
   dammaiguda: {
@@ -183,6 +184,21 @@ const AREA_PRESETS = {
     primaryColor: "#0F766E",  // Teal
     domain: "mydammaiguda.in",
     packageName: "com.sharkify.mydammaiguda",
+    senderName: "MYDAMM",
+    features: {
+      dumpYard: true,  // Only Dammaiguda has dump yard
+    },
+    dumpYard: {
+      enabled: true,
+      name: "Jawahar Nagar Dump Yard",
+      name_te: "జవహర్ నగర్ డంప్ యార్డ్",
+      dailyWasteTons: 10000,
+    },
+    aqi: {
+      primaryStation: { id: "dammaiguda", name: "Dammaiguda", name_te: "దమ్మాయిగూడ", lat: 17.4534, lon: 78.5674 },
+      secondaryStation: { id: "hyderabad", name: "Hyderabad", name_te: "హైదరాబాద్", lat: 17.385, lon: 78.4867 },
+    },
+    stats: { benefitsAmount: "₹10Cr+", problemsSolved: "100+", peopleBenefited: "50K+" },
   },
   asraonagar: {
     id: "asraonagar",
@@ -191,6 +207,16 @@ const AREA_PRESETS = {
     primaryColor: "#2563EB",  // Blue
     domain: "myasraonagar.in",
     packageName: "com.sharkify.myasraonagar",
+    senderName: "MYASRN",
+    features: {
+      dumpYard: false,  // No dump yard
+    },
+    dumpYard: { enabled: false },
+    aqi: {
+      primaryStation: { id: "asraonagar", name: "AS Rao Nagar", name_te: "ఏఎస్ రావు నగర్", lat: 17.4456, lon: 78.5563 },
+      secondaryStation: { id: "hyderabad", name: "Hyderabad", name_te: "హైదరాబాద్", lat: 17.385, lon: 78.4867 },
+    },
+    stats: { benefitsAmount: "₹8Cr+", problemsSolved: "80+", peopleBenefited: "40K+" },
   },
   kapra: {
     id: "kapra",
@@ -199,6 +225,16 @@ const AREA_PRESETS = {
     primaryColor: "#7C3AED",  // Purple
     domain: "mykapra.in",
     packageName: "com.sharkify.mykapra",
+    senderName: "MYKAPR",
+    features: {
+      dumpYard: false,
+    },
+    dumpYard: { enabled: false },
+    aqi: {
+      primaryStation: { id: "kapra", name: "Kapra", name_te: "కాప్ర", lat: 17.4789, lon: 78.5321 },
+      secondaryStation: { id: "hyderabad", name: "Hyderabad", name_te: "హైదరాబాద్", lat: 17.385, lon: 78.4867 },
+    },
+    stats: { benefitsAmount: "₹7Cr+", problemsSolved: "60+", peopleBenefited: "35K+" },
   },
   bachupally: {
     id: "bachupally",
@@ -207,6 +243,16 @@ const AREA_PRESETS = {
     primaryColor: "#DC2626",  // Red
     domain: "mybachupally.in",
     packageName: "com.sharkify.mybachupally",
+    senderName: "MYBCPL",
+    features: {
+      dumpYard: false,
+    },
+    dumpYard: { enabled: false },
+    aqi: {
+      primaryStation: { id: "bachupally", name: "Bachupally", name_te: "బాచుపల్లి", lat: 17.5234, lon: 78.3876 },
+      secondaryStation: { id: "hyderabad", name: "Hyderabad", name_te: "హైదరాబాద్", lat: 17.385, lon: 78.4867 },
+    },
+    stats: { benefitsAmount: "₹6Cr+", problemsSolved: "50+", peopleBenefited: "30K+" },
   },
   kukatpally: {
     id: "kukatpally",
@@ -215,8 +261,108 @@ const AREA_PRESETS = {
     primaryColor: "#EA580C",  // Orange
     domain: "mykukatpally.in",
     packageName: "com.sharkify.mykukatpally",
+    senderName: "MYKKTL",
+    features: {
+      dumpYard: false,
+    },
+    dumpYard: { enabled: false },
+    aqi: {
+      primaryStation: { id: "kukatpally", name: "Kukatpally", name_te: "కూకట్‌పల్లి", lat: 17.4947, lon: 78.3996 },
+      secondaryStation: { id: "hyderabad", name: "Hyderabad", name_te: "హైదరాబాద్", lat: 17.385, lon: 78.4867 },
+    },
+    stats: { benefitsAmount: "₹12Cr+", problemsSolved: "120+", peopleBenefited: "60K+" },
+  },
+  malkajgiri: {
+    id: "malkajgiri",
+    name: "Malkajgiri",
+    name_te: "మల్కాజ్‌గిరి",
+    primaryColor: "#059669",  // Emerald
+    domain: "mymalkajgiri.in",
+    packageName: "com.sharkify.mymalkajgiri",
+    senderName: "MYMLKJ",
+    features: {
+      dumpYard: false,
+    },
+    dumpYard: { enabled: false },
+    aqi: {
+      primaryStation: { id: "malkajgiri", name: "Malkajgiri", name_te: "మల్కాజ్‌గిరి", lat: 17.4589, lon: 78.5234 },
+      secondaryStation: { id: "hyderabad", name: "Hyderabad", name_te: "హైదరాబాద్", lat: 17.385, lon: 78.4867 },
+    },
+    stats: { benefitsAmount: "₹9Cr+", problemsSolved: "90+", peopleBenefited: "45K+" },
+  },
+  uppal: {
+    id: "uppal",
+    name: "Uppal",
+    name_te: "ఉప్పల్",
+    primaryColor: "#0891B2",  // Cyan
+    domain: "myuppal.in",
+    packageName: "com.sharkify.myuppal",
+    senderName: "MYUPPL",
+    features: {
+      dumpYard: false,
+    },
+    dumpYard: { enabled: false },
+    aqi: {
+      primaryStation: { id: "uppal", name: "Uppal", name_te: "ఉప్పల్", lat: 17.4012, lon: 78.5567 },
+      secondaryStation: { id: "hyderabad", name: "Hyderabad", name_te: "హైదరాబాద్", lat: 17.385, lon: 78.4867 },
+    },
+    stats: { benefitsAmount: "₹8Cr+", problemsSolved: "70+", peopleBenefited: "38K+" },
   },
 };
 
-export { APP_CONFIG, AREA_PRESETS };
+// Helper function to generate full config from preset
+const generateConfigFromPreset = (presetId) => {
+  const preset = AREA_PRESETS[presetId];
+  if (!preset) return null;
+  
+  return {
+    ...APP_CONFIG,
+    area: {
+      ...APP_CONFIG.area,
+      id: preset.id,
+      name: preset.name,
+      name_te: preset.name_te,
+    },
+    branding: {
+      ...APP_CONFIG.branding,
+      appName: `My ${preset.name}`,
+      appNameShort: `My ${preset.name}`,
+      primaryColor: preset.primaryColor,
+    },
+    urls: {
+      ...APP_CONFIG.urls,
+      domain: preset.domain,
+      playStore: `https://play.google.com/store/apps/details?id=${preset.packageName}`,
+    },
+    playStore: {
+      ...APP_CONFIG.playStore,
+      packageName: preset.packageName,
+      appId: `my-${preset.id}-app`,
+    },
+    features: {
+      ...APP_CONFIG.features,
+      ...preset.features,
+    },
+    dumpYard: preset.dumpYard,
+    aqi: {
+      primaryStation: preset.aqi.primaryStation.id,
+      secondaryStation: preset.aqi.secondaryStation.id,
+      stations: {
+        primary: preset.aqi.primaryStation,
+        secondary: preset.aqi.secondaryStation,
+      },
+    },
+    stats: {
+      ...APP_CONFIG.stats,
+      ...preset.stats,
+    },
+    sms: {
+      ...APP_CONFIG.sms,
+      senderName: preset.senderName,
+      templatePrefix: `My ${preset.name}`,
+    },
+  };
+};
+
+export { APP_CONFIG, AREA_PRESETS, generateConfigFromPreset };
 export default APP_CONFIG;
