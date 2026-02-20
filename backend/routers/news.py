@@ -226,7 +226,8 @@ async def scrape_rss_feed(url: str, category: str, limit: int = 10, use_ai: bool
                     summary_text = desc_text or "Read more..."
                     
                     # Apply AI rephrasing if enabled
-                    if use_ai and EMERGENT_LLM_KEY and idx < 5:  # Limit AI calls to first 5 items
+                    openai_key = os.environ.get("OPENAI_API_KEY")
+                    if use_ai and openai_key and idx < 5:  # Limit AI calls to first 5 items
                         rephrased = await rephrase_with_ai(title_text, summary_text)
                         title_text = rephrased["title"]
                         summary_text = rephrased["summary"]
