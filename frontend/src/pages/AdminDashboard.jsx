@@ -136,8 +136,11 @@ export default function AdminDashboard() {
   const [showTemplateDialog, setShowTemplateDialog] = useState(false);
   const [templateForm, setTemplateForm] = useState({
     title: "", title_te: "", category: "festival",
-    background_url: "", photo_position: { x: 150, y: 100, width: 120, height: 120 },
-    name_position: { x: 210, y: 280, fontSize: 24, color: "#ffffff" }
+    background_url: "", 
+    photo_position: { x: 150, y: 100, width: 120, height: 120, shape: "circle" },
+    name_position: { x: 200, y: 280, fontSize: 24, color: "#ffffff", align: "center" },
+    photo_editable: true,
+    name_editable: true
   });
   
   // Content Management (CMS)
