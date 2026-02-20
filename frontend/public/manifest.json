@@ -1,6 +1,7 @@
 {
-  "short_name": "My Dammaiguda",
   "name": "My Dammaiguda - Civic Engagement Platform",
+  "short_name": "My Dammaiguda",
+  "version": "1.0.0",
   "description": "Track Issues. Protect Health. Claim Benefits. Your civic engagement platform for Dammaiguda ward, Telangana.",
   "icons": [
     {
