@@ -284,6 +284,17 @@ export default function LandingPage() {
             <span className="text-xs text-slate-300">Astrology</span>
           </div>
         </div>
+        
+        {/* Privacy Policy Link */}
+        <div className="mt-6 text-center">
+          <a 
+            href="/privacy-policy" 
+            className="text-xs text-slate-500 hover:text-slate-400 underline"
+            onClick={(e) => { e.preventDefault(); navigate('/privacy-policy'); }}
+          >
+            Privacy Policy
+          </a>
+        </div>
       </div>
     </div>
   );
