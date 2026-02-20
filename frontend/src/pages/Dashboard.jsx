@@ -579,8 +579,9 @@ export default function Dashboard() {
                   ))}
                 </div>
               </CardContent>
-          </Card>
-        </Link>
+            </Card>
+          </Link>
+        )}
 
         {/* Wall Widget - Medium Sized */}
         <Card className="bg-white rounded-2xl border border-gray-200/60 shadow-sm overflow-hidden" data-testid="wall-widget">
