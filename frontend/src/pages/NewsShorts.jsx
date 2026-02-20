@@ -367,6 +367,47 @@ export default function NewsShorts() {
                     )}
                   </div>
                 </div>
+              ) : isVideoNews(currentItem) ? (
+                // VIDEO NEWS CARD
+                <>
+                  {/* YouTube Embed */}
+                  <div className="absolute inset-0 bg-black">
+                    {getYouTubeVideoId(currentItem.video_url) ? (
+                      <iframe
+                        src={`https://www.youtube.com/embed/${getYouTubeVideoId(currentItem.video_url)}?autoplay=1&mute=1&controls=1&modestbranding=1&rel=0`}
+                        title={getTitle(currentItem)}
+                        className="absolute inset-0 w-full h-full"
+                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                        allowFullScreen
+                      />
+                    ) : (
+                      <div className="absolute inset-0 flex items-center justify-center">
+                        <Play className="h-16 w-16 text-white/50" />
+                      </div>
+                    )}
+                    {/* Overlay for title */}
+                    <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/90 via-black/60 to-transparent p-5">
+                      <Badge className="w-fit mb-2 bg-red-500/90 text-white border-0">
+                        <Play className="h-3 w-3 mr-1" />
+                        {language === "te" ? "వీడియో వార్త" : "Video News"}
+                      </Badge>
+                      <h2 className="text-lg font-bold text-white leading-tight">
+                        {getTitle(currentItem)}
+                      </h2>
+                      <div className="flex items-center gap-3 mt-3">
+                        <Button
+                          size="sm"
+                          variant="ghost"
+                          className="text-white hover:bg-white/20"
+                          onClick={() => shareArticle(currentItem)}
+                        >
+                          <Share2 className="h-4 w-4 mr-1" />
+                          {language === "te" ? "షేర్" : "Share"}
+                        </Button>
+                      </div>
+                    </div>
+                  </div>
+                </>
               ) : (
                 // NEWS ARTICLE CARD
                 <>
