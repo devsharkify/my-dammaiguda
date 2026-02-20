@@ -46,6 +46,7 @@ import PrivacyPolicy from "./pages/PrivacyPolicy";
 import ShareHandler from "./pages/ShareHandler";
 import DeleteAccount from "./pages/DeleteAccount";
 import TermsOfService from "./pages/TermsOfService";
+import ChildSafety from "./pages/ChildSafety";
 
 import "./App.css";
 
