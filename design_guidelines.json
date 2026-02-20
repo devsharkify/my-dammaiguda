@@ -1,126 +1,164 @@
 {
-  "design_system": {
-    "identity": {
-      "name": "My Dammaiguda",
-      "tone": "Civic Authority & Community Trust",
-      "aesthetic": "High-Contrast Utility (Civic Tech)",
-      "principles": [
-        "Contrast is King: Black Navigation vs White Content",
-        "Data over Decoration: Clean widgets, minimal gradients",
-        "Accessibility First: High legibility for elderly users"
-      ]
+  "project_name": "My Dammaiguda",
+  "design_philosophy": {
+    "identity": "E1 - The Anti-AI Designer",
+    "core_principles": [
+      "Fusion over Imitation: Civic utility meets high-end dark mode aesthetics",
+      "Emotion First: Trust, Speed, and Community Pride",
+      "Content is King: Hierarchy emphasizes the 'Commitment' stats",
+      "Zoom In: Focus on the primary action (Get Started)",
+      "Negative Space: Generous breathing room despite mobile constraints"
+    ],
+    "hall_of_shame": [
+      "Purple/Teal generics (Use specific Emerald-Teal gradients)",
+      "Inter everywhere (Use Manrope)",
+      "Center-Everything (Use strategic alignment)",
+      "Gradient Overload (Use subtle glows)"
+    ]
+  },
+  "typography": {
+    "font_family": {
+      "headings": "Manrope, sans-serif",
+      "body": "Manrope, sans-serif",
+      "mono": "JetBrains Mono, monospace"
     },
-    "colors": {
-      "primary": "#0F766E",
-      "secondary": "#C2410C",
-      "accent": "#F59E0B",
-      "background": "#FFFFFF",
-      "surface": "#F8F9FA",
-      "text": {
-        "primary": "#111827",
-        "secondary": "#4B5563",
-        "muted": "#9CA3AF",
-        "inverse": "#FFFFFF"
+    "scale": {
+      "h1": "text-3xl font-bold tracking-tight",
+      "h2": "text-xl font-semibold tracking-tight",
+      "body": "text-sm leading-relaxed",
+      "caption": "text-xs text-slate-400"
+    },
+    "rules": [
+      "Headings must use tight tracking",
+      "Labels must be uppercase + wide spacing"
+    ]
+  },
+  "colors": {
+    "theme": "dark",
+    "palette": {
+      "background": {
+        "base": "bg-slate-950",
+        "surface": "bg-slate-900/50",
+        "glass": "bg-white/5 backdrop-blur-xl border border-white/10"
       },
-      "navigation": {
-        "background": "#000000",
-        "active": "#FFFFFF",
-        "inactive": "#9CA3AF"
+      "primary": {
+        "main": "from-teal-500 to-emerald-500",
+        "glow": "shadow-emerald-500/20",
+        "text": "text-emerald-400"
+      },
+      "text": {
+        "primary": "text-white",
+        "secondary": "text-slate-400",
+        "muted": "text-slate-600"
       },
       "status": {
-        "success": "#059669",
-        "warning": "#D97706",
-        "danger": "#DC2626",
-        "info": "#2563EB"
+        "error": "text-red-400",
+        "success": "text-emerald-400"
       }
     },
-    "typography": {
-      "font_family": {
-        "heading": "Manrope, sans-serif",
-        "body": "Inter, sans-serif",
-        "regional": "Noto Sans Telugu, sans-serif"
-      },
-      "scale": {
-        "h1": "text-2xl font-bold tracking-tight",
-        "h2": "text-xl font-bold",
-        "h3": "text-lg font-semibold",
-        "body": "text-sm leading-relaxed",
-        "caption": "text-xs font-medium text-muted-foreground"
-      }
-    },
-    "spacing": {
-      "container_padding": "p-4 md:p-6",
-      "element_gap": "gap-3 md:gap-4",
-      "radius": "rounded-xl"
+    "gradients": {
+      "button": "bg-gradient-to-r from-teal-500 to-emerald-600 hover:from-teal-400 hover:to-emerald-500",
+      "text": "bg-clip-text text-transparent bg-gradient-to-r from-white via-slate-200 to-slate-400"
     }
   },
-  "component_overrides": {
-    "Layout": {
-      "path": "/app/frontend/src/components/Layout.jsx",
-      "header": {
-        "style": "bg-black text-white shadow-md",
-        "elements": {
-          "profile_icon": "REMOVE (User Request)",
-          "logo": "Keep existing Shield + App Name",
-          "menu_trigger": "Keep existing Menu icon"
-        }
-      },
-      "bottom_navigation": {
-        "style": "bg-black text-white border-t border-white/10 safe-area-bottom",
-        "active_item": "text-white font-bold scale-105",
-        "inactive_item": "text-gray-500 hover:text-gray-300",
-        "bulge_button": "bg-white text-black shadow-glow-white border-4 border-black -mt-8 rounded-full p-4"
-      },
-      "sidebar": {
-        "structure": [
-          "Header (App Name + Close Button)",
-          "Profile Section (Avatar + Name + Phone) - Compact, Top of list",
-          "Navigation Links (Scrollable)",
-          "Logout (Bottom Fixed)"
-        ],
-        "style": "bg-white text-gray-900 w-72 shadow-2xl",
-        "spacing": "Remove excessive white space at top. Use p-4 for header, p-2 for list."
+  "layout": {
+    "structure": {
+      "type": "mobile_vertical_stack",
+      "container": "min-h-screen flex flex-col px-6 py-8 relative overflow-hidden",
+      "spacing_scale": {
+        "section_gap": "gap-8",
+        "element_gap": "gap-4",
+        "internal_padding": "p-6"
       }
     },
-    "Dashboard": {
-      "path": "/app/frontend/src/pages/Dashboard.jsx",
-      "dump_yard_widget": {
-        "design_goal": "Compact, Alert-Style, Reduced Text",
-        "width": "w-full md:w-1/2 lg:w-1/3 (On mobile keep full width but reduce height/padding)",
-        "style": "bg-white border-l-4 border-red-600 shadow-sm rounded-lg",
-        "content_structure": [
-          "Header: 'Dump Yard Status' (Small Label)",
-          "Main Metric: '1,200 Tons/Day' (Large, Bold)",
-          "Status Badge: '🔴 Active Risk' (Pill)",
-          "Footer: 'View Report →' (Link)"
-        ],
-        "remove": [
-          "List of diseases (Respiratory, Skin, etc.)",
-          "Detailed impact zone text (Keep it minimal)"
-        ]
-      }
+    "grid_system": {
+      "stats": "grid grid-cols-3 gap-3",
+      "actions": "grid grid-cols-2 gap-3"
+    },
+    "z_index": {
+      "background": "z-0",
+      "content": "z-10 relative",
+      "overlay": "z-50"
     }
   },
-  "visual_enhancements": {
-    "shadows": "shadow-sm for cards, shadow-xl for floating elements",
-    "borders": "border border-gray-100 for cards to define edges on white background",
-    "glassmorphism": "Use sparingly. Only for modal overlays (backdrop-blur-sm).",
-    "animations": "Button press scale (active:scale-95), Page transitions (fade-in)"
+  "components": {
+    "HeroSection": {
+      "description": "Top section with Logo and App Name",
+      "style": "flex flex-col items-center text-center mb-10",
+      "elements": [
+        "Logo: w-24 h-24 rounded-2xl shadow-2xl shadow-emerald-900/50 mb-6",
+        "Title: text-3xl font-bold text-white mb-2",
+        "Subtitle: text-sm text-slate-400 max-w-[200px]"
+      ]
+    },
+    "StatsGrid": {
+      "description": "Commitment numbers",
+      "style": "w-full grid grid-cols-3 gap-3 mb-10",
+      "card_style": "flex flex-col items-center justify-center p-3 rounded-2xl bg-white/5 border border-white/5 backdrop-blur-sm"
+    },
+    "AuthSection": {
+      "description": "Login/Register flow",
+      "style": "w-full max-w-sm mx-auto mb-10",
+      "button_style": "h-14 w-full rounded-2xl font-bold text-base shadow-lg shadow-emerald-900/20 active:scale-95 transition-all"
+    },
+    "ActionGrid": {
+      "description": "Quick actions at bottom",
+      "style": "grid grid-cols-2 gap-3 w-full max-w-sm mx-auto",
+      "card_style": "flex items-center gap-3 p-4 rounded-xl bg-slate-900/50 border border-slate-800 hover:border-emerald-500/50 transition-colors group cursor-pointer",
+      "icon_style": "text-xl group-hover:scale-110 transition-transform"
+    },
+    "Footer": {
+      "description": "Powered by section - moved to bottom",
+      "style": "mt-auto pt-10 pb-4 flex flex-col items-center justify-center opacity-60",
+      "text_style": "text-[10px] uppercase tracking-widest text-slate-500 mb-2"
+    }
   },
-  "universal_guidelines": [
+  "visual_enhancers": {
+    "glassmorphism": "backdrop-blur-xl bg-white/5 border border-white/10",
+    "glow_effects": [
+      "absolute top-0 left-0 w-full h-full bg-gradient-to-b from-teal-500/5 to-transparent pointer-events-none",
+      "shadow-[0_0_40px_-10px_rgba(16,185,129,0.3)]"
+    ],
+    "animation": {
+      "hover": "transition-all duration-300 ease-out hover:-translate-y-0.5",
+      "enter": "animate-in fade-in slide-in-from-bottom-4 duration-500"
+    }
+  },
+  "icons": {
+    "library": "lucide-react",
+    "mapping": {
+      "Report": "AlertTriangle",
+      "Health": "Heart",
+      "DumpYard": "Trash2",
+      "Benefits": "HandCoins",
+      "User": "User",
+      "Phone": "Smartphone",
+      "Location": "MapPin"
+    }
+  },
+  "image_urls": {
+    "logo": "https://static.prod-images.emergentagent.com/jobs/b415d412-3e65-4362-a62f-f8bab1368136/images/fd09263f1ffaceb3dad575cd85696c5fbff1a43edc5d0829bc8e76785518ca64.png",
+    "partner_logo": "https://customer-assets.emergentagent.com/job_b415d412-3e65-4362-a62f-f8bab1368136/artifacts/zoaa3k1e_Untitled%20design%20%2823%29.png"
+  },
+  "instructions_to_main_agent": [
+    "1. Move 'Powered by' section to the bottom of the page (footer area) with proper spacing (mt-auto).",
+    "2. Increase vertical spacing between the Logo/Title section and the Stats grid (use mb-10).",
+    "3. Increase spacing after the 'Get Started' button (use mb-10).",
+    "4. Replace emoji icons in Action Cards with Lucide React icons for a cleaner look.",
+    "5. Ensure the layout fits on a single mobile screen (approx 800px height) but allows scrolling if content expands.",
+    "6. Use the 'Manrope' font family for a modern app feel.",
+    "7. Implement the deep slate background with subtle emerald blobs as specified in the theme.",
+    "8. IMPORTANT: Preserve all functional logic (OTP sending, verification, state management). Only redesign the UI."
+  ],
+  "UNIVERSAL_GUIDELINES_FOR_MAIN_AGENT": [
     "Dark colors look good when used independently without gradients. DO NOT use dark colors as gradients",
     "Don't make generic centered layouts, simplistic gradients, and uniform styling.",
     "Create depth through layered design elements with z-index hierarchy",
-    "You MUST NOT apply universal transition. Eg: transition: all. This results in breaking transforms. Always add transitions for specific interactive elements",
-    "You MUST NOT center align the app container, ie do not add .App { text-align: center; } in the css file.",
-    "Always use modern button styles like pill-shaped, or sharp button with interaction animations & color relevant to the app style",
-    "NEVER: use AI assistant Emoji characters like 🤖🧠💭💡🔮🎯 etc for icons."
-  ],
-  "instructions_to_main_agent": [
-    "1. Modify Layout.jsx: Change Bottom Nav background to 'bg-black'. Update icons to be 'text-gray-500' (inactive) and 'text-white' (active).",
-    "2. Modify Layout.jsx: Remove the Profile Link/Icon from the top Header.",
-    "3. Modify Layout.jsx: Refactor Sidebar (Hamburger Menu). Move the User Profile info to be immediately below the close button/logo, with minimal padding. Ensure no large white gaps.",
-    "4. Modify Dashboard.jsx: Redesign the Dump Yard widget. Make it look like a 'Critical Alert' card. Remove the list of health risks. Keep it concise: Status, Daily Waste, and a 'View Details' link.",
-    "5. Ensure all text contrast ratios meet accessibility standards (White text on Black bg is safe)."
+    "Use glass-morphism effects with backdrop filters (12-24px blur)",
+    "You MUST NOT apply universal transition. Eg: transition: all.",
+    "You MUST NOT center align the app container, ie do not add .App { text-align: center; }.",
+    "Every interaction needs micro-animations - hover states, transitions.",
+    "Use 2-3x more spacing than feels comfortable.",
+    "Use sonner for toasts."
   ]
 }
