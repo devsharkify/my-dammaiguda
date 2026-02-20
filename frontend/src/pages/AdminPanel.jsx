@@ -564,6 +564,221 @@ export default function AdminPanel() {
             </Card>
           </TabsContent>
 
+          {/* Site Settings Tab */}
+          <TabsContent value="settings">
+            <div className="grid md:grid-cols-2 gap-6">
+              {/* Branding Settings */}
+              <Card>
+                <CardHeader>
+                  <CardTitle className="text-base flex items-center gap-2">
+                    <Palette className="h-5 w-5" />
+                    Branding Settings
+                  </CardTitle>
+                  <CardDescription>
+                    {selectedArea === "all" 
+                      ? "Select a specific area to edit branding" 
+                      : `Edit branding for ${AREAS[selectedArea]?.name}`}
+                  </CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  {selectedArea === "all" ? (
+                    <div className="text-center py-8 text-muted-foreground">
+                      <Settings className="h-12 w-12 mx-auto mb-2 opacity-20" />
+                      <p>Select a specific area from the filter above</p>
+                    </div>
+                  ) : (
+                    <>
+                      <div className="grid grid-cols-2 gap-4">
+                        <div>
+                          <Label>App Name</Label>
+                          <Input
+                            value={siteSettings.app_name}
+                            onChange={(e) => setSiteSettings(s => ({ ...s, app_name: e.target.value }))}
+                            placeholder="My Dammaiguda"
+                          />
+                        </div>
+                        <div>
+                          <Label>Short Name</Label>
+                          <Input
+                            value={siteSettings.app_name_short}
+                            onChange={(e) => setSiteSettings(s => ({ ...s, app_name_short: e.target.value }))}
+                            placeholder="My Dammaiguda"
+                          />
+                        </div>
+                      </div>
+                      
+                      <div>
+                        <Label>Tagline (English)</Label>
+                        <Input
+                          value={siteSettings.tagline}
+                          onChange={(e) => setSiteSettings(s => ({ ...s, tagline: e.target.value }))}
+                          placeholder="Track Issues. Protect Health. Claim Benefits."
+                        />
+                      </div>
+                      
+                      <div>
+                        <Label>Tagline (Telugu)</Label>
+                        <Input
+                          value={siteSettings.tagline_te}
+                          onChange={(e) => setSiteSettings(s => ({ ...s, tagline_te: e.target.value }))}
+                          placeholder="సమస్యలను ట్రాక్ చేయండి..."
+                        />
+                      </div>
+                      
+                      <div className="grid grid-cols-2 gap-4">
+                        <div>
+                          <Label>Primary Color</Label>
+                          <div className="flex gap-2">
+                            <Input
+                              type="color"
+                              value={siteSettings.primary_color}
+                              onChange={(e) => setSiteSettings(s => ({ ...s, primary_color: e.target.value }))}
+                              className="w-14 h-10 p-1"
+                            />
+                            <Input
+                              value={siteSettings.primary_color}
+                              onChange={(e) => setSiteSettings(s => ({ ...s, primary_color: e.target.value }))}
+                              placeholder="#0F766E"
+                            />
+                          </div>
+                        </div>
+                        <div>
+                          <Label>Company Name</Label>
+                          <Input
+                            value={siteSettings.company_name}
+                            onChange={(e) => setSiteSettings(s => ({ ...s, company_name: e.target.value }))}
+                            placeholder="Sharkify Technology Pvt. Ltd."
+                          />
+                        </div>
+                      </div>
+                      
+                      <div>
+                        <Label>Logo URL</Label>
+                        <div className="flex gap-2">
+                          <Input
+                            value={siteSettings.logo_url}
+                            onChange={(e) => setSiteSettings(s => ({ ...s, logo_url: e.target.value }))}
+                            placeholder="https://..."
+                            className="flex-1"
+                          />
+                          {siteSettings.logo_url && (
+                            <img src={siteSettings.logo_url} alt="Logo" className="h-10 w-10 rounded object-cover" />
+                          )}
+                        </div>
+                      </div>
+                      
+                      <div className="grid grid-cols-2 gap-4">
+                        <div>
+                          <Label>Partner Name</Label>
+                          <Input
+                            value={siteSettings.partner_name}
+                            onChange={(e) => setSiteSettings(s => ({ ...s, partner_name: e.target.value }))}
+                            placeholder="Kaizer News"
+                          />
+                        </div>
+                        <div>
+                          <Label>Partner Logo URL</Label>
+                          <Input
+                            value={siteSettings.partner_logo}
+                            onChange={(e) => setSiteSettings(s => ({ ...s, partner_logo: e.target.value }))}
+                            placeholder="https://..."
+                          />
+                        </div>
+                      </div>
+                    </>
+                  )}
+                </CardContent>
+              </Card>
+              
+              {/* Stats & Banner Settings */}
+              <Card>
+                <CardHeader>
+                  <CardTitle className="text-base flex items-center gap-2">
+                    <Image className="h-5 w-5" />
+                    Stats & Banner
+                  </CardTitle>
+                  <CardDescription>
+                    Configure landing page stats and banner image
+                  </CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  {selectedArea === "all" ? (
+                    <div className="text-center py-8 text-muted-foreground">
+                      <Settings className="h-12 w-12 mx-auto mb-2 opacity-20" />
+                      <p>Select a specific area from the filter above</p>
+                    </div>
+                  ) : (
+                    <>
+                      <div className="grid grid-cols-3 gap-4">
+                        <div>
+                          <Label>Benefits Amount</Label>
+                          <Input
+                            value={siteSettings.benefits_amount}
+                            onChange={(e) => setSiteSettings(s => ({ ...s, benefits_amount: e.target.value }))}
+                            placeholder="₹10Cr+"
+                          />
+                        </div>
+                        <div>
+                          <Label>Problems Solved</Label>
+                          <Input
+                            value={siteSettings.problems_solved}
+                            onChange={(e) => setSiteSettings(s => ({ ...s, problems_solved: e.target.value }))}
+                            placeholder="100+"
+                          />
+                        </div>
+                        <div>
+                          <Label>People Benefited</Label>
+                          <Input
+                            value={siteSettings.people_benefited}
+                            onChange={(e) => setSiteSettings(s => ({ ...s, people_benefited: e.target.value }))}
+                            placeholder="50K+"
+                          />
+                        </div>
+                      </div>
+                      
+                      <div>
+                        <Label>Banner Image URL</Label>
+                        <Input
+                          value={siteSettings.banner_url}
+                          onChange={(e) => setSiteSettings(s => ({ ...s, banner_url: e.target.value }))}
+                          placeholder="https://..."
+                        />
+                      </div>
+                      
+                      {siteSettings.banner_url && (
+                        <div className="aspect-video bg-muted rounded-lg overflow-hidden">
+                          <img 
+                            src={siteSettings.banner_url} 
+                            alt="Banner preview" 
+                            className="w-full h-full object-cover"
+                          />
+                        </div>
+                      )}
+                      
+                      <Button 
+                        className="w-full" 
+                        onClick={saveSiteSettings}
+                        disabled={savingSettings}
+                      >
+                        {savingSettings ? (
+                          <Loader2 className="h-4 w-4 animate-spin mr-2" />
+                        ) : (
+                          <Save className="h-4 w-4 mr-2" />
+                        )}
+                        Save Settings for {AREAS[selectedArea]?.name}
+                      </Button>
+                      
+                      <div className="bg-blue-50 border border-blue-200 rounded-lg p-3 text-sm text-blue-800">
+                        <strong>Note:</strong> Changes will be stored in the database and can be loaded dynamically by the app.
+                        For static config file changes, use the Clone Maker tool.
+                      </div>
+                    </>
+                  )}
+                </CardContent>
+              </Card>
+            </div>
+          </TabsContent>
+
           {/* Managers Tab */}
           <TabsContent value="managers">
             <Card>
