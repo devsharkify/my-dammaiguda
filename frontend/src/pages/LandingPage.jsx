@@ -142,9 +142,9 @@ export default function LandingPage() {
 
         {/* Login Section - Now After Numbers */}
         {!showLogin ? (
-          <div className="w-full max-w-xs space-y-1.5 mb-4">
+          <div className="w-full max-w-xs space-y-3 mb-4">
             <Button 
-              onClick={() => setShowLogin(true)}
+              onClick={() => { setShowLogin(true); setIsNewUser(true); }}
               className="w-full h-14 text-base font-semibold bg-gradient-to-r from-teal-500 to-emerald-500 hover:from-teal-400 hover:to-emerald-400 rounded-2xl shadow-lg shadow-teal-500/30 transition-all"
               data-testid="get-started-btn"
             >
@@ -152,30 +152,54 @@ export default function LandingPage() {
               Get Started
               <ChevronRight className="w-5 h-5 ml-2" />
             </Button>
-            <p className="text-slate-500 text-xs text-center">
-              Takes less than 30 seconds
-            </p>
+            <button 
+              onClick={() => { setShowLogin(true); setIsNewUser(false); }}
+              className="w-full text-sm text-slate-400 hover:text-white transition-colors"
+              data-testid="login-btn"
+            >
+              Already registered? <span className="text-teal-400 font-medium">Login</span>
+            </button>
           </div>
         ) : (
           <div className="w-full max-w-xs space-y-3 animate-in fade-in slide-in-from-bottom-4 duration-300 mb-4">
             {step === 1 ? (
               <>
-                {/* Name Input */}
-                <div className="relative">
-                  <div className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400">
-                    <User className="w-4 h-4" />
-                  </div>
-                  <Input
-                    type="text"
-                    placeholder="Your Name"
-                    value={name}
-                    onChange={(e) => setName(e.target.value)}
-                    className="h-12 pl-12 text-base bg-white/10 border-white/20 text-white placeholder:text-slate-500 rounded-2xl focus:ring-2 focus:ring-teal-500"
-                    data-testid="name-input"
-                  />
-                </div>
+                {/* Show Name & Colony only for new users */}
+                {isNewUser && (
+                  <>
+                    {/* Name Input */}
+                    <div className="relative">
+                      <div className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400">
+                        <User className="w-4 h-4" />
+                      </div>
+                      <Input
+                        type="text"
+                        placeholder="Your Name"
+                        value={name}
+                        onChange={(e) => setName(e.target.value)}
+                        className="h-12 pl-12 text-base bg-white/10 border-white/20 text-white placeholder:text-slate-500 rounded-2xl focus:ring-2 focus:ring-teal-500"
+                        data-testid="name-input"
+                      />
+                    </div>
 
-                {/* Phone Input */}
+                    {/* Colony Input */}
+                    <div className="relative">
+                      <div className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400">
+                        <MapPin className="w-4 h-4" />
+                      </div>
+                      <Input
+                        type="text"
+                        placeholder="Your Colony/Area"
+                        value={colony}
+                        onChange={(e) => setColony(e.target.value)}
+                        className="h-12 pl-12 text-base bg-white/10 border-white/20 text-white placeholder:text-slate-500 rounded-2xl focus:ring-2 focus:ring-teal-500"
+                        data-testid="colony-input"
+                      />
+                    </div>
+                  </>
+                )}
+
+                {/* Phone Input - Always shown */}
                 <div className="relative">
                   <div className="absolute left-4 top-1/2 -translate-y-1/2 flex items-center gap-1 text-slate-400">
                     <Phone className="w-4 h-4" />
@@ -191,29 +215,25 @@ export default function LandingPage() {
                   />
                 </div>
 
-                {/* Colony Input */}
-                <div className="relative">
-                  <div className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400">
-                    <MapPin className="w-4 h-4" />
-                  </div>
-                  <Input
-                    type="text"
-                    placeholder="Your Colony/Area"
-                    value={colony}
-                    onChange={(e) => setColony(e.target.value)}
-                    className="h-12 pl-12 text-base bg-white/10 border-white/20 text-white placeholder:text-slate-500 rounded-2xl focus:ring-2 focus:ring-teal-500"
-                    data-testid="colony-input"
-                  />
-                </div>
-
                 <Button 
                   onClick={handleSendOTP}
-                  disabled={loading || phone.length < 10 || !name.trim() || !colony.trim()}
+                  disabled={loading || phone.length < 10 || (isNewUser && (!name.trim() || !colony.trim()))}
                   className="w-full h-12 text-base font-semibold bg-gradient-to-r from-teal-500 to-emerald-500 hover:from-teal-400 hover:to-emerald-400 rounded-2xl disabled:opacity-50"
                   data-testid="send-otp-btn"
                 >
                   {loading ? "Sending..." : "Send OTP"}
                 </Button>
+
+                {/* Switch between login and register */}
+                <button 
+                  onClick={() => { setIsNewUser(!isNewUser); }}
+                  className="w-full text-sm text-slate-400 hover:text-white transition-colors"
+                >
+                  {isNewUser 
+                    ? <>Already registered? <span className="text-teal-400 font-medium">Login</span></>
+                    : <>New user? <span className="text-teal-400 font-medium">Register</span></>
+                  }
+                </button>
               </>
             ) : (
               <>
