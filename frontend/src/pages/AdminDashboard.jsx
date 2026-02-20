@@ -1902,10 +1902,54 @@ export default function AdminDashboard() {
                   </SelectContent>
                 </Select>
               </div>
-              <div>
-                <Label>Background Image URL *</Label>
-                <Input value={templateForm.background_url} onChange={(e) => setTemplateForm({...templateForm, background_url: e.target.value})} placeholder="https://..." />
+              
+              {/* Template Background Image with URL/Upload toggle */}
+              <div className="space-y-2">
+                <Label>Background Image *</Label>
+                
+                {/* Toggle between URL and Upload */}
+                <div className="flex gap-1 p-1 bg-muted rounded-lg w-fit">
+                  <button
+                    type="button"
+                    onClick={() => {}}
+                    className="flex items-center gap-1.5 px-3 py-1.5 text-xs rounded-md bg-background shadow-sm"
+                  >
+                    <LinkIcon className="w-3 h-3" />
+                    URL
+                  </button>
+                  <label className="flex items-center gap-1.5 px-3 py-1.5 text-xs rounded-md text-muted-foreground hover:text-foreground cursor-pointer">
+                    <Upload className="w-3 h-3" />
+                    Upload
+                    <input
+                      type="file"
+                      accept="image/*"
+                      className="hidden"
+                      onChange={(e) => {
+                        const file = e.target.files?.[0];
+                        if (file) {
+                          if (file.size > 5 * 1024 * 1024) {
+                            toast.error("File too large. Max 5MB.");
+                            return;
+                          }
+                          const reader = new FileReader();
+                          reader.onload = (ev) => {
+                            setTemplateForm({...templateForm, background_url: ev.target.result});
+                            toast.success("Image uploaded!");
+                          };
+                          reader.readAsDataURL(file);
+                        }
+                      }}
+                    />
+                  </label>
+                </div>
+
+                <Input 
+                  value={templateForm.background_url} 
+                  onChange={(e) => setTemplateForm({...templateForm, background_url: e.target.value})} 
+                  placeholder="https://example.com/template.jpg" 
+                />
               </div>
+
               {templateForm.background_url && (
                 <div className="aspect-square rounded-lg overflow-hidden bg-muted relative">
                   <img src={templateForm.background_url} alt="Preview" className="w-full h-full object-cover" />
