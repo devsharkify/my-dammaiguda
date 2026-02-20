@@ -3,6 +3,7 @@ import { Toaster } from "./components/ui/sonner";
 import { LanguageProvider } from "./context/LanguageContext";
 import { AuthProvider, useAuth } from "./context/AuthContext";
 import { ThemeProvider } from "./context/ThemeContext";
+import { AppConfigProvider } from "./context/AppConfigContext";
 import { OfflineBanner } from "./components/OfflineBanner";
 import { useServiceWorker } from "./hooks/useOffline";
 import { useEffect } from "react";
