@@ -280,19 +280,21 @@ export default function LandingPage() {
         <div className="grid grid-cols-2 gap-3 w-full max-w-sm mx-auto">
           <div className="flex items-center gap-3 p-3 rounded-xl bg-slate-900/50 border border-slate-800 hover:border-emerald-500/30 transition-colors cursor-pointer group">
             <AlertTriangle className="w-5 h-5 text-red-400 group-hover:scale-110 transition-transform" />
-            <span className="text-xs text-slate-300">Report a Problem</span>
+            <span className="text-xs text-slate-300">{language === "te" ? "సమస్య రిపోర్ట్ చేయండి" : "Report a Problem"}</span>
           </div>
           <div className="flex items-center gap-3 p-3 rounded-xl bg-slate-900/50 border border-slate-800 hover:border-emerald-500/30 transition-colors cursor-pointer group">
             <Heart className="w-5 h-5 text-pink-400 group-hover:scale-110 transition-transform" />
-            <span className="text-xs text-slate-300">Health & Fitness</span>
+            <span className="text-xs text-slate-300">{language === "te" ? "ఆరోగ్యం & ఫిట్‌నెస్" : "Health & Fitness"}</span>
           </div>
-          <div className="flex items-center gap-3 p-3 rounded-xl bg-slate-900/50 border border-slate-800 hover:border-emerald-500/30 transition-colors cursor-pointer group">
-            <Trash2 className="w-5 h-5 text-amber-400 group-hover:scale-110 transition-transform" />
-            <span className="text-xs text-slate-300">Dump Yard</span>
-          </div>
+          {config.features.dumpYard && (
+            <div className="flex items-center gap-3 p-3 rounded-xl bg-slate-900/50 border border-slate-800 hover:border-emerald-500/30 transition-colors cursor-pointer group">
+              <Trash2 className="w-5 h-5 text-amber-400 group-hover:scale-110 transition-transform" />
+              <span className="text-xs text-slate-300">{language === "te" ? "డంప్ యార్డ్" : "Dump Yard"}</span>
+            </div>
+          )}
           <div className="flex items-center gap-3 p-3 rounded-xl bg-slate-900/50 border border-slate-800 hover:border-orange-500/30 transition-colors cursor-pointer group">
             <Star className="w-5 h-5 text-orange-400 group-hover:scale-110 transition-transform" />
-            <span className="text-xs text-slate-300">Astrology</span>
+            <span className="text-xs text-slate-300">{language === "te" ? "జ్యోతిష్యం" : "Astrology"}</span>
           </div>
         </div>
         
