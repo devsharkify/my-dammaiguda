@@ -6,7 +6,7 @@ import requests
 import os
 from datetime import datetime
 
-BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', 'https://civic-trust-platform.preview.emergentagent.com')
+BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', 'https://civic-nexus-1.preview.emergentagent.com')
 
 class TestAuthentication:
     """Authentication tests"""
