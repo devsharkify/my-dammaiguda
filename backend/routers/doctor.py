@@ -430,11 +430,10 @@ async def get_all_foods(
 # ============== PSYCHOLOGIST AI ==============
 
 import os
+import httpx
 from dotenv import load_dotenv
 
 load_dotenv()
-
-EMERGENT_LLM_KEY = os.environ.get("EMERGENT_LLM_KEY")
 
 PSYCHOLOGIST_SYSTEM_PROMPT = """You are a compassionate AI psychologist assistant named "Kaizer Mind". Your role is to:
 
