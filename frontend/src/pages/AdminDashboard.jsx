@@ -2217,15 +2217,14 @@ export default function AdminDashboard() {
                 <Label>Description</Label>
                 <Textarea value={benefitForm.description} onChange={(e) => setBenefitForm({...benefitForm, description: e.target.value})} rows={2} />
               </div>
-              <div>
-                <Label>Image URL *</Label>
-                <Input value={benefitForm.image_url} onChange={(e) => setBenefitForm({...benefitForm, image_url: e.target.value})} placeholder="https://..." />
-              </div>
-              {benefitForm.image_url && (
-                <div className="h-32 rounded-lg overflow-hidden bg-muted">
-                  <img src={benefitForm.image_url} alt="Preview" className="w-full h-full object-cover" />
-                </div>
-              )}
+              
+              <ImageInput 
+                label="Benefit Image *"
+                value={benefitForm.image_url}
+                onChange={(url) => setBenefitForm({...benefitForm, image_url: url})}
+                aspectRatio="video"
+              />
+
               <div>
                 <Label>Category</Label>
                 <Select value={benefitForm.category} onValueChange={(v) => setBenefitForm({...benefitForm, category: v})}>
