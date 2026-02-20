@@ -279,9 +279,9 @@ export default function LandingPage() {
             <Trash2 className="w-5 h-5 text-amber-400 group-hover:scale-110 transition-transform" />
             <span className="text-xs text-slate-300">Dump Yard</span>
           </div>
-          <div className="flex items-center gap-3 p-3 rounded-xl bg-slate-900/50 border border-slate-800 hover:border-emerald-500/30 transition-colors cursor-pointer group">
-            <HandCoins className="w-5 h-5 text-emerald-400 group-hover:scale-110 transition-transform" />
-            <span className="text-xs text-slate-300">Claim Benefits</span>
+          <div className="flex items-center gap-3 p-3 rounded-xl bg-slate-900/50 border border-slate-800 hover:border-orange-500/30 transition-colors cursor-pointer group">
+            <Star className="w-5 h-5 text-orange-400 group-hover:scale-110 transition-transform" />
+            <span className="text-xs text-slate-300">Astrology</span>
           </div>
         </div>
       </div>
