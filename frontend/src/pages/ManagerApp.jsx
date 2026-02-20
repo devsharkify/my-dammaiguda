@@ -187,6 +187,7 @@ function ManagerDashboard({ user, token, onLogout }) {
   const [enrollments, setEnrollments] = useState([]);
   const [wallPosts, setWallPosts] = useState([]);
   const [members, setMembers] = useState([]);
+  const [bannerUrl, setBannerUrl] = useState("");
   
   // Dialog states
   const [showPostDialog, setShowPostDialog] = useState(false);
@@ -196,6 +197,8 @@ function ManagerDashboard({ user, token, onLogout }) {
   
   // Manager's assigned area
   const managerArea = user?.assigned_area || "dammaiguda";
+  
+  const headers = { Authorization: `Bearer ${token}` };
 
   useEffect(() => {
     fetchData();
@@ -206,46 +209,42 @@ function ManagerDashboard({ user, token, onLogout }) {
     setLoading(true);
     
     try {
-      const headers = { Authorization: `Bearer ${token}` };
-      
-      // Fetch area-specific data
-      // In a real app, these would be API calls
-      // For now, using mock data
-      
+      // Fetch stats
+      const statsRes = await axios.get(`${API}/manager/stats`, { headers });
       setStats({
-        totalMembers: 1250,
-        activeMembers: 890,
-        pendingGrievances: 12,
-        courseEnrollments: 345,
-        wallPosts: 67,
+        totalMembers: statsRes.data.total_members || 0,
+        activeMembers: statsRes.data.active_members || 0,
+        pendingGrievances: statsRes.data.pending_grievances || 0,
+        courseEnrollments: statsRes.data.course_enrollments || 0,
+        wallPosts: statsRes.data.wall_posts || 0,
       });
       
-      setGrievances([
-        { id: 1, title: "Street light not working", status: "pending", user: "Ramesh K", date: "2026-02-20", category: "Infrastructure" },
-        { id: 2, title: "Water supply issue", status: "pending", user: "Suresh M", date: "2026-02-19", category: "Water" },
-        { id: 3, title: "Garbage collection delayed", status: "pending", user: "Lakshmi P", date: "2026-02-18", category: "Sanitation" },
-      ]);
+      // Fetch grievances
+      const grievancesRes = await axios.get(`${API}/manager/grievances`, { headers });
+      setGrievances(grievancesRes.data.grievances || []);
       
-      setEnrollments([
-        { id: 1, course: "English Speaking", user: "Priya S", date: "2026-02-20", status: "active" },
-        { id: 2, course: "Computer Basics", user: "Ravi K", date: "2026-02-19", status: "active" },
-        { id: 3, course: "Tailoring", user: "Lakshmi D", date: "2026-02-18", status: "completed" },
-      ]);
+      // Fetch enrollments
+      const enrollmentsRes = await axios.get(`${API}/manager/enrollments`, { headers });
+      setEnrollments(enrollmentsRes.data.enrollments || []);
       
-      setWallPosts([
-        { id: 1, content: "Community meeting tomorrow at 5 PM", author: "Manager", date: "2026-02-20", likes: 24 },
-        { id: 2, content: "New health camp on Sunday", author: "Manager", date: "2026-02-19", likes: 45 },
-      ]);
+      // Fetch wall posts
+      const wallRes = await axios.get(`${API}/manager/wall`, { headers });
+      setWallPosts(wallRes.data.posts || []);
       
-      setMembers([
-        { id: 1, name: "Ramesh Kumar", phone: "9876543210", joined: "2026-01-15", status: "active" },
-        { id: 2, name: "Priya Sharma", phone: "9876543211", joined: "2026-01-20", status: "active" },
-        { id: 3, name: "Suresh Reddy", phone: "9876543212", joined: "2026-02-01", status: "inactive" },
-      ]);
+      // Fetch members
+      const membersRes = await axios.get(`${API}/manager/members`, { headers });
+      setMembers(membersRes.data.members || []);
+      
+      // Fetch banner
+      const bannerRes = await axios.get(`${API}/manager/banner`, { headers });
+      setBannerUrl(bannerRes.data.banner_url || "");
       
     } catch (err) {
       console.error("Error fetching data:", err);
-      toast.error("Failed to load data");
+      if (err.response?.status === 403) {
+        toast.error("Access denied. Manager privileges required.");
+        onLogout();
+      }
     } finally {
       setLoading(false);
     }
