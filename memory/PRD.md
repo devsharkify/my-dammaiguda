@@ -209,9 +209,17 @@ The app now supports easy replication for different areas (e.g., "My AS Rao Naga
 
 ### Key Files:
 - **CLI Tool:** `/frontend/scripts/create-area.js`
-- **Admin UI:** `/frontend/src/pages/CloneMaker.jsx` (route: `/admin/clone`)
+- **Admin UI Clone Maker:** `/frontend/src/pages/CloneMaker.jsx` (route: `/admin/clone`)
+- **Multi-Area Admin Panel:** `/frontend/src/pages/AdminPanel.jsx` (route: `/admin/panel`)
 - **Config:** `/frontend/src/config/appConfig.js`
 - **Context:** `/frontend/src/context/AppConfigContext.jsx`
+
+### Admin Panel Features (`/admin/panel`):
+- **Area Filter (Top Right):** Select which area to manage (All Areas, Dammaiguda, AS Rao Nagar, etc.)
+- **Quick Links:** User App, Clone Maker, News/Course/User Manager, Analytics, Issues
+- **Tabs:** Overview, Courses, News, Templates, Announcements
+- **Area Distribution Chart:** Shows all 7 areas with domains
+- **Apply to Areas:** When creating content, select which areas it applies to (specific or all)
 
 ---
 
