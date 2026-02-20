@@ -196,6 +196,13 @@ function AppRoutes() {
       {/* Status Templates Route */}
       <Route path="/status-templates" element={<StatusTemplates />} />
       
+      {/* Astrology Route */}
+      <Route path="/astrology" element={
+        <ProtectedRoute>
+          <Astrology />
+        </ProtectedRoute>
+      } />
+      
       {/* Instructor Portal */}
       <Route path="/instructor" element={
         <ProtectedRoute roles={["admin", "instructor"]}>
