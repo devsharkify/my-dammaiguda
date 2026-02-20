@@ -44,6 +44,7 @@ import AdminConsole from "./pages/AdminConsole";
 import Astrology from "./pages/Astrology";
 import PrivacyPolicy from "./pages/PrivacyPolicy";
 import ShareHandler from "./pages/ShareHandler";
+import DeleteAccount from "./pages/DeleteAccount";
 
 import "./App.css";
 
