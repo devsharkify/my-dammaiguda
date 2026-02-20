@@ -733,6 +733,7 @@ export default function Astrology() {
   const [kundaliStep, setKundaliStep] = useState(1);
   const [loading, setLoading] = useState(false);
   const [kundali, setKundali] = useState(null);
+  const [selectedZodiacSign, setSelectedZodiacSign] = useState(null);
   
   const [form, setForm] = useState({
     name: "",
@@ -743,6 +744,23 @@ export default function Astrology() {
   });
 
   // City is now free-text input
+  
+  // Unified back handler
+  const handleBack = () => {
+    if (activeTab === "horoscope" && selectedZodiacSign) {
+      // Go back from sign details to signs grid
+      setSelectedZodiacSign(null);
+    } else if (activeTab !== "home") {
+      // Go back to main astrology menu
+      setActiveTab("home");
+      setKundaliStep(1);
+      setKundali(null);
+      setSelectedZodiacSign(null);
+    } else {
+      // Go back to previous page (dashboard)
+      navigate(-1);
+    }
+  };
 
   const handleGenerateKundali = async () => {
     if (!form.name || !form.gender || !form.date_of_birth || !form.time_of_birth || !form.place_of_birth) {
