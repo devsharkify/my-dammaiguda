@@ -4,7 +4,7 @@ import axios from "axios";
 import { Card, CardContent } from "./ui/card";
 import { Button } from "./ui/button";
 import { Badge } from "./ui/badge";
-import { Wind, AlertTriangle, ChevronRight, RefreshCw, Loader2 } from "lucide-react";
+import { Wind, AlertTriangle, ChevronRight, RefreshCw, Loader2, Clock } from "lucide-react";
 
 const API = `${process.env.REACT_APP_BACKEND_URL}/api`;
 
@@ -13,6 +13,7 @@ export default function AQIWidget({ onViewFullReport }) {
   const [aqiData, setAqiData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
+  const [lastUpdated, setLastUpdated] = useState(null);
 
   useEffect(() => {
     fetchAQI();
@@ -23,11 +24,28 @@ export default function AQIWidget({ onViewFullReport }) {
       setRefreshing(true);
       const response = await axios.get(`${API}/aqi/both`);
       setAqiData(response.data);
+      setLastUpdated(new Date());
     } catch (error) {
       console.error("Error fetching AQI:", error);
     } finally {
       setLoading(false);
       setRefreshing(false);
+    }
+  };
+
+  const formatLastUpdated = () => {
+    if (!lastUpdated) return "";
+    const now = new Date();
+    const diff = Math.floor((now - lastUpdated) / 1000); // seconds
+    
+    if (diff < 60) {
+      return language === "te" ? "ఇప్పుడే" : "Just now";
+    } else if (diff < 3600) {
+      const mins = Math.floor(diff / 60);
+      return language === "te" ? `${mins} ని. క్రితం` : `${mins}m ago`;
+    } else {
+      const hours = Math.floor(diff / 3600);
+      return language === "te" ? `${hours} గం. క్రితం` : `${hours}h ago`;
     }
   };
 
