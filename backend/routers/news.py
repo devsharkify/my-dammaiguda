@@ -139,18 +139,23 @@ class AdminNewsPush(BaseModel):
     summary_te: Optional[str] = None
     category: str
     image_url: Optional[str] = None
+    video_url: Optional[str] = None  # YouTube video URL
     link: Optional[str] = None
     is_pinned: bool = True
     priority: int = 1  # 1=highest
+    content_type: str = "text"  # "text" or "video"
 
 class AdminNewsUpdate(BaseModel):
     title: Optional[str] = None
     title_te: Optional[str] = None
     summary: Optional[str] = None
     summary_te: Optional[str] = None
+    image_url: Optional[str] = None
+    video_url: Optional[str] = None
     is_pinned: Optional[bool] = None
     priority: Optional[int] = None
     is_active: Optional[bool] = None
+    content_type: Optional[str] = None
 
 # ============== HELPER FUNCTIONS ==============
 
