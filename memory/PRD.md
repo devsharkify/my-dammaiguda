@@ -283,6 +283,30 @@ Build a production-ready, mobile-first civic engagement platform "My Dammaiguda"
 
 ## Change Log
 
+### Feb 20, 2026 - Session 3: Comprehensive Astrology Module
+- **Feature Complete**: Expanded Astrology Module with 3 main features
+  - **Kundali / Birth Chart**: 
+    - South Indian style Rasi chart with 12 houses
+    - 9 planetary positions (Sun, Moon, Mars, Mercury, Jupiter, Venus, Saturn, Rahu, Ketu)
+    - Vimshottari Dasha period calculations
+    - **Life Predictions** for: Career, Finance, Health, Personal Life, Marriage, 2025 forecast
+    - City input changed from dropdown to free-text field (backend defaults to Hyderabad for unknown cities)
+  - **Marriage Compatibility (Kundali Milan)**:
+    - Boy/Girl form labels (user preference)
+    - Guna matching score out of 36
+    - 8 Gunas: Varna, Vashya, Tara, Yoni, Graha Maitri, Gana, Bhakoot, Nadi
+    - Verdict (Excellent/Good/Average/Challenging Match)
+  - **Zodiac Horoscope**:
+    - 12 zodiac signs with symbols and Telugu names
+    - Daily, Weekly, Monthly period selectors
+    - Predictions for: Love & Relationships, Career & Work, Health & Wellness, Money & Finance
+    - Lucky Number and Lucky Color displayed
+- **Technical Details**:
+  - Frontend: `/app/frontend/src/pages/Astrology.jsx` (1047 lines)
+  - Backend: `/app/backend/routers/astrology.py` (446 lines)
+  - API: `POST /api/astrology/kundali` + helper endpoints
+- **Testing**: 100% pass rate (iteration_31)
+
 ### Feb 20, 2026 - Session 2: Logo Zoom, Registration Fix & Authkey.io SMS Integration
 - **UI Enhancement**: Logo on landing page zoomed from 16x16 to 24x24 (larger and more visible)
 - **Bug Fix - Registration Backend**: Fixed critical bug where name & colony fields were not saved
