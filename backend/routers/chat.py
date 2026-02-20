@@ -3,6 +3,7 @@ from fastapi import APIRouter, HTTPException, Depends
 from pydantic import BaseModel
 from typing import Optional
 import os
+import httpx
 from .utils import db, generate_id, now_iso, get_current_user
 
 router = APIRouter(prefix="/chat", tags=["AI Chat"])
