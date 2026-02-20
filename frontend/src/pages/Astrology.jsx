@@ -1027,17 +1027,11 @@ export default function Astrology() {
         ) : activeTab === "compatibility" ? (
           /* Marriage Compatibility Section */
           <div className="space-y-4">
-            <button onClick={() => setActiveTab("home")} className="flex items-center gap-2 text-sm text-gray-600">
-              <ArrowLeft className="w-4 h-4" /> Back
-            </button>
             <MarriageCompatibility language={language} />
           </div>
         ) : activeTab === "horoscope" ? (
           /* Zodiac Horoscope Section */
           <div className="space-y-4">
-            <button onClick={() => setActiveTab("home")} className="flex items-center gap-2 text-sm text-gray-600">
-              <ArrowLeft className="w-4 h-4" /> Back
-            </button>
             <Card className="bg-gradient-to-br from-purple-50 to-indigo-50 border-purple-200">
               <CardContent className="p-4 text-center">
                 <Sun className="w-10 h-10 mx-auto text-purple-500 mb-2" />
