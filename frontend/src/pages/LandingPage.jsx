@@ -1,6 +1,8 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
+import { useAppConfig, useLocalizedConfig } from "../context/AppConfigContext";
+import { useLanguage } from "../context/LanguageContext";
 import { Button } from "../components/ui/button";
 import { Input } from "../components/ui/input";
 import { InputOTP, InputOTPGroup, InputOTPSlot } from "../components/ui/input-otp";
@@ -10,6 +12,9 @@ import { Phone, ChevronRight, Sparkles, User, MapPin, AlertTriangle, Heart, Tras
 export default function LandingPage() {
   const { sendOTP, verifyOTP } = useAuth();
   const navigate = useNavigate();
+  const { language } = useLanguage();
+  const config = useAppConfig();
+  const localizedConfig = useLocalizedConfig(language);
   
   const [showLogin, setShowLogin] = useState(false);
   const [isNewUser, setIsNewUser] = useState(true);
