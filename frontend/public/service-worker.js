@@ -1,12 +1,14 @@
 /* eslint-disable no-restricted-globals */
 
-const CACHE_NAME = 'my-dammaiguda-v2';
+const CACHE_NAME = 'my-dammaiguda-v3';
 const STATIC_ASSETS = [
   '/',
   '/index.html',
   '/manifest.json',
-  '/static/js/bundle.js',
-  '/static/css/main.css',
+  '/offline.html',
+  '/icons/icon-192x192.png',
+  '/icons/icon-512x512.png',
+  '/icons/maskable-icon-192x192.png',
 ];
 
 const API_CACHE_NAME = 'my-dammaiguda-api-v1';
