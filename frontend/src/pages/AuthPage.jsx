@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useLanguage } from "../context/LanguageContext";
 import { useAuth } from "../context/AuthContext";
@@ -9,7 +9,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "../co
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../components/ui/select";
 import { InputOTP, InputOTPGroup, InputOTPSlot } from "../components/ui/input-otp";
 import { toast } from "sonner";
-import { Shield, Phone, ArrowLeft, Globe, User, MapPin, Calendar } from "lucide-react";
+import { Shield, Phone, ArrowLeft, Globe, User, MapPin, Calendar, Timer } from "lucide-react";
 import { Link } from "react-router-dom";
 
 const colonies = [
