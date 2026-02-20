@@ -111,11 +111,15 @@ export default function Layout({ children, title, showBackButton = false }) {
             </h1>
           ) : (
             <Link to="/dashboard" className="flex items-center gap-2">
-              <div className="h-8 w-8 rounded-full bg-white/20 flex items-center justify-center">
-                <Shield className="h-4 w-4 text-white" />
+              <div className="h-8 w-8 rounded-full bg-white/20 flex items-center justify-center overflow-hidden">
+                {config.branding.logo ? (
+                  <img src={config.branding.logo} alt={config.branding.appName} className="h-full w-full object-cover" />
+                ) : (
+                  <Shield className="h-4 w-4 text-white" />
+                )}
               </div>
               <span className="font-heading font-bold text-white">
-                {t("appName")}
+                {config.branding.appNameShort || t("appName")}
               </span>
             </Link>
           )}
