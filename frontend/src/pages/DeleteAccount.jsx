@@ -206,6 +206,27 @@ export default function DeleteAccount() {
                     />
                   </div>
 
+                  {/* Resend OTP Timer */}
+                  <div className="text-center">
+                    {resendTimer > 0 ? (
+                      <p className="text-gray-500 text-sm flex items-center justify-center gap-2">
+                        <Timer className="h-4 w-4" />
+                        {language === "te" 
+                          ? `${resendTimer} సెకన్లలో OTP మళ్ళీ పంపవచ్చు` 
+                          : `Resend OTP in ${resendTimer}s`}
+                      </p>
+                    ) : (
+                      <Button
+                        variant="link"
+                        onClick={handleSendOtp}
+                        disabled={loading}
+                        className="text-teal-600"
+                      >
+                        {language === "te" ? "OTP మళ్ళీ పంపండి" : "Resend OTP"}
+                      </Button>
+                    )}
+                  </div>
+
                   <div>
                     <Label>{language === "te" ? "తొలగింపు కారణం (ఐచ్ఛికం)" : "Reason for deletion (optional)"}</Label>
                     <Input
