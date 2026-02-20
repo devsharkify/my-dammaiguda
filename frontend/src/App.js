@@ -252,6 +252,11 @@ function AppRoutes() {
           <CloneMaker />
         </ProtectedRoute>
       } />
+      <Route path="/admin/panel" element={
+        <ProtectedRoute roles={["admin"]}>
+          <AdminPanel />
+        </ProtectedRoute>
+      } />
       
       {/* Public Routes */}
       <Route path="/privacy-policy" element={<PrivacyPolicy />} />
