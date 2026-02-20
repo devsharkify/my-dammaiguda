@@ -78,21 +78,31 @@ const ImageInput = ({ value, onChange, label = "Image", aspectRatio = "video" })
 
     setUploading(true);
     try {
-      // Convert to base64 and use as data URL for now
-      // In production, you'd upload to a cloud service
-      const reader = new FileReader();
-      reader.onload = (event) => {
-        onChange(event.target.result);
-        setUploading(false);
-        toast.success("Image uploaded!");
-      };
-      reader.onerror = () => {
-        toast.error("Failed to read file");
-        setUploading(false);
-      };
-      reader.readAsDataURL(file);
+      // Upload to Cloudinary via backend
+      const formData = new FormData();
+      formData.append("file", file);
+      formData.append("folder", "dammaiguda-admin");
+
+      const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/upload/image`, {
+        method: "POST",
+        body: formData
+      });
+
+      if (!response.ok) {
+        throw new Error("Upload failed");
+      }
+
+      const data = await response.json();
+      if (data.success && data.url) {
+        onChange(data.url);
+        toast.success("Image uploaded to cloud!");
+      } else {
+        throw new Error(data.detail || "Upload failed");
+      }
     } catch (err) {
-      toast.error("Upload failed");
+      console.error("Upload error:", err);
+      toast.error("Upload failed. Please try again.");
+    } finally {
       setUploading(false);
     }
   };
