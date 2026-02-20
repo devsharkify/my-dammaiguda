@@ -84,58 +84,58 @@ export default function LandingPage() {
       </div>
 
       {/* Header - Powered By Section */}
-      <div className="relative pt-4 pb-2 px-6">
-        <div className="flex flex-col items-center gap-1">
-          <p className="text-slate-500 text-[9px] uppercase tracking-widest">
+      <div className="relative pt-3 px-6">
+        <div className="flex flex-col items-center gap-0.5">
+          <p className="text-slate-500 text-[8px] uppercase tracking-wider">
             Powered by
           </p>
-          <div className="flex items-center gap-2">
-            <span className="text-slate-300 text-[11px] font-medium">Rohan Kulkarni Foundation</span>
-            <span className="text-slate-500 text-[11px]">&</span>
+          <div className="flex items-center gap-1.5">
+            <span className="text-slate-400 text-[10px]">Rohan Kulkarni Foundation</span>
+            <span className="text-slate-500 text-[10px]">&</span>
             <img 
               src="https://customer-assets.emergentagent.com/job_b415d412-3e65-4362-a62f-f8bab1368136/artifacts/zoaa3k1e_Untitled%20design%20%2823%29.png" 
               alt="Kaizer News" 
-              className="h-7 object-contain"
+              className="h-5 object-contain"
             />
           </div>
         </div>
       </div>
 
       {/* Main Content - No Scroll */}
-      <div className="relative flex-1 flex flex-col items-center justify-center px-6 py-4">
+      <div className="relative flex-1 flex flex-col items-center justify-center px-6 py-2">
         
         {/* Logo & Title */}
-        <div className="text-center mb-4">
+        <div className="text-center mb-3">
           <img 
             src="https://static.prod-images.emergentagent.com/jobs/b415d412-3e65-4362-a62f-f8bab1368136/images/fd09263f1ffaceb3dad575cd85696c5fbff1a43edc5d0829bc8e76785518ca64.png"
             alt="My Dammaiguda"
-            className="w-24 h-24 mx-auto mb-3 rounded-2xl shadow-lg shadow-teal-500/30"
+            className="w-20 h-20 mx-auto mb-2 rounded-2xl shadow-lg shadow-teal-500/30"
           />
-          <h1 className="text-3xl font-bold text-white tracking-tight">
+          <h1 className="text-2xl font-bold text-white tracking-tight">
             My Dammaiguda
           </h1>
-          <p className="text-slate-400 text-sm mt-1.5 font-medium">
+          <p className="text-slate-400 text-xs mt-1">
             Track Issues. Protect Health. Claim Benefits.
           </p>
         </div>
 
         {/* Our Commitment Section */}
-        <div className="w-full max-w-xs mb-4">
-          <p className="text-center text-slate-500 text-[10px] uppercase tracking-widest mb-3">
+        <div className="w-full max-w-xs mb-3">
+          <p className="text-center text-slate-500 text-[9px] uppercase tracking-wider mb-2">
             Our Commitment to Dammaiguda
           </p>
           <div className="grid grid-cols-3 gap-2">
-            <div className="text-center py-2.5 px-1 rounded-xl bg-white/5 border border-white/10">
-              <p className="text-xl font-bold text-teal-400">₹10Cr+</p>
-              <p className="text-[9px] text-slate-400 leading-tight mt-1">Benefits to be<br/>Availed</p>
+            <div className="text-center py-2 px-1 rounded-xl bg-white/5 border border-white/10">
+              <p className="text-lg font-bold text-teal-400">₹10Cr+</p>
+              <p className="text-[8px] text-slate-400 leading-tight mt-0.5">Benefits to be<br/>Availed</p>
             </div>
-            <div className="text-center py-2.5 px-1 rounded-xl bg-white/5 border border-white/10">
-              <p className="text-xl font-bold text-emerald-400">100+</p>
-              <p className="text-[9px] text-slate-400 leading-tight mt-1">Local Problems<br/>to be Solved</p>
+            <div className="text-center py-2 px-1 rounded-xl bg-white/5 border border-white/10">
+              <p className="text-lg font-bold text-emerald-400">100+</p>
+              <p className="text-[8px] text-slate-400 leading-tight mt-0.5">Local Problems<br/>to be Solved</p>
             </div>
-            <div className="text-center py-2.5 px-1 rounded-xl bg-white/5 border border-white/10">
-              <p className="text-xl font-bold text-cyan-400">50K+</p>
-              <p className="text-[9px] text-slate-400 leading-tight mt-1">People to be<br/>Benefited</p>
+            <div className="text-center py-2 px-1 rounded-xl bg-white/5 border border-white/10">
+              <p className="text-lg font-bold text-cyan-400">50K+</p>
+              <p className="text-[8px] text-slate-400 leading-tight mt-0.5">People to be<br/>Benefited</p>
             </div>
           </div>
         </div>
