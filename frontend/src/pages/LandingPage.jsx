@@ -67,8 +67,26 @@ export default function LandingPage() {
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] bg-cyan-500/5 rounded-full blur-3xl"></div>
       </div>
 
+      {/* Header - Powered By Section */}
+      <div className="relative pt-4 pb-2 px-6">
+        <div className="flex flex-col items-center gap-1">
+          <p className="text-slate-500 text-[9px] uppercase tracking-widest">
+            Powered by
+          </p>
+          <div className="flex items-center gap-2">
+            <span className="text-slate-300 text-[11px] font-medium">Rohan Kulkarni Foundation</span>
+            <span className="text-slate-500 text-[11px]">&</span>
+            <img 
+              src="https://customer-assets.emergentagent.com/job_b415d412-3e65-4362-a62f-f8bab1368136/artifacts/gu1ur1cb_kaizer%20logo%20transparent.png" 
+              alt="Kaizer News" 
+              className="h-6 object-contain"
+            />
+          </div>
+        </div>
+      </div>
+
       {/* Main Content - No Scroll */}
-      <div className="relative flex-1 flex flex-col items-center justify-center px-6 py-6">
+      <div className="relative flex-1 flex flex-col items-center justify-center px-6 py-4">
         
         {/* Logo & Title */}
         <div className="text-center mb-4">
@@ -91,17 +109,17 @@ export default function LandingPage() {
             Our Commitment to Dammaiguda
           </p>
           <div className="grid grid-cols-3 gap-2">
-            <div className="text-center py-2 px-1 rounded-xl bg-white/5 border border-white/10">
-              <p className="text-lg font-bold text-teal-400">₹10Cr+</p>
-              <p className="text-[9px] text-slate-500 leading-tight">Benefits to be Availed</p>
+            <div className="text-center py-2.5 px-1 rounded-xl bg-white/5 border border-white/10">
+              <p className="text-xl font-bold text-teal-400">₹10Cr+</p>
+              <p className="text-[9px] text-slate-400 leading-tight mt-1">Benefits to be<br/>Availed</p>
             </div>
-            <div className="text-center py-2 px-1 rounded-xl bg-white/5 border border-white/10">
-              <p className="text-lg font-bold text-emerald-400">100+</p>
-              <p className="text-[9px] text-slate-500 leading-tight">Local Problems to Solve</p>
+            <div className="text-center py-2.5 px-1 rounded-xl bg-white/5 border border-white/10">
+              <p className="text-xl font-bold text-emerald-400">100+</p>
+              <p className="text-[9px] text-slate-400 leading-tight mt-1">Local Problems<br/>to be Solved</p>
             </div>
-            <div className="text-center py-2 px-1 rounded-xl bg-white/5 border border-white/10">
-              <p className="text-lg font-bold text-cyan-400">50K+</p>
-              <p className="text-[9px] text-slate-500 leading-tight">People to be Benefited</p>
+            <div className="text-center py-2.5 px-1 rounded-xl bg-white/5 border border-white/10">
+              <p className="text-xl font-bold text-cyan-400">50K+</p>
+              <p className="text-[9px] text-slate-400 leading-tight mt-1">People to be<br/>Benefited</p>
             </div>
           </div>
         </div>
@@ -211,20 +229,6 @@ export default function LandingPage() {
             )}
           </div>
         )}
-      </div>
-
-      {/* Footer with Kaizer News Logo */}
-      <div className="relative pb-5 px-6">
-        <div className="flex flex-col items-center gap-2">
-          <p className="text-slate-500 text-[10px] uppercase tracking-wider">
-            Powered by Rohan Kulkarni Foundation
-          </p>
-          <img 
-            src="https://customer-assets.emergentagent.com/job_b415d412-3e65-4362-a62f-f8bab1368136/artifacts/x1zovr9l_kaizer%20logo.png" 
-            alt="Kaizer News" 
-            className="h-7 object-contain"
-          />
-        </div>
       </div>
     </div>
   );
