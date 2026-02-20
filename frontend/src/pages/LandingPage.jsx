@@ -12,6 +12,7 @@ export default function LandingPage() {
   const navigate = useNavigate();
   
   const [showLogin, setShowLogin] = useState(false);
+  const [isNewUser, setIsNewUser] = useState(true); // true = registration, false = login
   const [step, setStep] = useState(1);
   const [phone, setPhone] = useState("");
   const [name, setName] = useState("");
@@ -24,13 +25,16 @@ export default function LandingPage() {
       toast.error("Enter valid phone number");
       return;
     }
-    if (!name.trim()) {
-      toast.error("Enter your name");
-      return;
-    }
-    if (!colony.trim()) {
-      toast.error("Enter your colony");
-      return;
+    // Only validate name/colony for new users
+    if (isNewUser) {
+      if (!name.trim()) {
+        toast.error("Enter your name");
+        return;
+      }
+      if (!colony.trim()) {
+        toast.error("Enter your colony");
+        return;
+      }
     }
     setLoading(true);
     try {
@@ -56,7 +60,9 @@ export default function LandingPage() {
     setLoading(true);
     try {
       const formattedPhone = phone.startsWith("+91") ? phone : `+91${phone}`;
-      const result = await verifyOTP(formattedPhone, otp, name, colony);
+      // Pass registration data only for new users
+      const userData = isNewUser ? { name, colony } : {};
+      const result = await verifyOTP(formattedPhone, otp, userData);
       if (result.success) {
         toast.success("Welcome!");
         navigate("/dashboard");
