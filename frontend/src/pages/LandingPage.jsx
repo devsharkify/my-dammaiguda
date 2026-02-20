@@ -157,7 +157,7 @@ export default function LandingPage() {
               {step === 1 ? (
                 <>
                   {isNewUser && (
-                    <div className="space-y-3">
+                    <div className="space-y-3 mb-5">
                       <div className="relative">
                         <div className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400">
                           <User className="w-4 h-4" />
@@ -187,7 +187,8 @@ export default function LandingPage() {
                     </div>
                   )}
 
-                  <div className="relative">
+                  {/* Phone Number Section */}
+                  <div className="relative mb-5">
                     <div className="absolute left-4 top-1/2 -translate-y-1/2 flex items-center gap-1.5 text-slate-400">
                       <Phone className="w-4 h-4" />
                       <span className="text-xs font-medium">+91</span>
