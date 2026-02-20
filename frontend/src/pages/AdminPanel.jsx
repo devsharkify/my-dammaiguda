@@ -242,6 +242,44 @@ export default function AdminPanel() {
       toast.error("Failed to remove manager");
     }
   };
+  
+  const saveSiteSettings = async () => {
+    if (selectedArea === "all") {
+      toast.error("Please select a specific area to update settings");
+      return;
+    }
+    
+    setSavingSettings(true);
+    try {
+      const headers = { Authorization: `Bearer ${token}` };
+      await axios.put(`${API}/settings/branding`, {
+        area_id: selectedArea,
+        branding: {
+          app_name: siteSettings.app_name,
+          app_name_short: siteSettings.app_name_short,
+          tagline: siteSettings.tagline,
+          tagline_te: siteSettings.tagline_te,
+          primary_color: siteSettings.primary_color,
+          logo_url: siteSettings.logo_url,
+          partner_logo: siteSettings.partner_logo,
+          partner_name: siteSettings.partner_name,
+          company_name: siteSettings.company_name
+        },
+        stats: {
+          benefits_amount: siteSettings.benefits_amount,
+          problems_solved: siteSettings.problems_solved,
+          people_benefited: siteSettings.people_benefited
+        },
+        banner_url: siteSettings.banner_url
+      }, { headers });
+      
+      toast.success(`Settings saved for ${AREAS[selectedArea]?.name}`);
+    } catch (err) {
+      toast.error("Failed to save settings");
+    } finally {
+      setSavingSettings(false);
+    }
+  };
 
   const handleAreaChange = (areaId) => {
     setSelectedArea(areaId);
