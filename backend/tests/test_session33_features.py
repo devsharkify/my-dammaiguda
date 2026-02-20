@@ -28,8 +28,8 @@ def get_user_token():
         return user_token
     
     # Request OTP
-    response = requests.post(f"{BASE_URL}/api/auth/request-otp", json={
-        "phone_number": TEST_PHONE
+    response = requests.post(f"{BASE_URL}/api/auth/send-otp", json={
+        "phone": TEST_PHONE
     })
     if response.status_code != 200:
         print(f"Failed to request OTP: {response.text}")
@@ -37,7 +37,7 @@ def get_user_token():
     
     # Verify OTP
     response = requests.post(f"{BASE_URL}/api/auth/verify-otp", json={
-        "phone_number": TEST_PHONE,
+        "phone": TEST_PHONE,
         "otp": TEST_OTP
     })
     if response.status_code != 200:
@@ -56,8 +56,8 @@ def get_admin_token():
         return admin_token
     
     # Request OTP
-    response = requests.post(f"{BASE_URL}/api/auth/request-otp", json={
-        "phone_number": ADMIN_PHONE
+    response = requests.post(f"{BASE_URL}/api/auth/send-otp", json={
+        "phone": ADMIN_PHONE
     })
     if response.status_code != 200:
         print(f"Failed to request OTP: {response.text}")
@@ -65,7 +65,7 @@ def get_admin_token():
     
     # Verify OTP
     response = requests.post(f"{BASE_URL}/api/auth/verify-otp", json={
-        "phone_number": ADMIN_PHONE,
+        "phone": ADMIN_PHONE,
         "otp": TEST_OTP
     })
     if response.status_code != 200:
