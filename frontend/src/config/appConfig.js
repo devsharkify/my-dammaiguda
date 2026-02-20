@@ -8,6 +8,8 @@
  * 1. Copy this file
  * 2. Change values for new area
  * 3. Build and deploy
+ * 
+ * OR use the clone generator: node scripts/create-area.js <area-id>
  */
 
 const APP_CONFIG = {
@@ -44,10 +46,14 @@ const APP_CONFIG = {
     accentColor: "#F59E0B",       // Amber
     backgroundColor: "#0a0a0a",
     
-    // Logo (update path for each area)
-    logo: "/logo512.png",
+    // Logo URLs - update for each area
+    logo: "https://static.prod-images.emergentagent.com/jobs/b415d412-3e65-4362-a62f-f8bab1368136/images/fd09263f1ffaceb3dad575cd85696c5fbff1a43edc5d0829bc8e76785518ca64.png",
     logoSmall: "/logo192.png",
     favicon: "/favicon.ico",
+    
+    // Partner logos
+    partnerLogo: "https://customer-assets.emergentagent.com/job_b415d412-3e65-4362-a62f-f8bab1368136/artifacts/zoaa3k1e_Untitled%20design%20%2823%29.png",
+    partnerName: "Kaizer News",
   },
 
   // ============== COMPANY INFO ==============
@@ -65,7 +71,7 @@ const APP_CONFIG = {
     domain: "mydammaiguda.in",
     playStore: "https://play.google.com/store/apps/details?id=com.sharkify.mydammaiguda",
     privacyPolicy: "/privacy-policy",
-    termsOfService: "/terms",
+    termsOfService: "/terms-of-service",
     deleteAccount: "/delete-account",
   },
 
@@ -84,13 +90,28 @@ const APP_CONFIG = {
     astrology: true,
     issues: true,
     aqi: true,
-    dumpYard: true,
+    dumpYard: true,        // Only Dammaiguda has dump yard
     polls: true,
     wardExpenditure: true,
     chat: true,
     volunteers: true,
-    education: false,  // Disable for some areas
-    shop: false,
+    education: true,
+    shop: true,
+    wall: true,
+    stories: true,
+    benefits: true,
+    family: true,
+    doctor: true,
+  },
+
+  // ============== DUMP YARD CONFIG (Dammaiguda specific) ==============
+  dumpYard: {
+    enabled: true,
+    name: "Jawahar Nagar Dump Yard",
+    name_te: "జవహర్ నగర్ డంప్ యార్డ్",
+    dailyWasteTons: 10000,
+    areaAcres: 350,
+    redZoneKm: 2,
   },
 
   // ============== AQI CONFIGURATION ==============
@@ -98,13 +119,15 @@ const APP_CONFIG = {
     primaryStation: "dammaiguda",
     secondaryStation: "hyderabad",
     stations: {
-      dammaiguda: {
+      primary: {
+        id: "dammaiguda",
         name: "Dammaiguda",
         name_te: "దమ్మాయిగూడ",
         lat: 17.4534,
         lon: 78.5674,
       },
-      hyderabad: {
+      secondary: {
+        id: "hyderabad",
         name: "Hyderabad",
         name_te: "హైదరాబాద్",
         lat: 17.385,
@@ -123,8 +146,14 @@ const APP_CONFIG = {
   // ============== STATS (Landing Page) ==============
   stats: {
     benefitsAmount: "₹10Cr+",
+    benefitsLabel: "Benefits to be Availed",
+    benefitsLabel_te: "ప్రయోజనాలు పొందబడతాయి",
     problemsSolved: "100+",
+    problemsLabel: "Local Problems to be Solved",
+    problemsLabel_te: "స్థానిక సమస్యలు పరిష్కరించబడతాయి",
     peopleBenefited: "50K+",
+    peopleLabel: "People to be Benefited",
+    peopleLabel_te: "ప్రజలు ప్రయోజనం పొందుతారు",
   },
 
   // ============== SMS/OTP CONFIG ==============
