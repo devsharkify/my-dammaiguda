@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { useLanguage } from "../context/LanguageContext";
 import { useAuth } from "../context/AuthContext";
 import axios from "axios";
-import { motion, AnimatePresence, useMotionValue, useTransform } from "framer-motion";
+import { motion, AnimatePresence, PanInfo } from "framer-motion";
 import { toast } from "sonner";
 import { trackFeature, trackAction, FEATURES, ACTIONS } from "../utils/analytics";
 import {
@@ -22,36 +22,23 @@ import {
   Share2,
   Loader2,
   ChevronLeft,
-  ArrowLeft,
-  ArrowRight,
-  ArrowUp,
-  ArrowDown,
-  ExternalLink,
-  Play,
   Volume2,
   VolumeX,
-  X
+  Play
 } from "lucide-react";
 
 const API = `${process.env.REACT_APP_BACKEND_URL}/api`;
 
 const CATEGORY_CONFIG = {
-  local: { icon: MapPin, label: "Local", labelTe: "స్థానిక", gradient: "from-green-600 to-emerald-700" },
-  city: { icon: Building2, label: "City", labelTe: "నగరం", gradient: "from-blue-600 to-cyan-700" },
-  state: { icon: Landmark, label: "State", labelTe: "రాష్ట్రం", gradient: "from-purple-600 to-violet-700" },
-  national: { icon: Globe, label: "National", labelTe: "జాతీయ", gradient: "from-orange-600 to-red-600" },
-  sports: { icon: Trophy, label: "Sports", labelTe: "క్రీడలు", gradient: "from-yellow-600 to-amber-700" },
-  entertainment: { icon: Tv, label: "Entertainment", labelTe: "వినోదం", gradient: "from-pink-600 to-rose-700" },
-  tech: { icon: Cpu, label: "Tech", labelTe: "టెక్", gradient: "from-indigo-600 to-blue-700" },
-  health: { icon: Heart, label: "Health", labelTe: "ఆరోగ్యం", gradient: "from-teal-600 to-cyan-700" },
-  business: { icon: Briefcase, label: "Business", labelTe: "వ్యాపారం", gradient: "from-slate-600 to-gray-700" }
-};
-
-// Spring animation config for smooth physics
-const springConfig = {
-  type: "spring",
-  stiffness: 300,
-  damping: 30
+  local: { icon: MapPin, label: "Local", labelTe: "స్థానిక", gradient: "from-emerald-500 to-teal-600" },
+  city: { icon: Building2, label: "City", labelTe: "నగరం", gradient: "from-blue-500 to-cyan-600" },
+  state: { icon: Landmark, label: "State", labelTe: "రాష్ట్రం", gradient: "from-purple-500 to-violet-600" },
+  national: { icon: Globe, label: "National", labelTe: "జాతీయ", gradient: "from-orange-500 to-red-500" },
+  sports: { icon: Trophy, label: "Sports", labelTe: "క్రీడలు", gradient: "from-yellow-500 to-amber-600" },
+  entertainment: { icon: Tv, label: "Entertainment", labelTe: "వినోదం", gradient: "from-pink-500 to-rose-600" },
+  tech: { icon: Cpu, label: "Tech", labelTe: "టెక్", gradient: "from-indigo-500 to-blue-600" },
+  health: { icon: Heart, label: "Health", labelTe: "ఆరోగ్యం", gradient: "from-teal-500 to-cyan-600" },
+  business: { icon: Briefcase, label: "Business", labelTe: "వ్యాపారం", gradient: "from-slate-500 to-gray-600" }
 };
 
 export default function NewsShorts() {
@@ -63,37 +50,17 @@ export default function NewsShorts() {
   const [news, setNews] = useState([]);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [loading, setLoading] = useState(true);
-  const [direction, setDirection] = useState(0); // -1 = prev, 1 = next
-  const [showSwipeHint, setShowSwipeHint] = useState(true);
+  const [direction, setDirection] = useState(0);
   const [bookmarked, setBookmarked] = useState({});
-  
-  // Video state
   const [isMuted, setIsMuted] = useState(true);
+  const [isDragging, setIsDragging] = useState(false);
   
   const headers = token ? { Authorization: `Bearer ${token}` } : {};
-
-  // Motion values for drag
-  const x = useMotionValue(0);
-  const y = useMotionValue(0);
-  
-  // Transform for visual feedback
-  const rotateZ = useTransform(x, [-200, 0, 200], [-10, 0, 10]);
-  const scale = useTransform(
-    [x, y],
-    ([latestX, latestY]) => {
-      const distance = Math.sqrt(latestX * latestX + latestY * latestY);
-      return Math.max(0.95, 1 - distance / 1000);
-    }
-  );
 
   useEffect(() => {
     fetchNews(activeCategory);
     setCurrentIndex(0);
     trackFeature(FEATURES.NEWS_SHORTS, token);
-    
-    // Hide swipe hint after 3 seconds
-    const timer = setTimeout(() => setShowSwipeHint(false), 3000);
-    return () => clearTimeout(timer);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [activeCategory]);
 
@@ -118,38 +85,27 @@ export default function NewsShorts() {
     if (currentIndex < news.length - 1) {
       setDirection(1);
       setCurrentIndex(prev => prev + 1);
-      trackAction(ACTIONS.VIEW_CONTENT, { type: 'news_swipe', direction: 'next' }, token);
     }
-  }, [currentIndex, news.length, token]);
+  }, [currentIndex, news.length]);
 
   const goToPrev = useCallback(() => {
     if (currentIndex > 0) {
       setDirection(-1);
       setCurrentIndex(prev => prev - 1);
-      trackAction(ACTIONS.VIEW_CONTENT, { type: 'news_swipe', direction: 'prev' }, token);
     }
-  }, [currentIndex, token]);
+  }, [currentIndex]);
 
   const handleDragEnd = (event, info) => {
+    setIsDragging(false);
     const { offset, velocity } = info;
-    const swipeThreshold = 50;
-    const velocityThreshold = 500;
+    const swipeThreshold = 80;
+    const velocityThreshold = 300;
     
-    // Determine swipe direction based on dominant axis
     const absX = Math.abs(offset.x);
     const absY = Math.abs(offset.y);
     
-    if (absX > absY) {
-      // Horizontal swipe
-      if (offset.x > swipeThreshold || velocity.x > velocityThreshold) {
-        // Swipe RIGHT = Next
-        goToNext();
-      } else if (offset.x < -swipeThreshold || velocity.x < -velocityThreshold) {
-        // Swipe LEFT = Previous
-        goToPrev();
-      }
-    } else {
-      // Vertical swipe
+    // Vertical swipe (primary - like TikTok)
+    if (absY > absX && absY > 30) {
       if (offset.y < -swipeThreshold || velocity.y < -velocityThreshold) {
         // Swipe UP = Next
         goToNext();
@@ -158,85 +114,84 @@ export default function NewsShorts() {
         goToPrev();
       }
     }
+    // Horizontal swipe (secondary)
+    else if (absX > absY && absX > 30) {
+      if (offset.x < -swipeThreshold || velocity.x < -velocityThreshold) {
+        // Swipe LEFT = Next
+        goToNext();
+      } else if (offset.x > swipeThreshold || velocity.x > velocityThreshold) {
+        // Swipe RIGHT = Previous
+        goToPrev();
+      }
+    }
   };
 
   const handleShare = async (item) => {
-    const shareData = {
-      title: item.title,
-      text: item.summary || item.title,
-      url: item.link || window.location.href
-    };
-
+    const shareText = `${item.title}\n\nRead on My Dammaiguda`;
     try {
       if (navigator.share) {
-        await navigator.share(shareData);
+        await navigator.share({ title: item.title, text: shareText });
       } else {
-        await navigator.clipboard.writeText(`${item.title}\n${item.link || window.location.href}`);
-        toast.success(language === "te" ? "లింక్ కాపీ అయింది" : "Link copied!");
+        await navigator.clipboard.writeText(shareText);
+        toast.success(language === "te" ? "కాపీ అయింది" : "Copied!");
       }
-      trackAction(ACTIONS.SHARE, { type: 'news' }, token);
     } catch (err) {
       console.error("Share failed:", err);
     }
   };
 
   const toggleBookmark = (itemId) => {
-    setBookmarked(prev => ({
-      ...prev,
-      [itemId]: !prev[itemId]
-    }));
-    toast.success(
-      bookmarked[itemId] 
-        ? (language === "te" ? "బుక్‌మార్క్ తీసివేయబడింది" : "Bookmark removed")
-        : (language === "te" ? "బుక్‌మార్క్ చేయబడింది" : "Bookmarked!")
+    setBookmarked(prev => ({ ...prev, [itemId]: !prev[itemId] }));
+    toast.success(bookmarked[itemId] 
+      ? (language === "te" ? "తీసివేయబడింది" : "Removed")
+      : (language === "te" ? "సేవ్ అయింది" : "Saved!")
     );
   };
 
   const currentNews = news[currentIndex];
 
-  // Card variants for animations
-  const cardVariants = {
-    enter: (dir) => ({
-      x: dir > 0 ? 300 : dir < 0 ? -300 : 0,
-      y: dir === 0 ? 100 : 0,
-      opacity: 0,
-      scale: 0.9
-    }),
-    center: {
-      x: 0,
-      y: 0,
-      opacity: 1,
-      scale: 1,
-      transition: springConfig
-    },
-    exit: (dir) => ({
-      x: dir > 0 ? -300 : dir < 0 ? 300 : 0,
-      y: dir === 0 ? -100 : 0,
-      opacity: 0,
-      scale: 0.9,
-      transition: { duration: 0.3 }
-    })
-  };
-
-  // Check if current item is a video
+  // Check if video
   const isVideo = currentNews?.video_url;
   const getYouTubeEmbedUrl = (url) => {
     if (!url) return null;
-    const videoIdMatch = url.match(/(?:youtube\.com\/(?:watch\?v=|shorts\/)|youtu\.be\/)([^&\n?#]+)/);
-    if (videoIdMatch) {
-      return `https://www.youtube.com/embed/${videoIdMatch[1]}?autoplay=1&mute=${isMuted ? 1 : 0}&loop=1&controls=0&modestbranding=1&playsinline=1`;
-    }
-    return null;
+    const match = url.match(/(?:youtube\.com\/(?:watch\?v=|shorts\/)|youtu\.be\/)([^&\n?#]+)/);
+    return match ? `https://www.youtube.com/embed/${match[1]}?autoplay=1&mute=${isMuted ? 1 : 0}&loop=1&controls=0&playsinline=1` : null;
+  };
+
+  // Smooth animation variants
+  const variants = {
+    enter: (dir) => ({
+      y: dir > 0 ? "100%" : dir < 0 ? "-100%" : 0,
+      opacity: 0.5,
+      scale: 0.95
+    }),
+    center: {
+      y: 0,
+      opacity: 1,
+      scale: 1,
+      transition: {
+        y: { type: "spring", stiffness: 400, damping: 35 },
+        opacity: { duration: 0.2 },
+        scale: { duration: 0.2 }
+      }
+    },
+    exit: (dir) => ({
+      y: dir > 0 ? "-100%" : dir < 0 ? "100%" : 0,
+      opacity: 0.5,
+      scale: 0.95,
+      transition: {
+        y: { type: "spring", stiffness: 400, damping: 35 },
+        opacity: { duration: 0.2 }
+      }
+    })
   };
 
   if (loading) {
     return (
-      <div className="h-screen w-screen bg-zinc-950 flex items-center justify-center">
+      <div className="h-screen w-screen bg-black flex items-center justify-center">
         <div className="text-center">
-          <Loader2 className="h-12 w-12 animate-spin text-white mx-auto mb-4" />
-          <p className="text-white/60 font-medium">
-            {language === "te" ? "వార్తలు లోడ్ అవుతున్నాయి..." : "Loading news..."}
-          </p>
+          <Loader2 className="h-10 w-10 animate-spin text-white/60 mx-auto mb-3" />
+          <p className="text-white/40 text-sm">{language === "te" ? "లోడ్ అవుతోంది..." : "Loading..."}</p>
         </div>
       </div>
     );
@@ -244,16 +199,11 @@ export default function NewsShorts() {
 
   if (!news.length) {
     return (
-      <div className="h-screen w-screen bg-zinc-950 flex items-center justify-center p-6">
+      <div className="h-screen w-screen bg-black flex items-center justify-center p-6">
         <div className="text-center">
-          <Newspaper className="h-16 w-16 text-white/30 mx-auto mb-4" />
-          <p className="text-white/60 text-lg">
-            {language === "te" ? "వార్తలు అందుబాటులో లేవు" : "No news available"}
-          </p>
-          <button 
-            onClick={() => fetchNews(activeCategory)}
-            className="mt-4 px-6 py-2 bg-white/10 hover:bg-white/20 rounded-full text-white transition-all"
-          >
+          <Newspaper className="h-12 w-12 text-white/20 mx-auto mb-3" />
+          <p className="text-white/40">{language === "te" ? "వార్తలు లేవు" : "No news"}</p>
+          <button onClick={() => fetchNews(activeCategory)} className="mt-4 px-5 py-2 bg-white/10 rounded-full text-white/70 text-sm">
             {language === "te" ? "రిఫ్రెష్" : "Refresh"}
           </button>
         </div>
@@ -262,19 +212,19 @@ export default function NewsShorts() {
   }
 
   return (
-    <div className="h-screen w-screen bg-zinc-950 overflow-hidden relative" data-testid="news-shorts">
+    <div className="h-screen w-screen bg-black overflow-hidden relative select-none" data-testid="news-shorts">
       {/* Back Button */}
       <button
         onClick={() => navigate(-1)}
-        className="absolute top-4 left-4 z-50 p-2 bg-black/40 backdrop-blur-md rounded-full text-white hover:bg-black/60 transition-all"
+        className="absolute top-4 left-4 z-50 p-2.5 bg-black/50 backdrop-blur-sm rounded-full text-white"
         data-testid="news-back-btn"
       >
-        <ChevronLeft className="h-6 w-6" />
+        <ChevronLeft className="h-5 w-5" />
       </button>
 
-      {/* Category Pills - Floating */}
-      <div className="absolute top-4 left-16 right-4 z-40 overflow-x-auto scrollbar-hide">
-        <div className="flex gap-2 pb-2">
+      {/* Category Pills */}
+      <div className="absolute top-4 left-14 right-4 z-40 overflow-x-auto scrollbar-hide">
+        <div className="flex gap-2 pb-1">
           {Object.entries(CATEGORY_CONFIG).map(([key, config]) => {
             const Icon = config.icon;
             const isActive = activeCategory === key;
@@ -282,14 +232,13 @@ export default function NewsShorts() {
               <button
                 key={key}
                 onClick={() => setActiveCategory(key)}
-                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm font-medium whitespace-nowrap transition-all ${
+                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium whitespace-nowrap transition-all ${
                   isActive 
-                    ? `bg-gradient-to-r ${config.gradient} text-white shadow-lg` 
-                    : 'bg-white/10 backdrop-blur-md text-white/80 hover:bg-white/20'
+                    ? `bg-gradient-to-r ${config.gradient} text-white` 
+                    : 'bg-black/40 backdrop-blur-sm text-white/70'
                 }`}
-                data-testid={`category-${key}`}
               >
-                <Icon className="h-3.5 w-3.5" />
+                <Icon className="h-3 w-3" />
                 <span>{language === "te" ? config.labelTe : config.label}</span>
               </button>
             );
@@ -297,214 +246,120 @@ export default function NewsShorts() {
         </div>
       </div>
 
-      {/* Progress Indicator */}
-      <div className="absolute top-16 left-4 right-4 z-40 flex gap-1">
-        {news.slice(0, 10).map((_, idx) => (
+      {/* Progress Bar */}
+      <div className="absolute top-14 left-4 right-4 z-40 flex gap-0.5">
+        {news.slice(0, Math.min(news.length, 15)).map((_, idx) => (
           <div
             key={idx}
-            className={`h-0.5 flex-1 rounded-full transition-all ${
-              idx === currentIndex ? 'bg-white' : idx < currentIndex ? 'bg-white/50' : 'bg-white/20'
+            className={`h-0.5 flex-1 rounded-full transition-colors duration-200 ${
+              idx === currentIndex ? 'bg-white' : idx < currentIndex ? 'bg-white/40' : 'bg-white/15'
             }`}
           />
         ))}
       </div>
 
-      {/* Swipe Hint Overlay */}
-      <AnimatePresence>
-        {showSwipeHint && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="absolute inset-0 z-30 bg-black/60 flex items-center justify-center pointer-events-none"
-          >
-            <div className="text-center text-white">
-              <div className="flex items-center justify-center gap-8 mb-4">
-                <div className="flex flex-col items-center">
-                  <ArrowLeft className="h-8 w-8 animate-pulse" />
-                  <span className="text-xs mt-1 opacity-70">Prev</span>
-                </div>
-                <div className="flex flex-col items-center">
-                  <ArrowUp className="h-8 w-8 animate-bounce" />
-                  <span className="text-xs mt-1 opacity-70">Next</span>
-                </div>
-                <div className="flex flex-col items-center">
-                  <ArrowRight className="h-8 w-8 animate-pulse" />
-                  <span className="text-xs mt-1 opacity-70">Next</span>
-                </div>
-              </div>
-              <p className="text-sm opacity-80">
-                {language === "te" ? "స్వైప్ చేయండి" : "Swipe to navigate"}
-              </p>
-            </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
-
-      {/* News Card Container */}
-      <AnimatePresence mode="wait" custom={direction}>
+      {/* News Card */}
+      <AnimatePresence initial={false} custom={direction} mode="popLayout">
         <motion.div
           key={currentIndex}
           custom={direction}
-          variants={cardVariants}
+          variants={variants}
           initial="enter"
           animate="center"
           exit="exit"
-          drag
-          dragConstraints={{ left: 0, right: 0, top: 0, bottom: 0 }}
-          dragElastic={0.7}
+          drag="y"
+          dragConstraints={{ top: 0, bottom: 0 }}
+          dragElastic={0.15}
+          onDragStart={() => setIsDragging(true)}
           onDragEnd={handleDragEnd}
-          style={{ x, y, rotateZ, scale }}
-          className="absolute inset-0 cursor-grab active:cursor-grabbing"
+          className="absolute inset-0 touch-pan-y"
         >
-          {/* Background Image/Video */}
+          {/* Background */}
           <div className="absolute inset-0">
             {isVideo ? (
-              <iframe
-                src={getYouTubeEmbedUrl(currentNews.video_url)}
-                className="w-full h-full object-cover"
-                allow="autoplay; encrypted-media"
-                allowFullScreen
-                title={currentNews.title}
-              />
+              <div className="w-full h-full bg-black flex items-center justify-center">
+                <iframe
+                  src={getYouTubeEmbedUrl(currentNews.video_url)}
+                  className="w-full h-full"
+                  allow="autoplay; encrypted-media"
+                  allowFullScreen
+                  title={currentNews.title}
+                />
+              </div>
             ) : (
               <img
                 src={currentNews.image || "https://images.unsplash.com/photo-1504711434969-e33886168f5c?w=800"}
-                alt={currentNews.title}
+                alt=""
                 className="w-full h-full object-cover"
                 draggable={false}
               />
             )}
-            
-            {/* Gradient Overlay */}
-            <div className="absolute inset-0 bg-gradient-to-t from-black via-black/40 to-transparent" />
+            <div className="absolute inset-0 bg-gradient-to-t from-black via-black/30 to-transparent" />
           </div>
 
           {/* Content */}
-          <div className="absolute bottom-0 left-0 right-0 p-6 pb-24 z-20">
-            {/* Category Badge */}
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.1 }}
-            >
-              {currentNews.category && CATEGORY_CONFIG[currentNews.category] && (
-                <span className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium bg-gradient-to-r ${CATEGORY_CONFIG[currentNews.category].gradient} text-white mb-3`}>
-                  {(() => {
-                    const Icon = CATEGORY_CONFIG[currentNews.category].icon;
-                    return <Icon className="h-3 w-3" />;
-                  })()}
-                  {language === "te" 
-                    ? CATEGORY_CONFIG[currentNews.category].labelTe 
-                    : CATEGORY_CONFIG[currentNews.category].label}
-                </span>
-              )}
-            </motion.div>
-
+          <div className="absolute bottom-0 left-0 right-16 p-5 pb-20">
+            {/* Category */}
+            {currentNews.category && CATEGORY_CONFIG[currentNews.category] && (
+              <span className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-semibold uppercase tracking-wide bg-gradient-to-r ${CATEGORY_CONFIG[currentNews.category].gradient} text-white mb-3`}>
+                {language === "te" ? CATEGORY_CONFIG[currentNews.category].labelTe : CATEGORY_CONFIG[currentNews.category].label}
+              </span>
+            )}
+            
             {/* Title */}
-            <motion.h1
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.2 }}
-              className="text-2xl md:text-3xl font-bold text-white leading-tight mb-3 drop-shadow-lg"
-              style={{ fontFamily: "'Merriweather', serif" }}
-            >
+            <h1 className="text-xl font-bold text-white leading-snug mb-2 line-clamp-3">
               {currentNews.title}
-            </motion.h1>
-
+            </h1>
+            
             {/* Summary */}
-            <motion.p
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.3 }}
-              className="text-white/80 text-sm md:text-base leading-relaxed line-clamp-3 mb-4"
-              style={{ fontFamily: "'DM Sans', sans-serif" }}
-            >
+            <p className="text-white/70 text-sm leading-relaxed line-clamp-2 mb-3">
               {currentNews.summary}
-            </motion.p>
-
-            {/* Source & Time */}
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ delay: 0.4 }}
-              className="flex items-center gap-3 text-white/60 text-xs"
-            >
-              <span>{currentNews.source}</span>
-              <span>•</span>
-              <span>{currentNews.time_ago || "Just now"}</span>
-              {currentNews.link && (
-                <>
-                  <span>•</span>
-                  <a 
-                    href={currentNews.link} 
-                    target="_blank" 
-                    rel="noopener noreferrer"
-                    className="flex items-center gap-1 text-blue-400 hover:text-blue-300"
-                    onClick={(e) => e.stopPropagation()}
-                  >
-                    <ExternalLink className="h-3 w-3" />
-                    <span>Read full</span>
-                  </a>
-                </>
-              )}
-            </motion.div>
+            </p>
+            
+            {/* Time */}
+            <p className="text-white/40 text-xs">
+              {currentNews.time_ago || "Just now"}
+            </p>
           </div>
         </motion.div>
       </AnimatePresence>
 
-      {/* Action Sidebar */}
-      <div className="absolute right-4 bottom-32 z-30 flex flex-col gap-4">
-        {/* Bookmark */}
-        <motion.button
-          whileTap={{ scale: 0.9 }}
+      {/* Action Buttons */}
+      <div className="absolute right-3 bottom-24 z-30 flex flex-col gap-5">
+        <button
           onClick={() => toggleBookmark(currentNews?.id || currentIndex)}
-          className={`p-3 rounded-full backdrop-blur-md transition-all ${
-            bookmarked[currentNews?.id || currentIndex] 
-              ? 'bg-yellow-500 text-white' 
-              : 'bg-white/10 text-white hover:bg-white/20'
-          }`}
-          data-testid="bookmark-btn"
+          className={`p-3 rounded-full transition-all ${bookmarked[currentNews?.id || currentIndex] ? 'bg-amber-500 text-white' : 'bg-black/40 backdrop-blur-sm text-white'}`}
         >
-          <Bookmark className={`h-6 w-6 ${bookmarked[currentNews?.id || currentIndex] ? 'fill-current' : ''}`} />
-        </motion.button>
-
-        {/* Share */}
-        <motion.button
-          whileTap={{ scale: 0.9 }}
+          <Bookmark className={`h-5 w-5 ${bookmarked[currentNews?.id || currentIndex] ? 'fill-current' : ''}`} />
+        </button>
+        
+        <button
           onClick={() => handleShare(currentNews)}
-          className="p-3 rounded-full bg-white/10 backdrop-blur-md text-white hover:bg-white/20 transition-all"
-          data-testid="share-btn"
+          className="p-3 rounded-full bg-black/40 backdrop-blur-sm text-white"
         >
-          <Share2 className="h-6 w-6" />
-        </motion.button>
-
-        {/* Mute/Unmute for video */}
+          <Share2 className="h-5 w-5" />
+        </button>
+        
         {isVideo && (
-          <motion.button
-            whileTap={{ scale: 0.9 }}
+          <button
             onClick={() => setIsMuted(!isMuted)}
-            className="p-3 rounded-full bg-white/10 backdrop-blur-md text-white hover:bg-white/20 transition-all"
-            data-testid="mute-btn"
+            className="p-3 rounded-full bg-black/40 backdrop-blur-sm text-white"
           >
-            {isMuted ? <VolumeX className="h-6 w-6" /> : <Volume2 className="h-6 w-6" />}
-          </motion.button>
+            {isMuted ? <VolumeX className="h-5 w-5" /> : <Volume2 className="h-5 w-5" />}
+          </button>
         )}
-
-        {/* Refresh */}
-        <motion.button
-          whileTap={{ scale: 0.9 }}
+        
+        <button
           onClick={() => fetchNews(activeCategory)}
-          className="p-3 rounded-full bg-white/10 backdrop-blur-md text-white hover:bg-white/20 transition-all"
-          data-testid="refresh-btn"
+          className="p-3 rounded-full bg-black/40 backdrop-blur-sm text-white"
         >
-          <RefreshCw className="h-6 w-6" />
-        </motion.button>
+          <RefreshCw className="h-5 w-5" />
+        </button>
       </div>
 
-      {/* Bottom Navigation Dots */}
-      <div className="absolute bottom-6 left-0 right-0 z-30 flex justify-center items-center gap-4">
-        <span className="text-white/60 text-sm font-medium">
+      {/* Page Counter */}
+      <div className="absolute bottom-6 left-0 right-0 z-30 flex justify-center">
+        <span className="text-white/50 text-xs font-medium bg-black/30 px-3 py-1 rounded-full">
           {currentIndex + 1} / {news.length}
         </span>
       </div>
