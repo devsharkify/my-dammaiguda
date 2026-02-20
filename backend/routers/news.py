@@ -18,7 +18,6 @@ load_dotenv()
 router = APIRouter(prefix="/news", tags=["News"])
 
 # ============== AI REPHRASING SETUP ==============
-EMERGENT_LLM_KEY = os.environ.get("EMERGENT_LLM_KEY")
 
 async def rephrase_with_ai(title: str, summary: str) -> Dict:
     """Use AI to rephrase news article for originality"""
