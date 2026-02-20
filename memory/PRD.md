@@ -232,6 +232,11 @@ Build a production-ready, mobile-first civic engagement platform "My Dammaiguda"
 - `GET /api/astrology/rashis` - Get all Rashi (zodiac signs) information
 - `GET /api/astrology/nakshatras` - Get all Nakshatra (birth stars) information
 
+### Upload (Cloudinary Integration)
+- `POST /api/upload/image` - Upload image to Cloudinary (multipart form-data)
+- `POST /api/upload/image-base64` - Upload base64 encoded image
+- `DELETE /api/upload/image/{public_id}` - Delete image from Cloudinary
+
 ### CMS (Content Management)
 - `GET /api/content/dumpyard` - Fetch dump yard configuration
 - `PUT /api/content/dumpyard` - Update dump yard config (admin)
