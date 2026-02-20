@@ -281,12 +281,24 @@ Build a production-ready, mobile-first civic engagement platform "My Dammaiguda"
 
 ## Change Log
 
-### Feb 20, 2026 - Admin Console Login Fix
+### Feb 20, 2026 - Admin Console Login Fix & Kaizer Fit Backend Integration
 - **Bug Fix**: Fixed Admin Console login failure
   - Root Cause: `login` function was missing from AuthContext exports
-  - Solution: Added `login(newUser, newToken)` function to AuthContext to allow AdminConsole to directly set auth state
-  - Admin can now successfully login via `/admin` route and access Admin Dashboard
-  - Tested: Full flow working (Send OTP → Verify OTP → Redirect to Admin Dashboard)
+  - Solution: Added `login(newUser, newToken)` function to AuthContext
+  - Admin can now successfully login via `/admin` route
+  
+- **Feature Complete**: Water/Meal Logging Backend Persistence
+  - Connected Kaizer Fit frontend to `/api/doctor/water` and `/api/doctor/meal` endpoints
+  - Water glasses now persist to MongoDB and display on page load
+  - Meal logging with calorie tracking persists and shows in daily summary
+  - Fixed decorative emoji overlays blocking + buttons (added pointer-events-none)
+  - Common South Indian foods added: idli, dosa, rice, roti, biryani, chai with Telugu names
+  
+- **Enhancement**: Telugu Translations Improved
+  - Expanded translations dictionary from ~60 to 150+ keys
+  - Added new categories: meals (breakfast/lunch/snacks/dinner), fitness (weightTracker, badges, streak)
+  - Better natural Telugu phrasing vs transliteration
+  - All navigation, auth, issues, benefits, polls sections covered
 
 ### Feb 19, 2026 - Session 2
 - **CMS Integration**: Dashboard now fetches dump yard data dynamically from CMS API
