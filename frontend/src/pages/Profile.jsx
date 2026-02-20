@@ -112,6 +112,11 @@ export default function Profile() {
     }
   };
 
+  useEffect(() => {
+    fetchNotificationPrefs();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   const updateNotifPref = async (key, value) => {
     const newPrefs = { ...notifPrefs, [key]: value };
     setNotifPrefs(newPrefs);
