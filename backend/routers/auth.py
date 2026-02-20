@@ -100,9 +100,17 @@ async def send_otp(request: OTPRequest):
 @router.post("/verify-otp")
 async def verify_otp(request: OTPVerify):
     """Verify OTP and login/register user"""
-    stored_otp = otp_store.get(request.phone)
+    stored_data = otp_store.get(request.phone)
     
-    if not stored_otp or stored_otp != request.otp:
+    if not stored_data:
+        raise HTTPException(status_code=400, detail="OTP expired or not sent")
+    
+    stored_otp = stored_data.get("otp")
+    if stored_otp != request.otp:
+        raise HTTPException(status_code=400, detail="Invalid OTP")
+    
+    # Clear OTP after successful verification
+    otp_store.pop(request.phone, None)
         raise HTTPException(status_code=400, detail="Invalid OTP")
     
     # Check if user exists
