@@ -22,23 +22,27 @@ EMERGENT_LLM_KEY = os.environ.get("EMERGENT_LLM_KEY")
 
 async def rephrase_with_ai(title: str, summary: str) -> Dict:
     """Use AI to rephrase news article for originality"""
-    if not EMERGENT_LLM_KEY:
+    openai_key = os.environ.get("OPENAI_API_KEY")
+    if not openai_key:
         return {"title": title, "summary": summary}
     
     try:
-        from emergentintegrations.llm.chat import LlmChat, UserMessage
-        
-        chat = LlmChat(
-            api_key=EMERGENT_LLM_KEY,
-            session_id=f"news_rephrase_{int(time.time())}",
-            system_message="You are a professional news editor. Rephrase the given news title and summary to be original while preserving all key facts. Keep it concise and professional. Output format: TITLE: [rephrased title]\nSUMMARY: [rephrased summary in 2-3 sentences]"
-        ).with_model("openai", "gpt-4o-mini")
-        
-        user_message = UserMessage(
-            text=f"Rephrase this news:\nTitle: {title}\nSummary: {summary}"
-        )
-        
-        response = await chat.send_message(user_message)
+        async with httpx.AsyncClient() as client:
+            resp = await client.post(
+                "https://api.openai.com/v1/chat/completions",
+                headers={"Authorization": f"Bearer {openai_key}", "Content-Type": "application/json"},
+                json={
+                    "model": "gpt-4o-mini",
+                    "messages": [
+                        {"role": "system", "content": "You are a professional news editor. Rephrase the given news title and summary to be original while preserving all key facts. Keep it concise and professional. Output format: TITLE: [rephrased title]\nSUMMARY: [rephrased summary in 2-3 sentences]"},
+                        {"role": "user", "content": f"Rephrase this news:\nTitle: {title}\nSummary: {summary}"}
+                    ],
+                    "max_tokens": 500
+                },
+                timeout=30.0
+            )
+            resp.raise_for_status()
+            response = resp.json()["choices"][0]["message"]["content"]
         
         # Parse response
         lines = response.strip().split('\n')
