@@ -32,6 +32,7 @@ from routers.websocket_chat import router as websocket_chat_router
 from routers.google_fit import router as google_fit_router
 from routers.astrology import router as astrology_router
 from routers.upload import router as upload_router
+from routers.analytics import router as analytics_router
 
 # Create FastAPI app
 app = FastAPI(
