@@ -7,7 +7,33 @@ Build a production-ready, mobile-first civic engagement platform "My Dammaiguda"
 
 ## What's Been Implemented (Feb 20, 2026)
 
-### Latest Session - Comprehensive Astrology Module
+### Latest Session - News Enhancements, AQI Fix & Analytics System
+
+#### News Page Updates
+1. **Read More Logic Changed**
+   - Removed "Read More" from scraped news articles
+   - "Read More" only shows for admin-pushed news with valid links
+   - Cleaner user experience
+
+2. **Video News Support**
+   - Admins can now push video news with YouTube links
+   - YouTube videos are embedded directly in the news feed
+   - Autoplay with mute, full controls available
+   - Video badge ("Video News") distinguishes from text news
+   - Share button works for video news
+
+3. **User Behavior Analytics System**
+   - New `/api/analytics` endpoints for tracking user behavior
+   - Tracks: page views, user actions (clicks, submits, shares), feature usage
+   - Admin dashboard: `/api/analytics/admin/summary` - daily active users, feature popularity, top pages
+   - Enables learning about user preferences for personalization
+   - Data stored in `user_analytics` collection
+
+#### AQI Widget Fix
+- Hyderabad section now has Wind icon matching Dammaiguda style
+- Consistent visual design across both city AQI displays
+
+### Previous Session - Comprehensive Astrology Module
 
 #### Astrology Feature (3 Main Options)
 1. **Kundali / Birth Chart**
@@ -29,7 +55,7 @@ Build a production-ready, mobile-first civic engagement platform "My Dammaiguda"
    - Predictions for Love, Career, Health, Money
    - Lucky Number and Lucky Color
 
-### Previous Session - UI/UX Design Improvements & Kaizer Fit Enhancement
+### Earlier Session - UI/UX Design Improvements & Kaizer Fit Enhancement
 
 #### 1. Dashboard Widget Redesign
 - **AQI Widget**: Full-width rectangular card showing:
