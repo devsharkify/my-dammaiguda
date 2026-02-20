@@ -17,6 +17,9 @@ class OTPRequest(BaseModel):
 class OTPVerify(BaseModel):
     phone: str
     otp: str
+    name: Optional[str] = None
+    colony: Optional[str] = None
+    age_range: Optional[str] = None
 
 class UserRegister(BaseModel):
     phone: str
@@ -66,6 +69,34 @@ async def verify_otp(request: OTPVerify):
             "token": token
         }
     else:
+        # If registration data is provided, create user directly
+        if request.name:
+            new_user = {
+                "id": generate_id(),
+                "phone": request.phone,
+                "name": request.name,
+                "colony": request.colony or "",
+                "age_range": request.age_range or "",
+                "role": "citizen",
+                "created_at": now_iso(),
+                "fitness_profile": {
+                    "daily_step_goal": 10000,
+                    "weekly_active_days_goal": 5
+                }
+            }
+            
+            await db.users.insert_one(new_user)
+            new_user.pop("_id", None)
+            
+            token = create_token(new_user["id"], new_user["role"])
+            
+            return {
+                "success": True,
+                "is_new_user": False,
+                "user": new_user,
+                "token": token
+            }
+        
         return {
             "success": True,
             "is_new_user": True,

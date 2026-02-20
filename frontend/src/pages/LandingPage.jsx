@@ -103,7 +103,7 @@ export default function LandingPage() {
           <img 
             src="https://static.prod-images.emergentagent.com/jobs/b415d412-3e65-4362-a62f-f8bab1368136/images/fd09263f1ffaceb3dad575cd85696c5fbff1a43edc5d0829bc8e76785518ca64.png"
             alt="My Dammaiguda"
-            className="w-16 h-16 mx-auto mb-3 rounded-2xl shadow-lg shadow-teal-500/30"
+            className="w-24 h-24 mx-auto mb-3 rounded-2xl shadow-lg shadow-teal-500/30"
           />
           <h1 className="text-3xl font-bold text-white tracking-tight">
             My Dammaiguda
