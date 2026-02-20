@@ -92,10 +92,6 @@ export default function Profile() {
 
   const headers = { Authorization: `Bearer ${token}` };
 
-  useEffect(() => {
-    fetchNotificationPrefs();
-  }, []);
-
   const fetchNotificationPrefs = async () => {
     try {
       const response = await axios.get(`${API}/notifications/preferences`, { headers });
