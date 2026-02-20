@@ -218,9 +218,9 @@ export default function PrivacyPolicy() {
           </p>
           
           <div className="bg-gray-50 p-3 rounded-lg space-y-1 text-sm">
-            <p><strong>{language === "te" ? "ఇమెయిల్" : "Email"}:</strong> support@mydammaiguda.com</p>
-            <p><strong>{language === "te" ? "ఫోన్" : "Phone"}:</strong> +91 9876543210</p>
-            <p><strong>{language === "te" ? "చిరునామా" : "Address"}:</strong> Dammaiguda, Medchal-Malkajgiri, Telangana 500083</p>
+            <p><strong>{language === "te" ? "ఇమెయిల్" : "Email"}:</strong> support@sharkify.ai</p>
+            <p><strong>{language === "te" ? "చిరునామా" : "Address"}:</strong> Flat 501, SM Plaza, AS Rao Nagar, Hyderabad 500062</p>
+            <p><strong>{language === "te" ? "సంస్థ" : "Company"}:</strong> Sharkify Technology Pvt Ltd</p>
           </div>
         </section>
 
