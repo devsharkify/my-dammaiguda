@@ -533,11 +533,13 @@ export default function Dashboard() {
               </div>
               
               {/* Health Risk Tags */}
-              <div className="flex gap-1.5 mt-2.5">
+              <div className="flex flex-wrap gap-1.5 mt-2.5">
                 {[
                   { en: "Respiratory", te: "శ్వాసకోశం", icon: "🫁" },
                   { en: "Water", te: "నీరు", icon: "💧" },
-                  { en: "Cancer", te: "క్యాన్సర్", icon: "⚠️" }
+                  { en: "Cancer", te: "క్యాన్సర్", icon: "⚠️" },
+                  { en: "Skin", te: "చర్మం", icon: "🩹" },
+                  { en: "Eyes", te: "కళ్ళు", icon: "👁️" }
                 ].map((tag, idx) => (
                   <span key={idx} className="inline-flex items-center gap-0.5 px-1.5 py-0.5 bg-white/10 rounded text-[9px] font-medium text-gray-300">
                     <span className="text-[10px]">{tag.icon}</span>
