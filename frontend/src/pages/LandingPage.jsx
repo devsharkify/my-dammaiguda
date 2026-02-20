@@ -142,30 +142,30 @@ export default function LandingPage() {
 
         {/* Login Section - Now After Numbers */}
         {!showLogin ? (
-          <div className="w-full max-w-xs space-y-3 mb-4">
+          <div className="w-full max-w-xs space-y-2 mb-3">
             <Button 
               onClick={() => { setShowLogin(true); setIsNewUser(true); }}
-              className="w-full h-14 text-base font-semibold bg-gradient-to-r from-teal-500 to-emerald-500 hover:from-teal-400 hover:to-emerald-400 rounded-2xl shadow-lg shadow-teal-500/30 transition-all"
+              className="w-full h-12 text-sm font-semibold bg-gradient-to-r from-teal-500 to-emerald-500 hover:from-teal-400 hover:to-emerald-400 rounded-2xl shadow-lg shadow-teal-500/30 transition-all"
               data-testid="get-started-btn"
             >
-              <Sparkles className="w-5 h-5 mr-2" />
+              <Sparkles className="w-4 h-4 mr-2" />
               Get Started
-              <ChevronRight className="w-5 h-5 ml-2" />
+              <ChevronRight className="w-4 h-4 ml-2" />
             </Button>
-            <p className="text-slate-500 text-xs text-center">
+            <p className="text-slate-500 text-[10px] text-center">
               Takes less than 30 seconds
             </p>
           </div>
         ) : (
-          <div className="w-full max-w-xs space-y-4 animate-in fade-in slide-in-from-bottom-4 duration-300 mb-4">
+          <div className="w-full max-w-xs space-y-3 animate-in fade-in slide-in-from-bottom-4 duration-300 mb-3">
             {step === 1 ? (
               <>
                 {/* Show Name & Colony only for new users */}
                 {isNewUser && (
-                  <div className="space-y-3">
+                  <div className="space-y-2">
                     {/* Name Input */}
                     <div className="relative">
-                      <div className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400">
+                      <div className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400">
                         <User className="w-4 h-4" />
                       </div>
                       <Input
@@ -173,14 +173,14 @@ export default function LandingPage() {
                         placeholder="Your Name"
                         value={name}
                         onChange={(e) => setName(e.target.value)}
-                        className="h-12 pl-12 text-base bg-white/10 border-white/20 text-white placeholder:text-slate-500 rounded-2xl focus:ring-2 focus:ring-teal-500"
+                        className="h-11 pl-10 text-sm bg-white/10 border-white/20 text-white placeholder:text-slate-500 rounded-xl focus:ring-2 focus:ring-teal-500"
                         data-testid="name-input"
                       />
                     </div>
 
                     {/* Colony Input */}
                     <div className="relative">
-                      <div className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400">
+                      <div className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400">
                         <MapPin className="w-4 h-4" />
                       </div>
                       <Input
@@ -188,7 +188,7 @@ export default function LandingPage() {
                         placeholder="Your Colony/Area"
                         value={colony}
                         onChange={(e) => setColony(e.target.value)}
-                        className="h-12 pl-12 text-base bg-white/10 border-white/20 text-white placeholder:text-slate-500 rounded-2xl focus:ring-2 focus:ring-teal-500"
+                        className="h-11 pl-10 text-sm bg-white/10 border-white/20 text-white placeholder:text-slate-500 rounded-xl focus:ring-2 focus:ring-teal-500"
                         data-testid="colony-input"
                       />
                     </div>
@@ -196,17 +196,17 @@ export default function LandingPage() {
                 )}
 
                 {/* Phone Input - Always shown */}
-                <div className="relative mt-4">
-                  <div className="absolute left-4 top-1/2 -translate-y-1/2 flex items-center gap-1 text-slate-400">
+                <div className="relative mt-3">
+                  <div className="absolute left-3 top-1/2 -translate-y-1/2 flex items-center gap-1 text-slate-400">
                     <Phone className="w-4 h-4" />
-                    <span className="text-sm font-medium">+91</span>
+                    <span className="text-xs font-medium">+91</span>
                   </div>
                   <Input
                     type="tel"
                     placeholder="98765 43210"
                     value={phone}
                     onChange={(e) => setPhone(e.target.value.replace(/\D/g, "").slice(0, 10))}
-                    className="h-12 pl-20 text-base bg-white/10 border-white/20 text-white placeholder:text-slate-500 rounded-2xl focus:ring-2 focus:ring-teal-500"
+                    className="h-11 pl-[4.5rem] text-sm bg-white/10 border-white/20 text-white placeholder:text-slate-500 rounded-xl focus:ring-2 focus:ring-teal-500"
                     data-testid="phone-input"
                   />
                 </div>
@@ -214,7 +214,7 @@ export default function LandingPage() {
                 <Button 
                   onClick={handleSendOTP}
                   disabled={loading || phone.length < 10 || (isNewUser && (!name.trim() || !colony.trim()))}
-                  className="w-full h-12 text-base font-semibold bg-gradient-to-r from-teal-500 to-emerald-500 hover:from-teal-400 hover:to-emerald-400 rounded-2xl disabled:opacity-50 mt-4"
+                  className="w-full h-11 text-sm font-semibold bg-gradient-to-r from-teal-500 to-emerald-500 hover:from-teal-400 hover:to-emerald-400 rounded-xl disabled:opacity-50 mt-3"
                   data-testid="send-otp-btn"
                 >
                   {loading ? "Sending..." : (isNewUser ? "Register & Send OTP" : "Send OTP")}
@@ -224,7 +224,7 @@ export default function LandingPage() {
                 {isNewUser && (
                   <button 
                     onClick={() => { setIsNewUser(false); }}
-                    className="w-full text-sm text-slate-400 hover:text-white transition-colors mt-3"
+                    className="w-full text-xs text-slate-400 hover:text-white transition-colors mt-2"
                     data-testid="switch-to-login"
                   >
                     Already registered? <span className="text-teal-400 font-medium">Login</span>
@@ -235,7 +235,7 @@ export default function LandingPage() {
                 {!isNewUser && (
                   <button 
                     onClick={() => { setIsNewUser(true); }}
-                    className="w-full text-sm text-slate-400 hover:text-white transition-colors mt-3"
+                    className="w-full text-xs text-slate-400 hover:text-white transition-colors mt-2"
                     data-testid="switch-to-register"
                   >
                     New user? <span className="text-teal-400 font-medium">Register</span>
