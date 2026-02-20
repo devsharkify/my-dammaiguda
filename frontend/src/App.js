@@ -41,6 +41,7 @@ import InstructorPortal from "./pages/InstructorPortal";
 import Leaderboard from "./pages/Leaderboard";
 import LiveChat from "./pages/LiveChat";
 import AdminConsole from "./pages/AdminConsole";
+import Astrology from "./pages/Astrology";
 
 import "./App.css";
 
