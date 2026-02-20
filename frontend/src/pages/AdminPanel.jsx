@@ -83,7 +83,9 @@ export default function AdminPanel() {
   const [showCourseDialog, setShowCourseDialog] = useState(false);
   const [showNewsDialog, setShowNewsDialog] = useState(false);
   const [showTemplateDialog, setShowTemplateDialog] = useState(false);
+  const [showManagerDialog, setShowManagerDialog] = useState(false);
   const [editingItem, setEditingItem] = useState(null);
+  const [managers, setManagers] = useState([]);
   
   // Form states
   const [courseForm, setCourseForm] = useState({
@@ -109,6 +111,12 @@ export default function AdminPanel() {
     type: "notification",
     areas: ["all"],
   });
+  
+  const [managerForm, setManagerForm] = useState({
+    phone: "",
+    name: "",
+    assigned_area: "",
+  });
 
   // Update URL when area or tab changes
   useEffect(() => {
@@ -128,6 +136,7 @@ export default function AdminPanel() {
     setLoading(true);
     
     try {
+      const headers = { Authorization: `Bearer ${token}` };
       const headers = { Authorization: `Bearer ${token}` };
       const areaParam = selectedArea !== "all" ? `?area=${selectedArea}` : "";
       
