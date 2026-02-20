@@ -241,6 +241,9 @@ function AppRoutes() {
         </ProtectedRoute>
       } />
       
+      {/* Public Routes */}
+      <Route path="/privacy-policy" element={<PrivacyPolicy />} />
+      
       {/* Catch all */}
       <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>
