@@ -70,7 +70,7 @@ async def send_authkey_otp(phone: str) -> dict:
         "mobile": mobile,
         "country_code": "91",
         "sid": "35306",
-        "name": "My Dammaiguda",
+        "company": "My Dammaiguda",
         "otp": otp
     }
     
