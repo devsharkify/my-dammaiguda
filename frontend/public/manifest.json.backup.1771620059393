@@ -1,8 +1,8 @@
 {
-  "name": "My Dammaiguda - Civic Engagement Platform",
-  "short_name": "My Dammaiguda",
+  "name": "My AS Rao Nagar - Civic Engagement Platform",
+  "short_name": "My AS Rao Nagar",
   "version": "1.0.0",
-  "description": "Track Issues. Protect Health. Claim Benefits. Your civic engagement platform for Dammaiguda, Telangana.",
+  "description": "Track Issues. Protect Health. Claim Benefits. Your civic engagement platform for AS Rao Nagar, Telangana.",
   "icons": [
     {
       "src": "/icons/icon-72x72.png",
@@ -67,12 +67,12 @@
   ],
   "start_url": "/",
   "display": "standalone",
-  "theme_color": "#0F766E",
+  "theme_color": "#2563EB",
   "background_color": "#0a0a0a",
   "orientation": "portrait",
   "scope": "/",
   "lang": "en",
-  "id": "my-dammaiguda-app",
+  "id": "my-asraonagar-app",
   "categories": [
     "government",
     "utilities",

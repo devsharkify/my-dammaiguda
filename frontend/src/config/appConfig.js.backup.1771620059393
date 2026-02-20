@@ -1,6 +1,6 @@
 /**
- * WHITE-LABEL APP CONFIGURATION - Dammaiguda
- * Generated: 2026-02-20T20:40:59.392Z
+ * WHITE-LABEL APP CONFIGURATION - AS Rao Nagar
+ * Generated: 2026-02-20T20:40:26.914Z
  * 
  * To switch areas, replace this file with another area's config.
  */
@@ -8,9 +8,9 @@
 const APP_CONFIG = {
   // ============== AREA IDENTITY ==============
   area: {
-    id: "dammaiguda",
-    name: "Dammaiguda",
-    name_te: "దమ్మాయిగూడ",
+    id: "asraonagar",
+    name: "AS Rao Nagar",
+    name_te: "ఏఎస్ రావు నగర్",
     tagline: "Track Issues. Protect Health. Claim Benefits.",
     tagline_te: "సమస్యలను ట్రాక్ చేయండి. ఆరోగ్యాన్ని రక్షించండి. ప్రయోజనాలు పొందండి.",
     zone: "Medchal-Malkajgiri",
@@ -25,11 +25,11 @@ const APP_CONFIG = {
 
   // ============== APP BRANDING ==============
   branding: {
-    appName: "My Dammaiguda",
-    appNameShort: "My Dammaiguda",
-    primaryColor: "#0F766E",
-    primaryColorLight: "#379e96",
-    primaryColorDark: "#005850",
+    appName: "My AS Rao Nagar",
+    appNameShort: "My AS Rao Nagar",
+    primaryColor: "#2563EB",
+    primaryColorLight: "#4d8bff",
+    primaryColorDark: "#0745cd",
     accentColor: "#F59E0B",
     backgroundColor: "#0a0a0a",
     logo: "https://static.prod-images.emergentagent.com/jobs/b415d412-3e65-4362-a62f-f8bab1368136/images/fd09263f1ffaceb3dad575cd85696c5fbff1a43edc5d0829bc8e76785518ca64.png",
@@ -51,8 +51,8 @@ const APP_CONFIG = {
 
   // ============== DOMAIN & URLS ==============
   urls: {
-    domain: "mydammaiguda.in",
-    playStore: "https://play.google.com/store/apps/details?id=com.sharkify.mydammaiguda",
+    domain: "myasraonagar.in",
+    playStore: "https://play.google.com/store/apps/details?id=com.sharkify.myasraonagar",
     privacyPolicy: "/privacy-policy",
     termsOfService: "/terms-of-service",
     deleteAccount: "/delete-account",
@@ -60,8 +60,8 @@ const APP_CONFIG = {
 
   // ============== PLAY STORE INFO ==============
   playStore: {
-    packageName: "com.sharkify.mydammaiguda",
-    appId: "my-dammaiguda-app",
+    packageName: "com.sharkify.myasraonagar",
+    appId: "my-asraonagar-app",
     developerName: "Sharkify Technology Pvt. Ltd.",
     category: "Social",
   },
@@ -73,7 +73,7 @@ const APP_CONFIG = {
     astrology: true,
     issues: true,
     aqi: true,
-    dumpYard: true,
+    dumpYard: false,
     polls: true,
     wardExpenditure: true,
     chat: true,
@@ -89,25 +89,21 @@ const APP_CONFIG = {
 
   // ============== DUMP YARD CONFIG ==============
   dumpYard: {
-    enabled: true,
-    name: "Local Dump Yard",
-    name_te: "డంప్ యార్డ్",
-    dailyWasteTons: 5000,
-    areaAcres: 100,
-    redZoneKm: 2,
+    enabled: false,
+    
   },
 
   // ============== AQI CONFIGURATION ==============
   aqi: {
-    primaryStation: "dammaiguda",
+    primaryStation: "asraonagar",
     secondaryStation: "hyderabad",
     stations: {
       primary: {
-        id: "dammaiguda",
-        name: "Dammaiguda",
-        name_te: "దమ్మాయిగూడ",
-        lat: 17.4534,
-        lon: 78.5674,
+        id: "asraonagar",
+        name: "AS Rao Nagar",
+        name_te: "ఏఎస్ రావు నగర్",
+        lat: 17.4456,
+        lon: 78.5563,
       },
       secondary: {
         id: "hyderabad",
@@ -128,21 +124,21 @@ const APP_CONFIG = {
 
   // ============== STATS (Landing Page) ==============
   stats: {
-    benefitsAmount: "₹10Cr+",
+    benefitsAmount: "₹8Cr+",
     benefitsLabel: "Benefits to be Availed",
     benefitsLabel_te: "ప్రయోజనాలు పొందబడతాయి",
-    problemsSolved: "100+",
+    problemsSolved: "80+",
     problemsLabel: "Local Problems to be Solved",
     problemsLabel_te: "స్థానిక సమస్యలు పరిష్కరించబడతాయి",
-    peopleBenefited: "50K+",
+    peopleBenefited: "40K+",
     peopleLabel: "People to be Benefited",
     peopleLabel_te: "ప్రజలు ప్రయోజనం పొందుతారు",
   },
 
   // ============== SMS/OTP CONFIG ==============
   sms: {
-    senderName: "MYDAMM",
-    templatePrefix: "My Dammaiguda",
+    senderName: "MYASRN",
+    templatePrefix: "My AS Rao Nagar",
   },
 
   // ============== SOCIAL LINKS ==============
