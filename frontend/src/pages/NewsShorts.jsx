@@ -6,6 +6,7 @@ import Layout from "../components/Layout";
 import { Button } from "../components/ui/button";
 import { Badge } from "../components/ui/badge";
 import { toast } from "sonner";
+import { trackFeature, trackAction, FEATURES, ACTIONS } from "../utils/analytics";
 import {
   Newspaper,
   MapPin,
