@@ -646,10 +646,6 @@ const ZodiacHoroscope = ({ language, selectedSign, setSelectedSign }) => {
         </div>
       ) : (
         <div className="space-y-4">
-          <button onClick={() => setSelectedSign(null)} className="flex items-center gap-2 text-sm text-gray-600">
-            <ArrowLeft className="w-4 h-4" /> Back to Signs
-          </button>
-
           <Card className="bg-gradient-to-br from-orange-50 to-amber-50 border-orange-200">
             <CardContent className="p-4">
               <div className="text-center mb-4">
