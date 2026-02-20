@@ -329,11 +329,20 @@ Build a production-ready, mobile-first civic engagement platform "My Dammaiguda"
     - Daily, Weekly, Monthly period selectors
     - Predictions for: Love & Relationships, Career & Work, Health & Wellness, Money & Finance
     - Lucky Number and Lucky Color displayed
+- **UX Fix**: Unified back button - single header back button handles all navigation states
 - **Technical Details**:
   - Frontend: `/app/frontend/src/pages/Astrology.jsx` (1047 lines)
   - Backend: `/app/backend/routers/astrology.py` (446 lines)
   - API: `POST /api/astrology/kundali` + helper endpoints
 - **Testing**: 100% pass rate (iteration_31)
+
+- **Feature Complete**: Cloudinary Image Upload for Admin Panel
+  - New backend endpoint: `POST /api/upload/image` 
+  - Uploads to Cloudinary cloud storage
+  - Returns permanent public URLs (res.cloudinary.com)
+  - ImageInput component updated to use Cloudinary
+  - Replaced base64 data URLs with proper cloud storage
+- **Testing**: 100% pass rate (iteration_32)
 
 ### Feb 20, 2026 - Session 2: Logo Zoom, Registration Fix & Authkey.io SMS Integration
 - **UI Enhancement**: Logo on landing page zoomed from 16x16 to 24x24 (larger and more visible)
