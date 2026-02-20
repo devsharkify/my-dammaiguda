@@ -112,6 +112,7 @@ export default function KaizerFit() {
   const [mealType, setMealType] = useState("breakfast");
   const [caloriesConsumed, setCaloriesConsumed] = useState(0);
   const [caloriesGoal] = useState(2000);
+  const [todayMeals, setTodayMeals] = useState([]);
   
   // Live activity
   const [showActivityPicker, setShowActivityPicker] = useState(false);
