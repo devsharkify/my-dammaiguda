@@ -455,6 +455,10 @@ export default function AdminPanel() {
               <BarChart3 className="h-4 w-4" />
               Overview
             </TabsTrigger>
+            <TabsTrigger value="settings" className="gap-2">
+              <Settings className="h-4 w-4" />
+              Site Settings
+            </TabsTrigger>
             <TabsTrigger value="managers" className="gap-2">
               <Shield className="h-4 w-4" />
               Managers
