@@ -4,100 +4,95 @@ Build a production-ready, mobile-first civic engagement platform “My Dammaigud
 **PRODUCT REQUIREMENTS:**
 - **Core Modules:** User Auth (OTP), Issue Reporting (with media), Dump Yard/Environment info, Health & Fitness (Kaizer Fit), Citizen Benefits, Ward Expenditure Dashboard, Polls, Volunteer Module, Admin Dashboard.
 - **Recent User-Requested Features:**
-    - **AQI Widget:** Live Air Quality Index on the main screen.
-    - **News Shorts:** A shorts style news feed.
-    - **Citizen Wall:** A space for citizens to post updates, with enhanced sharing (image + text + link).
-    - **Kaizer Fit & Doctor UI:** Premium UI/UX overhaul, including weight tracker, live activity tracking, daily streaks, and badges. Move water/meal/nutrition logging to Kaizer Fit and enhance Kaizer Doctor with advanced features like medicine lookup.
-    - **Smart Device Integration:** Connect with phone sensors and smartwatches for fitness tracking.
-    - **PWA Push Notifications:** For various alerts.
-    - **Stories/Status:** 24-hour ephemeral stories.
-    - **AIT Education Module:** A comprehensive EdTech platform with courses, quizzes, and a scholarship application form with an admin approval workflow.
-    - **Gift Shop & Wallet System:** An e-commerce-like section.
-    - **Default Language Toggle:** The app should default to English, with an option to switch to Telugu. Improve Telugu translations.
-    - **Fitness Onboarding & Manual Recording.**
-    - **Enhanced Issues Management:** My Issues tab for users, and detailed admin status options. Fix submission errors.
-    - **Dashboard Reorganization & Bottom Navigation Update.**
-    - **Comprehensive Admin Panel:** A complete end-to-end UI for admin functionalities, provided as a standalone PWA.
-    - **Instructor Portal & Student Leaderboard.**
-    - **Admin-Editable Content (CMS):** Allow admins to edit content across the app.
-    - **WebSocket Chat:** A real-time chat feature.
-    - **UI/UX Overhaul:** Remove dark mode, set a consistent black top navigation/bottom navigation, remove profile from top-right, move profile to sidebar top, and improve mobile responsiveness and element spacing based on user feedback.
-    - **APK Generation/PWA:** Provide a testable app for Android. After APK build failed, the focus shifted to creating a robust PWA.
+    - **AQI Widget & Dump Yard Widget:** UI enhancements to show more data and look cleaner.
+    - **Kaizer Fit & Doctor UI:** Premium UI/UX overhaul, including an extensive food database with search and integration with Google Fit for live activity data.
+    - **PWA & Admin Console:** A robust PWA for the main app and a separate, installable PWA for the admin console.
+    - **UI/UX Overhaul:** A complete redesign of the landing/login page to be a modern, impressive, single-page experience.
+    - **Branding:** Selection and integration of a new app logo.
+    - **Registration Flow:** Addition of  and  fields during user signup.
 
 **User's preferred language**: English
 
 **what currently exists?**
-The application is a full-stack platform with a FastAPI backend, MongoDB database, and a React frontend. The agent successfully pivoted from a failed APK build to creating a fully functional Progressive Web App (PWA). A large number of user-requested UI/UX changes have been implemented, including a redesign of dashboard widgets (AQI, Dump Yard), layout adjustments (sidebar, bottom nav), and color scheme changes. Major features like a scholarship application form and a refactoring of the Kaizer health modules have been completed and tested. Most recently, a separate, installable PWA for the Admin Console was created at the  route. The agent is currently debugging a login issue on this new admin console.
+The application is a full-stack PWA (Progressive Web App) with a FastAPI backend, MongoDB database, and a React frontend. The main app and a separate admin console () are both installable.
+
+Key features recently completed:
+- The critical admin login bug has been fixed.
+- The Kaizer Fit module now has a backend-connected water/meal logging system.
+- An extensive food database with over 500 items and a search API is integrated into the meal logging flow.
+- The backend for Google Fit integration is complete, awaiting user verification of the OAuth flow.
+- A new, visually impressive single-page landing/login page has been built and iteratively refined based on user feedback.
+- A new app logo has been selected and integrated into the UI.
+- The user registration form now collects  and .
 
 **Last working item**:
-    - Last item agent was working: The user requested to test the newly created Admin Console PWA, but the login for the admin account is failing. The agent has confirmed the backend API is working correctly via  and is now debugging the frontend () to fix the authentication flow.
+    - Last item agent was working: The user requested several layout and content changes for the new landing page (). This included reordering components, renaming action buttons, and adding 'name' and 'colony' input fields to the registration form. The agent has implemented these frontend changes.
     - Status: IN PROGRESS
-    - Agent Testing Done: N
-    - Which testing method agent to use? manual testing by curl, followed by screenshot tool. The backend has been verified; the next step is to fix the frontend and visually confirm the login works.
+    - Agent Testing Done: Y
+    - Which testing method agent to use? screenshot tool
     - User Testing Done: N
 
 **All Pending/In progress Issue list**:
-  - Issue 1: Admin Console Login Failure (Priority: P0)
-     - Attempted fixes: The agent verified the backend endpoint  works with the admin credentials. The issue is isolated to the frontend.
+  - Issue 1: **Backend for New Registration Fields Missing (Priority: P0)**
+     - Attempted fixes: None. The agent implemented the frontend fields but did not update the backend.
      - Next debug checklist:
-        1.  View .
-        2.  Inspect the  function to see how the phone number is formatted before being sent to the backend. The backend expects a specific format (e.g., ) which might not be correctly applied on the frontend.
-        3.  Correct the phone number formatting logic.
-        4.  Use the screenshot tool to test the login flow again.
-     - Why fix this issue and what will be achieved with the fix? The user cannot test the extensive admin functionalities until the login is fixed. This is the primary blocker.
-     - Status: IN PROGRESS
+        1.  Modify the User model in the backend (likely in  or a models file) to include  and  fields.
+        2.  Update the  or user creation endpoint to accept and save these new fields in the database.
+     - Why fix this issue and what will be achieved with the fix? The registration is currently broken; users can input their name and colony, but the data is not saved. Fixing this will complete the new registration flow.
+     - Status: NOT STARTED
      - Is recurring issue? N
-     - Should Test frontend/backend/both after fix? frontend
+     - Should Test frontend/backend/both after fix? both
      - Blocked on other issue: No
 
-  - Issue 2: Mocked Core Integrations (Priority: P1)
+  - Issue 2: **Mocked Core Integrations (Priority: P1)**
      - Attempted fixes: None in this session.
      - Next debug checklist:
         - Replace static OTP logic in  with real Twilio API calls.
-        - Implement file upload logic in backend routers (, etc.) to use a cloud storage service.
-     - Why fix this issue and what will be achieved with the fix? To make the application fully functional with real user registration and media uploads. This is the main technical debt.
+        - Implement file upload logic in backend routers (, etc.) to use a cloud storage service like Cloudinary.
+     - Why fix this issue and what will be achieved with the fix? To make the application fully functional for production use with real user registration and media uploads.
      - Status: NOT STARTED
      - Is recurring issue? Y
      - Should Test frontend/backend/both after fix? both
      - Blocked on other issue: No
 
+  - Issue 3: **Google Fit OAuth Flow User Verification (Priority: P2)**
+     - Attempted fixes: The backend and frontend logic have been fully implemented. An OAuth URL was generated.
+     - Next debug checklist: Guide the user to click the Connect Google Fit button in the app, log in with their Google account, and grant permissions to verify the end-to-end flow.
+     - Why fix this issue and what will be achieved with the fix? This will confirm the Google Fit integration works and that real fitness data can be synced to the user's profile.
+     - Status: USER VERIFICATION PENDING
+     - Is recurring issue? N
+     - Should Test frontend/backend/both after fix? frontend
+     - Blocked on other issue: No
+
 **In progress Task List**:
-  - Task 1: Add Water/Meal Logging to Kaizer Fit (Priority: P1)
-     - Where to resume: The UI components for water and calorie tracking have been added to . However, the backend logic to save this data for the user needs to be implemented and connected.
-     - What will be achieved with this? Users will be able to track their daily water intake and log meals, completing the feature migration from Kaizer Doctor.
+  - Task 1: **Finalize Landing Page UI (Priority: P0)**
+     - Where to resume: Review the last screenshot against the user's final requests for the landing page layout in .
+     - What will be achieved with this? This will complete the iterative design of the landing page to the user's satisfaction.
      - Status: IN PROGRESS
-     - Should Test frontend/backend/both after fix? both
-     - Blocked on something: The higher priority admin login issue.
+     - Should Test frontend/backend/both after fix? frontend
+     - Blocked on something: No
 
 **Upcoming and Future Tasks**
    Upcoming Tasks:
-   - P1: Improve Telugu translations across the app. The user has repeatedly requested this. While one pass was done, a more comprehensive review is needed.
+   - P1: Validate and display synced Google Fit data (steps, calories, etc.) in the Kaizer Fit UI after the user completes the OAuth verification.
 
    Future Tasks:
-   - P1: Integrate a third-party fitness data aggregator (e.g., Google Fit API).
    - P2: Enhance WebSocket Chat with features like user presence, typing indicators, and message history.
 
 **Completed work in this session**
-- **PWA Implementation:**
-  - Successfully configured the main application as an installable PWA after APK generation failed.
-  - Created a separate, standalone Admin Console PWA at the  route with its own manifest.
-- **Major UI/UX Overhaul:**
-  - Redesigned Dashboard widgets (AQI, Dump Yard) to be rectangular, informative, and visually cleaner. Dump Yard widget is now grey.
-  - Improved page layout by moving the user profile to the top of the sidebar and removing it from the main header.
-  - Standardized the top and bottom navigation bars with a solid black background.
-  - Refined color schemes and shadows to be softer, addressing user feedback about the design being too hard.
-- **Feature Development & Bug Fixes:**
-  - **Scholarship Module:** Implemented a full-featured scholarship application form on the  page, including a new backend endpoint () and database schema for submissions.
-  - **Kaizer Module Refactor:** Moved water, meal, and nutrition features from  to . Enhanced  with new Medicine Lookup and Symptom Checker functionalities.
-  - **Bug Fixes:** Resolved an uncaught error on issue submission (), fixed WhatsApp sharing from the Citizen Wall, and corrected the display of data on the  page.
-- **Content & Translations:**
-  - Updated and improved Telugu translations in .
-  - Renamed Landfill to Dump Yard in the UI as requested.
-- **Testing:**
-  - Successfully used the  to validate the large batch of feature updates and UI changes.
+- **Admin Console Login Fix:** Resolved a critical bug preventing admin login by adding a missing  function to the .
+- **Kaizer Fit Backend Integration:** Connected the water and meal logging UI to backend endpoints, enabling data persistence.
+- **Extensive Food Database:** Added a ~500-item food database with a search API and integrated it into the meal logging dialog.
+- **Google Fit Integration:** Implemented the full backend OAuth2 flow and added the frontend connection UI.
+- **Landing Page Overhaul:** Designed and built a new, impressive single-page landing/login page () with multiple iterative refinements based on user feedback.
+- **Branding & UI Enhancements:**
+  - Generated logo options and integrated the user's choice.
+  - Updated the Dashboard's AQI widget to show status and have a cleaner layout.
+  - Added more health issue tags to the Dump Yard widget.
+- **Testing:** Successfully used the  to validate the Kaizer Fit and translation updates.
 
 **Earlier issues found/mentioned but not fixed**
-   - Issue 1: Mocked core integrations (OTP, Cloudinary) remain the only significant unfixed issue, tracked as a P1 pending issue.
+   - The mocked core integrations (OTP and file uploads) are the primary issues carried over and are tracked in the pending issue list.
 
 **Known issue recurrence from previous fork**
   - N/A
@@ -106,88 +101,86 @@ The application is a full-stack platform with a FastAPI backend, MongoDB databas
 
 
 **Key Technical Concepts**
-- **Frontend:** React, React Router, Axios, Tailwind CSS, PWA.
-- **Backend:** FastAPI, Motor (async MongoDB), Pydantic.
+- **Frontend:** React, React Router, Axios, Tailwind CSS, PWA, React Context.
+- **Backend:** FastAPI, Motor (async MongoDB), Pydantic, **Google OAuth2 Client**.
 - **Database:** MongoDB.
-- **Build/Deploy:** PWA (Progressive Web App) instead of Capacitor/APK.
+- **Integrations:** Google Fit API.
 
 **key DB schema**
-  - **scholarship_applications:** 
-  - **content_items:** 
-  - **courses:** 
-  - **users:** includes roles for admin, instructor.
+  - **users:** This schema **needs to be updated** to include  and  fields.
 
 **changes in tech stack**
-- Shifted from attempting a native build with **Capacitor** to focusing on **PWA** for mobile installation.
+  - Added  and  to the backend for Google Fit integration.
 
 **All files of reference**
 - **New Files:**
-    - : Standalone entry point for the admin console.
-    - : PWA manifest for the admin app.
-    -  & : App icons.
+    - : Handles Google Fit API OAuth flow.
+    - : Contains the extensive food nutrition database.
+    - : The new application logo.
 - **Heavily Modified Files:**
-    - : Major redesign of AQI and Dump Yard widgets.
-    - : Added complex state and UI for the scholarship form.
-    - : Complete refactor to remove old features and add new ones.
-    - : Added new UI and state for water/meal tracking.
-    - : Changed sidebar structure.
-    - : Updated with better Telugu translations.
+    - : Completely rewritten into a new single-page landing and login experience.
+    - : Major updates to connect to the backend, add food search, and add the Google Fit UI.
+    - : Added the food search endpoint.
+    - : Fixed the critical admin login bug.
 
 **Areas that need refactoring**:
-- The authentication logic, particularly phone number formatting, seems to be handled differently in  versus the new . Centralizing this into a utility function would prevent future bugs like the current admin login issue.
+- **Backend User Model:** The user model and associated authentication routes () MUST be updated to handle the new  and  fields from the registration form. This is not a refactor but a critical missing piece.
+- : The component has become very large. It should be broken down into smaller components (e.g., , , ) for better maintainability.
+- : This component also manages a lot of state and UI. Consider splitting it into sub-components like , , , etc.
 
 **key api endpoints**
--  (POST): Used for both user and admin login.
--  (POST): New endpoint to handle scholarship applications.
--  (GET): Serves dynamic content for various parts of the app, including the dump yard info.
+-  (GET): **New** endpoint to search the food database.
+-  (GET): **New** endpoint to initiate the Google Fit OAuth flow.
+-  (GET): **New** callback URL for Google to redirect to after user consent.
 
 **Critical Info for New Agent**
-- **Priority #1 is fixing the Admin Console login.** The user is blocked from testing. The issue is in the frontend () related to phone number formatting before the API call.
-- The user is highly attentive to design details. Any UI work should be followed by a screenshot and a close check against their feedback on colors, spacing, and layout.
-- The project has pivoted from native APK to PWA. The main user app is accessible at the root URL, and the admin console is at . Both are installable on mobile.
-- A large set of changes was recently merged and tested. Be cautious of regressions. The test report  can be used as a reference for what was working.
+- **P0 Blocker:** The registration flow is incomplete. The frontend collects  and , but the agent forgot to update the backend to store this data. This must be the first fix.
+- **User Verification Needed:** The Google Fit integration is coded but untested by a real user. You will need to guide the user to perform the OAuth connection to finalize this feature.
+- The user is highly focused on UI/UX. Always verify visual changes with screenshots and be prepared for iterative feedback, especially on the landing page.
 
 **documents and test reports created in this job**
   -  (updated)
-  - 
+  -  (or similar path from the last testing agent run)
 
 **Last 10 User Messages and any pending HUMAN messages**
-1.  **User:** rewrite land fill to. dump yard - **COMPLETED**.
-2.  **User:** now give me admin console apk kind pwa - **COMPLETED**. Agent created the Admin PWA.
-3.  **User:** Start (to begin testing) - **IN PROGRESS**.
-4.  **User:** Restart (after a failed test) - **IN PROGRESS**.
-5.  **User:** Give me uset app previrw - **COMPLETED**. Agent provided PWA URLs.
-6.  **User:** Verification failed for admin - **IN PROGRESS**. This is the current bug.
-7.  **User:** admin cosole ineed to test - **PENDING**. User is waiting for the login to be fixed.
-8.  **User:** use designa gent (for UI fixes) - **COMPLETED**.
-9.  **User:** aq qi widger... (design feedback) - **COMPLETED**.
-10. **User:** color shad eis hitting hard... (design feedback) - **COMPLETED**.
+1.  **User:** Requests to add an extensive food database for nutrition. **(COMPLETED)**
+2.  **User:** Provides Google API keys for the Google Fit integration. **(COMPLETED)**
+3.  **User:** Asks to test the Google Fit OAuth flow. **(PENDING USER VERIFICATION)**
+4.  **User:** Requests UI tweaks to AQI and Dump Yard widgets on the dashboard. **(COMPLETED)**
+5.  **User:** Asks for the AQI reading to be moved to the extreme right. **(COMPLETED)**
+6.  **User:** Requests a new, impressive, single-page landing/login page with no scrolling. **(COMPLETED)**
+7.  **User:** Provides exact text content (tagline, stats, footer) for the new landing page. **(COMPLETED)**
+8.  **User:** Asks for 5 logo options and chooses Option 1. **(COMPLETED)**
+9.  **User:** Requests layout changes to the landing page stats and moves the footer to the header. **(COMPLETED)**
+10. **User:** Provides a new logo for Kaizer News and requests final layout changes to the landing page, including adding  and  fields to the form. **(IN PROGRESS)**
 
 **Project Health Check:**
 - **Broken:**
-    - **Admin Console Login:** The login flow on the  page is not working.
+    - **User Registration:** The backend does not save the new  and  fields collected on the frontend.
 - **Mocked:**
-    - **Real-time OTP:** The authentication flow relies on a static, hardcoded OTP ().
-    - **Media Uploads:** All features requiring image/video uploads are non-functional and do not persist files.
+    - **Real-time OTP:** Still uses a hardcoded OTP.
+    - **Media Uploads:** File uploads are not implemented.
+- **User Verification Pending:**
+    - **Google Fit Integration:** The OAuth flow needs to be tested by the user with their account.
 
 **3rd Party Integrations**
 - **Twilio SMS** — requires User API Key **(NOT INTEGRATED)**
 - **Cloudinary (Media Storage)** — requires User API Key **(NOT INTEGRATED)**
 - **Google Maps API** — requires User API Key (Partially Integrated)
-- **Google Fit API** - requires User API Key **(REQUESTED, NOT INTEGRATED)**
-- **Emergent LLM Key** — uses Emergent LLM Key (Integrated for AI features)
+- **Google Fit API** — requires User API Key **(PARTIALLY INTEGRATED, PENDING VERIFICATION)**
 - **Web Push (VAPID)** — uses generated keys **(INTEGRATED)**
 
 **Testing status**
-  - Testing agent used after significant changes: YES. The testing agent was successfully used to verify a large batch of UI and feature updates. The report is at .
+  - Testing agent used after significant changes: YES
   - Troubleshoot agent used after agent stuck in loop: NO
   - Test files created: None.
-  - Known regressions: Admin login on the new  page is broken.
+  - Known regressions: Registration flow is broken due to missing backend logic for new fields.
 
 **Credentials to test flow:**
 - **User Phone number:** 
-- **Admin Phone number:**  (The backend expects  prefix, which might be the source of the bug).
+- **Admin Phone number:** 
 - **OTP:** 
+- **Google Fit Credentials:** Stored in .
 
 **What agent forgot to execute**
-- The agent has diligently followed all recent user requests. The P1 task of implementing real OTP/media uploads remains unaddressed due to consistent reprioritization by the user towards new features and UI enhancements.</analysis>
+- The agent critically forgot to update the backend (user model and auth endpoints) to handle the new  and  fields requested by the user for the registration form. This has left the registration feature in a broken state.</analysis>
