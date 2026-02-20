@@ -81,40 +81,40 @@ export default function StatusTemplates() {
       title: "Ugadi Wishes",
       title_te: "ఉగాది శుభాకాంక్షలు",
       category: "festival",
-      background_url: "https://picsum.photos/800/800?random=1",
-      thumbnail_url: "https://picsum.photos/200/200?random=1",
-      photo_position: { x: 150, y: 100, width: 120, height: 120, shape: "circle" },
-      name_position: { x: 210, y: 280, fontSize: 24, color: "#ffffff", align: "center" }
+      background_url: "https://static.prod-images.emergentagent.com/jobs/044ec1e0-0bbd-4371-8858-4deb764fc72a/images/79b37a5afa2166067efdd52ee9e70173629fd95771b00ec0c40b3eabae9b08db.png",
+      thumbnail_url: "https://static.prod-images.emergentagent.com/jobs/044ec1e0-0bbd-4371-8858-4deb764fc72a/images/79b37a5afa2166067efdd52ee9e70173629fd95771b00ec0c40b3eabae9b08db.png",
+      photo_position: { x: 200, y: 80, width: 120, height: 120, shape: "circle" },
+      name_position: { x: 200, y: 350, fontSize: 24, color: "#8B4513", align: "center" }
     },
     {
       id: "sample-2",
       title: "Happy Birthday",
       title_te: "పుట్టినరోజు శుభాకాంక్షలు",
       category: "birthday",
-      background_url: "https://picsum.photos/800/800?random=2",
-      thumbnail_url: "https://picsum.photos/200/200?random=2",
-      photo_position: { x: 150, y: 80, width: 100, height: 100, shape: "circle" },
-      name_position: { x: 200, y: 240, fontSize: 20, color: "#333333", align: "center" }
+      background_url: "https://static.prod-images.emergentagent.com/jobs/044ec1e0-0bbd-4371-8858-4deb764fc72a/images/48a5573191656e5bc13f3f9be0be236a9917d5a3769d90d772878192b73ea167.png",
+      thumbnail_url: "https://static.prod-images.emergentagent.com/jobs/044ec1e0-0bbd-4371-8858-4deb764fc72a/images/48a5573191656e5bc13f3f9be0be236a9917d5a3769d90d772878192b73ea167.png",
+      photo_position: { x: 200, y: 120, width: 130, height: 130, shape: "circle" },
+      name_position: { x: 200, y: 340, fontSize: 22, color: "#ffffff", align: "center" }
     },
     {
       id: "sample-3",
       title: "Diwali Greetings",
       title_te: "దీపావళి శుభాకాంక్షలు",
       category: "festival",
-      background_url: "https://picsum.photos/800/800?random=3",
-      thumbnail_url: "https://picsum.photos/200/200?random=3",
-      photo_position: { x: 160, y: 120, width: 100, height: 100, shape: "circle" },
-      name_position: { x: 210, y: 300, fontSize: 22, color: "#FFD700", align: "center" }
+      background_url: "https://static.prod-images.emergentagent.com/jobs/044ec1e0-0bbd-4371-8858-4deb764fc72a/images/ed0e204c8414c20a3008a3c85214b5bf4a533419cff72a0ab193d6c1e43b6f50.png",
+      thumbnail_url: "https://static.prod-images.emergentagent.com/jobs/044ec1e0-0bbd-4371-8858-4deb764fc72a/images/ed0e204c8414c20a3008a3c85214b5bf4a533419cff72a0ab193d6c1e43b6f50.png",
+      photo_position: { x: 200, y: 100, width: 120, height: 120, shape: "circle" },
+      name_position: { x: 200, y: 280, fontSize: 22, color: "#FFD700", align: "center" }
     },
     {
       id: "sample-4",
-      title: "Thank You",
-      title_te: "ధన్యవాదాలు",
-      category: "greeting",
-      background_url: "https://picsum.photos/800/800?random=4",
-      thumbnail_url: "https://picsum.photos/200/200?random=4",
-      photo_position: { x: 155, y: 90, width: 110, height: 110, shape: "circle" },
-      name_position: { x: 210, y: 260, fontSize: 20, color: "#ffffff", align: "center" }
+      title: "Sankranti Wishes",
+      title_te: "సంక్రాంతి శుభాకాంక్షలు",
+      category: "festival",
+      background_url: "https://static.prod-images.emergentagent.com/jobs/044ec1e0-0bbd-4371-8858-4deb764fc72a/images/c93634804f27546d1d02b94ba9064a9436d0b1370740f62f5bf37a3eeeae071b.png",
+      thumbnail_url: "https://static.prod-images.emergentagent.com/jobs/044ec1e0-0bbd-4371-8858-4deb764fc72a/images/c93634804f27546d1d02b94ba9064a9436d0b1370740f62f5bf37a3eeeae071b.png",
+      photo_position: { x: 200, y: 100, width: 110, height: 110, shape: "circle" },
+      name_position: { x: 200, y: 340, fontSize: 20, color: "#ffffff", align: "center" }
     }
   ];
 
