@@ -514,9 +514,14 @@ export default function Dashboard() {
               
               {/* Hyderabad - Secondary Row */}
               <div className="flex items-center justify-between mt-3 pt-3 border-t border-gray-100">
-                <p className="text-sm text-gray-500">
-                  {language === "te" ? "హైదరాబాద్" : "Hyderabad"}
-                </p>
+                <div className="flex items-center gap-2">
+                  <div className={`h-7 w-7 rounded-lg ${getAqiInfo(aqiData?.hyderabad?.aqi).bg} ${getAqiInfo(aqiData?.hyderabad?.aqi).text} flex items-center justify-center`}>
+                    <Wind className="h-3.5 w-3.5" />
+                  </div>
+                  <p className="text-sm text-gray-600">
+                    {language === "te" ? "హైదరాబాద్" : "Hyderabad"}
+                  </p>
+                </div>
                 <div className="flex items-center gap-2">
                   <p className="font-semibold text-base text-gray-600">{aqiData?.hyderabad?.aqi || "—"}</p>
                   <span className={`px-2 py-0.5 rounded-md text-[10px] font-semibold ${getAqiInfo(aqiData?.hyderabad?.aqi).bg} ${getAqiInfo(aqiData?.hyderabad?.aqi).text}`}>
