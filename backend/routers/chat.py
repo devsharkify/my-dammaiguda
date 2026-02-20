@@ -54,8 +54,6 @@ async def get_chat_personas():
 @router.post("")
 async def chat(message: ChatMessage, user: dict = Depends(get_current_user)):
     """Send a message to AI assistant"""
-    from emergentintegrations.llm.chat import LlmChat, UserMessage
-    
     if message.chat_type not in CHAT_PERSONAS:
         raise HTTPException(status_code=400, detail="Invalid chat type")
     
@@ -69,32 +67,27 @@ async def chat(message: ChatMessage, user: dict = Depends(get_current_user)):
     
     history.reverse()
     
-    # Build messages
-    messages = []
+    # Build messages for OpenAI
+    openai_messages = [{"role": "system", "content": persona["system"]}]
     for h in history:
-        messages.append({"role": "user", "content": h["message"]})
-        messages.append({"role": "assistant", "content": h["response"]})
+        openai_messages.append({"role": "user", "content": h["message"]})
+        openai_messages.append({"role": "assistant", "content": h["response"]})
+    openai_messages.append({"role": "user", "content": message.message})
     
     try:
-        llm_key = os.environ.get('EMERGENT_LLM_KEY')
-        if not llm_key:
+        openai_key = os.environ.get('OPENAI_API_KEY')
+        if not openai_key:
             raise HTTPException(status_code=500, detail="AI service not configured")
         
-        chat_instance = LlmChat(
-            api_key=llm_key,
-            model="gpt-4o-mini",
-            system_message=persona["system"]
-        )
-        
-        # Add history
-        for msg in messages:
-            if msg["role"] == "user":
-                chat_instance.add_user_message(msg["content"])
-            else:
-                chat_instance.messages.append({"role": "assistant", "content": msg["content"]})
-        
-        # Get response
-        response = await chat_instance.async_chat(message.message)
+        async with httpx.AsyncClient() as client:
+            resp = await client.post(
+                "https://api.openai.com/v1/chat/completions",
+                headers={"Authorization": f"Bearer {openai_key}", "Content-Type": "application/json"},
+                json={"model": "gpt-4o-mini", "messages": openai_messages, "max_tokens": 1000},
+                timeout=30.0
+            )
+            resp.raise_for_status()
+            response = resp.json()["choices"][0]["message"]["content"]
         
         # Save to history
         chat_entry = {
