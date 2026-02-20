@@ -493,7 +493,7 @@ export default function Dashboard() {
               <p className="text-[11px] text-gray-400 font-medium mb-3">
                 {language === "te" ? "గాలి నాణ్యత (కాలుష్యం)" : "Air Quality (Pollution)"}
               </p>
-              {/* Dammaiguda - Main Row */}
+              {/* Dammaiguda Row */}
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-3">
                   <div className={`h-10 w-10 rounded-xl ${getAqiInfo(aqiData?.dammaiguda?.aqi).bg} ${getAqiInfo(aqiData?.dammaiguda?.aqi).text} flex items-center justify-center`}>
@@ -513,21 +513,23 @@ export default function Dashboard() {
                 </div>
               </div>
               
-              {/* Hyderabad - Secondary Row */}
+              {/* Hyderabad Row - Same size as Dammaiguda */}
               <div className="flex items-center justify-between mt-3 pt-3 border-t border-gray-100">
-                <div className="flex items-center gap-2">
-                  <div className={`h-7 w-7 rounded-lg ${getAqiInfo(aqiData?.hyderabad?.aqi).bg} ${getAqiInfo(aqiData?.hyderabad?.aqi).text} flex items-center justify-center`}>
-                    <Wind className="h-3.5 w-3.5" />
+                <div className="flex items-center gap-3">
+                  <div className={`h-10 w-10 rounded-xl ${getAqiInfo(aqiData?.hyderabad?.aqi).bg} ${getAqiInfo(aqiData?.hyderabad?.aqi).text} flex items-center justify-center`}>
+                    <Wind className="h-5 w-5" />
                   </div>
-                  <p className="text-sm text-gray-600">
+                  <p className="text-base font-bold text-gray-800">
                     {language === "te" ? "హైదరాబాద్" : "Hyderabad"}
                   </p>
                 </div>
-                <div className="flex items-center gap-2">
-                  <p className="font-semibold text-base text-gray-600">{aqiData?.hyderabad?.aqi || "—"}</p>
-                  <span className={`px-2 py-0.5 rounded-md text-[10px] font-semibold ${getAqiInfo(aqiData?.hyderabad?.aqi).bg} ${getAqiInfo(aqiData?.hyderabad?.aqi).text}`}>
-                    {language === "te" ? getAqiInfo(aqiData?.hyderabad?.aqi).status_te : getAqiInfo(aqiData?.hyderabad?.aqi).status}
-                  </span>
+                <div className="flex items-center gap-3">
+                  <p className="font-bold text-2xl text-gray-800">{aqiData?.hyderabad?.aqi || "—"}</p>
+                  <div className={`px-2.5 py-1 rounded-lg ${getAqiInfo(aqiData?.hyderabad?.aqi).bg}`}>
+                    <span className={`text-xs font-semibold ${getAqiInfo(aqiData?.hyderabad?.aqi).text}`}>
+                      {language === "te" ? getAqiInfo(aqiData?.hyderabad?.aqi).status_te : getAqiInfo(aqiData?.hyderabad?.aqi).status}
+                    </span>
+                  </div>
                 </div>
               </div>
             </CardContent>
