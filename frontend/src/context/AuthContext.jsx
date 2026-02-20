@@ -83,6 +83,13 @@ export function AuthProvider({ children }) {
     setUser(null);
   };
 
+  // Direct login function for external auth flows
+  const login = (newUser, newToken) => {
+    localStorage.setItem("dammaiguda_token", newToken);
+    setToken(newToken);
+    setUser(newUser);
+  };
+
   return (
     <AuthContext.Provider value={{
       user,
