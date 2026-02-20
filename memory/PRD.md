@@ -127,20 +127,76 @@ DISABLE_ESLINT_PLUGIN=true
 
 ## Pending/Future Tasks
 
+### P0 - Immediate:
+- [ ] Complete Google Play Store submission
+- [ ] Google Fit OAuth verification (user testing on live domain)
+
 ### P1 - High Priority:
 - [ ] Update Play Store listing with production URLs
-- [ ] Create Terms of Service page
 - [ ] Test OTP flow with real phone numbers
-- [ ] Remove test OTP backdoor (123456) for production security
+- [ ] Remove test OTP backdoor (123456) for production security (after Play Store approval)
+- [ ] Apple App Store submission
 
 ### P2 - Medium Priority:
-- [ ] White-label replication for other areas (AS Rao Nagar, Kapra)
+- [x] ✅ White-label replication architecture (COMPLETED - Feb 20, 2026)
 - [ ] Enhanced WebSocket Chat features
 - [ ] User analytics dashboard
 
 ### P3 - Low Priority:
 - [ ] Push notifications setup
 - [ ] Offline mode enhancements
+
+---
+
+## White-Label Architecture (Completed Feb 20, 2026)
+
+### Overview
+The app now supports easy replication for different areas (e.g., "My AS Rao Nagar", "My Kapra") through a centralized configuration system.
+
+### Key Files:
+1. **`/src/config/appConfig.js`** - Master configuration file with:
+   - Area identity (name, location, pincode)
+   - Branding (colors, logos, app name)
+   - Feature toggles (dump yard is disabled for non-Dammaiguda areas)
+   - AQI station configuration
+   - Stats for landing page
+   - Company info
+
+2. **`/src/context/AppConfigContext.jsx`** - React context provider with hooks:
+   - `useAppConfig()` - Full config access
+   - `useFeatureFlags()` - Feature toggles
+   - `useLocalizedConfig(language)` - Localized values
+   - `useBranding()`, `useAreaInfo()`, `useStats()`, etc.
+
+3. **`/scripts/create-area.js`** - CLI clone generator:
+   ```bash
+   node scripts/create-area.js asraonagar     # Use preset
+   node scripts/create-area.js kompally --new # Create new
+   ```
+
+### Configured Components:
+- ✅ LandingPage.jsx - Uses config for branding, stats, area name
+- ✅ Dashboard.jsx - Conditionally shows dump yard widget
+- ✅ Layout.jsx - Menu items filtered by feature flags
+- ✅ App.js - AppConfigProvider wrapping app
+
+### Area Presets Available:
+| Area | Color | Dump Yard | Domain |
+|------|-------|-----------|--------|
+| Dammaiguda | Teal | ✅ Yes | mydammaiguda.in |
+| AS Rao Nagar | Blue | ❌ No | myasraonagar.in |
+| Kapra | Purple | ❌ No | mykapra.in |
+| Bachupally | Red | ❌ No | mybachupally.in |
+| Kukatpally | Orange | ❌ No | mykukatpally.in |
+| Malkajgiri | Emerald | ❌ No | mymalkajgiri.in |
+| Uppal | Cyan | ❌ No | myuppal.in |
+
+### How to Clone for New Area:
+1. Run `node scripts/create-area.js <area-id>`
+2. Copy generated files to `/src/config/` and `/public/`
+3. Update logo files
+4. Update .env with new backend URL
+5. Build and deploy
 
 ---
 
