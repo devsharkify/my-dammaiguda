@@ -2169,15 +2169,14 @@ export default function AdminDashboard() {
                 <Label>Subtitle</Label>
                 <Input value={bannerForm.subtitle} onChange={(e) => setBannerForm({...bannerForm, subtitle: e.target.value})} />
               </div>
-              <div>
-                <Label>Image URL *</Label>
-                <Input value={bannerForm.image_url} onChange={(e) => setBannerForm({...bannerForm, image_url: e.target.value})} placeholder="https://..." />
-              </div>
-              {bannerForm.image_url && (
-                <div className="aspect-video rounded-lg overflow-hidden bg-muted">
-                  <img src={bannerForm.image_url} alt="Preview" className="w-full h-full object-cover" />
-                </div>
-              )}
+              
+              <ImageInput 
+                label="Banner Image *"
+                value={bannerForm.image_url}
+                onChange={(url) => setBannerForm({...bannerForm, image_url: url})}
+                aspectRatio="video"
+              />
+
               <div>
                 <Label>Link URL (optional)</Label>
                 <Input value={bannerForm.link_url} onChange={(e) => setBannerForm({...bannerForm, link_url: e.target.value})} placeholder="/education" />
