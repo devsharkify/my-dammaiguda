@@ -9,66 +9,84 @@ import pytest
 import requests
 import os
 
-BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', '').rstrip('/')
+BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', 'https://civic-trust-platform.preview.emergentagent.com').rstrip('/')
 
 # Test credentials
 ADMIN_PHONE = "9999999999"
 TEST_PHONE = "9876543210"
 TEST_OTP = "123456"
 
+# Global tokens
+admin_token = None
+user_token = None
 
-class TestSetup:
-    """Setup and teardown for tests"""
+
+def get_user_token():
+    """Get regular user auth token"""
+    global user_token
+    if user_token:
+        return user_token
     
-    @pytest.fixture(scope="class")
-    def admin_token(self):
-        """Get admin auth token"""
-        # Request OTP
-        response = requests.post(f"{BASE_URL}/api/auth/request-otp", json={
-            "phone_number": ADMIN_PHONE
-        })
-        if response.status_code != 200:
-            pytest.skip(f"Failed to request OTP: {response.text}")
-        
-        # Verify OTP
-        response = requests.post(f"{BASE_URL}/api/auth/verify-otp", json={
-            "phone_number": ADMIN_PHONE,
-            "otp": TEST_OTP
-        })
-        if response.status_code != 200:
-            pytest.skip(f"Failed to verify OTP: {response.text}")
-        
-        data = response.json()
-        return data.get("token")
+    # Request OTP
+    response = requests.post(f"{BASE_URL}/api/auth/request-otp", json={
+        "phone_number": TEST_PHONE
+    })
+    if response.status_code != 200:
+        print(f"Failed to request OTP: {response.text}")
+        return None
     
-    @pytest.fixture(scope="class")
-    def user_token(self):
-        """Get regular user auth token"""
-        # Request OTP
-        response = requests.post(f"{BASE_URL}/api/auth/request-otp", json={
-            "phone_number": TEST_PHONE
-        })
-        if response.status_code != 200:
-            pytest.skip(f"Failed to request OTP: {response.text}")
-        
-        # Verify OTP
-        response = requests.post(f"{BASE_URL}/api/auth/verify-otp", json={
-            "phone_number": TEST_PHONE,
-            "otp": TEST_OTP
-        })
-        if response.status_code != 200:
-            pytest.skip(f"Failed to verify OTP: {response.text}")
-        
-        data = response.json()
-        return data.get("token")
+    # Verify OTP
+    response = requests.post(f"{BASE_URL}/api/auth/verify-otp", json={
+        "phone_number": TEST_PHONE,
+        "otp": TEST_OTP
+    })
+    if response.status_code != 200:
+        print(f"Failed to verify OTP: {response.text}")
+        return None
+    
+    data = response.json()
+    user_token = data.get("token")
+    return user_token
 
 
-class TestAnalyticsAPI(TestSetup):
+def get_admin_token():
+    """Get admin auth token"""
+    global admin_token
+    if admin_token:
+        return admin_token
+    
+    # Request OTP
+    response = requests.post(f"{BASE_URL}/api/auth/request-otp", json={
+        "phone_number": ADMIN_PHONE
+    })
+    if response.status_code != 200:
+        print(f"Failed to request OTP: {response.text}")
+        return None
+    
+    # Verify OTP
+    response = requests.post(f"{BASE_URL}/api/auth/verify-otp", json={
+        "phone_number": ADMIN_PHONE,
+        "otp": TEST_OTP
+    })
+    if response.status_code != 200:
+        print(f"Failed to verify OTP: {response.text}")
+        return None
+    
+    data = response.json()
+    admin_token = data.get("token")
+    return admin_token
+
+
+class TestAnalyticsAPI:
     """Test Analytics API Endpoints"""
     
-    def test_page_view_tracking(self, user_token):
+    def test_page_view_tracking(self):
         """Test POST /api/analytics/page-view"""
-        headers = {"Authorization": f"Bearer {user_token}"}
+        token = get_user_token()
+        if not token:
+            pytest.skip("Could not get user token")
+        
+        headers = {"Authorization": f"Bearer {token}"}
         response = requests.post(f"{BASE_URL}/api/analytics/page-view", json={
             "page": "/news",
             "page_title": "News Page",
@@ -80,9 +98,13 @@ class TestAnalyticsAPI(TestSetup):
         assert data.get("success") is True
         print(f"PASS: POST /api/analytics/page-view - {response.status_code}")
     
-    def test_action_tracking(self, user_token):
+    def test_action_tracking(self):
         """Test POST /api/analytics/action"""
-        headers = {"Authorization": f"Bearer {user_token}"}
+        token = get_user_token()
+        if not token:
+            pytest.skip("Could not get user token")
+        
+        headers = {"Authorization": f"Bearer {token}"}
         response = requests.post(f"{BASE_URL}/api/analytics/action", json={
             "action": "click",
             "element": "share_button",
@@ -95,9 +117,13 @@ class TestAnalyticsAPI(TestSetup):
         assert data.get("success") is True
         print(f"PASS: POST /api/analytics/action - {response.status_code}")
     
-    def test_feature_tracking(self, user_token):
+    def test_feature_tracking(self):
         """Test POST /api/analytics/feature"""
-        headers = {"Authorization": f"Bearer {user_token}"}
+        token = get_user_token()
+        if not token:
+            pytest.skip("Could not get user token")
+        
+        headers = {"Authorization": f"Bearer {token}"}
         response = requests.post(f"{BASE_URL}/api/analytics/feature", json={
             "feature": "news",
             "sub_feature": "local",
@@ -110,9 +136,13 @@ class TestAnalyticsAPI(TestSetup):
         assert data.get("success") is True
         print(f"PASS: POST /api/analytics/feature - {response.status_code}")
     
-    def test_admin_analytics_summary(self, admin_token):
+    def test_admin_analytics_summary(self):
         """Test GET /api/analytics/admin/summary - Admin only"""
-        headers = {"Authorization": f"Bearer {admin_token}"}
+        token = get_admin_token()
+        if not token:
+            pytest.skip("Could not get admin token")
+        
+        headers = {"Authorization": f"Bearer {token}"}
         response = requests.get(f"{BASE_URL}/api/analytics/admin/summary?days=7", headers=headers)
         
         assert response.status_code == 200
@@ -127,17 +157,25 @@ class TestAnalyticsAPI(TestSetup):
         print(f"  - Total events: {data.get('total_events')}")
         print(f"  - Active users: {data.get('unique_active_users')}")
     
-    def test_admin_analytics_non_admin_rejected(self, user_token):
+    def test_admin_analytics_non_admin_rejected(self):
         """Test that non-admin users cannot access admin analytics"""
-        headers = {"Authorization": f"Bearer {user_token}"}
+        token = get_user_token()
+        if not token:
+            pytest.skip("Could not get user token")
+        
+        headers = {"Authorization": f"Bearer {token}"}
         response = requests.get(f"{BASE_URL}/api/analytics/admin/summary", headers=headers)
         
         assert response.status_code == 403
         print(f"PASS: Non-admin rejected from analytics - {response.status_code}")
     
-    def test_admin_active_users(self, admin_token):
+    def test_admin_active_users(self):
         """Test GET /api/analytics/admin/active-users"""
-        headers = {"Authorization": f"Bearer {admin_token}"}
+        token = get_admin_token()
+        if not token:
+            pytest.skip("Could not get admin token")
+        
+        headers = {"Authorization": f"Bearer {token}"}
         response = requests.get(f"{BASE_URL}/api/analytics/admin/active-users?hours=24", headers=headers)
         
         assert response.status_code == 200
@@ -148,7 +186,7 @@ class TestAnalyticsAPI(TestSetup):
         print(f"PASS: GET /api/analytics/admin/active-users - {response.status_code}")
 
 
-class TestNewsVideoSupport(TestSetup):
+class TestNewsVideoSupport:
     """Test News API with Video Support"""
     
     def test_news_categories(self):
@@ -171,9 +209,13 @@ class TestNewsVideoSupport(TestSetup):
         assert "count" in data
         print(f"PASS: GET /api/news/local - {response.status_code} - {data.get('count')} articles")
     
-    def test_admin_create_video_news(self, admin_token):
+    def test_admin_create_video_news(self):
         """Test POST /api/news/admin/push - Create video news"""
-        headers = {"Authorization": f"Bearer {admin_token}"}
+        token = get_admin_token()
+        if not token:
+            pytest.skip("Could not get admin token")
+        
+        headers = {"Authorization": f"Bearer {token}"}
         
         video_news = {
             "title": "TEST_Video News - YouTube Test",
@@ -200,11 +242,14 @@ class TestNewsVideoSupport(TestSetup):
         print(f"PASS: POST /api/news/admin/push (video) - {response.status_code}")
         print(f"  - News ID: {news.get('id')}")
         print(f"  - Content type: {news.get('content_type')}")
-        return news.get("id")
     
-    def test_admin_create_text_news_with_link(self, admin_token):
+    def test_admin_create_text_news_with_link(self):
         """Test creating text news with Read More link"""
-        headers = {"Authorization": f"Bearer {admin_token}"}
+        token = get_admin_token()
+        if not token:
+            pytest.skip("Could not get admin token")
+        
+        headers = {"Authorization": f"Bearer {token}"}
         
         text_news = {
             "title": "TEST_Admin Text News - Read More Test",
@@ -227,18 +272,25 @@ class TestNewsVideoSupport(TestSetup):
         assert news.get("is_admin_pushed") is True
         assert news.get("link") == "https://example.com/news/article"
         print(f"PASS: POST /api/news/admin/push (text) - {response.status_code}")
-        return news.get("id")
     
-    def test_get_admin_pushed_news(self, admin_token):
+    def test_get_admin_pushed_news(self):
         """Test GET /api/news/admin/pushed - Get all admin news"""
-        headers = {"Authorization": f"Bearer {admin_token}"}
+        token = get_admin_token()
+        if not token:
+            pytest.skip("Could not get admin token")
+        
+        headers = {"Authorization": f"Bearer {token}"}
         response = requests.get(f"{BASE_URL}/api/news/admin/pushed", headers=headers)
         
         assert response.status_code == 200
         data = response.json()
         assert "news" in data
         assert "total" in data
+        
+        # Verify video news exists
+        video_news = [n for n in data.get("news", []) if n.get("content_type") == "video"]
         print(f"PASS: GET /api/news/admin/pushed - {response.status_code} - {data.get('total')} articles")
+        print(f"  - Video news count: {len(video_news)}")
     
     def test_news_includes_admin_pushed_content(self):
         """Test that news feed includes admin-pushed content with is_admin_pushed flag"""
@@ -251,6 +303,10 @@ class TestNewsVideoSupport(TestSetup):
         # Check if any news has is_admin_pushed flag
         admin_pushed = [n for n in news_list if n.get("is_admin_pushed")]
         print(f"PASS: News feed checked - Found {len(admin_pushed)} admin-pushed articles out of {len(news_list)}")
+        
+        # Check video news
+        video_news = [n for n in news_list if n.get("content_type") == "video"]
+        print(f"  - Video news in feed: {len(video_news)}")
 
 
 class TestAQIEndpoints:
@@ -276,12 +332,16 @@ class TestAQIEndpoints:
         print(f"  - Hyderabad AQI: {data.get('hyderabad', {}).get('aqi')}")
 
 
-class TestCleanup(TestSetup):
+class TestCleanup:
     """Cleanup test data"""
     
-    def test_cleanup_test_news(self, admin_token):
+    def test_cleanup_test_news(self):
         """Clean up test news articles"""
-        headers = {"Authorization": f"Bearer {admin_token}"}
+        token = get_admin_token()
+        if not token:
+            pytest.skip("Could not get admin token")
+        
+        headers = {"Authorization": f"Bearer {token}"}
         
         # Get all admin news
         response = requests.get(f"{BASE_URL}/api/news/admin/pushed", headers=headers)
