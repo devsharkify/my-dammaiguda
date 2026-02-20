@@ -148,7 +148,7 @@ async def get_members(manager: dict = Depends(get_current_manager)):
                 active_date = datetime.fromisoformat(last_active.replace("Z", "+00:00"))
                 days_inactive = (datetime.utcnow().replace(tzinfo=active_date.tzinfo) - active_date).days
                 m["status"] = "active" if days_inactive < 30 else "inactive"
-            except:
+            except (ValueError, TypeError):
                 m["status"] = "unknown"
         else:
             m["status"] = "unknown"
