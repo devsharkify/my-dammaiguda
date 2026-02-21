@@ -463,6 +463,10 @@ export default function AdminPanel() {
               <Activity className="h-4 w-4" />
               Analytics
             </TabsTrigger>
+            <TabsTrigger value="alerts" className="gap-2">
+              <Bell className="h-4 w-4" />
+              Alerts
+            </TabsTrigger>
             <TabsTrigger value="settings" className="gap-2">
               <Settings className="h-4 w-4" />
               Site Settings
@@ -492,6 +496,11 @@ export default function AdminPanel() {
           {/* Analytics Tab */}
           <TabsContent value="analytics">
             <AnalyticsDashboard />
+          </TabsContent>
+
+          {/* Alerts Tab */}
+          <TabsContent value="alerts">
+            <AlertsPanel />
           </TabsContent>
 
           {/* Overview Tab */}
