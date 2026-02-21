@@ -156,9 +156,30 @@ export default function LiveActivity() {
             latitude, longitude
           );
           
-          // Only add if moved more than 3m (filter GPS noise)
+          // Only add if moved more than 3m and accuracy is good (filter GPS noise)
           if (dist > 3 && accuracy < 50) {
-            setDistance(prev => prev + dist);
+            setDistance(prev => {
+              const newDistance = prev + dist;
+              
+              // Calculate steps based on ACTUAL distance (not time)
+              // Average stride: ~0.75m for walking, ~1.0m for running
+              if (["running", "walking", "hiking"].includes(activityType)) {
+                const strideLength = activityType === "running" ? 1.0 : 0.75;
+                const newSteps = Math.round(newDistance / strideLength);
+                setSteps(newSteps);
+              }
+              
+              // Calculate calories based on actual distance + time
+              const weight = user?.health_profile?.weight_kg || 70;
+              const distKm = newDistance / 1000;
+              const MET = { running: 9.8, walking: 3.5, cycling: 7.5, hiking: 6.0, football: 7.0, yoga: 2.5, gym: 6.0, swimming: 8.0, dancing: 5.0 };
+              // More accurate: calories = distance(km) * weight(kg) * factor
+              const caloriesFactor = activityType === "running" ? 1.0 : 0.5;
+              const newCalories = Math.round(distKm * weight * caloriesFactor);
+              setCalories(newCalories);
+              
+              return newDistance;
+            });
             setRoutePath(prev => [...prev, newPos]);
             
             // Calculate pace (min/km)
@@ -178,7 +199,7 @@ export default function LiveActivity() {
       },
       options
     );
-  }, [isRunning, isPaused, elapsedSeconds, distance]);
+  }, [isRunning, isPaused, elapsedSeconds, distance, activityType, user]);
 
   // Start activity
   const startActivity = async () => {
