@@ -246,6 +246,33 @@ DISABLE_ESLINT_PLUGIN=true
 - Query parameters preserved during redirect
 - Legacy component replaced with redirect-only component
 
+### Calorie Counter Enhancement (Completed Feb 21, 2026)
+- **Location:** KaizerFit page > Calories card (clickable opens full tracker)
+- **Component:** `/app/frontend/src/components/CalorieCounter.jsx`
+- **Features:**
+  - 5 Meal Categories: Breakfast, Lunch, Snacks, Evening Snacks, Dinner
+  - 8 Quantity Units: Serving, Grams, Spoon, Tablespoon, Piece, Cup, Bowl, Plate
+  - Macro Tracking: Calories, Protein, Carbs, Fat
+  - 500+ Foods Database with Telugu translations
+  - Food Search (English & Telugu)
+  - Popular Foods per meal type
+  - Custom food entry with manual calories
+- **API Endpoints:**
+  - `POST /api/doctor/meal` - Log meal with macros
+  - `GET /api/doctor/meals` - Get today's meals with summary
+  - `DELETE /api/doctor/meal/{id}` - Delete meal entry
+  - `GET /api/doctor/foods` - Food database
+  - `GET /api/doctor/foods/search?q=` - Search foods
+- **Quantity Multipliers:**
+  - Serving: 1x
+  - Grams: 0.01x (per 100g base)
+  - Spoon: 0.15x
+  - Tablespoon: 0.25x
+  - Piece: 1x
+  - Cup: 1.5x
+  - Bowl: 2x
+  - Plate: 2.5x
+
 ---
 
 ## Push Notifications (Completed Feb 21, 2026)
