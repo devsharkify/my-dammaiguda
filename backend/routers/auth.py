@@ -101,16 +101,16 @@ async def send_authkey_otp(phone: str) -> dict:
 @router.post("/otp")
 @router.post("/send-otp")
 @limiter.limit("5/minute")
-async def send_otp(request: OTPRequest, req: Request):
+async def send_otp(request: Request, otp_request: OTPRequest):
     """Send OTP to phone number (Rate limited: 5/min)"""
     if AUTHKEY_ENABLED:
         # Use Authkey.io for real SMS
-        result = await send_authkey_otp(request.phone)
+        result = await send_authkey_otp(otp_request.phone)
         return result
     else:
         # Dev mode - fixed OTP
         otp = "123456"
-        otp_store[request.phone] = {"otp": otp, "type": "dev"}
+        otp_store[otp_request.phone] = {"otp": otp, "type": "dev"}
         return {
             "success": True,
             "message": "OTP sent successfully",
@@ -120,7 +120,7 @@ async def send_otp(request: OTPRequest, req: Request):
 @router.post("/verify")
 @router.post("/verify-otp")
 @limiter.limit("10/minute")
-async def verify_otp(request: OTPVerify, req: Request):
+async def verify_otp(request: Request, verify_request: OTPVerify):
     """Verify OTP and login/register user"""
     stored_data = otp_store.get(request.phone)
     
