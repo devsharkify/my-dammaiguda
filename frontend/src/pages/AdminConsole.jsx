@@ -90,11 +90,10 @@ export default function AdminConsole() {
     }
     setLoading(true);
     try {
-      const phoneNum = phone.startsWith('+') ? phone : `+91${phone}`;
       const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/auth/send-otp`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ phone: phoneNum })
+        body: JSON.stringify({ phone: phone })
       });
       if (response.ok) {
         setOtpSent(true);
@@ -114,11 +113,10 @@ export default function AdminConsole() {
     }
     setLoading(true);
     try {
-      const phoneNum = phone.startsWith('+') ? phone : `+91${phone}`;
       const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/auth/verify-otp`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ phone: phoneNum, otp })
+        body: JSON.stringify({ phone: phone, otp })
       });
       const data = await response.json();
       
