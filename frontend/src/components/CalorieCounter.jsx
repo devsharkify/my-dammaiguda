@@ -100,7 +100,7 @@ const POPULAR_FOODS = {
   ]
 };
 
-export default function CalorieCounter({ onMealsUpdated }) {
+export default function CalorieCounter({ onMealsUpdated, onClose }) {
   const { language } = useLanguage();
   const { token } = useAuth();
   const headers = { Authorization: `Bearer ${token}` };
