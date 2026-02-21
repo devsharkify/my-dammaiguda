@@ -44,6 +44,48 @@ a img, button img, .clickable img {
     body {
         display: none !important;
     }
+    html {
+        display: none !important;
+    }
+}
+
+/* Prevent content extraction via CSS */
+body::before {
+    content: "";
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 0;
+    height: 0;
+    z-index: -1;
+}
+
+/* Disable highlighting */
+::selection {
+    background: transparent;
+}
+
+::-moz-selection {
+    background: transparent;
+}
+
+/* Allow selection in inputs */
+input::selection,
+textarea::selection,
+.selectable::selection {
+    background: #b4d5fe;
+}
+
+/* Watermark overlay for protected content (invisible) */
+.protected::after {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    pointer-events: none;
+    background: transparent;
 }
 
 code {
