@@ -1501,6 +1501,17 @@ export default function KaizerFit() {
           </div>
         </DialogContent>
       </Dialog>
+      {/* Calorie Counter Full Dialog */}
+      <Dialog open={showCalorieCounter} onOpenChange={setShowCalorieCounter}>
+        <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto p-0">
+          <CalorieCounter 
+            onClose={() => {
+              setShowCalorieCounter(false);
+              fetchNutritionData(); // Refresh data
+            }}
+          />
+        </DialogContent>
+      </Dialog>
     </Layout>
   );
 }
