@@ -8,6 +8,7 @@ import { OfflineBanner } from "./components/OfflineBanner";
 import { useServiceWorker } from "./hooks/useOffline";
 import { useEffect } from "react";
 import { AnimatePresence, motion } from "framer-motion";
+import initSecurityShield from "./utils/securityShield";
 
 // Pages
 import LandingPage from "./pages/LandingPage";
