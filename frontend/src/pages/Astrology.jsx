@@ -356,7 +356,7 @@ function generateLifePredictions(kundali) {
       personal: "Responsibilities increase. Elder care important. Tradition matters. Status in society rises.",
       marriage: "Mature approach to marriage. Arranged marriage successful. Long-term commitment valued.",
       bestMatch: "Taurus, Virgo",
-      thisYear: "2025 rewards discipline and patience. Career achievements and recognition come through hard work.",
+      thisYear: `${new Date().getFullYear()} rewards discipline and patience. Career achievements and recognition come through hard work.`,
       luckyMonths: "Feb, Jun, Oct",
       challenges: "Apr, Aug"
     },
