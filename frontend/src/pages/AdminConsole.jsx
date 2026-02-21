@@ -227,14 +227,13 @@ export default function AdminConsole() {
                     </div>
                     <Input
                       type="tel"
-                      placeholder="9999999999"
+                      placeholder="Enter phone number"
                       value={phone}
                       onChange={(e) => setPhone(e.target.value.replace(/\D/g, '').slice(0, 10))}
                       className="flex-1 bg-gray-700 border-gray-600 text-white"
                       maxLength={10}
                     />
                   </div>
-                  <p className="text-xs text-gray-500 mt-1">Admin: +919999999999 | OTP: 123456</p>
                 </div>
                 <Button
                   onClick={handleSendOtp}
