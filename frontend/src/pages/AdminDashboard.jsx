@@ -1,63 +1,41 @@
-import { useState, useEffect } from "react";
-import { useLanguage } from "../context/LanguageContext";
-import { useAuth } from "../context/AuthContext";
-import axios from "axios";
-import { Card, CardContent, CardHeader, CardTitle } from "../components/ui/card";
-import { Button } from "../components/ui/button";
-import { Badge } from "../components/ui/badge";
-import { Input } from "../components/ui/input";
-import { Label } from "../components/ui/label";
-import { Textarea } from "../components/ui/textarea";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "../components/ui/tabs";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../components/ui/select";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "../components/ui/dialog";
-import { Switch } from "../components/ui/switch";
-import { toast } from "sonner";
-import Layout from "../components/Layout";
-import {
-  BarChart3,
-  Users,
-  AlertTriangle,
-  CheckCircle,
-  Clock,
-  TrendingUp,
-  Activity,
-  Heart,
-  MapPin,
-  ArrowUpRight,
-  Shield,
-  GraduationCap,
-  Plus,
-  Edit,
-  Trash2,
-  Eye,
-  BookOpen,
-  Video,
-  Loader2,
-  Gift,
-  Package,
-  Coins,
-  Truck,
-  Star,
-  Newspaper,
-  Ticket,
-  Image as ImageIcon,
-  Settings,
-  FileText,
-  RefreshCw,
-  Search,
-  Filter,
-  Download,
-  Phone,
-  Calendar,
-  X,
-  Check,
-  ChevronRight,
-  Send,
-  Copy,
-  Upload,
-  Link as LinkIcon
-} from "lucide-react";
+import { useEffect } from "react";
+import { useNavigate, useSearchParams } from "react-router-dom";
+import { Loader2 } from "lucide-react";
+
+/**
+ * AdminDashboard - Deprecated
+ * This page now redirects to the new Multi-Area Admin Panel (/admin/panel)
+ * 
+ * For backwards compatibility, we preserve any query params like ?tab=news
+ * and redirect users to the new panel.
+ */
+export default function AdminDashboard() {
+  const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  
+  useEffect(() => {
+    // Preserve query parameters when redirecting
+    const params = searchParams.toString();
+    const redirectUrl = params ? `/admin/panel?${params}` : "/admin/panel";
+    
+    // Small delay to show loading state
+    const timer = setTimeout(() => {
+      navigate(redirectUrl, { replace: true });
+    }, 500);
+    
+    return () => clearTimeout(timer);
+  }, [navigate, searchParams]);
+
+  return (
+    <div className="min-h-screen flex flex-col items-center justify-center bg-gray-100">
+      <Loader2 className="h-8 w-8 animate-spin text-primary mb-4" />
+      <p className="text-gray-600">Redirecting to Admin Panel...</p>
+      <p className="text-sm text-gray-400 mt-2">
+        The Admin Dashboard has moved to a new location.
+      </p>
+    </div>
+  );
+}
 
 const API = `${process.env.REACT_APP_BACKEND_URL}/api`;
 
