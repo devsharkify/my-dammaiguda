@@ -542,3 +542,56 @@ The app now supports easy replication for different areas (e.g., "My AS Rao Naga
    - Manager: `9844548537` + OTP `123456` → Manager Portal access
    - Test User: `9876543210` + OTP `123456` → User app (kept for Play Store)
 
+
+## Claim Benefits Module (Completed Feb 21, 2026)
+
+### Three Benefit Types:
+
+**1. ₹2 Lakhs Accidental Insurance**
+- Form Fields: Name, Gender, Relation Type, Father's/Husband's Name, DOB (min 18), Aadhar, Voter ID, WhatsApp (unique), Address, Occupation, Monthly Earning
+- Up to 5 family members (primary + 4 additional)
+- Each family member requires unique WhatsApp number
+- Status: Pending → Admin reviews → Approved (with document) / Rejected
+- Success Message: "Your accidental insurance would be provided within 7 days"
+
+**2. 25% Monthly Health Insurance Reimbursement**
+- Form Fields: Name, Mobile Number, Family Count (1-10)
+- Status: Pending → Admin reviews → Team contacts user
+- Success Message: "Our team will contact you"
+
+**3. Education Voucher ₹54,999 (Bose American Academy)**
+- Form Fields: Name, Education level, Occupation, DOB, Aadhar, Voter ID (if 18+), Address
+- Auto-approves with instant voucher code (format: BOSE-XXXX-XXXX)
+- Voucher can be copied and used in Education section
+- Currently unlocks: Digital Marketing course
+
+### API Endpoints:
+- `POST /api/benefits/accidental-insurance` - Apply for accidental insurance
+- `POST /api/benefits/health-insurance` - Apply for health insurance
+- `POST /api/benefits/education-voucher` - Apply for education voucher (auto-generates code)
+- `GET /api/benefits/my-applications` - User's applications
+- `GET /api/benefits/my-vouchers` - User's vouchers
+- `POST /api/benefits/validate-voucher` - Validate voucher code
+- `GET /api/benefits/admin/applications` - Admin: All applications
+- `PUT /api/benefits/admin/applications/{id}` - Admin: Update status
+- `GET /api/benefits/stats` - Public stats
+
+### Admin Features:
+- Benefits tab in Admin Panel
+- Filter by status (pending/approved/rejected) or type
+- View full application details
+- Approve with document URL (for insurance PDF/JPG)
+- Reject with notes
+- Stats cards showing pending count by type
+
+### Frontend Pages:
+- `/claim-benefits` - Main benefits application page
+- `/benefits` - Enhanced with "Special Benefits" banner linking to claim page
+
+### Files Created/Modified:
+- `/app/backend/routers/benefits.py` (New)
+- `/app/frontend/src/pages/ClaimBenefits.jsx` (New)
+- `/app/frontend/src/components/BenefitsAdmin.jsx` (New)
+- `/app/frontend/src/pages/AdminPanel.jsx` (Added Benefits tab)
+- `/app/frontend/src/pages/CitizenBenefits.jsx` (Added banner)
+
