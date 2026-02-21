@@ -370,7 +370,7 @@ function generateLifePredictions(kundali) {
       personal: "Friendships deepen. Group activities fulfilling. Humanitarian causes attract. Independence valued.",
       marriage: "Unconventional relationships work. Friendship-based marriage. Space in relationship important.",
       bestMatch: "Gemini, Libra",
-      thisYear: "2025 brings innovation and humanitarian focus. Technology and friendships play major roles.",
+      thisYear: `${new Date().getFullYear()} brings innovation and humanitarian focus. Technology and friendships play major roles.`,
       luckyMonths: "Jan, May, Sep",
       challenges: "Mar, Jul"
     },
