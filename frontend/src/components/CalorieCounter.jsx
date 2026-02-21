@@ -304,7 +304,7 @@ export default function CalorieCounter({ onMealsUpdated, onClose }) {
       {/* Summary Card */}
       <Card className="border-0 shadow-lg bg-gradient-to-br from-orange-500 to-red-500 text-white overflow-hidden">
         <CardContent className="p-4 relative">
-          <div className="absolute -right-8 -top-8 text-8xl opacity-10">🍎</div>
+          <div className="absolute -right-8 -top-8 text-8xl opacity-10 pointer-events-none">🍎</div>
           <div className="flex items-center justify-between mb-3">
             <div>
               <p className="text-orange-100 text-xs font-medium uppercase tracking-wide">
