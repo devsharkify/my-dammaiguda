@@ -42,7 +42,8 @@ import {
   Image,
   Type,
   Save,
-  Activity
+  Activity,
+  Bell
 } from "lucide-react";
 
 const API = `${process.env.REACT_APP_BACKEND_URL}/api`;
