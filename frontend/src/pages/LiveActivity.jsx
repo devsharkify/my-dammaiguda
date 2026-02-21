@@ -188,18 +188,9 @@ export default function LiveActivity() {
       setIsRunning(true);
       setIsPaused(false);
       
-      // Start timer
+      // Start timer (only tracks elapsed time - steps/calories are calculated from actual GPS movement)
       timerRef.current = setInterval(() => {
-        setElapsedSeconds(prev => {
-          const newSec = prev + 1;
-          setCalories(calculateCalories(newSec));
-          // Estimate steps based on time and activity
-          if (["running", "walking", "hiking"].includes(activityType)) {
-            const stepsPerMin = activityType === "running" ? 150 : 100;
-            setSteps(Math.round((newSec / 60) * stepsPerMin));
-          }
-          return newSec;
-        });
+        setElapsedSeconds(prev => prev + 1);
       }, 1000);
 
       // Start GPS for applicable activities
