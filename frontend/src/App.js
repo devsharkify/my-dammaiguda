@@ -152,6 +152,11 @@ function AppRoutes() {
           <CitizenBenefits />
         </ProtectedRoute>
       } />
+      <Route path="/claim-benefits" element={
+        <ProtectedRoute>
+          <ClaimBenefits />
+        </ProtectedRoute>
+      } />
       <Route path="/profile" element={
         <ProtectedRoute>
           <Profile />
