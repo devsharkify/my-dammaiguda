@@ -726,7 +726,7 @@ export default function KaizerFit() {
           </div>
 
           {/* Weight Overview Cards */}
-          <div className="grid grid-cols-3 gap-3">
+          <div className="grid grid-cols-2 gap-3">
             <Card className="border-0 shadow-md bg-gradient-to-br from-slate-50 to-slate-100">
               <CardContent className="p-3 text-center">
                 <p className="text-[10px] text-muted-foreground font-medium uppercase tracking-wide">
@@ -750,7 +750,32 @@ export default function KaizerFit() {
                 <p className="text-[10px] text-muted-foreground">kg</p>
               </CardContent>
             </Card>
+          </div>
+
+          {/* BMI & Change Cards */}
+          <div className="grid grid-cols-2 gap-3">
+            {/* BMI Card */}
+            <Card className={`border-0 shadow-md ${
+              weightStats?.bmi_category === "Normal" ? "bg-gradient-to-br from-green-50 to-emerald-50" :
+              weightStats?.bmi_category === "Underweight" ? "bg-gradient-to-br from-yellow-50 to-amber-50" :
+              "bg-gradient-to-br from-orange-50 to-red-50"
+            }`}>
+              <CardContent className="p-3 text-center">
+                <p className="text-[10px] text-muted-foreground font-medium uppercase tracking-wide">
+                  BMI
+                </p>
+                <p className={`text-2xl font-bold mt-1 ${
+                  weightStats?.bmi_category === "Normal" ? "text-green-600" :
+                  weightStats?.bmi_category === "Underweight" ? "text-yellow-600" :
+                  "text-orange-600"
+                }`}>
+                  {weightStats?.bmi || "—"}
+                </p>
+                <p className="text-[10px] text-muted-foreground">{weightStats?.bmi_category || ""}</p>
+              </CardContent>
+            </Card>
             
+            {/* Change Card */}
             <Card className={`border-0 shadow-md ${weightChange < 0 ? "bg-gradient-to-br from-green-50 to-emerald-50" : weightChange > 0 ? "bg-gradient-to-br from-orange-50 to-red-50" : "bg-gradient-to-br from-gray-50 to-slate-50"}`}>
               <CardContent className="p-3 text-center">
                 <p className="text-[10px] text-muted-foreground font-medium uppercase tracking-wide">
@@ -761,10 +786,42 @@ export default function KaizerFit() {
                   {weightChange > 0 && <TrendingUp className="h-4 w-4" />}
                   {Math.abs(weightChange) || "0"}
                 </p>
-                <p className="text-[10px] text-muted-foreground">kg</p>
+                <p className="text-[10px] text-muted-foreground">kg total</p>
               </CardContent>
             </Card>
           </div>
+
+          {/* Weekly Stats */}
+          {(weightStats?.weekly_avg || weightStats?.weekly_change !== null) && (
+            <Card className="border-0 shadow-md bg-white">
+              <CardContent className="p-3">
+                <div className="flex items-center justify-between">
+                  <div className="text-center flex-1">
+                    <p className="text-[10px] text-muted-foreground uppercase">Weekly Avg</p>
+                    <p className="text-lg font-bold">{weightStats?.weekly_avg || "—"} kg</p>
+                  </div>
+                  <div className="h-8 w-px bg-gray-200" />
+                  <div className="text-center flex-1">
+                    <p className="text-[10px] text-muted-foreground uppercase">This Week</p>
+                    <p className={`text-lg font-bold ${
+                      weightStats?.weekly_change < 0 ? "text-green-600" :
+                      weightStats?.weekly_change > 0 ? "text-orange-600" : ""
+                    }`}>
+                      {weightStats?.weekly_change > 0 ? "+" : ""}{weightStats?.weekly_change || "0"} kg
+                    </p>
+                  </div>
+                  <div className="h-8 w-px bg-gray-200" />
+                  <div className="text-center flex-1">
+                    <p className="text-[10px] text-muted-foreground uppercase">Trend</p>
+                    <Badge variant={weightStats?.trend === "losing" ? "success" : weightStats?.trend === "gaining" ? "destructive" : "secondary"} className="text-[10px]">
+                      {weightStats?.trend === "losing" ? "↓ Losing" : 
+                       weightStats?.trend === "gaining" ? "↑ Gaining" : "→ Stable"}
+                    </Badge>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          )}
 
           {/* Progress to Goal */}
           {targetWeight && (
