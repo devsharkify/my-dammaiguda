@@ -666,20 +666,22 @@ export default function KaizerFit() {
           </Card>
           
           {/* Calories Tracking */}
-          <Card className="border-0 shadow-lg bg-gradient-to-br from-orange-500 to-red-500 text-white overflow-hidden">
+          <Card 
+            className="border-0 shadow-lg bg-gradient-to-br from-orange-500 to-red-500 text-white overflow-hidden cursor-pointer active:scale-[0.98] transition-transform"
+            onClick={() => setShowCalorieCounter(true)}
+          >
             <CardContent className="p-4 relative">
               <div className="absolute -right-4 -top-4 text-6xl opacity-20 pointer-events-none">🍎</div>
               <div className="flex items-center justify-between mb-2">
                 <p className="text-orange-100 text-xs font-medium uppercase tracking-wide">
                   {language === "te" ? "కేలరీలు" : "Calories"}
                 </p>
-                <button 
-                  onClick={() => setShowMealDialog(true)}
-                  className="h-8 w-8 rounded-full bg-white/20 flex items-center justify-center hover:bg-white/30 transition-colors"
+                <div 
+                  className="h-8 w-8 rounded-full bg-white/20 flex items-center justify-center"
                   data-testid="log-meal-btn"
                 >
                   <Plus className="h-4 w-4" />
-                </button>
+                </div>
               </div>
               <p className="text-3xl font-bold">{caloriesConsumed}</p>
               <p className="text-orange-100 text-xs">/ {caloriesGoal} {language === "te" ? "కేల్" : "kcal"}</p>
