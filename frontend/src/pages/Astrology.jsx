@@ -328,7 +328,7 @@ function generateLifePredictions(kundali) {
       personal: "Deep transformations. Secrets revealed. Psychological growth. Intense family dynamics.",
       marriage: "Intense relationships. Deep bonding with partner. Trust issues resolve. Transformation through love.",
       bestMatch: "Cancer, Pisces",
-      thisYear: "2025 brings deep transformation. Hidden matters surface. Rebirth and renewal themes.",
+      thisYear: `${new Date().getFullYear()} brings deep transformation. Hidden matters surface. Rebirth and renewal themes.`,
       luckyMonths: "Apr, Aug, Dec",
       challenges: "Feb, Jun"
     },
