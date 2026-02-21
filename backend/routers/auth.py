@@ -122,20 +122,20 @@ async def send_otp(request: Request, otp_request: OTPRequest):
 @limiter.limit("10/minute")
 async def verify_otp(request: Request, verify_request: OTPVerify):
     """Verify OTP and login/register user"""
-    stored_data = otp_store.get(request.phone)
+    stored_data = otp_store.get(verify_request.phone)
     
     if not stored_data:
         raise HTTPException(status_code=400, detail="OTP expired or not sent")
     
     stored_otp = stored_data.get("otp")
-    if stored_otp != request.otp:
+    if stored_otp != verify_request.otp:
         raise HTTPException(status_code=400, detail="Invalid OTP")
     
     # Clear OTP after successful verification
-    otp_store.pop(request.phone, None)
+    otp_store.pop(verify_request.phone, None)
     
     # Check if user exists
-    user = await db.users.find_one({"phone": request.phone}, {"_id": 0})
+    user = await db.users.find_one({"phone": verify_request.phone}, {"_id": 0})
     
     if user:
         token = create_token(user["id"], user["role"])
@@ -148,13 +148,13 @@ async def verify_otp(request: Request, verify_request: OTPVerify):
         }
     else:
         # If registration data is provided, create user directly
-        if request.name:
+        if verify_request.name:
             new_user = {
                 "id": generate_id(),
-                "phone": request.phone,
-                "name": request.name,
-                "colony": request.colony or "",
-                "age_range": request.age_range or "",
+                "phone": verify_request.phone,
+                "name": verify_request.name,
+                "colony": verify_request.colony or "",
+                "age_range": verify_request.age_range or "",
                 "role": "citizen",
                 "created_at": now_iso(),
                 "fitness_profile": {
