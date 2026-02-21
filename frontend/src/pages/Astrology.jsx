@@ -300,7 +300,7 @@ function generateLifePredictions(kundali) {
       personal: "Service to others brings joy. Pets favorable. Daily routines matter. Cleanliness obsession may increase.",
       marriage: "Practical approach to marriage. Partner's health important. Service-oriented relationship works.",
       bestMatch: "Taurus, Capricorn",
-      thisYear: "2025 rewards hard work and attention to detail. Health and service themes dominate.",
+      thisYear: `${new Date().getFullYear()} rewards hard work and attention to detail. Health and service themes dominate.`,
       luckyMonths: "Feb, Jun, Oct",
       challenges: "Apr, Aug"
     },
