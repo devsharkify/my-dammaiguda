@@ -53,8 +53,12 @@ from routers.muhurtam import router as muhurtam_router
 app = FastAPI(
     title="My Dammaiguda API",
     description="Civic Engagement Platform for Dammaiguda Ward",
-    version="2.6.0"
+    version="2.7.0"
 )
+
+# Add rate limiter to app state
+app.state.limiter = limiter
+app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)
 
 # CORS middleware
 app.add_middleware(
