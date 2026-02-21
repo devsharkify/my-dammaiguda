@@ -9,6 +9,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "
 import { Textarea } from "../components/ui/textarea";
 import { toast } from "sonner";
 import axios from "axios";
+import ReportsPanel from "../components/ReportsPanel";
 import {
   Shield,
   Users,
@@ -31,7 +32,8 @@ import {
   Calendar,
   FileText,
   PenSquare,
-  BarChart3
+  BarChart3,
+  Download
 } from "lucide-react";
 
 const API = `${process.env.REACT_APP_BACKEND_URL}/api`;
