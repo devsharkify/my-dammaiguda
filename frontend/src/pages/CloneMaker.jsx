@@ -18,7 +18,8 @@ import {
   FileJson,
   Smartphone,
   RefreshCw,
-  GraduationCap
+  GraduationCap,
+  Shield
 } from "lucide-react";
 
 // Area presets matching the CLI tool
