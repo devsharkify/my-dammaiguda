@@ -384,7 +384,7 @@ function generateLifePredictions(kundali) {
       personal: "Spiritual growth significant. Dreams meaningful. Solitude beneficial. Artistic expression healing.",
       marriage: "Soul-mate connections. Spiritual partner ideal. Compassionate relationships. Sacrifice in love.",
       bestMatch: "Cancer, Scorpio",
-      thisYear: "2025 emphasizes spirituality and creativity. Dreams and intuition guide major decisions.",
+      thisYear: `${new Date().getFullYear()} emphasizes spirituality and creativity. Dreams and intuition guide major decisions.`,
       luckyMonths: "Apr, Aug, Dec",
       challenges: "Feb, Jun"
     }
