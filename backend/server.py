@@ -36,6 +36,7 @@ from routers.analytics import router as analytics_router
 from routers.user import router as user_router
 from routers.manager import router as manager_router
 from routers.settings import router as settings_router
+from routers.panchangam import router as panchangam_router
 
 # Create FastAPI app
 app = FastAPI(
