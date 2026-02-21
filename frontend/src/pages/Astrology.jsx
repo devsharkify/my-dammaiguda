@@ -195,7 +195,7 @@ const LifePredictions = ({ kundali }) => {
         <CardContent className="p-3">
           <div className="flex items-center gap-2 mb-2">
             <TrendingUp className="w-5 h-5 text-amber-600" />
-            <h4 className="font-bold text-amber-800">2025 Predictions</h4>
+            <h4 className="font-bold text-amber-800">{new Date().getFullYear()} Predictions</h4>
           </div>
           <p className="text-sm text-amber-700">{predictions.thisYear}</p>
           <div className="mt-2 grid grid-cols-2 gap-2">
