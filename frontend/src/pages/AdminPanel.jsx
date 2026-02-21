@@ -469,6 +469,10 @@ export default function AdminPanel() {
               <Bell className="h-4 w-4" />
               Alerts
             </TabsTrigger>
+            <TabsTrigger value="reports" className="gap-2">
+              <Download className="h-4 w-4" />
+              Reports
+            </TabsTrigger>
             <TabsTrigger value="settings" className="gap-2">
               <Settings className="h-4 w-4" />
               Site Settings
@@ -503,6 +507,11 @@ export default function AdminPanel() {
           {/* Alerts Tab */}
           <TabsContent value="alerts">
             <AlertsPanel />
+          </TabsContent>
+
+          {/* Reports Tab */}
+          <TabsContent value="reports">
+            <ReportsPanel userRole="admin" />
           </TabsContent>
 
           {/* Overview Tab */}
