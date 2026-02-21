@@ -186,6 +186,16 @@ export default function AQIWidget({ onViewFullReport }) {
       </div>
 
       <CardContent className="p-0">
+        {/* Info Banner - AQI Display Logic */}
+        <div className="px-4 py-2 bg-blue-50 border-b border-blue-100 flex items-center gap-2">
+          <Info className="h-3 w-3 text-blue-500 flex-shrink-0" />
+          <p className="text-xs text-blue-700">
+            {language === "te" 
+              ? "రాత్రి 8 గంటల వరకు రోజంతా అత్యధిక AQI చూపిస్తుంది. 8 గంటల తర్వాత ప్రస్తుత విలువ చూపిస్తుంది."
+              : "Shows day's highest AQI until 8 PM, then shows live value."}
+          </p>
+        </div>
+        
         {/* Dammaiguda AQI - Main */}
         <div className="p-4 border-b border-border/30">
           <div className="flex items-center justify-between mb-3">
@@ -200,7 +210,7 @@ export default function AQIWidget({ onViewFullReport }) {
             <div className="text-right">
               <div className="flex items-center gap-2">
                 <span className="text-4xl font-bold" style={{ color: dammaiguda.color }}>
-                  {dammaiguda.aqi || "—"}
+                  {getDisplayAqi('dammaiguda', dammaiguda.aqi) || "—"}
                 </span>
                 <span className="text-2xl">{getAQIEmoji(dammaiguda.category)}</span>
               </div>
@@ -210,6 +220,9 @@ export default function AQIWidget({ onViewFullReport }) {
               >
                 {language === "te" ? dammaiguda.category_te : dammaiguda.category}
               </Badge>
+              {dailyMaxAqi.dammaiguda && dailyMaxAqi.dammaiguda !== dammaiguda.aqi && !isPastResetTime() && (
+                <p className="text-xs text-gray-400 mt-1">Live: {dammaiguda.aqi}</p>
+              )}
             </div>
           </div>
           
