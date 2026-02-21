@@ -70,11 +70,14 @@ async def search_users(
     query = {"$or": []}
     
     if phone:
-        # Search with and without +91 prefix
+        # Search with and without +91 prefix (escape special chars for regex)
+        import re
         clean_phone = phone.replace("+91", "").replace("+", "").replace(" ", "")
+        escaped_phone = re.escape(clean_phone)
         query["$or"].extend([
-            {"phone": {"$regex": clean_phone, "$options": "i"}},
-            {"phone": {"$regex": f"+91{clean_phone}", "$options": "i"}}
+            {"phone": {"$regex": escaped_phone, "$options": "i"}},
+            {"phone": f"+91{clean_phone}"},
+            {"phone": clean_phone}
         ])
     
     if name:
