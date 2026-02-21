@@ -200,8 +200,12 @@ def get_tithi(date: datetime) -> dict:
     """Calculate approximate Tithi based on lunar phase"""
     # Simplified calculation
     # New moon reference: January 6, 2000
-    ref_new_moon = datetime(2000, 1, 6, 18, 14)
+    ref_new_moon = datetime(2000, 1, 6, 18, 14, tzinfo=timezone.utc)
     lunar_month = 29.530588853  # Average synodic month in days
+    
+    # Make date timezone-aware if not already
+    if date.tzinfo is None:
+        date = date.replace(tzinfo=timezone.utc)
     
     days_since_new_moon = (date - ref_new_moon).total_seconds() / 86400
     lunar_day = (days_since_new_moon % lunar_month) / lunar_month * 30
