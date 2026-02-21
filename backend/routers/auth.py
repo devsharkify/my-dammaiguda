@@ -5,6 +5,7 @@ from typing import Optional
 import httpx
 import os
 import random
+import hashlib
 from .utils import db, generate_id, now_iso, create_token, get_current_user
 
 router = APIRouter(prefix="/auth", tags=["Authentication"])
@@ -19,10 +20,18 @@ AUTHKEY_ENABLED = bool(AUTHKEY_API_KEY)
 # OTP store (stores LogID from Authkey for verification, or OTP for dev mode)
 otp_store = {}
 
+# Password hashing
+def hash_password(password: str) -> str:
+    return hashlib.sha256(password.encode()).hexdigest()
+
 # ============== MODELS ==============
 
 class OTPRequest(BaseModel):
     phone: str
+
+class PasswordLogin(BaseModel):
+    phone: str
+    password: str
 
 class OTPVerify(BaseModel):
     phone: str
