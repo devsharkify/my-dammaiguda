@@ -134,8 +134,16 @@ async def verify_otp(request: Request, verify_request: OTPVerify):
     # Clear OTP after successful verification
     otp_store.pop(verify_request.phone, None)
     
-    # Check if user exists
-    user = await db.users.find_one({"phone": verify_request.phone}, {"_id": 0})
+    # Normalize phone format for database lookup (check both with and without +91)
+    phone_normalized = verify_request.phone.replace("+91", "").replace("+", "").strip()
+    phone_with_prefix = f"+91{phone_normalized}"
+    
+    # Check if user exists (try both formats)
+    user = await db.users.find_one({"phone": phone_with_prefix}, {"_id": 0})
+    if not user:
+        user = await db.users.find_one({"phone": phone_normalized}, {"_id": 0})
+    if not user:
+        user = await db.users.find_one({"phone": verify_request.phone}, {"_id": 0})
     
     if user:
         token = create_token(user["id"], user["role"])
