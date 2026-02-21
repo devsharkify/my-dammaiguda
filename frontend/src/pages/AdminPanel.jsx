@@ -457,6 +457,10 @@ export default function AdminPanel() {
               <BarChart3 className="h-4 w-4" />
               Overview
             </TabsTrigger>
+            <TabsTrigger value="analytics" className="gap-2">
+              <Activity className="h-4 w-4" />
+              Analytics
+            </TabsTrigger>
             <TabsTrigger value="settings" className="gap-2">
               <Settings className="h-4 w-4" />
               Site Settings
@@ -482,6 +486,11 @@ export default function AdminPanel() {
               Announcements
             </TabsTrigger>
           </TabsList>
+
+          {/* Analytics Tab */}
+          <TabsContent value="analytics">
+            <AnalyticsDashboard />
+          </TabsContent>
 
           {/* Overview Tab */}
           <TabsContent value="overview">
