@@ -3,87 +3,121 @@ Build a production-ready, mobile-first civic engagement platform “My Dammaigud
 
 **PRODUCT REQUIREMENTS:**
 - **Core Modules:** User Auth (OTP), Issue Reporting, Dump Yard/Environment info, Health & Fitness (Kaizer Fit), Citizen Benefits, Ward Expenditure Dashboard, Polls, Volunteer Module, Admin Dashboard.
-- **Recent User-Requested Features:**
-    - **White-Label Architecture:** Refactor the entire application to be multi-tenant, allowing it to be easily cloned and rebranded for new geographical areas (e.g., My AS Rao Nagar).
-    - **App Clone Generator:** Create both a CLI tool and a user-friendly Admin UI to generate new configurations and clone the application for new areas instantly.
-    - **Multi-Area Admin Panel:** Develop a centralized, desktop-first admin dashboard that allows a super-admin to manage content (news, courses, etc.) for all cloned areas from a single interface, with an area-switcher filter.
-    - **Manager Portal:** Create a separate, standalone web app/portal for area-specific Managers. These managers should have a distinct login and a dashboard where they can only see and manage grievances, user enrollments, and wall posts for their assigned area.
+- **White-Label Architecture:** Refactor the entire application to be multi-tenant, allowing it to be easily cloned and rebranded for new geographical areas.
+- **App Clone Generator:** Create both a CLI tool and a user-friendly Admin UI to generate new configurations and clone the application.
+- **Multi-Area Admin Panel:** Develop a centralized admin dashboard to manage content for all cloned areas from a single interface.
+- **Manager Portal:** Create a separate, standalone portal for area-specific Managers to manage local grievances, users, and wall posts.
+- **Recent User Requests:**
+    - Enhance the Astrology module with Telugu Panchangam, fix prediction dates, and improve UI.
+    - Improve the AQI monitor to show the daily highest value.
+    - Implement PWA features: Push Notifications, better Offline Mode, and a Muhurtam Calculator.
+    - Enhance the fitness calorie counter and reorganize nutrition tools.
 
 **User's preferred language**: English
 
 **what currently exists?**
-The application is a full-stack Progressive Web App (PWA) that has been architected into a powerful, multi-tenant white-label platform. It features a FastAPI backend and a React frontend. The core functionalities like User Auth, News, AQI, and Issue Reporting are now context-aware and change based on the selected area configuration.
+The application is a mature, full-stack, multi-tenant Progressive Web App (PWA) built with a FastAPI backend and React frontend. It features a sophisticated white-label architecture allowing for easy cloning and rebranding for different geographical areas.
 
-A sophisticated cloning system is in place, featuring both a CLI script () and a web-based Admin UI (). A new centralized Admin Panel () allows a super-admin to manage all app instances from one place. A separate, functionally complete Manager Portal () has been created for area-specific managers to handle local operations.
+Key functionalities include:
+- **Core:** User Authentication, News, AQI, Issue Reporting.
+- **Admin:** A powerful multi-area Admin Panel () for super-admins to manage all app instances, including a site settings editor for on-the-fly branding changes. An app cloning tool () is also available.
+- **Manager:** A separate, standalone Manager Portal () for area-specific managers to handle local grievances and user management.
+- **Features:** A detailed Astrology section with daily predictions and a new Telugu Panchangam, a Muhurtam Calculator, and an enhanced AQI widget.
+- **PWA:** The app has a service worker with offline caching and backend support for web push notifications.
 
 **Last working item**:
-    - Last item agent was working: Building the complete end-to-end Manager Portal feature. This included creating a  role in the backend, developing a full suite of manager-specific APIs, adding a Managers tab to the main Admin Panel for creating/assigning managers, and building the separate Manager Portal frontend with login and a dashboard. The agent successfully tested the full flow: creating a manager in the admin panel, logging in as that manager, and viewing area-specific data on the manager dashboard.
-    - Status: COMPLETED
-    - Agent Testing Done: Y
-    - Which testing method agent to use? NA
+    - Last item agent was working: Addressing a user request to enhance the fitness module. This involves two parts: 1) Fixing a broken calorie counter by building a new, more detailed version with specific meal categories (Breakfast, Lunch, etc.) and quantity units (grams, pieces). 2) Reorganizing the app by moving nutrition-related tools (Nutrition Meal Maker, Eater Loos) from the  page to the main  page. The agent had begun by exploring the existing code and creating a placeholder file for the new calorie counter component.
+    - Status: IN PROGRESS
+    - Agent Testing Done: N
+    - Which testing method agent to use? both
     - User Testing Done: N
 
 **All Pending/In progress Issue list**:
-  - Issue 1:  **Complete Google Play Store Submission (Priority: P0)**
-     - Attempted fixes: The agent has previously guided the user through most of the Play Console forms and generated an AAB file. The user pivoted to feature development before completing the submission.
+  - Issue 1: **Enhance Calorie Counter and Reorganize Fitness Tools (Priority: P0)**
+  - Issue 2: **Complete Google Play Store Submission (Priority: P1)**
+  - Issue 3: **Google Fit OAuth Flow User Verification (Priority: P2)**
+  - Issue 4: **Remove Test OTP Backdoor in Production (Priority: P3)**
+
+  Issues Detail:
+  - Issue 1:
+     - Attempted fixes: The agent has analyzed the existing , , and backend meal/food routes. A new file  has been created.
      - Next debug checklist:
-        1.  Re-engage with the user to see if they are ready to proceed with the submission.
-        2.  Guide the user to the Production release track in Play Console.
-        3.  Instruct the user to upload the  file and fill in release notes.
-        4.  Assist with any rejections from Google.
+        1. Implement the UI for the new  component with meal categories and unit inputs.
+        2. Update or create backend APIs in  and  to support the new detailed logging structure.
+        3. Integrate the new component into .
+        4. Move the Nutrition Meal Maker and Eater Loos components/logic from  to .
+        5. Test the entire flow.
+     - Why fix this issue and what will be achieved with the fix? To provide a core functional calorie tracking feature as requested by the user and improve the UX of the fitness section.
+     - Status: IN PROGRESS
+     - Is recurring issue? N
+     - Should Test frontend/backend/both after fix? both
+     - Blocked on other issue: None
+
+  - Issue 2:
+     - Attempted fixes: The agent previously generated an AAB file and guided the user through the Play Console. The user pivoted to feature development.
+     - Next debug checklist: Re-engage with the user to continue the submission process in the Google Play Console's Production track.
      - Why fix this issue and what will be achieved with the fix? This is a primary project goal to make the application publicly available.
      - Status:  IN PROGRESS
      - Is recurring issue? N
      - Should Test frontend/backend/both after fix? N/A
-     - Blocked on other issue: User action.
+     - Blocked on other issue: User availability.
 
-  - Issue 2: **Google Fit OAuth Flow User Verification (Priority: P1)**
-     - Attempted fixes: The backend and frontend logic are fully implemented and deployed on the production server.
-     - Next debug checklist: Guide the user to log in on the live app, navigate to Kaizer Fit, and complete the Google OAuth flow to verify data syncing.
-     - Why fix this issue and what will be achieved with the fix? To confirm a key integration is working end-to-end in the production environment.
-     - Status:  USER VERIFICATION PENDING
+  - Issue 3:
+     - Attempted fixes: The feature is fully implemented.
+     - Next debug checklist: Guide the user to test the Google Fit connection flow on the live application.
+     - Why fix this issue and what will be achieved with the fix? To confirm a key third-party integration works correctly in the production environment.
+     - Status: USER VERIFICATION PENDING
      - Is recurring issue? N
      - Should Test frontend/backend/both after fix? frontend
      - Blocked on other issue: No
 
-  - Issue 3: **Remove Test OTP Backdoor in Production (Priority: P2)**
-     - Attempted fixes: None. This is a planned security measure.
-     - Next debug checklist: After the app is approved on the Play Store, modify  to remove the code block that allows the static OTP  for test phone numbers.
-     - Why fix this issue and what will be achieved with the fix? Critical security hardening to ensure only real, SMS-delivered OTPs are used in production.
+  - Issue 4:
+     - Attempted fixes: None.
+     - Next debug checklist: In , remove the static OTP logic for test numbers.
+     - Why fix this issue and what will be achieved with the fix? Critical security hardening before public launch.
      - Status:  NOT STARTED
      - Is recurring issue? N
      - Should Test frontend/backend/both after fix? backend
      - Blocked on other issue: Google Play Store approval.
 
 **In progress Task List**:
-  - None. The agent completed the active development task. The next action depends on user direction.
+  - Task 1: **Calorie Counter and Fitness Page Refactor**
+     - Where to resume: The agent should begin implementing the UI and logic inside the newly created  file.
+     - What will be achieved with this? A functional, detailed calorie counter and a more logically organized fitness page.
+     - Status: IN PROGRESS
+     - Should Test frontend/backend/both after fix? both
+     - Blocked on something: No
 
 **Upcoming and Future Tasks**
     Upcoming Tasks:
-    - P1: Add admin controls to the main  website to make it generic (e.g., editable Powered By text).
-    - P1: Implement banner changing functionality within the Manager Portal.
-    - P1: Enable managers to post/delete messages on their area's wall and view all group messages.
     - P1: Generate phone and tablet screenshots for the Play Store listing.
     - P2: Guide user through the Apple App Store submission process.
 
     Future Tasks:
     - P2: Deprecate the old  in favor of the new .
-    - P2: Implement the Enterprise Grade roadmap, starting with security hardening (rate limiting, stricter CORS, refresh tokens) and monitoring (Sentry).
+    - P2: Implement Enterprise Grade roadmap (rate limiting, stricter CORS, Sentry).
+    - P3: User analytics dashboard.
     - P3: Enhance WebSocket Chat with features like user presence, typing indicators, and message history.
 
 **Completed work in this session**
-- **White-Label Architecture:** Successfully refactored the entire frontend to be multi-tenant using React Context () and dynamic configuration files. Core components like , , and  are now fully generic.
-- **App Clone Generator (CLI & UI):**
-    - Created a Node.js CLI script () to instantly generate new area-specific configurations.
-    - Built a user-friendly Admin UI () for non-technical users to create clones, featuring presets and custom forms. Made the Powered By field editable and removed the Dump Yard option as requested.
-- **Multi-Area Admin Panel:** Developed a new, comprehensive admin dashboard () with a global area filter, enabling a super-admin to manage content for all cloned apps from a single interface.
-- **Manager Portal (End-to-End):**
-    - **Backend:** Added a  role to the user model (), created a new API router for manager-specific actions (), and added an endpoint for admins to create managers.
-    - **Frontend:** Built a completely separate Manager Portal () with its own login and dashboard, allowing managers to view area-specific stats, grievances, and user data.
-    - **Testing:** The full E2E flow for creating and logging in as a manager was implemented and verified.
+- **Admin & Manager Panel Enhancements:**
+    - Implemented a Site Settings tab in the Admin Panel () for on-the-fly editing of branding (, ).
+    - Created backend settings API ().
+    - Tested and verified the full workflow for both Admin and Manager panels via the testing agent.
+- **Astrology Module Overhaul:**
+    - Integrated a Telugu Panchangam feature with its own API () and frontend view.
+    - Fixed predictions to use the current year dynamically, resolving a bug where they showed 2025.
+    - Fixed UI layout for the Kundali form submit button.
+- **AQI Widget Improvement:**
+    - Updated the widget to store and display the daily maximum AQI value, with a reset mechanism.
+- **PWA Features Implementation:**
+    - **Muhurtam Calculator:** Built a new feature to find auspicious times, with a dedicated backend () and frontend page.
+    - **Push Notifications:** Set up backend infrastructure to enable sending web push notifications.
+    - **Offline Mode:** Enhanced the service worker for better offline caching and created a more user-friendly offline page.
+- **Comprehensive Testing:** All completed features were successfully verified using the .
 
 **Earlier issues found/mentioned but not fixed**
-   - None in this session. The primary task was to address the previously unfixed white-labeling issue, which is now complete.
+   - None
 
 **Known issue recurrence from previous fork**
   - None.
@@ -92,66 +126,75 @@ A sophisticated cloning system is in place, featuring both a CLI script () and a
 
 
 **Key Technical Concepts**
-- **Frontend:** React, PWA, Tailwind CSS, Shadcn/UI.
+- **Frontend:** React, PWA, Tailwind CSS, Shadcn/UI, React Context.
 - **Backend:** FastAPI, Motor (async MongoDB).
-- **Architecture:** **Multi-Tenancy / White-Label** via React Context and dynamic configuration files.
+- **Architecture:** Multi-Tenancy / White-Label via dynamic configurations.
 - **Tooling:** Node.js for CLI script automation.
 
 **key DB schema**
-  - **users:**
-    - : (String, Enum: user, admin, manager) - Added to differentiate user types.
-    - : (String) - For managers, specifies which area they manage (e.g., dammaiguda).
+  - **users:** {role: user | admin | manager, assigned_area: string}
+  - **settings:** {area_name: string, appName: string, poweredByText: string, ...} (New collection for branding)
+  - **foods:** (Existing schema for food database)
+  - **meals:** (Existing schema for user meal logs)
 
 **changes in tech stack**
-  - No new package installations. The primary change was the introduction of a Node.js script () for automation.
+  - No new technologies or major packages were added.
 
 **All files of reference**
-- **White-Label Core:** , 
-- **Cloning Tools:** , 
-- **Admin Panel:** 
-- **Manager Portal:** , 
-- **Data Models:** 
+- **Current Task:**
+    - 
+    - 
+    - 
+    - 
+    - 
+- **Recently Completed:**
+    - 
+    - 
+    - 
+    - 
+    - 
+    - 
+    - 
 
 **Areas that need refactoring**:
-- The legacy  page should be reviewed and potentially deprecated or removed to avoid confusion with the new, more powerful .
+- The legacy  page should be deprecated in favor of the new .
+- The  page will require cleanup after nutrition tools are moved from it.
 
 **key api endpoints**
-- **POST /api/manager/create:** (Admin-only) Creates a new manager user.
-- **POST /api/manager/login:** Handles login for manager roles.
-- **GET /api/manager/dashboard-stats:** Gets dashboard statistics for the manager's assigned area.
-- **GET /api/manager/grievances:** Gets grievances for the manager's assigned area.
-- **GET /api/manager/enrollments:** Gets course enrollments for the manager's assigned area.
-- **GET /api/manager/wall-posts:** Gets wall posts for the manager's assigned area.
+- **GET /api/settings/{area_name}**: Fetches branding settings.
+- **PUT /api/settings/{area_name}**: Updates branding settings.
+- **GET /api/panchangam/**: Fetches Telugu Panchangam data.
+- **POST /api/muhurtam/calculate**: Calculates auspicious times.
 
 **Critical Info for New Agent**
-- The application's architecture is now multi-tenant. The active brand or area is controlled by the content of . Use the  command to switch between configurations for testing.
-- There are three distinct user roles: User, Admin, and Manager, each with their own portal/view.
-- Super Admins use the  for centralized management.
-- Area Managers use the  portal for localized management.
-- The immediate priority has shifted from deployment to extending the platform's multi-tenant capabilities. Clarify with the user whether to continue this feature development or return to the Play Store submission process.
+- The immediate priority is the **Calorie Counter enhancement** and **Fitness page reorganization**. Start by implementing the  component.
+- The user has provided a list of new features (astrology, AQI, PWA) which have now been completed and tested.
+- Do not proceed to other tasks until the current fitness module task is complete.
+- The  has proven effective for comprehensive testing after feature implementation. Use it to verify your work on the fitness module.
 
 **documents and test reports created in this job**
-  - 
+  - /app/test_reports/iteration_4.json (latest report)
+  - /app/memory/PRD.md (updated multiple times)
 
 **Last 10 User Messages and any pending HUMAN messages**
-1. **User:** Requests a multi-area admin panel with an area filter and apply to all functionality. (COMPLETED)
-2. **User:** Asks for the weblinks to the new admin panels. (COMPLETED)
-3. **User:** Requests changes to the CloneMaker: make Powered by editable and remove Dump Yard. (COMPLETED)
-4. **User:** Requests a new, separate Manager Panel app linked to specific areas for grievance management. (COMPLETED)
-5. **User:** Confirms the manager panel should be a separate app with a separate login. (COMPLETED)
-6. **User:** Confirms managers should only have access to their assigned area and limited functionality (banner changes, wall posts). (COMPLETED)
-7. **User:** Gives go-ahead to implement the CloneMaker changes and the new Manager Panel. (COMPLETED)
-8. **User:** Gives go-ahead to implement the backend APIs for the Manager Portal. (COMPLETED)
-9. **User:** Gives go-ahead to create a test manager and test the full login flow. (COMPLETED)
-10. **User:** (Pending) Was prompted for the next steps after seeing the completed Manager Portal.
+1. **User:** Requested astrology enhancements: Telugu Panchangam, Rahu Kalam, and fixing the prediction year. (COMPLETED)
+2. **User:** Pointed out a layout issue with the submit button on a form. (COMPLETED)
+3. **User:** Stated predictions for 2025 are wrong and should be for the current year (2026). (COMPLETED)
+4. **User:** Requested a free API for astrology data. (COMPLETED, agent built one)
+5. **User:** Requested an improvement to the AQI monitor to show the day's highest value. (COMPLETED)
+6. **User:** Requested PWA enhancements: Webpush API and better offline mode. (COMPLETED)
+7. **User:** Requested a Muhurtam Calculator. (COMPLETED)
+8. **User:** Stated the calorie counter in the fitness section is not working. (IN PROGRESS)
+9. **User:** Described requirements for a new calorie counter: categories for breakfast/lunch/dinner/snacks and units like grams/spoons/pieces. (IN PROGRESS)
+10. **User:** Requested moving the nutrition meal maker and eater loos tools from the doctor page to the fitness page. (IN PROGRESS)
 
 **Project Health Check:**
-- **Broken:** None
-- **Mocked:** None
+- **Broken:** The calorie counter feature is currently broken and is the active task to fix.
+- **Mocked:** None.
 - **User Verification Pending:**
-    - Google Fit Integration on the live production domain.
-    - The entire Multi-Area Admin Panel workflow.
-    - The entire Manager Portal workflow.
+    - Google Fit Integration on the production domain.
+    - Multi-Area Admin Panel workflow.
+    - Manager Portal workflow.
 
 **3rd Party Integrations**
 - **Authkey.io (SMS)** — requires User API Key **(INTEGRATED)**
@@ -161,7 +204,7 @@ A sophisticated cloning system is in place, featuring both a CLI script () and a
 - **OpenAI API** — requires User API Key **(INTEGRATED)**
 
 **Testing status**
-  - Testing agent used after significant changes: YES (After white-label implementation, all 15 tests passed).
+  - Testing agent used after significant changes: YES (Last run for PWA/Astrology/Muhurtam features passed with 100% success).
   - Troubleshoot agent used after agent stuck in loop: NO
   - Test files created: None
   - Known regressions: None
@@ -169,8 +212,8 @@ A sophisticated cloning system is in place, featuring both a CLI script () and a
 **Credentials to test flow:**
 - **User Phone:** 
 - **Admin Phone:** 
-- **Manager Phone:**  (Assigned to Dammaiguda)
+- **Manager Phone:** 
 - **OTP (for all test numbers):** 
 
 **What agent forgot to execute**
-- The user requested a admin conteol o mydamamaigdua websit e.. ill make i tgenric. The agent built the powerful multi-area admin panel but may have missed the more direct request to add a simple control panel on the main production site itself to edit its branding on the fly. This should be clarified as a potential upcoming task.</analysis>
+- Nothing was explicitly forgotten in this session. The agent systematically worked through a long list of user requests.</analysis>
