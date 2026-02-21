@@ -298,6 +298,47 @@ DISABLE_ESLINT_PLUGIN=true
   - `POST /api/notifications/test` - Send test notification
   - `POST /api/notifications/broadcast` - Admin broadcast
 
+## Weight Tracker Enhancement (Completed Feb 21, 2026)
+
+### New Features:
+- **BMI Calculation & Display:**
+  - Automatic calculation from current weight and height
+  - Color-coded BMI card (green=Normal, yellow=Underweight, orange/red=Overweight/Obese)
+  - Categories: Underweight (<18.5), Normal (18.5-25), Overweight (25-30), Obese (>30)
+- **Weekly/Monthly Statistics:**
+  - Weekly average weight
+  - Weekly change indicator (+/- kg)
+  - Monthly average weight
+  - Trend detection (losing/gaining/stable)
+- **API Enhancement:**
+  - `GET /api/fitness/weight/stats` now returns:
+    - bmi, bmi_category
+    - weekly_avg, monthly_avg
+    - weekly_change, trend
+
+## Report Downloading System (Completed Feb 21, 2026)
+
+### Admin Reports (/api/reports/admin/):
+| Report | Description | Filters |
+|--------|-------------|---------|
+| users | All registered users | date_from, date_to, area |
+| grievances | All issues/complaints | date_from, date_to, status, area |
+| analytics | Daily engagement metrics | date_from, date_to |
+| health-summary | Aggregated fitness data | date_from, date_to |
+
+### Manager Reports (/api/reports/manager/):
+| Report | Description | Filters |
+|--------|-------------|---------|
+| grievances | Area-specific issues | date_from, date_to, status |
+| users | Area-specific users | date_from, date_to |
+
+### Features:
+- **Export Formats:** CSV (Excel-compatible), JSON
+- **Date Range Filtering:** Custom date_from and date_to
+- **Status Filtering:** For grievances (pending, in_progress, resolved)
+- **Role-Based Access:** Admins see all data, Managers see only their assigned area
+- **UI Location:** Admin Panel > Reports tab, Manager Portal > Reports tab
+
 ## Offline Mode Enhancements (Completed Feb 21, 2026)
 
 ### Service Worker Caching:
