@@ -139,7 +139,7 @@ export default function ChildSafety() {
           <div className="text-sm text-gray-600 space-y-1">
             <p><strong>Safety Team:</strong> safety@sharkify.ai</p>
             <p><strong>General Support:</strong> support@sharkify.ai</p>
-            <p><strong>Company:</strong> Sharkify Technology Pvt Ltd</p>
+            <p><strong>Company:</strong> Rohan Kul</p>
             <p><strong>Address:</strong> Flat 501, SM Plaza, AS Rao Nagar, Hyderabad 500062</p>
           </div>
         </section>
@@ -154,7 +154,7 @@ export default function ChildSafety() {
 
         {/* Footer */}
         <div className="text-center text-xs text-gray-400 pt-4">
-          <p>© 2026 Sharkify Technology Pvt Ltd. All rights reserved.</p>
+          <p>© 2026 Rohan Kul. All rights reserved.</p>
         </div>
       </div>
     </Layout>

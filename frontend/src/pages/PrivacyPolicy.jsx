@@ -220,7 +220,7 @@ export default function PrivacyPolicy() {
           <div className="bg-gray-50 p-3 rounded-lg space-y-1 text-sm">
             <p><strong>{language === "te" ? "ఇమెయిల్" : "Email"}:</strong> support@sharkify.ai</p>
             <p><strong>{language === "te" ? "చిరునామా" : "Address"}:</strong> Flat 501, SM Plaza, AS Rao Nagar, Hyderabad 500062</p>
-            <p><strong>{language === "te" ? "సంస్థ" : "Company"}:</strong> Sharkify Technology Pvt Ltd</p>
+            <p><strong>{language === "te" ? "సంస్థ" : "Company"}:</strong> Rohan Kul</p>
           </div>
         </section>
 
@@ -243,7 +243,7 @@ export default function PrivacyPolicy() {
 
         {/* Footer */}
         <div className="text-center text-sm text-gray-500 pt-4">
-          <p>© 2026 Sharkify Technology Pvt Ltd. {language === "te" ? "అన్ని హక్కులు రిజర్వ్ చేయబడ్డాయి." : "All rights reserved."}</p>
+          <p>© 2026 Rohan Kul. {language === "te" ? "అన్ని హక్కులు రిజర్వ్ చేయబడ్డాయి." : "All rights reserved."}</p>
         </div>
       </div>
     </Layout>

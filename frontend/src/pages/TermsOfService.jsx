@@ -135,13 +135,13 @@ export default function TermsOfService() {
           <div className="text-sm text-gray-600 space-y-1">
             <p><strong>Email:</strong> support@sharkify.ai</p>
             <p><strong>Address:</strong> Flat 501, SM Plaza, AS Rao Nagar, Hyderabad 500062</p>
-            <p><strong>Company:</strong> Sharkify Technology Pvt Ltd</p>
+            <p><strong>Company:</strong> Rohan Kul</p>
           </div>
         </section>
 
         {/* Footer */}
         <div className="text-center text-xs text-gray-400 pt-4">
-          <p>© 2026 Sharkify Technology Pvt Ltd</p>
+          <p>© 2026 Rohan Kul</p>
           <p>{language === "te" ? "అన్ని హక్కులు రిజర్వ్ చేయబడ్డాయి" : "All rights reserved"}</p>
         </div>
       </div>

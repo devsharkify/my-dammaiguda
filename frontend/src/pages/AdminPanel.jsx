@@ -680,7 +680,7 @@ export default function AdminPanel() {
                           <Input
                             value={siteSettings.company_name}
                             onChange={(e) => setSiteSettings(s => ({ ...s, company_name: e.target.value }))}
-                            placeholder="Sharkify Technology Pvt. Ltd."
+                            placeholder="Rohan Kul"
                           />
                         </div>
                       </div>

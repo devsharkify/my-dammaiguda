@@ -144,7 +144,7 @@ export default function CloneMaker() {
     problemsSolved: "50+",
     peopleBenefited: "25K+",
     // Company & Partner (Powered By)
-    companyName: "Sharkify Technology Pvt. Ltd.",
+    companyName: "Rohan Kul",
     partnerName: "Kaizer News",
     partnerLogo: "",
     // Education partner
@@ -188,7 +188,7 @@ export default function CloneMaker() {
       },
     } : {
       ...AREA_PRESETS[selectedPreset],
-      company: { name: customArea.companyName || "Sharkify Technology Pvt. Ltd." },
+      company: { name: customArea.companyName || "Rohan Kul" },
       partner: { name: customArea.partnerName || "Kaizer News", logo: customArea.partnerLogo || "" },
       education: { partnerName: customArea.educationPartner || "Bose American Academy" },
     };
@@ -549,7 +549,7 @@ input::selection, textarea::selection {
                     <div>
                       <Label className="text-xs">Company Name</Label>
                       <Input
-                        placeholder="Sharkify Technology Pvt. Ltd."
+                        placeholder="Rohan Kul"
                         value={customArea.companyName}
                         onChange={(e) => handleCustomChange('companyName', e.target.value)}
                       />
@@ -673,7 +673,7 @@ input::selection, textarea::selection {
                   <div>
                     <Label className="text-xs">Company Name</Label>
                     <Input
-                      placeholder="Sharkify Technology Pvt. Ltd."
+                      placeholder="Rohan Kul"
                       value={customArea.companyName}
                       onChange={(e) => handleCustomChange('companyName', e.target.value)}
                     />
