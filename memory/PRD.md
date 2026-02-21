@@ -128,15 +128,17 @@ DISABLE_ESLINT_PLUGIN=true
 ## Pending/Future Tasks
 
 ### P0 - Immediate:
+- [x] ✅ Admin/Manager Login Fix (COMPLETED - Feb 21, 2026)
 - [ ] Complete Google Play Store submission
 - [ ] Google Fit OAuth verification (user testing on live domain)
 
 ### P1 - High Priority:
 - [ ] Update Play Store listing with production URLs
 - [ ] Test OTP flow with real phone numbers
-- [ ] Remove test OTP backdoor (123456) for production security (after Play Store approval)
 - [ ] Apple App Store submission
 - [x] ✅ Calorie Counter Enhancement (COMPLETED - Feb 21, 2026)
+
+**NOTE:** Test OTP backdoor (123456) is intentionally KEPT for Play Store testing as requested by user.
 
 ### P2 - Medium Priority:
 - [x] ✅ White-label replication architecture (COMPLETED - Feb 20, 2026)
