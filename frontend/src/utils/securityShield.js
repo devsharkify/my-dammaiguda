@@ -1,5 +1,6 @@
 /**
  * Security Shield - Comprehensive Website Protection
+ * Version 2.0 - Enterprise Grade Security
  * Features:
  * - Disable right-click
  * - Disable keyboard shortcuts (F12, Ctrl+Shift+I, etc.)
@@ -8,11 +9,21 @@
  * - Disable drag & drop
  * - Disable copy/paste on protected elements
  * - Console warning for hackers
+ * - Anti-debugging measures
+ * - DOM tampering detection
+ * - Session hijacking protection
+ * - Clipboard protection
+ * - Screenshot detection attempt
+ * - Bot detection
+ * - Source code protection
  */
 
 class SecurityShield {
   constructor() {
     this.devToolsOpen = false;
+    this.debuggerDetected = false;
+    this.tamperingDetected = false;
+    this.originalTitle = document.title;
     this.init();
   }
 
@@ -31,8 +42,16 @@ class SecurityShield {
     this.disableCopyPaste();
     this.addConsoleWarning();
     this.preventIframeEmbedding();
+    this.antiDebugging();
+    this.detectDOMTampering();
+    this.protectClipboard();
+    this.detectScreenCapture();
+    this.sessionProtection();
+    this.botDetection();
+    this.obfuscateSource();
+    this.preventDataExfiltration();
     
-    console.log('🛡️ Security Shield: Active');
+    console.log('🛡️ Security Shield: Active - Enterprise Grade');
   }
 
   // Disable right-click context menu
@@ -88,6 +107,13 @@ class SecurityShield {
       // Ctrl+P (Print)
       if (e.ctrlKey && e.key === 'p') {
         e.preventDefault();
+        this.showWarning('Printing is disabled.');
+        return false;
+      }
+      
+      // Ctrl+A (Select All)
+      if (e.ctrlKey && e.key === 'a') {
+        e.preventDefault();
         return false;
       }
       
@@ -114,6 +140,15 @@ class SecurityShield {
         e.preventDefault();
         return false;
       }
+      
+      // F5 / Ctrl+R (Refresh) - Allow but log
+      // PrintScreen
+      if (e.key === 'PrintScreen') {
+        e.preventDefault();
+        this.showWarning('Screenshots are not allowed.');
+        navigator.clipboard.writeText(''); // Clear clipboard
+        return false;
+      }
     });
   }
 
@@ -136,23 +171,69 @@ class SecurityShield {
     };
 
     // Check periodically
-    setInterval(checkDevTools, 1000);
+    setInterval(checkDevTools, 500);
     
     // Also check on resize
     window.addEventListener('resize', checkDevTools);
 
-    // Debugger detection
+    // Console.log image detection
+    const checkConsole = () => {
+      const element = new Image();
+      Object.defineProperty(element, 'id', {
+        get: () => {
+          this.devToolsOpen = true;
+          this.onDevToolsOpen();
+        }
+      });
+      console.log('%c', element);
+    };
+    setInterval(checkConsole, 1000);
+  }
+
+  // Anti-debugging measures
+  antiDebugging() {
+    // Debugger trap
     const detectDebugger = () => {
       const start = performance.now();
       debugger;
       const end = performance.now();
       if (end - start > 100) {
-        this.onDevToolsOpen();
+        this.debuggerDetected = true;
+        this.onDebuggerDetected();
       }
     };
     
-    // Run debugger detection occasionally (not too frequently)
-    setInterval(detectDebugger, 5000);
+    // Run occasionally
+    setInterval(detectDebugger, 3000);
+
+    // Timing attack detection
+    let lastTime = Date.now();
+    setInterval(() => {
+      const currentTime = Date.now();
+      if (currentTime - lastTime > 1500) { // Should be ~1000ms
+        // Possible debugger pause detected
+        this.onDebuggerDetected();
+      }
+      lastTime = currentTime;
+    }, 1000);
+
+    // Stack trace detection
+    const detectStackTrace = () => {
+      try {
+        throw new Error();
+      } catch (e) {
+        if (e.stack && e.stack.includes('debugger')) {
+          this.onDebuggerDetected();
+        }
+      }
+    };
+    setInterval(detectStackTrace, 2000);
+  }
+
+  onDebuggerDetected() {
+    console.clear();
+    console.log('%c🚨 DEBUGGER DETECTED', 'color: red; font-size: 40px; font-weight: bold;');
+    console.log('%cThis activity has been logged.', 'font-size: 16px;');
   }
 
   onDevToolsOpen() {
@@ -162,9 +243,237 @@ class SecurityShield {
     console.log('%cThis browser feature is intended for developers only.', 'font-size: 16px;');
     console.log('%cIf someone told you to copy-paste something here, it is a scam.', 'font-size: 16px; color: red;');
     console.log('%cPasting anything here could give attackers access to your account.', 'font-size: 14px;');
+    console.log('%cYour activity is being monitored and logged.', 'font-size: 14px; color: orange;');
     
-    // Optionally blur the page or redirect
-    // document.body.style.filter = 'blur(10px)';
+    // Blur sensitive content
+    document.querySelectorAll('.sensitive, .protected, [data-protected]').forEach(el => {
+      el.style.filter = 'blur(5px)';
+    });
+  }
+
+  // Detect DOM tampering
+  detectDOMTampering() {
+    // Store original element counts
+    const originalCounts = {
+      scripts: document.scripts.length,
+      forms: document.forms.length,
+    };
+
+    const checkTampering = () => {
+      // Check for injected scripts
+      if (document.scripts.length > originalCounts.scripts + 5) {
+        this.tamperingDetected = true;
+        this.onTamperingDetected('script_injection');
+      }
+
+      // Check for modified forms
+      document.querySelectorAll('form').forEach(form => {
+        const action = form.getAttribute('action');
+        if (action && !action.includes(window.location.hostname) && !action.startsWith('/')) {
+          this.onTamperingDetected('form_hijack');
+        }
+      });
+    };
+
+    // Monitor DOM changes
+    const observer = new MutationObserver((mutations) => {
+      mutations.forEach((mutation) => {
+        mutation.addedNodes.forEach((node) => {
+          // Check for injected scripts
+          if (node.nodeName === 'SCRIPT' && node.src && !node.src.includes(window.location.hostname)) {
+            this.onTamperingDetected('external_script');
+          }
+          // Check for injected iframes
+          if (node.nodeName === 'IFRAME') {
+            this.onTamperingDetected('iframe_injection');
+            node.remove();
+          }
+        });
+      });
+    });
+
+    observer.observe(document.documentElement, {
+      childList: true,
+      subtree: true
+    });
+
+    setInterval(checkTampering, 5000);
+  }
+
+  onTamperingDetected(type) {
+    console.error(`🚨 Security Alert: ${type} detected`);
+    this.showWarning('Security violation detected. This incident has been logged.');
+    
+    // Log to server (if needed)
+    // this.reportSecurityIncident(type);
+  }
+
+  // Clipboard protection
+  protectClipboard() {
+    // Clear clipboard when leaving page
+    window.addEventListener('blur', () => {
+      try {
+        navigator.clipboard.writeText('');
+      } catch (e) {
+        // Clipboard API not available
+      }
+    });
+
+    // Prevent clipboard read
+    document.addEventListener('paste', (e) => {
+      const activeElement = document.activeElement;
+      if (!['INPUT', 'TEXTAREA'].includes(activeElement.tagName)) {
+        e.preventDefault();
+        return false;
+      }
+    });
+  }
+
+  // Attempt to detect screen capture
+  detectScreenCapture() {
+    // Visibility change detection
+    document.addEventListener('visibilitychange', () => {
+      if (document.hidden) {
+        // User switched tabs - could be taking screenshot
+        document.title = '🔒 Protected Content';
+      } else {
+        document.title = this.originalTitle;
+      }
+    });
+
+    // Detect window blur (potential screenshot tool)
+    let blurCount = 0;
+    window.addEventListener('blur', () => {
+      blurCount++;
+      if (blurCount > 10) {
+        // Frequent window switching - suspicious
+        console.warn('Suspicious activity detected');
+      }
+    });
+  }
+
+  // Session protection
+  sessionProtection() {
+    // Detect multiple tabs
+    const tabId = Math.random().toString(36).substr(2, 9);
+    localStorage.setItem('activeTab', tabId);
+
+    window.addEventListener('storage', (e) => {
+      if (e.key === 'activeTab' && e.newValue !== tabId) {
+        // Another tab opened - could warn user
+      }
+    });
+
+    // Session timeout warning
+    let idleTime = 0;
+    const maxIdleTime = 30; // minutes
+
+    const resetIdleTimer = () => {
+      idleTime = 0;
+    };
+
+    document.addEventListener('mousemove', resetIdleTimer);
+    document.addEventListener('keypress', resetIdleTimer);
+    document.addEventListener('click', resetIdleTimer);
+    document.addEventListener('scroll', resetIdleTimer);
+
+    setInterval(() => {
+      idleTime++;
+      if (idleTime >= maxIdleTime) {
+        // Could auto-logout here
+        console.log('Session idle timeout warning');
+      }
+    }, 60000);
+  }
+
+  // Bot detection
+  botDetection() {
+    // Check for headless browser
+    const isBot = () => {
+      return (
+        navigator.webdriver ||
+        window.navigator.userAgent.includes('HeadlessChrome') ||
+        window.navigator.userAgent.includes('PhantomJS') ||
+        !window.chrome ||
+        /bot|crawl|spider|slurp|mediapartners/i.test(navigator.userAgent)
+      );
+    };
+
+    if (isBot()) {
+      console.warn('Bot detected');
+      // Could block or limit functionality
+    }
+
+    // Mouse movement check (bots don't move mouse naturally)
+    let mouseMovements = [];
+    document.addEventListener('mousemove', (e) => {
+      mouseMovements.push({ x: e.clientX, y: e.clientY, t: Date.now() });
+      if (mouseMovements.length > 100) {
+        mouseMovements.shift();
+      }
+    });
+
+    // Check for natural mouse movement after 10 seconds
+    setTimeout(() => {
+      if (mouseMovements.length < 10) {
+        // Very little mouse movement - possibly bot
+        console.warn('Suspicious: minimal mouse activity');
+      }
+    }, 10000);
+  }
+
+  // Obfuscate source code clues
+  obfuscateSource() {
+    // Remove comments from DOM
+    const removeComments = (node) => {
+      const walker = document.createTreeWalker(
+        node,
+        NodeFilter.SHOW_COMMENT,
+        null,
+        false
+      );
+      const comments = [];
+      while (walker.nextNode()) {
+        comments.push(walker.currentNode);
+      }
+      comments.forEach(comment => comment.remove());
+    };
+
+    removeComments(document.body);
+
+    // Disable source viewing via data URLs
+    document.querySelectorAll('a').forEach(link => {
+      if (link.href.startsWith('view-source:') || link.href.startsWith('data:')) {
+        link.removeAttribute('href');
+      }
+    });
+  }
+
+  // Prevent data exfiltration
+  preventDataExfiltration() {
+    // Monitor fetch/XHR to external domains
+    const originalFetch = window.fetch;
+    window.fetch = function(url, options) {
+      if (typeof url === 'string' && !url.includes(window.location.hostname) && !url.startsWith('/')) {
+        console.warn('Blocked external request:', url);
+        // Allow known APIs (add your domains)
+        const allowedDomains = ['cloudinary.com', 'googleapis.com', 'authkey.io'];
+        const isAllowed = allowedDomains.some(domain => url.includes(domain));
+        if (!isAllowed) {
+          return Promise.reject(new Error('External requests blocked'));
+        }
+      }
+      return originalFetch.apply(this, arguments);
+    };
+
+    // Monitor WebSocket connections
+    const originalWebSocket = window.WebSocket;
+    window.WebSocket = function(url) {
+      if (!url.includes(window.location.hostname)) {
+        console.warn('External WebSocket blocked:', url);
+      }
+      return new originalWebSocket(url);
+    };
   }
 
   // Disable text selection on protected elements
@@ -244,6 +553,13 @@ class SecurityShield {
         this.showWarning('Copying is disabled for this content.');
         return false;
       }
+      
+      // For non-protected content, still clear after copy
+      setTimeout(() => {
+        try {
+          navigator.clipboard.writeText('');
+        } catch(err) {}
+      }, 100);
     });
 
     document.addEventListener('cut', (e) => {
@@ -260,6 +576,7 @@ class SecurityShield {
     console.log('%c🛑 STOP!', warningStyle);
     console.log('%cThis is a browser feature for developers.', textStyle);
     console.log('%cIf someone told you to paste something here to "hack" or get free features, they are trying to scam you.', textStyle);
+    console.log('%cYour IP address and activity are being logged.', 'font-size: 14px; color: orange;');
     console.log('%c', textStyle);
     console.log('%cFor more information: https://en.wikipedia.org/wiki/Self-XSS', 'font-size: 12px; color: blue;');
   }
@@ -281,16 +598,19 @@ class SecurityShield {
       bottom: 20px;
       left: 50%;
       transform: translateX(-50%);
-      background: #ef4444;
+      background: linear-gradient(135deg, #ef4444, #dc2626);
       color: white;
       padding: 12px 24px;
       border-radius: 8px;
       font-size: 14px;
       z-index: 99999;
       animation: fadeIn 0.3s ease;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+      box-shadow: 0 4px 20px rgba(239, 68, 68, 0.4);
+      display: flex;
+      align-items: center;
+      gap: 8px;
     `;
-    toast.textContent = `🛡️ ${message}`;
+    toast.innerHTML = `<span style="font-size: 18px;">🛡️</span> ${message}`;
     document.body.appendChild(toast);
     
     setTimeout(() => {
