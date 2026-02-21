@@ -314,7 +314,7 @@ function generateLifePredictions(kundali) {
       personal: "Social life flourishes. Artistic pursuits successful. Beauty and aesthetics focus. Harmony at home.",
       marriage: "Excellent year for marriage. Beautiful celebrations. Partner brings balance. Venus strongly supports.",
       bestMatch: "Gemini, Aquarius",
-      thisYear: "2025 emphasizes relationships and balance. Beauty, harmony, and partnerships flourish.",
+      thisYear: `${new Date().getFullYear()} emphasizes relationships and balance. Beauty, harmony, and partnerships flourish.`,
       luckyMonths: "Jan, May, Sep",
       challenges: "Mar, Jul"
     },
