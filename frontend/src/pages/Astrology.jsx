@@ -230,7 +230,7 @@ function generateLifePredictions(kundali) {
       personal: "Family relationships strengthen. Good time for home improvements. Children bring joy. Elder's blessings important.",
       marriage: "Marriage prospects favorable after June. Existing relationships deepen. Communication is key for harmony.",
       bestMatch: "Leo, Sagittarius",
-      thisYear: "2025 is a year of new beginnings and leadership. Major decisions will shape your future. Be bold but calculated.",
+      thisYear: `${new Date().getFullYear()} is a year of new beginnings and leadership. Major decisions will shape your future. Be bold but calculated.`,
       luckyMonths: "Mar, Jul, Nov",
       challenges: "Apr, Aug"
     },
