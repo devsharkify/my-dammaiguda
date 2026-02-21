@@ -88,7 +88,7 @@ export default function AdminConsole() {
 
   const handleLogin = async () => {
     if (!phone || phone.length < 10) {
-      toast.error("Enter valid phone number");
+      toast.error("Enter valid 10-digit phone number");
       return;
     }
     if (!password || password.length < 4) {
@@ -100,7 +100,7 @@ export default function AdminConsole() {
       const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/auth/admin-login`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ phone: phone, password: password })
+        body: JSON.stringify({ phone: phone.replace(/\D/g, ''), password: password })
       });
       const data = await response.json();
       
@@ -109,11 +109,11 @@ export default function AdminConsole() {
         toast.success(data.message || "Welcome, Admin!");
         navigate("/admin/panel");
       } else {
-        toast.error(data.detail || "Login failed");
+        toast.error(data.detail || data.message || "Login failed. Check credentials.");
       }
     } catch (error) {
       console.error("Login Error:", error);
-      toast.error("Login failed. Please try again.");
+      toast.error("Connection failed. Please try again.");
     } finally {
       setLoading(false);
     }
