@@ -202,62 +202,43 @@ export default function AdminConsole() {
               </div>
             </div>
 
-            {!otpSent ? (
-              <div className="space-y-4">
-                <div>
-                  <label className="text-sm text-gray-400 mb-1.5 block">Phone Number</label>
-                  <div className="flex gap-2">
-                    <div className="flex items-center px-3 bg-gray-700 rounded-lg text-gray-400 text-sm">
-                      +91
-                    </div>
-                    <Input
-                      type="tel"
-                      placeholder="Enter phone number"
-                      value={phone}
-                      onChange={(e) => setPhone(e.target.value.replace(/\D/g, '').slice(0, 10))}
-                      className="flex-1 bg-gray-700 border-gray-600 text-white"
-                      maxLength={10}
-                    />
+            <div className="space-y-4">
+              <div>
+                <label className="text-sm text-gray-400 mb-1.5 block">Phone Number</label>
+                <div className="flex gap-2">
+                  <div className="flex items-center px-3 bg-gray-700 rounded-lg text-gray-400 text-sm">
+                    +91
                   </div>
-                </div>
-                <Button
-                  onClick={handleSendOtp}
-                  disabled={loading || phone.length < 10}
-                  className="w-full bg-primary hover:bg-primary/90"
-                >
-                  {loading ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : null}
-                  Send OTP
-                </Button>
-              </div>
-            ) : (
-              <div className="space-y-4">
-                <div>
-                  <label className="text-sm text-gray-400 mb-1.5 block">Enter OTP</label>
                   <Input
-                    type="text"
-                    placeholder="123456"
-                    value={otp}
-                    onChange={(e) => setOtp(e.target.value.replace(/\D/g, '').slice(0, 6))}
-                    className="bg-gray-700 border-gray-600 text-white text-center text-2xl tracking-widest"
-                    maxLength={6}
+                    type="tel"
+                    placeholder="Enter phone number"
+                    value={phone}
+                    onChange={(e) => setPhone(e.target.value.replace(/\D/g, '').slice(0, 10))}
+                    className="flex-1 bg-gray-700 border-gray-600 text-white"
+                    maxLength={10}
                   />
                 </div>
-                <Button
-                  onClick={handleVerifyOtp}
-                  disabled={loading || otp.length !== 6}
-                  className="w-full bg-primary hover:bg-primary/90"
-                >
-                  {loading ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : null}
-                  Verify & Login
-                </Button>
-                <button
-                  onClick={() => { setOtpSent(false); setOtp(""); }}
-                  className="w-full text-sm text-gray-400 hover:text-white"
-                >
-                  Change phone number
-                </button>
               </div>
-            )}
+              <div>
+                <label className="text-sm text-gray-400 mb-1.5 block">Password</label>
+                <Input
+                  type="password"
+                  placeholder="Enter password"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  className="bg-gray-700 border-gray-600 text-white"
+                  onKeyDown={(e) => e.key === 'Enter' && handleLogin()}
+                />
+              </div>
+              <Button
+                onClick={handleLogin}
+                disabled={loading || phone.length < 10 || !password}
+                className="w-full bg-primary hover:bg-primary/90"
+              >
+                {loading ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : null}
+                Login
+              </Button>
+            </div>
           </CardContent>
         </Card>
 
