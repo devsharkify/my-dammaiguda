@@ -285,7 +285,22 @@ export default function CalorieCounter({ onMealsUpdated, onClose }) {
   const progressPercent = Math.min(100, (caloriesSummary.total / caloriesGoal) * 100);
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-4 p-4">
+      {/* Header with Close Button */}
+      {onClose && (
+        <div className="flex items-center justify-between pb-2 border-b">
+          <div className="flex items-center gap-2">
+            <Apple className="h-5 w-5 text-orange-500" />
+            <h2 className="text-lg font-bold">
+              {language === "te" ? "కేలరీ ట్రాకర్" : "Calorie Tracker"}
+            </h2>
+          </div>
+          <Button variant="ghost" size="sm" onClick={onClose} data-testid="close-calorie-counter">
+            ✕
+          </Button>
+        </div>
+      )}
+
       {/* Summary Card */}
       <Card className="border-0 shadow-lg bg-gradient-to-br from-orange-500 to-red-500 text-white overflow-hidden">
         <CardContent className="p-4 relative">
