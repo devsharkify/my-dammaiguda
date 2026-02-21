@@ -9,7 +9,7 @@ from fastapi import APIRouter, Depends, HTTPException, WebSocket, WebSocketDisco
 from pydantic import BaseModel
 from typing import Optional, List, Dict
 from datetime import datetime, timezone, timedelta
-from .utils import db, generate_id, now_iso, get_current_user
+from .utils import db, generate_id, now_iso, get_current_user, JWT_SECRET
 import logging
 import asyncio
 import statistics
