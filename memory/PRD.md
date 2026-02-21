@@ -144,12 +144,41 @@ DISABLE_ESLINT_PLUGIN=true
 - [x] ✅ Manager Portal with Backend APIs (COMPLETED - Feb 20, 2026)
 - [x] ✅ Admin Panel Site Settings Tab - Editable Branding (COMPLETED - Feb 20, 2026)
 - [x] ✅ Manager Portal Wall Posts & Banner Update (COMPLETED - Feb 20, 2026)
+- [x] ✅ Telugu Panchangam with Rahu Kalam, etc. (COMPLETED - Feb 21, 2026)
+- [x] ✅ AQI Daily Max Logic with 8 PM reset (COMPLETED - Feb 21, 2026)
 - [ ] Enhanced WebSocket Chat features
 - [ ] User analytics dashboard
 
 ### P3 - Low Priority:
 - [ ] Push notifications setup
 - [ ] Offline mode enhancements
+
+---
+
+## Telugu Panchangam (Completed Feb 21, 2026)
+
+### Features:
+- **API Endpoint:** `/api/panchangam/today` - Public API returning complete Telugu Panchangam
+- **Telugu Translations:** All elements have Telugu names (తిథి, నక్షత్రం, యోగం, కరణం, etc.)
+- **Daily Updates:** Automatically refreshes with each new day
+- **Included Elements:**
+  - Tithi (తిథి) with Shukla/Krishna Paksha
+  - Nakshatra (నక్షత్రం)
+  - Yoga (యోగం)
+  - Karana (కరణం)
+  - Rahu Kalam (రాహు కాలం)
+  - Yamagandam (యమగండం)
+  - Gulika Kalam (గుళిక కాలం)
+  - Abhijit Muhurtam (అభిజిత్ ముహూర్తం)
+  - Amrit Kalam (అమృత కాలం)
+  - Durmuhurtam (దుర్ముహూర్తం)
+  - Sunrise/Sunset times
+
+### AQI Daily Max Logic:
+- Shows day's highest AQI value until 8 PM
+- After 8 PM, shows live value
+- Info banner explains the logic to users
+- Values stored in localStorage per day
 
 ---
 
