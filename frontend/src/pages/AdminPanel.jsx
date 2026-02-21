@@ -491,6 +491,10 @@ export default function AdminPanel() {
               <Newspaper className="h-4 w-4" />
               News
             </TabsTrigger>
+            <TabsTrigger value="benefits" className="gap-2">
+              <Heart className="h-4 w-4" />
+              Benefits
+            </TabsTrigger>
             <TabsTrigger value="templates" className="gap-2">
               <FileText className="h-4 w-4" />
               Templates
@@ -514,6 +518,11 @@ export default function AdminPanel() {
           {/* Reports Tab */}
           <TabsContent value="reports">
             <ReportsPanel userRole="admin" />
+          </TabsContent>
+
+          {/* Benefits Tab */}
+          <TabsContent value="benefits">
+            <BenefitsAdmin token={token} />
           </TabsContent>
 
           {/* Overview Tab */}
