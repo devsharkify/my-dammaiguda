@@ -107,6 +107,46 @@ async def send_authkey_otp(phone: str) -> dict:
         otp_store[phone] = {"otp": otp, "type": "authkey"}
         return {"success": True, "message": "OTP sent", "resend_after": 30}
 
+# ============== PASSWORD LOGIN (Admin/Manager) ==============
+
+@router.post("/admin-login")
+@limiter.limit("10/minute")
+async def admin_password_login(request: Request, login: PasswordLogin):
+    """Password-based login for Admin/Manager"""
+    # Normalize phone
+    phone = login.phone.replace("+91", "").replace("+", "").replace(" ", "").strip()
+    phone_with_prefix = f"+91{phone}"
+    
+    # Find user by phone
+    user = await db.users.find_one({"$or": [{"phone": phone_with_prefix}, {"phone": phone}]})
+    
+    if not user:
+        raise HTTPException(status_code=401, detail="User not found")
+    
+    # Check role
+    if user.get("role") not in ["admin", "manager"]:
+        raise HTTPException(status_code=403, detail="Admin/Manager access required")
+    
+    # Check password
+    if not user.get("password_hash"):
+        raise HTTPException(status_code=401, detail="Password not set. Contact administrator.")
+    
+    if user["password_hash"] != hash_password(login.password):
+        raise HTTPException(status_code=401, detail="Invalid password")
+    
+    # Generate token
+    token = create_token(user["id"])
+    
+    # Remove sensitive data
+    user_data = {k: v for k, v in user.items() if k not in ["_id", "password_hash"]}
+    
+    return {
+        "success": True,
+        "message": f"Welcome, {user.get('role', 'user').title()}!",
+        "token": token,
+        "user": user_data
+    }
+
 @router.post("/otp")
 @router.post("/send-otp")
 @limiter.limit("5/minute")
