@@ -52,7 +52,7 @@ const APP_CONFIG = {
   // ============== DOMAIN & URLS ==============
   urls: {
     domain: "mydammaiguda.in",
-    playStore: "https://play.google.com/store/apps/details?id=com.sharkify.mydammaiguda",
+    playStore: "https://play.google.com/store/apps/details?id=com.mydammaiguda.app",
     privacyPolicy: "/privacy-policy",
     termsOfService: "/terms-of-service",
     deleteAccount: "/delete-account",
