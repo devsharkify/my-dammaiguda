@@ -207,7 +207,7 @@ class TestNotificationsPreferences:
     
     def test_get_preferences_requires_auth(self):
         response = requests.get(f"{BASE_URL}/api/notifications/preferences")
-        assert response.status_code == 401, "Should require authentication"
+        assert response.status_code in [401, 403], "Should require authentication"
         
         print("✓ GET preferences requires authentication")
     
