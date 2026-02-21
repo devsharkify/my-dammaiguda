@@ -53,6 +53,7 @@ import CloneMaker from "./pages/CloneMaker";
 import AdminPanel from "./pages/AdminPanel";
 import ManagerApp from "./pages/ManagerApp";
 import MuhurtamCalculator from "./pages/MuhurtamCalculator";
+import ClaimBenefits from "./pages/ClaimBenefits";
 
 import "./App.css";
 
