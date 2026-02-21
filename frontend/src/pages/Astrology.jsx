@@ -258,7 +258,7 @@ function generateLifePredictions(kundali) {
       personal: "Social life active. Siblings play important role. Learning new skills beneficial. Short trips joyful.",
       marriage: "Need patience in marriage matters. Clear communication essential. Avoid misunderstandings.",
       bestMatch: "Libra, Aquarius",
-      thisYear: "2025 emphasizes learning and communication. Knowledge expansion leads to success.",
+      thisYear: `${new Date().getFullYear()} emphasizes learning and communication. Knowledge expansion leads to success.`,
       luckyMonths: "Jan, May, Sep",
       challenges: "Mar, Jul"
     },
