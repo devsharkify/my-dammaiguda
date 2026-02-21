@@ -12,37 +12,56 @@ import pytest
 import requests
 import os
 import uuid
+import time
 
 BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', '').rstrip('/')
+
+# Global session and token to avoid rate limiting
+_session = None
+_token = None
+
+def get_authenticated_session():
+    """Get or create authenticated session (singleton pattern)"""
+    global _session, _token
+    
+    if _session is not None and _token is not None:
+        return _session
+    
+    _session = requests.Session()
+    _session.headers.update({"Content-Type": "application/json"})
+    
+    # Authenticate with test credentials
+    response = _session.post(f"{BASE_URL}/api/auth/send-otp", json={
+        "phone": "9876543210"
+    })
+    if response.status_code != 200:
+        raise Exception(f"Failed to send OTP: {response.text}")
+    
+    # Verify OTP
+    response = _session.post(f"{BASE_URL}/api/auth/verify-otp", json={
+        "phone": "9876543210",
+        "otp": "123456"
+    })
+    if response.status_code != 200:
+        raise Exception(f"Failed to verify OTP: {response.text}")
+    
+    data = response.json()
+    _token = data.get("token")
+    if not _token:
+        raise Exception("No token received from login")
+    
+    _session.headers.update({"Authorization": f"Bearer {_token}"})
+    print(f"✓ Authentication successful")
+    return _session
+
 
 class TestCalorieCounterAPIs:
     """Test Calorie Counter APIs for KaizerFit module"""
     
     @pytest.fixture(autouse=True)
     def setup(self):
-        """Setup - authenticate and get token"""
-        self.session = requests.Session()
-        self.session.headers.update({"Content-Type": "application/json"})
-        
-        # Authenticate with test credentials
-        response = self.session.post(f"{BASE_URL}/api/auth/send-otp", json={
-            "phone": "9876543210"
-        })
-        assert response.status_code == 200, f"Failed to send OTP: {response.text}"
-        
-        # Verify OTP
-        response = self.session.post(f"{BASE_URL}/api/auth/verify-otp", json={
-            "phone": "9876543210",
-            "otp": "123456"
-        })
-        assert response.status_code == 200, f"Failed to verify OTP: {response.text}"
-        
-        data = response.json()
-        self.token = data.get("token")
-        assert self.token, "No token received from login"
-        
-        self.session.headers.update({"Authorization": f"Bearer {self.token}"})
-        print(f"✓ Authentication successful")
+        """Setup - get authenticated session"""
+        self.session = get_authenticated_session()
     
     # ============== MEAL TYPES TESTS ==============
     
@@ -62,7 +81,6 @@ class TestCalorieCounterAPIs:
         assert data.get("calories") > 0, f"Calories should be positive: {data.get('calories')}"
         assert data.get("id"), "Meal entry should have an ID"
         print(f"✓ Breakfast logged: {data['food_item']} x{data['quantity']} = {data['calories']} cal")
-        return data["id"]
     
     def test_post_meal_lunch(self):
         """POST /api/doctor/meal - Log lunch meal"""
@@ -338,17 +356,8 @@ class TestCalorieCounterIntegration:
     
     @pytest.fixture(autouse=True)
     def setup(self):
-        """Setup - authenticate"""
-        self.session = requests.Session()
-        self.session.headers.update({"Content-Type": "application/json"})
-        
-        self.session.post(f"{BASE_URL}/api/auth/send-otp", json={"phone": "9876543210"})
-        response = self.session.post(f"{BASE_URL}/api/auth/verify-otp", json={
-            "phone": "9876543210",
-            "otp": "123456"
-        })
-        self.token = response.json().get("token")
-        self.session.headers.update({"Authorization": f"Bearer {self.token}"})
+        """Setup - get authenticated session"""
+        self.session = get_authenticated_session()
     
     def test_full_meal_workflow(self):
         """Test complete meal logging workflow: log -> verify -> delete -> verify"""
@@ -390,7 +399,7 @@ class TestCalorieCounterIntegration:
     def test_all_meal_types_in_single_day(self):
         """Test logging all 5 meal types and verifying in summary"""
         meal_types = ["breakfast", "lunch", "snacks", "evening_snacks", "dinner"]
-        foods = ["idli", "rice", "samosa", "chai", "roti"]
+        foods = ["idli", "rice", "samosa", "vada", "roti"]  # Changed chai to vada as chai might not exist
         logged_meals = []
         
         # Log one meal for each type
