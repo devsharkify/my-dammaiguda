@@ -138,7 +138,7 @@ self.addEventListener('fetch', (event) => {
   // Skip chrome-extension and other non-http(s) requests
   if (!url.protocol.startsWith('http')) return;
 
-  // API requests - Network first, cache fallback
+  // API requests - Network first, cache fallback with smart caching
   if (url.pathname.startsWith('/api/')) {
     event.respondWith(handleApiRequest(request));
     return;
@@ -148,10 +148,20 @@ self.addEventListener('fetch', (event) => {
   event.respondWith(handleStaticRequest(request));
 });
 
-// Handle API requests - Network first strategy
+// Handle API requests - Network first strategy with smart caching
 async function handleApiRequest(request) {
   const url = new URL(request.url);
   const isCacheable = CACHEABLE_API_ROUTES.some(route => url.pathname.includes(route));
+  
+  // Determine cache duration based on API type
+  let cacheDuration = CACHE_DURATIONS.default;
+  if (url.pathname.includes('/panchangam')) {
+    cacheDuration = CACHE_DURATIONS.panchangam;
+  } else if (url.pathname.includes('/aqi')) {
+    cacheDuration = CACHE_DURATIONS.aqi;
+  } else if (url.pathname.includes('/news')) {
+    cacheDuration = CACHE_DURATIONS.news;
+  }
 
   try {
     const response = await fetch(request);
@@ -159,7 +169,19 @@ async function handleApiRequest(request) {
     // Cache successful GET responses for cacheable routes
     if (response.ok && isCacheable) {
       const cache = await caches.open(API_CACHE_NAME);
-      cache.put(request, response.clone());
+      const responseToCache = response.clone();
+      
+      // Add timestamp to cached response headers
+      const headers = new Headers(responseToCache.headers);
+      headers.append('sw-cached-at', Date.now().toString());
+      
+      const cachedResponse = new Response(await responseToCache.blob(), {
+        status: responseToCache.status,
+        statusText: responseToCache.statusText,
+        headers: headers
+      });
+      
+      cache.put(request, cachedResponse);
     }
     
     return response;
@@ -169,6 +191,17 @@ async function handleApiRequest(request) {
     // Try to get from cache
     const cachedResponse = await caches.match(request);
     if (cachedResponse) {
+      // Check if cache is still valid
+      const cachedAt = cachedResponse.headers.get('sw-cached-at');
+      if (cachedAt) {
+        const age = Date.now() - parseInt(cachedAt);
+        if (age < cacheDuration) {
+          console.log('[SW] Serving from cache (age:', Math.round(age/1000), 's)');
+          return cachedResponse;
+        }
+      }
+      // Even if expired, return stale cache when offline
+      console.log('[SW] Serving stale cache (offline)');
       return cachedResponse;
     }
     
@@ -177,7 +210,8 @@ async function handleApiRequest(request) {
       JSON.stringify({ 
         error: 'offline', 
         message: 'You are offline. Please check your connection.',
-        message_te: 'మీరు ఆఫ్‌లైన్‌లో ఉన్నారు. దయచేసి మీ కనెక్షన్ తనిఖీ చేయండి.'
+        message_te: 'మీరు ఆఫ్‌లైన్‌లో ఉన్నారు. దయచేసి మీ కనెక్షన్ తనిఖీ చేయండి.',
+        cached: false
       }),
       { 
         status: 503,
