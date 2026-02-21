@@ -25,8 +25,7 @@ export default function AdminConsole() {
   const { user, token, login } = useAuth();
   const [loading, setLoading] = useState(false);
   const [phone, setPhone] = useState("");
-  const [otp, setOtp] = useState("");
-  const [otpSent, setOtpSent] = useState(false);
+  const [password, setPassword] = useState("");
   const [deferredPrompt, setDeferredPrompt] = useState(null);
   const [isInstalled, setIsInstalled] = useState(false);
 
