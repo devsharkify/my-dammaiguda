@@ -228,7 +228,7 @@ const APP_CONFIG = {
     primaryColor: "${cfg.primaryColor}",
   },
   company: {
-    name: "${cfg.company?.name || 'Sharkify Technology Pvt. Ltd.'}",
+    name: "${cfg.company?.name || 'Rohan Kul'}",
   },
   partner: {
     name: "${cfg.partner?.name || 'Kaizer News'}",
