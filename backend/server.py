@@ -43,6 +43,7 @@ from routers.google_fit import router as google_fit_router
 from routers.astrology import router as astrology_router
 from routers.upload import router as upload_router
 from routers.analytics import router as analytics_router
+from routers.analytics_alerts import router as analytics_alerts_router
 from routers.user import router as user_router
 from routers.manager import router as manager_router
 from routers.settings import router as settings_router
