@@ -271,14 +271,179 @@ export default APP_CONFIG;`;
       background_color: "#0a0a0a",
       display: "standalone",
       start_url: "/",
+      // Security CSP
+      csp: {
+        "default-src": "'self'",
+        "frame-ancestors": "'none'",
+      }
     }, null, 2);
   };
 
-  const downloadConfig = (type) => {
-    if (!generatedConfig) return;
+  const generateSecurityConfig = () => {
+    return `/**
+ * Security Shield - Enterprise Grade Website Protection
+ * Copy this file to: src/utils/securityShield.js
+ * Import in App.js: import initSecurityShield from './utils/securityShield';
+ * Call in useEffect: initSecurityShield();
+ */
+
+class SecurityShield {
+  constructor() {
+    this.devToolsOpen = false;
+    this.init();
+  }
+
+  init() {
+    if (process.env.NODE_ENV !== 'production') return;
     
-    const content = type === 'config' ? generatedConfig.config : generatedConfig.manifest;
-    const filename = type === 'config' ? 'appConfig.js' : 'manifest.json';
+    this.disableRightClick();
+    this.disableKeyboardShortcuts();
+    this.detectDevTools();
+    this.disableTextSelection();
+    this.disableDragDrop();
+    this.disableCopyPaste();
+    this.addConsoleWarning();
+    this.preventIframeEmbedding();
+    this.antiDebugging();
+    this.botDetection();
+  }
+
+  disableRightClick() {
+    document.addEventListener('contextmenu', e => { e.preventDefault(); return false; });
+  }
+
+  disableKeyboardShortcuts() {
+    document.addEventListener('keydown', e => {
+      if (e.key === 'F12' || 
+          (e.ctrlKey && e.shiftKey && ['I','J','C','K'].includes(e.key)) ||
+          (e.ctrlKey && ['u','s','p','a'].includes(e.key)) ||
+          (e.metaKey && e.altKey && ['i','j','u'].includes(e.key)) ||
+          e.key === 'PrintScreen') {
+        e.preventDefault();
+        return false;
+      }
+    });
+  }
+
+  detectDevTools() {
+    const threshold = 160;
+    setInterval(() => {
+      if (window.outerWidth - window.innerWidth > threshold || 
+          window.outerHeight - window.innerHeight > threshold) {
+        this.onDevToolsOpen();
+      }
+    }, 500);
+  }
+
+  antiDebugging() {
+    setInterval(() => {
+      const start = performance.now();
+      debugger;
+      if (performance.now() - start > 100) this.onDevToolsOpen();
+    }, 3000);
+  }
+
+  onDevToolsOpen() {
+    console.clear();
+    console.log('%c⚠️ SECURITY WARNING', 'color:red;font-size:40px;font-weight:bold;');
+    console.log('%cThis activity is being monitored and logged.', 'font-size:14px;color:orange;');
+  }
+
+  disableTextSelection() {
+    document.body.style.userSelect = 'none';
+    document.body.style.webkitUserSelect = 'none';
+  }
+
+  disableDragDrop() {
+    document.addEventListener('dragstart', e => { e.preventDefault(); return false; });
+    document.addEventListener('drop', e => { e.preventDefault(); return false; });
+  }
+
+  disableCopyPaste() {
+    document.addEventListener('copy', e => { e.preventDefault(); return false; });
+    document.addEventListener('cut', e => { e.preventDefault(); return false; });
+  }
+
+  addConsoleWarning() {
+    console.log('%c🛑 STOP!', 'color:red;font-size:30px;font-weight:bold;');
+    console.log('%cThis is a protected website. Your activity is being monitored.', 'font-size:14px;');
+  }
+
+  preventIframeEmbedding() {
+    if (window.self !== window.top) window.top.location = window.self.location;
+  }
+
+  botDetection() {
+    if (navigator.webdriver || window.navigator.userAgent.includes('HeadlessChrome')) {
+      console.warn('Bot detected');
+    }
+  }
+}
+
+const initSecurityShield = () => {
+  if (typeof window !== 'undefined') window.securityShield = new SecurityShield();
+};
+
+export default initSecurityShield;`;
+  };
+
+  const generateSecurityCSS = () => {
+    return `/* Security CSS - Copy to your index.css */
+body {
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}
+
+input, textarea, [contenteditable="true"], .selectable {
+  -webkit-user-select: text !important;
+  user-select: text !important;
+}
+
+img {
+  -webkit-user-drag: none;
+  user-drag: none;
+  pointer-events: none;
+}
+
+@media print {
+  body, html { display: none !important; }
+}
+
+::selection { background: transparent; }
+::-moz-selection { background: transparent; }
+
+input::selection, textarea::selection {
+  background: #b4d5fe;
+}`;
+  };
+
+  const downloadConfig = (type) => {
+    if (!generatedConfig && type !== 'security' && type !== 'securityCSS') return;
+    
+    let content, filename;
+    
+    switch(type) {
+      case 'config':
+        content = generatedConfig.config;
+        filename = 'appConfig.js';
+        break;
+      case 'manifest':
+        content = generatedConfig.manifest;
+        filename = 'manifest.json';
+        break;
+      case 'security':
+        content = generateSecurityConfig();
+        filename = 'securityShield.js';
+        break;
+      case 'securityCSS':
+        content = generateSecurityCSS();
+        filename = 'security.css';
+        break;
+      default:
+        return;
+    }
     
     const blob = new Blob([content], { type: 'text/plain' });
     const url = URL.createObjectURL(blob);
