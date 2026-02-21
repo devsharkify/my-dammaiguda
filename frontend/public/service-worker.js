@@ -1,6 +1,6 @@
 /* eslint-disable no-restricted-globals */
 
-const CACHE_NAME = 'my-dammaiguda-v3';
+const CACHE_NAME = 'my-dammaiguda-v4';
 const STATIC_ASSETS = [
   '/',
   '/index.html',
@@ -11,16 +11,28 @@ const STATIC_ASSETS = [
   '/icons/maskable-icon-192x192.png',
 ];
 
-const API_CACHE_NAME = 'my-dammaiguda-api-v1';
+const API_CACHE_NAME = 'my-dammaiguda-api-v2';
 const CACHEABLE_API_ROUTES = [
+  '/api/aqi/both',
   '/api/aqi/current',
+  '/api/news/local',
   '/api/news/categories',
   '/api/benefits',
+  '/api/panchangam/today',
+  '/api/astrology/horoscope',
 ];
+
+// Cache duration in milliseconds
+const CACHE_DURATIONS = {
+  panchangam: 24 * 60 * 60 * 1000,  // 24 hours (refreshes daily)
+  aqi: 30 * 60 * 1000,              // 30 minutes
+  news: 60 * 60 * 1000,             // 1 hour
+  default: 12 * 60 * 60 * 1000      // 12 hours
+};
 
 // Install event - cache static assets
 self.addEventListener('install', (event) => {
-  console.log('[SW] Installing service worker...');
+  console.log('[SW] Installing service worker v4...');
   event.waitUntil(
     caches.open(CACHE_NAME).then((cache) => {
       console.log('[SW] Caching static assets');
@@ -48,16 +60,19 @@ self.addEventListener('push', (event) => {
   const title = data.title || 'My Dammaiguda';
   const options = {
     body: data.body || 'మీకు కొత్త నోటిఫికేషన్ వచ్చింది',
-    icon: '/logo192.png',
-    badge: '/logo192.png',
+    icon: '/icons/icon-192x192.png',
+    badge: '/icons/icon-72x72.png',
     vibrate: [100, 50, 100],
-    data: data.data || {},
-    tag: data.category || 'default',
+    data: data.data || { url: data.url },
+    tag: data.tag || data.category || 'default',
     renotify: true,
-    actions: [
+    requireInteraction: data.requireInteraction || false,
+    actions: data.actions || [
       { action: 'open', title: 'తెరవండి' },
       { action: 'close', title: 'మూసివేయండి' }
-    ]
+    ],
+    // Add image if provided
+    ...(data.image && { image: data.image })
   };
   
   event.waitUntil(
@@ -76,18 +91,23 @@ self.addEventListener('notificationclick', (event) => {
   
   // Determine which page to open based on notification data
   const data = event.notification.data || {};
-  let targetUrl = '/dashboard';
+  let targetUrl = data.url || '/dashboard';
   
-  if (data.category === 'sos') {
-    targetUrl = '/family';
-  } else if (data.category === 'news') {
-    targetUrl = '/news';
-  } else if (data.category === 'community') {
-    targetUrl = '/wall';
-  } else if (data.category === 'health') {
-    targetUrl = '/fitness';
-  } else if (data.category === 'geofence') {
-    targetUrl = '/family';
+  // Category-based routing
+  const categoryRoutes = {
+    'grievance': '/issues',
+    'news': '/news',
+    'panchangam': '/astrology',
+    'announcement': '/wall',
+    'health': '/fitness',
+    'aqi': '/dashboard',
+    'sos': '/family',
+    'community': '/wall',
+    'geofence': '/family'
+  };
+  
+  if (data.category && categoryRoutes[data.category]) {
+    targetUrl = categoryRoutes[data.category];
   }
   
   event.waitUntil(
