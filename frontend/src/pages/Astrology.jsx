@@ -822,6 +822,26 @@ export default function Astrology() {
               </CardContent>
             </Card>
 
+            {/* Option 0: Today's Panchangam - NEW */}
+            <button onClick={() => setActiveTab("panchangam")} className="w-full text-left">
+              <Card className="hover:shadow-lg transition-all border-2 border-transparent hover:border-teal-300 bg-gradient-to-r from-teal-50 to-emerald-50">
+                <CardContent className="p-4 flex items-center gap-4">
+                  <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-teal-500 to-emerald-600 flex items-center justify-center flex-shrink-0">
+                    <Calendar className="w-7 h-7 text-white" />
+                  </div>
+                  <div className="flex-1">
+                    <h3 className="font-bold text-gray-800">
+                      {language === "te" ? "నేటి పంచాంగం" : "Today's Panchangam"}
+                    </h3>
+                    <p className="text-sm text-gray-500">
+                      {language === "te" ? "రాహు కాలం, తిథి, నక్షత్రం, యోగం" : "Rahu Kalam, Tithi, Nakshatra, Yoga"}
+                    </p>
+                  </div>
+                  <ChevronRight className="w-5 h-5 text-gray-400" />
+                </CardContent>
+              </Card>
+            </button>
+
             {/* Option 1: Kundali */}
             <button onClick={() => setActiveTab("kundali")} className="w-full text-left">
               <Card className="hover:shadow-lg transition-all border-2 border-transparent hover:border-orange-300">
@@ -882,6 +902,9 @@ export default function Astrology() {
               </Card>
             </button>
           </div>
+        ) : activeTab === "panchangam" ? (
+          /* Panchangam Section - NEW */
+          <PanchangamView language={language} />
         ) : activeTab === "kundali" ? (
           /* Kundali Section */
           <div className="space-y-4">
