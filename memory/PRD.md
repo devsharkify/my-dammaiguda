@@ -136,6 +136,7 @@ DISABLE_ESLINT_PLUGIN=true
 - [ ] Test OTP flow with real phone numbers
 - [ ] Remove test OTP backdoor (123456) for production security (after Play Store approval)
 - [ ] Apple App Store submission
+- [ ] Calorie Counter Enhancement (IN PROGRESS)
 
 ### P2 - Medium Priority:
 - [x] ✅ White-label replication architecture (COMPLETED - Feb 20, 2026)
@@ -146,13 +147,71 @@ DISABLE_ESLINT_PLUGIN=true
 - [x] ✅ Manager Portal Wall Posts & Banner Update (COMPLETED - Feb 20, 2026)
 - [x] ✅ Telugu Panchangam with Rahu Kalam, etc. (COMPLETED - Feb 21, 2026)
 - [x] ✅ AQI Daily Max Logic with 8 PM reset (COMPLETED - Feb 21, 2026)
-- [ ] Enhanced WebSocket Chat features
-- [ ] User analytics dashboard
+- [x] ✅ Enhanced WebSocket Chat features (COMPLETED - Feb 21, 2026)
+- [x] ✅ User Analytics Dashboard (COMPLETED - Feb 21, 2026)
+- [x] ✅ Deprecate /admin-dashboard → /admin/panel (COMPLETED - Feb 21, 2026)
+- [x] ✅ Enterprise Grade Features - Rate Limiting + Sentry (COMPLETED - Feb 21, 2026)
 
 ### P3 - Low Priority:
 - [x] ✅ Push Notifications Setup (COMPLETED - Feb 21, 2026)
 - [x] ✅ Offline Mode Enhancements (COMPLETED - Feb 21, 2026)
 - [x] ✅ Muhurtam Calculator (COMPLETED - Feb 21, 2026)
+
+---
+
+## Enterprise Grade Features (Completed Feb 21, 2026)
+
+### Rate Limiting
+- **Library:** slowapi
+- **Configuration:**
+  - OTP endpoint: 5 requests/minute
+  - Verify endpoint: 10 requests/minute
+  - General API: 60 requests/minute (default)
+- **Implementation:** `/app/backend/middleware/rate_limiter.py`
+
+### Sentry Error Monitoring
+- **Status:** Placeholder ready
+- **Setup:** To enable, add `SENTRY_DSN` to backend/.env
+- **Features:**
+  - FastAPI + Starlette integrations
+  - Performance monitoring (20% sample rate)
+  - Error filtering (excludes 4xx errors)
+  - User context tracking
+- **Implementation:** `/app/backend/middleware/sentry_config.py`
+
+### User Analytics Dashboard
+- **Location:** Admin Panel > Analytics tab
+- **API Endpoints:**
+  - `GET /api/analytics/admin/summary?days=N` - Feature popularity, top pages, daily active users
+  - `GET /api/analytics/admin/active-users?hours=N` - Recently active users
+  - `GET /api/analytics/admin/export?days=N` - Raw analytics export
+- **UI Features:**
+  - Key metrics (Active Users, Total Events, Page Views, Feature Uses)
+  - Daily Active Users bar chart
+  - Feature Popularity ranking
+  - Top Pages with avg duration
+  - Active Users list with last seen
+
+### Enhanced WebSocket Chat
+- **New Features:**
+  - User presence (online/offline tracking)
+  - Typing indicators with auto-timeout
+  - Read receipts for messages
+  - Room-based online user count
+  - Unread message count per room
+- **API Endpoints:**
+  - `GET /api/chat/rooms` - Now includes online_count, unread_count
+  - `GET /api/chat/presence/online` - Global online users
+  - `POST /api/chat/rooms/{room_id}/read` - Mark messages read
+- **WebSocket Messages:**
+  - `presence` - Join/leave events
+  - `typing` - Typing indicator with user list
+  - `read_receipt` - Read status updates
+
+### Admin Dashboard Deprecation
+- `/admin-dashboard` now redirects to `/admin/panel`
+- Query parameters preserved during redirect
+- Legacy component replaced with redirect-only component
 
 ---
 
