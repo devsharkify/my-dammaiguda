@@ -46,7 +46,8 @@ import {
   Save,
   Activity,
   Bell,
-  Download
+  Download,
+  Heart
 } from "lucide-react";
 
 const API = `${process.env.REACT_APP_BACKEND_URL}/api`;
