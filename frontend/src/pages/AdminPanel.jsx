@@ -14,6 +14,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogD
 import { toast } from "sonner";
 import AnalyticsDashboard from "../components/AnalyticsDashboard";
 import AlertsPanel from "../components/AlertsPanel";
+import ReportsPanel from "../components/ReportsPanel";
 import {
   BarChart3,
   Users,
