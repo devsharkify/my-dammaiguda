@@ -496,6 +496,10 @@ export default function AdminPanel() {
               <Heart className="h-4 w-4" />
               Benefits
             </TabsTrigger>
+            <TabsTrigger value="users" className="gap-2">
+              <Users className="h-4 w-4" />
+              Users
+            </TabsTrigger>
             <TabsTrigger value="templates" className="gap-2">
               <FileText className="h-4 w-4" />
               Templates
@@ -524,6 +528,11 @@ export default function AdminPanel() {
           {/* Benefits Tab */}
           <TabsContent value="benefits">
             <BenefitsAdmin token={token} />
+          </TabsContent>
+
+          {/* Users Tab */}
+          <TabsContent value="users">
+            <UserManager token={token} />
           </TabsContent>
 
           {/* Overview Tab */}
