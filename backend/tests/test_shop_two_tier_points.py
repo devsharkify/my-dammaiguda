@@ -8,7 +8,7 @@ import os
 
 BASE_URL = os.environ.get("REACT_APP_BACKEND_URL", "").rstrip("/")
 if not BASE_URL:
-    BASE_URL = "https://dammaiguda-app-1.preview.emergentagent.com"
+    BASE_URL = "https://benefit-claims-test.preview.emergentagent.com"
 
 # Test credentials
 TEST_PHONE = "9876543210"
