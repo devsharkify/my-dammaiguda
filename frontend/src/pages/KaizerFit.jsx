@@ -110,6 +110,7 @@ export default function KaizerFit() {
   const [waterGlasses, setWaterGlasses] = useState(0);
   const [waterGoal] = useState(8);
   const [showMealDialog, setShowMealDialog] = useState(false);
+  const [showCalorieCounter, setShowCalorieCounter] = useState(false);
   const [mealType, setMealType] = useState("breakfast");
   const [caloriesConsumed, setCaloriesConsumed] = useState(0);
   const [caloriesGoal] = useState(2000);
