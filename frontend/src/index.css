@@ -2,6 +2,7 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Security: Disable text selection on body (allow in inputs) */
 body {
     margin: 0;
     font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen",
@@ -9,6 +10,40 @@ body {
         sans-serif;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+}
+
+/* Allow selection in form elements */
+input, textarea, [contenteditable="true"], .selectable {
+    -webkit-user-select: text !important;
+    -moz-user-select: text !important;
+    -ms-user-select: text !important;
+    user-select: text !important;
+}
+
+/* Disable image dragging and right-click saving */
+img {
+    -webkit-user-drag: none;
+    -khtml-user-drag: none;
+    -moz-user-drag: none;
+    -o-user-drag: none;
+    user-drag: none;
+    pointer-events: none;
+}
+
+/* Allow clickable images (buttons, links) */
+a img, button img, .clickable img {
+    pointer-events: auto;
+}
+
+/* Disable print */
+@media print {
+    body {
+        display: none !important;
+    }
 }
 
 code {
