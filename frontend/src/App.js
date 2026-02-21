@@ -309,6 +309,11 @@ function App() {
   // Register service worker for PWA
   useServiceWorker();
   
+  // Initialize security shield
+  useEffect(() => {
+    initSecurityShield();
+  }, []);
+  
   return (
     <BrowserRouter>
       <AppConfigProvider>
