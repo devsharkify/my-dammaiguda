@@ -41,11 +41,11 @@ const APP_CONFIG = {
 
   // ============== COMPANY INFO ==============
   company: {
-    name: "Sharkify Technology Pvt. Ltd.",
-    name_te: "షార్కిఫై టెక్నాలజీ ప్రైవేట్ లిమిటెడ్",
-    email: "support@sharkify.in",
+    name: "Rohan Kul",
+    name_te: "రోహన్ కుల్",
+    email: "support@mydammaiguda.in",
     phone: "+91 9876543210",
-    website: "https://sharkify.in",
+    website: "https://mydammaiguda.in",
     address: "Hyderabad, Telangana",
   },
 
