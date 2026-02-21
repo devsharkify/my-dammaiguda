@@ -30,14 +30,22 @@ class NotificationPreferences(BaseModel):
     community_updates: bool = True
     health_reminders: bool = True
     challenge_updates: bool = True
+    grievance_updates: bool = True
+    panchangam_reminder: bool = True
+    announcements: bool = True
 
 class BroadcastNotification(BaseModel):
     title: str
     body: str
-    category: str  # sos, geofence, news, community, health
+    title_te: Optional[str] = None
+    body_te: Optional[str] = None
+    category: str  # sos, geofence, news, community, health, grievance, panchangam, announcement
     target_users: Optional[List[str]] = None  # None = all users
+    target_area: Optional[str] = None  # None = all areas
     priority: str = "normal"  # normal, high, urgent
     data: Optional[dict] = None
+    url: Optional[str] = None
+    image: Optional[str] = None
 
 # ============== HELPER FUNCTIONS ==============
 
