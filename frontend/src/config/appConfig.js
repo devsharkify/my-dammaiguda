@@ -62,7 +62,7 @@ const APP_CONFIG = {
   playStore: {
     packageName: "com.mydammaiguda.app",
     appId: "my-dammaiguda-app",
-    developerName: "Rohan Kul",
+    developerName: "Rohan Kulkarni",
     category: "Social",
   },
 
