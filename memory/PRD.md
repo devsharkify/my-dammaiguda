@@ -156,6 +156,8 @@ DISABLE_ESLINT_PLUGIN=true
 - [x] ✅ Push Notifications Setup (COMPLETED - Feb 21, 2026)
 - [x] ✅ Offline Mode Enhancements (COMPLETED - Feb 21, 2026)
 - [x] ✅ Muhurtam Calculator (COMPLETED - Feb 21, 2026)
+- [x] ✅ Weight Tracker Enhancement (COMPLETED - Feb 21, 2026)
+- [x] ✅ Report Downloading in Admin & Manager (COMPLETED - Feb 21, 2026)
 
 ---
 
