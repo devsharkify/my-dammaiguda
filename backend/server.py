@@ -1,14 +1,24 @@
 """
 My Dammaiguda - Civic Engagement Platform
 Main FastAPI Application with Modular Routers
+Enterprise Grade: Rate Limiting + Sentry Error Monitoring
 """
-from fastapi import FastAPI
+from fastapi import FastAPI, Request
 from starlette.middleware.cors import CORSMiddleware
+from slowapi import _rate_limit_exceeded_handler
+from slowapi.errors import RateLimitExceeded
 import logging
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
+
+# Initialize Sentry (if configured)
+from middleware.sentry_config import init_sentry
+sentry_enabled = init_sentry()
+
+# Rate limiter
+from middleware.rate_limiter import limiter
 
 # Import routers
 from routers.auth import router as auth_router
