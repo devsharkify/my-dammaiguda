@@ -244,7 +244,20 @@ export default function LiveActivity() {
     if (isPaused) {
       setIsPaused(false);
       timerRef.current = setInterval(() => {
-        setElapsedSeconds(prev => prev + 1);
+        setElapsedSeconds(prev => {
+          const newSec = prev + 1;
+          
+          // For non-GPS activities, calculate calories based on time
+          if (!config.tracksGPS) {
+            const weight = user?.health_profile?.weight_kg || 70;
+            const MET = { yoga: 2.5, gym: 6.0, swimming: 8.0, dancing: 5.0 };
+            const hours = newSec / 3600;
+            const newCalories = Math.round((MET[activityType] || 4) * weight * hours);
+            setCalories(newCalories);
+          }
+          
+          return newSec;
+        });
       }, 1000);
       toast.info(language === "te" ? "కొనసాగించబడింది" : "Resumed");
     } else {
