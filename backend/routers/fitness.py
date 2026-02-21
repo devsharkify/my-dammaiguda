@@ -1075,37 +1075,89 @@ async def set_goal_weight(goal: GoalWeight, user: dict = Depends(get_current_use
 
 @router.get("/weight/stats")
 async def get_weight_stats(user: dict = Depends(get_current_user)):
-    """Get weight statistics"""
+    """Get comprehensive weight statistics with BMI and trends"""
     # Get all weight logs
     records = await db.weight_logs.find(
         {"user_id": user["id"]},
-        {"_id": 0, "weight_kg": 1, "date": 1}
+        {"_id": 0, "weight_kg": 1, "date": 1, "notes": 1}
     ).sort("date", 1).to_list(365)
+    
+    user_data = await db.users.find_one({"id": user["id"]}, {"_id": 0, "health_profile": 1})
+    health_profile = user_data.get("health_profile", {}) if user_data else {}
+    goal_weight = health_profile.get("goal_weight_kg")
+    height_cm = health_profile.get("height_cm")
     
     if not records:
         return {
-            "current_weight": None,
+            "current_weight": health_profile.get("weight_kg"),
             "starting_weight": None,
             "lowest_weight": None,
             "highest_weight": None,
             "total_change": None,
-            "goal_weight": None,
-            "progress_to_goal": None
+            "goal_weight": goal_weight,
+            "progress_to_goal": None,
+            "bmi": None,
+            "bmi_category": None,
+            "weekly_avg": None,
+            "monthly_avg": None,
+            "trend": None,
+            "total_entries": 0
         }
-    
-    user_data = await db.users.find_one({"id": user["id"]}, {"_id": 0, "health_profile": 1})
-    goal_weight = user_data.get("health_profile", {}).get("goal_weight_kg")
     
     weights = [r["weight_kg"] for r in records]
     current = weights[-1] if weights else None
     starting = weights[0] if weights else None
     
+    # Calculate BMI
+    bmi = None
+    bmi_category = None
+    if current and height_cm:
+        height_m = height_cm / 100
+        bmi = round(current / (height_m * height_m), 1)
+        if bmi < 18.5:
+            bmi_category = "Underweight"
+        elif bmi < 25:
+            bmi_category = "Normal"
+        elif bmi < 30:
+            bmi_category = "Overweight"
+        else:
+            bmi_category = "Obese"
+    
+    # Progress to goal
     progress = None
     if goal_weight and starting and current:
         total_to_lose = abs(starting - goal_weight)
         lost_so_far = abs(starting - current)
         if total_to_lose > 0:
             progress = min(100, int((lost_so_far / total_to_lose) * 100))
+    
+    # Calculate weekly and monthly averages
+    from datetime import datetime, timedelta, timezone
+    now = datetime.now(timezone.utc)
+    week_ago = (now - timedelta(days=7)).strftime("%Y-%m-%d")
+    month_ago = (now - timedelta(days=30)).strftime("%Y-%m-%d")
+    
+    weekly_weights = [r["weight_kg"] for r in records if r.get("date", "") >= week_ago]
+    monthly_weights = [r["weight_kg"] for r in records if r.get("date", "") >= month_ago]
+    
+    weekly_avg = round(sum(weekly_weights) / len(weekly_weights), 1) if weekly_weights else None
+    monthly_avg = round(sum(monthly_weights) / len(monthly_weights), 1) if monthly_weights else None
+    
+    # Calculate trend (last 7 entries)
+    trend = None
+    if len(weights) >= 2:
+        recent = weights[-7:] if len(weights) >= 7 else weights
+        if recent[-1] < recent[0]:
+            trend = "losing"
+        elif recent[-1] > recent[0]:
+            trend = "gaining"
+        else:
+            trend = "stable"
+    
+    # Weekly change
+    weekly_change = None
+    if weekly_weights and len(weekly_weights) >= 2:
+        weekly_change = round(weekly_weights[-1] - weekly_weights[0], 1)
     
     return {
         "current_weight": current,
@@ -1115,7 +1167,14 @@ async def get_weight_stats(user: dict = Depends(get_current_user)):
         "total_change": round(current - starting, 1) if current and starting else None,
         "goal_weight": goal_weight,
         "progress_to_goal": progress,
-        "total_entries": len(records)
+        "bmi": bmi,
+        "bmi_category": bmi_category,
+        "weekly_avg": weekly_avg,
+        "monthly_avg": monthly_avg,
+        "weekly_change": weekly_change,
+        "trend": trend,
+        "total_entries": len(records),
+        "height_cm": height_cm
     }
 
 
