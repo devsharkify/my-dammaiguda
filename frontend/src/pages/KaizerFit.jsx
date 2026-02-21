@@ -102,7 +102,9 @@ export default function KaizerFit() {
   const [weightStats, setWeightStats] = useState(null);
   const [showAddWeight, setShowAddWeight] = useState(false);
   const [showSetGoal, setShowSetGoal] = useState(false);
+  const [showWeightDetails, setShowWeightDetails] = useState(false);
   const [newWeight, setNewWeight] = useState("");
+  const [weightNotes, setWeightNotes] = useState("");
   const [goalWeight, setGoalWeight] = useState("");
   const [submitting, setSubmitting] = useState(false);
   
