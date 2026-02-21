@@ -439,6 +439,10 @@ function ManagerDashboard({ user, token, onLogout }) {
               <Users className="h-4 w-4" />
               Members
             </TabsTrigger>
+            <TabsTrigger value="reports" className="gap-2">
+              <Download className="h-4 w-4" />
+              Reports
+            </TabsTrigger>
           </TabsList>
 
           {/* Overview Tab */}
