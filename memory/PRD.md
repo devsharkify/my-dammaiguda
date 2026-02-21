@@ -136,7 +136,7 @@ DISABLE_ESLINT_PLUGIN=true
 - [ ] Test OTP flow with real phone numbers
 - [ ] Remove test OTP backdoor (123456) for production security (after Play Store approval)
 - [ ] Apple App Store submission
-- [ ] Calorie Counter Enhancement (IN PROGRESS)
+- [x] ✅ Calorie Counter Enhancement (COMPLETED - Feb 21, 2026)
 
 ### P2 - Medium Priority:
 - [x] ✅ White-label replication architecture (COMPLETED - Feb 20, 2026)
