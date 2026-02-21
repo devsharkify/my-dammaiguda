@@ -231,7 +231,9 @@ def get_nakshatra(date: datetime) -> dict:
     """Calculate approximate Nakshatra"""
     # Each nakshatra spans 13°20' (800 arc-minutes)
     # Moon moves ~13.2° per day
-    ref_date = datetime(2000, 1, 1)
+    ref_date = datetime(2000, 1, 1, tzinfo=timezone.utc)
+    if date.tzinfo is None:
+        date = date.replace(tzinfo=timezone.utc)
     days = (date - ref_date).days
     
     # Approximate nakshatra index (simplified)
@@ -246,7 +248,9 @@ def get_nakshatra(date: datetime) -> dict:
 
 def get_yoga(date: datetime) -> dict:
     """Calculate approximate Yoga"""
-    ref_date = datetime(2000, 1, 1)
+    ref_date = datetime(2000, 1, 1, tzinfo=timezone.utc)
+    if date.tzinfo is None:
+        date = date.replace(tzinfo=timezone.utc)
     days = (date - ref_date).days
     yoga_index = int((days * 27 / 27.3) % 27)
     yoga = YOGAS[yoga_index]
@@ -259,7 +263,9 @@ def get_yoga(date: datetime) -> dict:
 
 def get_karana(date: datetime) -> dict:
     """Calculate approximate Karana"""
-    ref_date = datetime(2000, 1, 1)
+    ref_date = datetime(2000, 1, 1, tzinfo=timezone.utc)
+    if date.tzinfo is None:
+        date = date.replace(tzinfo=timezone.utc)
     days = (date - ref_date).days
     karana_index = int((days * 60 / 29.53) % 11)
     karana = KARANAS[karana_index]
