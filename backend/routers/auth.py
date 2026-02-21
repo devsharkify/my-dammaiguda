@@ -113,12 +113,25 @@ async def send_authkey_otp(phone: str) -> dict:
 @limiter.limit("10/minute")
 async def admin_password_login(request: Request, login: PasswordLogin):
     """Password-based login for Admin/Manager"""
-    # Normalize phone
-    phone = login.phone.replace("+91", "").replace("+", "").replace(" ", "").strip()
+    # Normalize phone - remove +91, spaces, and any non-digits
+    phone = login.phone.replace("+91", "").replace("+", "").replace(" ", "").replace("-", "").strip()
+    # Remove leading zeros
+    phone = phone.lstrip("0")
+    # Ensure we have 10 digits
+    if len(phone) != 10:
+        raise HTTPException(status_code=400, detail="Invalid phone number")
+    
     phone_with_prefix = f"+91{phone}"
     
-    # Find user by phone
-    user = await db.users.find_one({"$or": [{"phone": phone_with_prefix}, {"phone": phone}]})
+    # Find user by phone (try multiple formats)
+    user = await db.users.find_one({
+        "$or": [
+            {"phone": phone_with_prefix},
+            {"phone": phone},
+            {"phone": f"+91 {phone}"},
+            {"phone": f"91{phone}"}
+        ]
+    })
     
     if not user:
         raise HTTPException(status_code=401, detail="User not found")
