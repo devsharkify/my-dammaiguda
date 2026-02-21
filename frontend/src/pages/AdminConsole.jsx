@@ -95,12 +95,16 @@ export default function AdminConsole() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ phone: phone })
       });
-      if (response.ok) {
+      const data = await response.json();
+      if (response.ok && data.success) {
         setOtpSent(true);
         toast.success("OTP sent to your phone");
+      } else {
+        toast.error(data.message || "Failed to send OTP");
       }
     } catch (error) {
-      toast.error("Failed to send OTP");
+      console.error("OTP Error:", error);
+      toast.error("Failed to send OTP. Please try again.");
     } finally {
       setLoading(false);
     }
