@@ -208,6 +208,39 @@ DISABLE_ESLINT_PLUGIN=true
   - `typing` - Typing indicator with user list
   - `read_receipt` - Read status updates
 
+### Real-Time Analytics Alerts (Completed Feb 21, 2026)
+- **Purpose:** Alert admins when user activity spikes or unusual patterns detected
+- **Backend Implementation:** `/app/backend/routers/analytics_alerts.py`
+- **Frontend Component:** `/app/frontend/src/components/AlertsPanel.jsx`
+- **Location:** Admin Panel > Alerts tab
+- **API Endpoints:**
+  - `GET /api/analytics/alerts/config` - Get alert thresholds
+  - `PUT /api/analytics/alerts/config` - Update thresholds
+  - `GET /api/analytics/alerts/` - List alerts with filters
+  - `POST /api/analytics/alerts/check` - Trigger manual check
+  - `GET /api/analytics/alerts/metrics/current` - Current metrics vs baseline
+  - `POST /api/analytics/alerts/{id}/acknowledge` - Acknowledge alert
+  - `WSS /api/analytics/alerts/ws` - Real-time WebSocket
+- **Default Thresholds:**
+  - Active Users spike: 50% above baseline (60min window)
+  - Active Users drop: 50% below baseline (60min window)
+  - Login Attempts spike: 100% above baseline (30min window)
+  - Page Views spike: 75% above baseline (60min window)
+  - Errors absolute: 10 errors (15min window)
+- **Severity Levels:**
+  - Critical: ≥200% change
+  - High: ≥100% change
+  - Medium: ≥50% change
+  - Low: <50% change
+- **UI Features:**
+  - Real-time WebSocket connection status
+  - 4 metrics cards (Active Users, Page Views, Login Attempts, Feature Usage)
+  - Change percentage vs 7-day baseline
+  - Configurable thresholds with enable/disable
+  - Alert list with acknowledge/delete
+  - Sound notifications toggle
+  - Manual check trigger button
+
 ### Admin Dashboard Deprecation
 - `/admin-dashboard` now redirects to `/admin/panel`
 - Query parameters preserved during redirect
