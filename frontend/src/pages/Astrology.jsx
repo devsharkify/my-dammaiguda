@@ -272,7 +272,7 @@ function generateLifePredictions(kundali) {
       personal: "Strong family bonds. Mother's blessings important. Home renovations favorable. Ancestral property matters.",
       marriage: "Excellent for marriage. Deep emotional connections. Family approval comes. Wedding bells possible.",
       bestMatch: "Scorpio, Pisces",
-      thisYear: "2025 focuses on home and family. Emotional security and nurturing relationships take priority.",
+      thisYear: `${new Date().getFullYear()} focuses on home and family. Emotional security and nurturing relationships take priority.`,
       luckyMonths: "Apr, Aug, Dec",
       challenges: "Feb, Jun"
     },
