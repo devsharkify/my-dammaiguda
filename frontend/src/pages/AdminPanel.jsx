@@ -13,6 +13,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from ".
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogDescription } from "../components/ui/dialog";
 import { toast } from "sonner";
 import AnalyticsDashboard from "../components/AnalyticsDashboard";
+import AlertsPanel from "../components/AlertsPanel";
 import {
   BarChart3,
   Users,
