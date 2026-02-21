@@ -286,7 +286,7 @@ function generateLifePredictions(kundali) {
       personal: "Children bring happiness. Romance blooms. Creative pursuits successful. Stage performances favorable.",
       marriage: "Love marriage possible. Grand celebrations. Partner very supportive. Royal wedding vibes.",
       bestMatch: "Aries, Sagittarius",
-      thisYear: "2025 is your year to shine. Leadership, creativity, and recognition define this period.",
+      thisYear: `${new Date().getFullYear()} is your year to shine. Leadership, creativity, and recognition define this period.`,
       luckyMonths: "Mar, Jul, Nov",
       challenges: "Jan, May"
     },
