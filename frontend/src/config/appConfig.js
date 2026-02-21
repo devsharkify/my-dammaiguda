@@ -41,8 +41,8 @@ const APP_CONFIG = {
 
   // ============== COMPANY INFO ==============
   company: {
-    name: "Rohan Kul",
-    name_te: "రోహన్ కుల్",
+    name: "Rohan Kulkarni",
+    name_te: "రోహన్ కుల్కర్ణి",
     email: "support@mydammaiguda.in",
     phone: "+91 9876543210",
     website: "https://mydammaiguda.in",
