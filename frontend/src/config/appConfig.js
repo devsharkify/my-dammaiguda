@@ -60,9 +60,9 @@ const APP_CONFIG = {
 
   // ============== PLAY STORE INFO ==============
   playStore: {
-    packageName: "com.sharkify.mydammaiguda",
+    packageName: "com.mydammaiguda.app",
     appId: "my-dammaiguda-app",
-    developerName: "Sharkify Technology Pvt. Ltd.",
+    developerName: "Rohan Kul",
     category: "Social",
   },
 
