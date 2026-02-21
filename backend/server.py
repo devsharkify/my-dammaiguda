@@ -174,8 +174,14 @@ async def certificate_og_page(certificate_id: str):
 async def health_check():
     return {
         "status": "healthy",
-        "version": "2.6.0",
-        "service": "My Dammaiguda API"
+        "version": "2.7.0",
+        "service": "My Dammaiguda API",
+        "features": {
+            "rate_limiting": True,
+            "sentry": sentry_enabled,
+            "analytics": True,
+            "websocket_chat": True
+        }
     }
 
 # Root endpoint
