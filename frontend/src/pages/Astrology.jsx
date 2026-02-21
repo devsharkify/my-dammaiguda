@@ -912,13 +912,15 @@ export default function Astrology() {
                         </SelectContent>
                       </Select>
                     </div>
-                    <div>
-                      <Label className="flex items-center gap-2 mb-2"><Calendar className="w-4 h-4 text-orange-500" />{language === "te" ? "పుట్టిన తేదీ" : "Date of Birth"}</Label>
-                      <Input type="date" value={form.date_of_birth} onChange={(e) => setForm({...form, date_of_birth: e.target.value})} />
-                    </div>
-                    <div>
-                      <Label className="flex items-center gap-2 mb-2"><Clock className="w-4 h-4 text-orange-500" />{language === "te" ? "పుట్టిన సమయం" : "Time of Birth"}</Label>
-                      <Input type="time" value={form.time_of_birth} onChange={(e) => setForm({...form, time_of_birth: e.target.value})} />
+                    <div className="grid grid-cols-2 gap-3">
+                      <div>
+                        <Label className="flex items-center gap-2 mb-2"><Calendar className="w-4 h-4 text-orange-500" />{language === "te" ? "పుట్టిన తేదీ" : "Date of Birth"}</Label>
+                        <Input type="date" value={form.date_of_birth} onChange={(e) => setForm({...form, date_of_birth: e.target.value})} className="w-full" />
+                      </div>
+                      <div>
+                        <Label className="flex items-center gap-2 mb-2"><Clock className="w-4 h-4 text-orange-500" />{language === "te" ? "సమయం" : "Time"}</Label>
+                        <Input type="time" value={form.time_of_birth} onChange={(e) => setForm({...form, time_of_birth: e.target.value})} className="w-full" />
+                      </div>
                     </div>
                     <div>
                       <Label className="flex items-center gap-2 mb-2"><MapPin className="w-4 h-4 text-orange-500" />{language === "te" ? "పుట్టిన ప్రదేశం" : "Place of Birth"}</Label>
@@ -928,12 +930,16 @@ export default function Astrology() {
                         placeholder={language === "te" ? "నగరం పేరు టైప్ చేయండి" : "Type city name (e.g., Hyderabad)"}
                       />
                     </div>
-                    <Button onClick={handleGenerateKundali} disabled={loading} className="w-full h-12 bg-gradient-to-r from-orange-500 to-amber-500">
-                      {loading ? <Loader2 className="w-5 h-5 animate-spin mr-2" /> : <Star className="w-5 h-5 mr-2" />}
-                      {language === "te" ? "కుండలి చూడండి" : "Generate Kundali"}
-                    </Button>
                   </CardContent>
                 </Card>
+                
+                {/* Fixed Submit Button - Always Visible */}
+                <div className="sticky bottom-20 bg-white p-3 rounded-xl shadow-lg border">
+                  <Button onClick={handleGenerateKundali} disabled={loading} className="w-full h-12 bg-gradient-to-r from-orange-500 to-amber-500 text-lg font-semibold">
+                    {loading ? <Loader2 className="w-5 h-5 animate-spin mr-2" /> : <Star className="w-5 h-5 mr-2" />}
+                    {language === "te" ? "కుండలి చూడండి" : "Generate Kundali"}
+                  </Button>
+                </div>
               </>
             ) : (
               /* Kundali Result */
