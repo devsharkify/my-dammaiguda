@@ -82,6 +82,7 @@ app.include_router(user_router, prefix="/api")
 app.include_router(manager_router, prefix="/api")
 app.include_router(settings_router, prefix="/api")
 app.include_router(panchangam_router, prefix="/api")
+app.include_router(muhurtam_router, prefix="/api")
 
 from fastapi.responses import HTMLResponse
 
