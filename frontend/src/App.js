@@ -213,6 +213,13 @@ function AppRoutes() {
         </ProtectedRoute>
       } />
       
+      {/* Muhurtam Calculator */}
+      <Route path="/muhurtam" element={
+        <ProtectedRoute>
+          <MuhurtamCalculator />
+        </ProtectedRoute>
+      } />
+      
       {/* Instructor Portal */}
       <Route path="/instructor" element={
         <ProtectedRoute roles={["admin", "instructor"]}>
