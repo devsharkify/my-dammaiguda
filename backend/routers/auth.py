@@ -1,5 +1,5 @@
 """Authentication Router - OTP login, registration, profile"""
-from fastapi import APIRouter, HTTPException, Depends
+from fastapi import APIRouter, HTTPException, Depends, Request
 from pydantic import BaseModel
 from typing import Optional
 import httpx
@@ -8,6 +8,9 @@ import random
 from .utils import db, generate_id, now_iso, create_token, get_current_user
 
 router = APIRouter(prefix="/auth", tags=["Authentication"])
+
+# Rate limiting imports
+from middleware.rate_limiter import limiter
 
 # Authkey.io configuration
 AUTHKEY_API_KEY = os.environ.get("AUTHKEY_API_KEY", "")
