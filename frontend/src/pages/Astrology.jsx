@@ -342,7 +342,7 @@ function generateLifePredictions(kundali) {
       personal: "Long travels planned. Higher learning pursuits. Spiritual growth. Father's blessings important.",
       marriage: "Marriage with foreigner possible. Philosophical compatibility matters. Adventure in love.",
       bestMatch: "Aries, Leo",
-      thisYear: "2025 expands horizons through travel, education, and philosophy. Luck favors the bold.",
+      thisYear: `${new Date().getFullYear()} expands horizons through travel, education, and philosophy. Luck favors the bold.`,
       luckyMonths: "Mar, Jul, Nov",
       challenges: "Jan, May"
     },
