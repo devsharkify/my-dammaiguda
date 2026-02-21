@@ -12,6 +12,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "../components/ui/tabs"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../components/ui/select";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogDescription } from "../components/ui/dialog";
 import { toast } from "sonner";
+import AnalyticsDashboard from "../components/AnalyticsDashboard";
 import {
   BarChart3,
   Users,
@@ -39,7 +40,8 @@ import {
   Palette,
   Image,
   Type,
-  Save
+  Save,
+  Activity
 } from "lucide-react";
 
 const API = `${process.env.REACT_APP_BACKEND_URL}/api`;
