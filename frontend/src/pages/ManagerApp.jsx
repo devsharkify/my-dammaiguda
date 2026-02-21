@@ -683,6 +683,11 @@ function ManagerDashboard({ user, token, onLogout }) {
               </CardContent>
             </Card>
           </TabsContent>
+
+          {/* Reports Tab */}
+          <TabsContent value="reports">
+            <ReportsPanel userRole="manager" />
+          </TabsContent>
         </Tabs>
       </main>
 
