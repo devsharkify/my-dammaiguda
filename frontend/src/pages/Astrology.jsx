@@ -1093,6 +1093,26 @@ export default function Astrology() {
                 </CardContent>
               </Card>
             </button>
+
+            {/* Option 4: Muhurtam Calculator */}
+            <button onClick={() => navigate("/muhurtam")} className="w-full text-left">
+              <Card className="hover:shadow-lg transition-all border-2 border-transparent hover:border-violet-300 bg-gradient-to-r from-violet-50 to-purple-50">
+                <CardContent className="p-4 flex items-center gap-4">
+                  <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-violet-500 to-purple-600 flex items-center justify-center flex-shrink-0">
+                    <Clock className="w-7 h-7 text-white" />
+                  </div>
+                  <div className="flex-1">
+                    <h3 className="font-bold text-gray-800">
+                      {language === "te" ? "ముహూర్త కాలిక్యులేటర్" : "Muhurtam Calculator"}
+                    </h3>
+                    <p className="text-sm text-gray-500">
+                      {language === "te" ? "వివాహం, గృహప్రవేశం, వ్యాపారం" : "Marriage, Griha Pravesham, Business"}
+                    </p>
+                  </div>
+                  <ChevronRight className="w-5 h-5 text-gray-400" />
+                </CardContent>
+              </Card>
+            </button>
           </div>
         ) : activeTab === "panchangam" ? (
           /* Panchangam Section - NEW */
