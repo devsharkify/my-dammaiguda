@@ -150,8 +150,63 @@ DISABLE_ESLINT_PLUGIN=true
 - [ ] User analytics dashboard
 
 ### P3 - Low Priority:
-- [ ] Push notifications setup
-- [ ] Offline mode enhancements
+- [x] ✅ Push Notifications Setup (COMPLETED - Feb 21, 2026)
+- [x] ✅ Offline Mode Enhancements (COMPLETED - Feb 21, 2026)
+- [x] ✅ Muhurtam Calculator (COMPLETED - Feb 21, 2026)
+
+---
+
+## Push Notifications (Completed Feb 21, 2026)
+
+### Features:
+- **Web Push API:** Browser-native notifications without external services
+- **Notification Types:**
+  - Grievance updates
+  - News alerts
+  - Panchangam daily reminder
+  - Admin announcements
+  - SOS alerts
+  - Health reminders
+  - Community updates
+- **User Preferences:** Users can enable/disable specific notification types
+- **API Endpoints:**
+  - `GET /api/notifications/vapid-public-key` - Public VAPID key
+  - `POST /api/notifications/subscribe` - Subscribe to push
+  - `DELETE /api/notifications/unsubscribe` - Unsubscribe
+  - `GET/PUT /api/notifications/preferences` - User preferences
+  - `POST /api/notifications/test` - Send test notification
+  - `POST /api/notifications/broadcast` - Admin broadcast
+
+## Offline Mode Enhancements (Completed Feb 21, 2026)
+
+### Service Worker Caching:
+- **Cacheable API Routes:**
+  - `/api/panchangam/today` - 24 hour cache
+  - `/api/aqi/both`, `/api/aqi/current` - 30 minute cache
+  - `/api/news/local`, `/api/news/categories` - 1 hour cache
+  - `/api/benefits` - 12 hour cache (default)
+- **Smart Caching:** Network-first with cache fallback, stale-while-revalidate pattern
+- **Offline Indicator:** Shows cached data with offline message
+
+## Muhurtam Calculator (Completed Feb 21, 2026)
+
+### Features:
+- **5 Event Types:** Marriage (వివాహం), Griha Pravesham (గృహ ప్రవేశం), Vehicle Purchase (వాహన కొనుగోలు), Business Start (వ్యాపార ప్రారంభం), Naming Ceremony (నామకరణం)
+- **Score System:** 0-100 score based on tithi, nakshatra, day compatibility
+- **Ratings:** Excellent, Good, Average, Poor
+- **Auspicious Times:** Abhijit Muhurtam, Morning Muhurtam, Evening Muhurtam
+- **Rahu Kalam Warning:** Shows time to avoid for each day
+- **Date Suggestions:** Find best dates in next 60 days
+- **Telugu Support:** All labels, descriptions, and results in Telugu
+
+### API Endpoints:
+- `GET /api/muhurtam/event-types` - All event types
+- `GET /api/muhurtam/calculate/{event_type}?date=YYYY-MM-DD` - Calculate muhurtam
+- `GET /api/muhurtam/find-dates/{event_type}?start_date=X&num_days=N` - Find auspicious dates
+
+### Frontend:
+- Accessible from Astrology page as 5th option
+- Direct URL: `/muhurtam`
 
 ---
 
