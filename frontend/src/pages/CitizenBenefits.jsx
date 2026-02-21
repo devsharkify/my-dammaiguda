@@ -286,6 +286,34 @@ export default function CitizenBenefits() {
   return (
     <Layout showBackButton title={language === "te" ? "పౌర ప్రయోజనాలు" : "Citizen Benefits"}>
       <div className="space-y-6 pb-20" data-testid="citizen-benefits">
+        {/* Claim Benefits Banner */}
+        <Card className="border-2 border-primary bg-gradient-to-r from-primary/10 to-primary/5">
+          <CardContent className="p-4">
+            <div className="flex items-center gap-4">
+              <div className="h-14 w-14 rounded-2xl bg-primary flex items-center justify-center shrink-0">
+                <Gift className="h-7 w-7 text-white" />
+              </div>
+              <div className="flex-1">
+                <h3 className="font-bold text-lg">
+                  {language === "te" ? "ప్రత్యేక ప్రయోజనాలు" : "Special Benefits"}
+                </h3>
+                <p className="text-sm text-muted-foreground">
+                  {language === "te" 
+                    ? "₹2 లక్షల ప్రమాద బీమా, 25% ఆరోగ్య బీమా, ₹54,999 విద్యా వౌచర్" 
+                    : "₹2L Accidental Insurance, 25% Health Insurance, ₹54,999 Education Voucher"}
+                </p>
+              </div>
+            </div>
+            <a href="/claim-benefits">
+              <Button className="w-full mt-3 bg-primary hover:bg-primary/90">
+                <Sparkles className="h-4 w-4 mr-2" />
+                {language === "te" ? "ఇప్పుడే దరఖాస్తు చేయండి" : "Apply Now"}
+                <ArrowRight className="h-4 w-4 ml-2" />
+              </Button>
+            </a>
+          </CardContent>
+        </Card>
+
         <Tabs defaultValue="benefits" className="w-full">
           <TabsList className="grid w-full grid-cols-2 h-12">
             <TabsTrigger value="benefits" className="text-sm">
