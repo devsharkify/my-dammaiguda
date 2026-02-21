@@ -10,7 +10,7 @@ from fastapi import APIRouter, WebSocket, WebSocketDisconnect, Depends, HTTPExce
 from pydantic import BaseModel
 from typing import Optional, List, Dict, Set
 from datetime import datetime, timezone, timedelta
-from .utils import db, generate_id, now_iso, get_current_user
+from .utils import db, generate_id, now_iso, get_current_user, JWT_SECRET
 import json
 import logging
 import asyncio
