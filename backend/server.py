@@ -50,6 +50,7 @@ from routers.settings import router as settings_router
 from routers.panchangam import router as panchangam_router
 from routers.muhurtam import router as muhurtam_router
 from routers.reports import router as reports_router
+from routers.benefits import router as benefits_router
 
 # Create FastAPI app
 app = FastAPI(
