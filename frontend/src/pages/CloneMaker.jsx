@@ -213,6 +213,7 @@ export default function CloneMaker() {
   const generateConfigContent = (cfg) => {
     return `// White-Label Config for ${cfg.name}
 // Generated: ${new Date().toISOString()}
+// Includes Enterprise Grade Security
 
 const APP_CONFIG = {
   area: {
@@ -243,6 +244,19 @@ const APP_CONFIG = {
   urls: {
     domain: "${cfg.domain}",
     packageName: "${cfg.packageName}",
+  },
+  security: {
+    enabled: true,
+    disableRightClick: true,
+    disableDevTools: true,
+    disableTextSelection: true,
+    disableCopyPaste: true,
+    disablePrint: true,
+    disableDragDrop: true,
+    detectTampering: true,
+    antiDebugging: true,
+    sessionProtection: true,
+    botDetection: true,
   },
 };
 
