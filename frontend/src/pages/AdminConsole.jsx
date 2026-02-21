@@ -83,60 +83,44 @@ export default function AdminConsole() {
   };
 
   const handleSendOtp = async () => {
+    // This function is now handleLogin for password-based auth
+  };
+
+  const handleLogin = async () => {
     if (!phone || phone.length < 10) {
       toast.error("Enter valid phone number");
       return;
     }
+    if (!password || password.length < 4) {
+      toast.error("Enter password");
+      return;
+    }
     setLoading(true);
     try {
-      const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/auth/send-otp`, {
+      const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/auth/admin-login`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ phone: phone })
+        body: JSON.stringify({ phone: phone, password: password })
       });
       const data = await response.json();
+      
       if (response.ok && data.success) {
-        setOtpSent(true);
-        toast.success("OTP sent to your phone");
+        login(data.user, data.token);
+        toast.success(data.message || "Welcome, Admin!");
+        navigate("/admin/panel");
       } else {
-        toast.error(data.message || "Failed to send OTP");
+        toast.error(data.detail || "Login failed");
       }
     } catch (error) {
-      console.error("OTP Error:", error);
-      toast.error("Failed to send OTP. Please try again.");
+      console.error("Login Error:", error);
+      toast.error("Login failed. Please try again.");
     } finally {
       setLoading(false);
     }
   };
 
   const handleVerifyOtp = async () => {
-    if (!otp || otp.length !== 6) {
-      toast.error("Enter 6-digit OTP");
-      return;
-    }
-    setLoading(true);
-    try {
-      const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/auth/verify-otp`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ phone: phone, otp })
-      });
-      const data = await response.json();
-      
-      if (response.ok && data.user?.role === "admin") {
-        login(data.user, data.token);
-        toast.success("Welcome, Admin!");
-        navigate("/admin-dashboard");
-      } else if (response.ok && data.user?.role !== "admin") {
-        toast.error("Access denied. Admin only.");
-      } else {
-        toast.error(data.detail || "Invalid OTP");
-      }
-    } catch (error) {
-      toast.error("Verification failed");
-    } finally {
-      setLoading(false);
-    }
+    // Legacy OTP verification - not used anymore
   };
 
   const adminFeatures = [
