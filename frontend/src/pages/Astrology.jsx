@@ -721,6 +721,196 @@ const ZodiacHoroscope = ({ language, selectedSign, setSelectedSign }) => {
   );
 };
 
+// Panchangam View Component
+const PanchangamView = ({ language }) => {
+  const [panchangam, setPanchangam] = useState(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    fetchPanchangam();
+  }, []);
+
+  const fetchPanchangam = async () => {
+    setLoading(true);
+    try {
+      const response = await axios.get(`${API}/panchangam/today`);
+      setPanchangam(response.data);
+    } catch (error) {
+      toast.error("Failed to fetch Panchangam");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center py-12">
+        <Loader2 className="w-8 h-8 animate-spin text-teal-500" />
+      </div>
+    );
+  }
+
+  if (!panchangam) return null;
+
+  return (
+    <div className="space-y-4">
+      {/* Header Card */}
+      <Card className="bg-gradient-to-br from-teal-500 to-emerald-600 text-white border-0">
+        <CardContent className="p-4">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-teal-100 text-sm">{panchangam.date_formatted}</p>
+              <h2 className="text-xl font-bold">{language === "te" ? panchangam.day.telugu : panchangam.day.english}</h2>
+              <p className="text-sm text-teal-100">{language === "te" ? panchangam.telugu_month.name_te : panchangam.telugu_month.name} మాసం</p>
+            </div>
+            <Button onClick={fetchPanchangam} variant="ghost" size="sm" className="text-white hover:bg-white/20">
+              <RefreshCw className="w-4 h-4" />
+            </Button>
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Sun Times */}
+      <div className="grid grid-cols-2 gap-3">
+        <Card className="bg-gradient-to-br from-orange-50 to-yellow-50 border-orange-200">
+          <CardContent className="p-3 text-center">
+            <Sun className="w-6 h-6 mx-auto text-orange-500 mb-1" />
+            <p className="text-xs text-gray-500">{language === "te" ? "సూర్యోదయం" : "Sunrise"}</p>
+            <p className="font-bold text-orange-700">{panchangam.sunrise}</p>
+          </CardContent>
+        </Card>
+        <Card className="bg-gradient-to-br from-indigo-50 to-purple-50 border-indigo-200">
+          <CardContent className="p-3 text-center">
+            <Moon className="w-6 h-6 mx-auto text-indigo-500 mb-1" />
+            <p className="text-xs text-gray-500">{language === "te" ? "సూర్యాస్తమయం" : "Sunset"}</p>
+            <p className="font-bold text-indigo-700">{panchangam.sunset}</p>
+          </CardContent>
+        </Card>
+      </div>
+
+      {/* Tithi, Nakshatra, Yoga, Karana */}
+      <Card>
+        <CardContent className="p-4">
+          <h3 className="font-bold text-gray-800 mb-3 flex items-center gap-2">
+            <Star className="w-4 h-4 text-teal-500" />
+            {language === "te" ? "పంచాంగం వివరాలు" : "Panchangam Details"}
+          </h3>
+          <div className="grid grid-cols-2 gap-3">
+            <div className="bg-orange-50 p-3 rounded-lg">
+              <p className="text-xs text-orange-600 font-medium">{language === "te" ? "తిథి" : "Tithi"}</p>
+              <p className="font-bold text-orange-800">{language === "te" ? panchangam.tithi.name_te : panchangam.tithi.name}</p>
+              <p className="text-xs text-gray-500">{panchangam.tithi.paksha} పక్షం</p>
+            </div>
+            <div className="bg-purple-50 p-3 rounded-lg">
+              <p className="text-xs text-purple-600 font-medium">{language === "te" ? "నక్షత్రం" : "Nakshatra"}</p>
+              <p className="font-bold text-purple-800">{language === "te" ? panchangam.nakshatra.name_te : panchangam.nakshatra.name}</p>
+            </div>
+            <div className="bg-blue-50 p-3 rounded-lg">
+              <p className="text-xs text-blue-600 font-medium">{language === "te" ? "యోగం" : "Yoga"}</p>
+              <p className="font-bold text-blue-800">{language === "te" ? panchangam.yoga.name_te : panchangam.yoga.name}</p>
+            </div>
+            <div className="bg-green-50 p-3 rounded-lg">
+              <p className="text-xs text-green-600 font-medium">{language === "te" ? "కరణం" : "Karana"}</p>
+              <p className="font-bold text-green-800">{language === "te" ? panchangam.karana.name_te : panchangam.karana.name}</p>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Inauspicious Times - Rahu Kalam, Yamagandam, Gulika */}
+      <Card className="border-red-200 bg-red-50/30">
+        <CardContent className="p-4">
+          <h3 className="font-bold text-red-800 mb-3 flex items-center gap-2">
+            <AlertTriangle className="w-4 h-4" />
+            {language === "te" ? "అశుభ సమయాలు" : "Inauspicious Times"}
+          </h3>
+          <div className="space-y-3">
+            <div className="flex items-center justify-between p-3 bg-white rounded-lg border border-red-200">
+              <div>
+                <p className="font-bold text-red-700">{language === "te" ? panchangam.rahu_kalam.name_te : "Rahu Kalam"}</p>
+                <p className="text-xs text-gray-500">{language === "te" ? panchangam.rahu_kalam.description_te : panchangam.rahu_kalam.description}</p>
+              </div>
+              <p className="font-mono font-bold text-red-600 bg-red-100 px-2 py-1 rounded">{panchangam.rahu_kalam.time}</p>
+            </div>
+            <div className="flex items-center justify-between p-3 bg-white rounded-lg border border-orange-200">
+              <div>
+                <p className="font-bold text-orange-700">{language === "te" ? panchangam.yamagandam.name_te : "Yamagandam"}</p>
+                <p className="text-xs text-gray-500">{language === "te" ? panchangam.yamagandam.description_te : panchangam.yamagandam.description}</p>
+              </div>
+              <p className="font-mono font-bold text-orange-600 bg-orange-100 px-2 py-1 rounded">{panchangam.yamagandam.time}</p>
+            </div>
+            <div className="flex items-center justify-between p-3 bg-white rounded-lg border border-yellow-200">
+              <div>
+                <p className="font-bold text-yellow-700">{language === "te" ? panchangam.gulika.name_te : "Gulika Kalam"}</p>
+                <p className="text-xs text-gray-500">{language === "te" ? panchangam.gulika.description_te : panchangam.gulika.description}</p>
+              </div>
+              <p className="font-mono font-bold text-yellow-600 bg-yellow-100 px-2 py-1 rounded">{panchangam.gulika.time}</p>
+            </div>
+            <div className="flex items-center justify-between p-3 bg-white rounded-lg border border-gray-200">
+              <div>
+                <p className="font-bold text-gray-700">{language === "te" ? panchangam.durmuhurtam.name_te : "Durmuhurtam"}</p>
+                <p className="text-xs text-gray-500">{language === "te" ? panchangam.durmuhurtam.description_te : panchangam.durmuhurtam.description}</p>
+              </div>
+              <p className="font-mono font-bold text-gray-600 bg-gray-100 px-2 py-1 rounded">{panchangam.durmuhurtam.time}</p>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Auspicious Times */}
+      <Card className="border-green-200 bg-green-50/30">
+        <CardContent className="p-4">
+          <h3 className="font-bold text-green-800 mb-3 flex items-center gap-2">
+            <Sparkles className="w-4 h-4" />
+            {language === "te" ? "శుభ సమయాలు" : "Auspicious Times"}
+          </h3>
+          <div className="space-y-3">
+            <div className="flex items-center justify-between p-3 bg-white rounded-lg border border-green-200">
+              <div>
+                <p className="font-bold text-green-700">{language === "te" ? panchangam.abhijit_muhurtam.name_te : "Abhijit Muhurtam"}</p>
+                <p className="text-xs text-gray-500">{language === "te" ? panchangam.abhijit_muhurtam.description_te : panchangam.abhijit_muhurtam.description}</p>
+              </div>
+              <p className="font-mono font-bold text-green-600 bg-green-100 px-2 py-1 rounded">{panchangam.abhijit_muhurtam.time}</p>
+            </div>
+            <div className="flex items-center justify-between p-3 bg-white rounded-lg border border-teal-200">
+              <div>
+                <p className="font-bold text-teal-700">{language === "te" ? panchangam.amrit_kalam.name_te : "Amrit Kalam"}</p>
+                <p className="text-xs text-gray-500">{language === "te" ? panchangam.amrit_kalam.description_te : panchangam.amrit_kalam.description}</p>
+              </div>
+              <p className="font-mono font-bold text-teal-600 bg-teal-100 px-2 py-1 rounded">{panchangam.amrit_kalam.time}</p>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Special Notes */}
+      {panchangam.special_notes?.length > 0 && (
+        <Card className="border-amber-200 bg-amber-50/30">
+          <CardContent className="p-4">
+            <h3 className="font-bold text-amber-800 mb-3 flex items-center gap-2">
+              <BookOpen className="w-4 h-4" />
+              {language === "te" ? "ప్రత్యేక గమనికలు" : "Special Notes"}
+            </h3>
+            <div className="space-y-2">
+              {panchangam.special_notes.map((note, i) => (
+                <div key={i} className="p-3 bg-white rounded-lg border border-amber-200">
+                  <p className="font-bold text-amber-700">{language === "te" ? note.name_te : note.name}</p>
+                  <p className="text-sm text-gray-600">{note.description}</p>
+                </div>
+              ))}
+            </div>
+          </CardContent>
+        </Card>
+      )}
+
+      {/* Refresh Info */}
+      <p className="text-xs text-center text-gray-400">
+        {language === "te" ? "పంచాంగం ప్రతిరోజూ అర్ధరాత్రి రిఫ్రెష్ అవుతుంది" : "Panchangam refreshes daily at midnight"}
+      </p>
+    </div>
+  );
+};
+
 export default function Astrology() {
   const { language } = useLanguage();
   const navigate = useNavigate();
