@@ -4,9 +4,18 @@ import axios from "axios";
 import { Card, CardContent } from "./ui/card";
 import { Button } from "./ui/button";
 import { Badge } from "./ui/badge";
-import { Wind, AlertTriangle, ChevronRight, RefreshCw, Loader2, Clock } from "lucide-react";
+import { Wind, AlertTriangle, ChevronRight, RefreshCw, Loader2, Clock, Info } from "lucide-react";
 
 const API = `${process.env.REACT_APP_BACKEND_URL}/api`;
+
+// Helper to get today's date key for localStorage
+const getTodayKey = () => new Date().toISOString().split('T')[0];
+
+// Helper to check if it's past 8 PM (reset time)
+const isPastResetTime = () => {
+  const now = new Date();
+  return now.getHours() >= 20; // 8 PM = 20:00
+};
 
 export default function AQIWidget({ onViewFullReport }) {
   const { language } = useLanguage();
@@ -14,8 +23,21 @@ export default function AQIWidget({ onViewFullReport }) {
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
   const [lastUpdated, setLastUpdated] = useState(null);
+  const [dailyMaxAqi, setDailyMaxAqi] = useState({ dammaiguda: null, hyderabad: null });
 
   useEffect(() => {
+    // Load stored daily max from localStorage
+    const storedData = localStorage.getItem('dailyMaxAqi');
+    if (storedData) {
+      const parsed = JSON.parse(storedData);
+      // Check if it's from today and not past reset time
+      if (parsed.date === getTodayKey() && !isPastResetTime()) {
+        setDailyMaxAqi(parsed.values);
+      } else {
+        // Reset for new day or past 8 PM
+        localStorage.removeItem('dailyMaxAqi');
+      }
+    }
     fetchAQI();
   }, []);
 
@@ -23,7 +45,34 @@ export default function AQIWidget({ onViewFullReport }) {
     try {
       setRefreshing(true);
       const response = await axios.get(`${API}/aqi/both`);
-      setAqiData(response.data);
+      const data = response.data;
+      
+      // Update daily max values
+      const currentMax = { ...dailyMaxAqi };
+      const todayKey = getTodayKey();
+      
+      // Only track max if before 8 PM
+      if (!isPastResetTime()) {
+        if (data.dammaiguda?.aqi) {
+          if (!currentMax.dammaiguda || data.dammaiguda.aqi > currentMax.dammaiguda) {
+            currentMax.dammaiguda = data.dammaiguda.aqi;
+          }
+        }
+        if (data.hyderabad?.aqi) {
+          if (!currentMax.hyderabad || data.hyderabad.aqi > currentMax.hyderabad) {
+            currentMax.hyderabad = data.hyderabad.aqi;
+          }
+        }
+        
+        // Store to localStorage
+        localStorage.setItem('dailyMaxAqi', JSON.stringify({
+          date: todayKey,
+          values: currentMax
+        }));
+        setDailyMaxAqi(currentMax);
+      }
+      
+      setAqiData(data);
       setLastUpdated(new Date());
     } catch (error) {
       console.error("Error fetching AQI:", error);
@@ -31,6 +80,18 @@ export default function AQIWidget({ onViewFullReport }) {
       setLoading(false);
       setRefreshing(false);
     }
+  };
+
+  // Get display AQI value (show higher of current or daily max before 8 PM)
+  const getDisplayAqi = (location, currentAqi) => {
+    if (isPastResetTime()) {
+      return currentAqi; // After 8 PM, show live value
+    }
+    const maxAqi = dailyMaxAqi[location];
+    if (maxAqi && maxAqi > currentAqi) {
+      return maxAqi;
+    }
+    return currentAqi;
   };
 
   const formatLastUpdated = () => {
