@@ -244,7 +244,7 @@ function generateLifePredictions(kundali) {
       personal: "Domestic happiness prevails. Family celebrations expected. Good time for buying home. Peace at home.",
       marriage: "Marriage prospects very good. Existing couples experience harmony. Venus blesses relationships.",
       bestMatch: "Cancer, Virgo",
-      thisYear: "2025 brings material prosperity and emotional fulfillment. Focus on building lasting foundations.",
+      thisYear: `${new Date().getFullYear()} brings material prosperity and emotional fulfillment. Focus on building lasting foundations.`,
       luckyMonths: "Feb, Jun, Oct",
       challenges: "May, Sep"
     },
