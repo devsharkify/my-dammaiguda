@@ -71,8 +71,14 @@ export default function CitizenBenefits() {
   }, [user]);
 
   const fetchMyApplications = async () => {
+    if (!token) {
+      setLoading(false);
+      return;
+    }
     try {
-      const response = await axios.get(`${API}/benefits/my-applications`);
+      const response = await axios.get(`${API}/benefits/my-applications`, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
       setMyApplications(response.data?.applications || response.data || []);
     } catch (error) {
       console.error("Error fetching applications:", error);
