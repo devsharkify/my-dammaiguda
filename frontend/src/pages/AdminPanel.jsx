@@ -15,6 +15,7 @@ import { toast } from "sonner";
 import AnalyticsDashboard from "../components/AnalyticsDashboard";
 import AlertsPanel from "../components/AlertsPanel";
 import ReportsPanel from "../components/ReportsPanel";
+import BenefitsAdmin from "../components/BenefitsAdmin";
 import {
   BarChart3,
   Users,
