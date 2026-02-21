@@ -522,3 +522,23 @@ The app now supports easy replication for different areas (e.g., "My AS Rao Naga
 
 ## Contact
 **Powered by:** Sharkify Technology Private Limited
+
+## Admin/Manager Login Fix (Completed Feb 21, 2026)
+
+### Root Cause:
+1. **User `9100063133`** had role `citizen` in database (not `admin`)
+2. **User `9844548537`** did not exist in database
+3. Phone number format mismatch: Frontend sent `9100063133` but DB stored `+919100063133`
+
+### Fixes Applied:
+1. **Database Updates:**
+   - Updated `+919100063133` role from `citizen` to `admin`
+   - Created new user `+919844548537` with `manager` role
+2. **Backend Fix (`/app/backend/routers/auth.py`):**
+   - Added `9100063133` and `9844548537` to `TEST_PHONES` list for backdoor OTP
+   - Enhanced `verify_otp` endpoint to normalize phone formats (checks both with and without +91 prefix)
+3. **Test Credentials:**
+   - Admin: `9100063133` + OTP `123456` → Admin Panel access
+   - Manager: `9844548537` + OTP `123456` → Manager Portal access
+   - Test User: `9876543210` + OTP `123456` → User app (kept for Play Store)
+
