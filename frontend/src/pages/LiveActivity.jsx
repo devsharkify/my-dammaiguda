@@ -209,9 +209,23 @@ export default function LiveActivity() {
       setIsRunning(true);
       setIsPaused(false);
       
-      // Start timer (only tracks elapsed time - steps/calories are calculated from actual GPS movement)
+      // Start timer
       timerRef.current = setInterval(() => {
-        setElapsedSeconds(prev => prev + 1);
+        setElapsedSeconds(prev => {
+          const newSec = prev + 1;
+          
+          // For non-GPS activities (yoga, gym, etc.), calculate calories based on time
+          // GPS activities calculate calories based on actual distance moved
+          if (!config.tracksGPS) {
+            const weight = user?.health_profile?.weight_kg || 70;
+            const MET = { yoga: 2.5, gym: 6.0, swimming: 8.0, dancing: 5.0 };
+            const hours = newSec / 3600;
+            const newCalories = Math.round((MET[activityType] || 4) * weight * hours);
+            setCalories(newCalories);
+          }
+          
+          return newSec;
+        });
       }, 1000);
 
       // Start GPS for applicable activities
