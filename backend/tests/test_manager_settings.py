@@ -11,7 +11,7 @@ import pytest
 import requests
 import os
 
-BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', 'https://community-hub-492.preview.emergentagent.com')
+BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', 'https://dammaiguda-app-1.preview.emergentagent.com')
 
 # Test credentials
 MANAGER_PHONE = "+919876543211"
