@@ -335,14 +335,17 @@ async def get_panchangam_for_date(date: datetime) -> dict:
     abhijit_end = abhijit_start + 48/60
     abhijit_time = f"{int(abhijit_start):02d}:{int((abhijit_start % 1) * 60):02d} - {int(abhijit_end):02d}:{int((abhijit_end % 1) * 60):02d}"
     
-    # Durmuhurtam (inauspicious period)
-    durmuhurt_periods = [
-        (8, 24, 9, 12) if indian_day in [0, 3] else None,
-        (15, 0, 15, 48) if indian_day in [1, 4] else None,
-        (12, 24, 13, 12) if indian_day in [2, 5] else None,
-        (10, 48, 11, 36) if indian_day == 6 else None
-    ]
-    durmuhurt = next((f"{h1:02d}:{m1:02d} - {h2:02d}:{m2:02d}" for h1, m1, h2, m2 in durmuhurt_periods if (h1, m1, h2, m2) is not None), "08:24 - 09:12")
+    # Durmuhurtam (inauspicious period) - based on day of week
+    durmuhurt_times = {
+        0: "16:30 - 17:18",  # Sunday
+        1: "12:24 - 13:12",  # Monday
+        2: "08:24 - 09:12",  # Tuesday
+        3: "11:36 - 12:24",  # Wednesday
+        4: "09:12 - 10:00",  # Thursday
+        5: "08:24 - 09:12",  # Friday
+        6: "15:00 - 15:48"   # Saturday
+    }
+    durmuhurt = durmuhurt_times.get(indian_day, "08:24 - 09:12")
     
     # Amrit Kalam (most auspicious time)
     amrit_offset = (nakshatra["number"] * 4) % 24
