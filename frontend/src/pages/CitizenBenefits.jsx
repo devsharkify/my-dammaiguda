@@ -73,9 +73,10 @@ export default function CitizenBenefits() {
   const fetchMyApplications = async () => {
     try {
       const response = await axios.get(`${API}/benefits/my-applications`);
-      setMyApplications(response.data);
+      setMyApplications(response.data?.applications || response.data || []);
     } catch (error) {
       console.error("Error fetching applications:", error);
+      setMyApplications([]);
     } finally {
       setLoading(false);
     }
