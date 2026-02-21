@@ -253,7 +253,7 @@ export default function AQIWidget({ onViewFullReport }) {
             <div 
               className={`h-10 w-10 rounded-full flex items-center justify-center text-white font-bold ${getAQIBgClass(hyderabad.category)}`}
             >
-              {hyderabad.aqi || "—"}
+              {getDisplayAqi('hyderabad', hyderabad.aqi) || "—"}
             </div>
             <div>
               <p className="font-medium text-sm text-text-primary">
