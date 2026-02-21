@@ -148,7 +148,7 @@ async def admin_password_login(request: Request, login: PasswordLogin):
         raise HTTPException(status_code=401, detail="Invalid password")
     
     # Generate token
-    token = create_token(user["id"])
+    token = create_token(user["id"], user.get("role", "citizen"))
     
     # Remove sensitive data
     user_data = {k: v for k, v in user.items() if k not in ["_id", "password_hash"]}
