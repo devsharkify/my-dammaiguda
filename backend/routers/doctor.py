@@ -198,6 +198,14 @@ async def get_meals(date: Optional[str] = None, user: dict = Depends(get_current
     
     return {"date": date, "meals": meals, "summary": summary}
 
+@router.delete("/meal/{meal_id}")
+async def delete_meal(meal_id: str, user: dict = Depends(get_current_user)):
+    """Delete a meal entry"""
+    result = await db.meals.delete_one({"id": meal_id, "user_id": user["id"]})
+    if result.deleted_count == 0:
+        raise HTTPException(status_code=404, detail="Meal not found")
+    return {"success": True, "message": "Meal deleted"}
+
 @router.post("/water")
 async def log_water(water: WaterLog, user: dict = Depends(get_current_user)):
     """Log water intake"""
