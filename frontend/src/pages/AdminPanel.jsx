@@ -17,6 +17,7 @@ import AlertsPanel from "../components/AlertsPanel";
 import ReportsPanel from "../components/ReportsPanel";
 import BenefitsAdmin from "../components/BenefitsAdmin";
 import UserManager from "../components/UserManager";
+import CourseManager from "../components/CourseManager";
 import {
   BarChart3,
   Users,
