@@ -745,13 +745,6 @@ class SmartWatchData(BaseModel):
     stress_level: Optional[int] = None
     sync_timestamp: str
 
-class DeviceConnection(BaseModel):
-    device_type: str  # phone, smartwatch
-    device_brand: Optional[str] = None
-    device_id: Optional[str] = None
-    device_name: Optional[str] = None
-    permissions: List[str] = []  # steps, heart_rate, sleep, etc.
-
 @router.post("/sync/phone-sensors")
 async def sync_phone_sensor_data(data: PhoneSensorData, user: dict = Depends(get_current_user)):
     """Sync step data from phone's built-in sensors (pedometer, accelerometer)"""
