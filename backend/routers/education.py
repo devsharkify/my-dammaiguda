@@ -664,6 +664,25 @@ async def get_my_courses(user: dict = Depends(get_current_user)):
     
     return {"courses": courses}
 
+@router.get("/streak")
+async def get_learning_streak(user: dict = Depends(get_current_user)):
+    """Get user's learning streak information"""
+    streak_data = await calculate_learning_streak(user["id"])
+    
+    # Get cached streak record for additional info
+    streak_record = await db.education_streaks.find_one(
+        {"user_id": user["id"]},
+        {"_id": 0}
+    )
+    
+    return {
+        "current_streak": streak_data["current_streak"],
+        "longest_streak": streak_data["longest_streak"],
+        "last_activity_date": streak_data["last_activity_date"],
+        "streak_frozen": False,  # Could implement streak freeze feature
+        "freeze_available": 2     # Number of freezes available
+    }
+
 # ============== QUIZ ROUTES ==============
 
 @router.post("/quizzes")
