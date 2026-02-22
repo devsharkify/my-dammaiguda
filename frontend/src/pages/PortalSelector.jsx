@@ -131,7 +131,7 @@ export default function PortalSelector() {
 
   const canAccessPortal = (portal) => {
     // Check localStorage directly for most up-to-date state
-    const storedUser = localStorage.getItem('user');
+    const storedUser = localStorage.getItem('dammaiguda_user');
     const currentUser = storedUser ? JSON.parse(storedUser) : (loggedInUser || user);
     if (!currentUser) return false;
     return portal.roles.includes(currentUser.role);
@@ -139,7 +139,7 @@ export default function PortalSelector() {
 
   const handlePortalClick = (portal) => {
     // Check localStorage directly for most up-to-date state
-    const storedUser = localStorage.getItem('user');
+    const storedUser = localStorage.getItem('dammaiguda_user');
     const currentUser = storedUser ? JSON.parse(storedUser) : (loggedInUser || user);
     
     if (!currentUser) {
@@ -158,7 +158,7 @@ export default function PortalSelector() {
   };
 
   // Get current user from multiple sources
-  const storedUser = typeof window !== 'undefined' && localStorage.getItem('user');
+  const storedUser = typeof window !== 'undefined' && localStorage.getItem('dammaiguda_user');
   const currentUser = storedUser ? JSON.parse(storedUser) : (loggedInUser || user);
 
   return (
