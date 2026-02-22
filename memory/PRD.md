@@ -123,6 +123,12 @@ DISABLE_ESLINT_PLUGIN=true
    - React.js Framework: 6 lessons
    - Node.js & Backend Development: 6 lessons
 6. ✅ Total course content: 22 lessons across 4 subjects
+7. ✅ Added `/api/education/subjects/{subject_id}/lessons` endpoint
+8. ✅ **Tested Sequential Learning - WORKING PERFECTLY:**
+   - Students cannot skip lessons
+   - Error message: "Please complete '[Previous Lesson]' first"
+   - Progress tracking works (2/22 = 9%)
+   - Admins can bypass restrictions (by design)
 
 ## Previous Session Completions
 
