@@ -1,0 +1,1343 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>MY DAMMAIGUDA DOCUMENTATION</title>
+    <style>
+        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; max-width: 900px; margin: 0 auto; padding: 40px; line-height: 1.6; }
+        h1 { color: #1a1a1a; border-bottom: 2px solid #10b981; padding-bottom: 10px; }
+        h2 { color: #333; margin-top: 40px; }
+        h3 { color: #555; }
+        table { border-collapse: collapse; width: 100%; margin: 20px 0; }
+        th, td { border: 1px solid #ddd; padding: 12px; text-align: left; }
+        th { background: #10b981; color: white; }
+        tr:nth-child(even) { background: #f9f9f9; }
+        code { background: #f4f4f4; padding: 2px 6px; border-radius: 4px; font-family: 'Fira Code', monospace; }
+        pre { background: #1a1a1a; color: #fff; padding: 20px; border-radius: 8px; overflow-x: auto; }
+        pre code { background: transparent; color: #fff; }
+        hr { border: none; border-top: 1px solid #eee; margin: 30px 0; }
+        blockquote { border-left: 4px solid #10b981; padding-left: 20px; color: #666; }
+    </style>
+</head>
+<body>
+<h1>My Dammaiguda - Complete Technical Documentation</h1>
+
+<p><strong>Version:</strong> 2.7.0<br />
+<strong>Last Updated:</strong> February 22, 2026<br />
+<strong>Status:</strong> Production Ready  </p>
+
+<hr />
+
+<h2>Table of Contents</h2>
+
+<ol>
+<li><a href="#1-application-overview">Application Overview</a></li>
+<li><a href="#2-architecture">Architecture</a></li>
+<li><a href="#3-urls--endpoints">URLs &amp; Endpoints</a></li>
+<li><a href="#4-test-credentials">Test Credentials</a></li>
+<li><a href="#5-all-portals">All Portals</a></li>
+<li><a href="#6-database-schema">Database Schema</a></li>
+<li><a href="#7-api-reference">API Reference</a></li>
+<li><a href="#8-source-code-structure">Source Code Structure</a></li>
+<li><a href="#9-deployment-configuration">Deployment Configuration</a></li>
+<li><a href="#10-third-party-integrations">Third-Party Integrations</a></li>
+<li><a href="#11-features--modules">Features &amp; Modules</a></li>
+<li><a href="#12-testing">Testing</a></li>
+</ol>
+
+<hr />
+
+<h2>1. Application Overview</h2>
+
+<h3>What is My Dammaiguda?</h3>
+
+<p>My Dammaiguda is a <strong>production-ready, mobile-first civic engagement platform</strong> designed for local communities. It provides:
+- Citizen services (issue reporting, benefits claiming)
+- Health &amp; fitness tracking
+- Education platform (Byju's-style courses)
+- News aggregation
+- Community wall &amp; social features
+- Admin &amp; management tools</p>
+
+<h3>Key Statistics</h3>
+
+<table>
+<thead>
+<tr>
+  <th>Metric</th>
+  <th>Value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+  <td>Total Users</td>
+  <td>13</td>
+</tr>
+<tr>
+  <td>Total Courses</td>
+  <td>7</td>
+</tr>
+<tr>
+  <td>Total Lessons</td>
+  <td>47</td>
+</tr>
+<tr>
+  <td>Total Issues</td>
+  <td>4</td>
+</tr>
+<tr>
+  <td>API Endpoints</td>
+  <td>200+</td>
+</tr>
+<tr>
+  <td>Database Collections</td>
+  <td>60+</td>
+</tr>
+</tbody>
+</table>
+
+<hr />
+
+<h2>2. Architecture</h2>
+
+<h3>Technology Stack</h3>
+
+<table>
+<thead>
+<tr>
+  <th>Layer</th>
+  <th>Technology</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+  <td><strong>Frontend</strong></td>
+  <td>React 18, Tailwind CSS, Shadcn/UI</td>
+</tr>
+<tr>
+  <td><strong>Backend</strong></td>
+  <td>FastAPI (Python 3.11)</td>
+</tr>
+<tr>
+  <td><strong>Database</strong></td>
+  <td>MongoDB (Motor async driver)</td>
+</tr>
+<tr>
+  <td><strong>Authentication</strong></td>
+  <td>JWT + OTP via Authkey.io</td>
+</tr>
+<tr>
+  <td><strong>File Storage</strong></td>
+  <td>Cloudinary</td>
+</tr>
+<tr>
+  <td><strong>Real-time</strong></td>
+  <td>WebSockets</td>
+</tr>
+<tr>
+  <td><strong>Notifications</strong></td>
+  <td>Web Push (VAPID)</td>
+</tr>
+</tbody>
+</table>
+
+<h3>System Architecture</h3>
+
+<pre><code>┌─────────────────────────────────────────────────────────────┐
+│                        CLIENTS                               │
+│  (Mobile PWA / Desktop Browser / Tablet)                    │
+└─────────────────────────────────────────────────────────────┘
+                              │
+                              ▼
+┌─────────────────────────────────────────────────────────────┐
+│                     KUBERNETES INGRESS                       │
+│            https://course-learn-1.preview.emergentagent.com │
+└─────────────────────────────────────────────────────────────┘
+                              │
+            ┌─────────────────┴─────────────────┐
+            ▼                                   ▼
+┌───────────────────────┐         ┌───────────────────────────┐
+│    FRONTEND (3000)    │         │      BACKEND (8001)       │
+│    React + Tailwind   │         │         FastAPI           │
+│                       │         │                           │
+│  - Landing Page       │         │  - REST API (/api/*)      │
+│  - Dashboard          │         │  - WebSocket Chat         │
+│  - Admin Panel        │         │  - Background Tasks       │
+│  - Course Manager     │         │                           │
+└───────────────────────┘         └───────────────────────────┘
+                                              │
+                                              ▼
+                              ┌───────────────────────────────┐
+                              │        MONGODB (27017)        │
+                              │      Database: dammaiguda_db  │
+                              │      Collections: 60+         │
+                              └───────────────────────────────┘
+</code></pre>
+
+<hr />
+
+<h2>3. URLs &amp; Endpoints</h2>
+
+<h3>Production URLs</h3>
+
+<table>
+<thead>
+<tr>
+  <th>Environment</th>
+  <th>URL</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+  <td><strong>Preview</strong></td>
+  <td>https://course-learn-1.preview.emergentagent.com</td>
+</tr>
+<tr>
+  <td><strong>Production</strong></td>
+  <td>https://www.mydammaiguda.in</td>
+</tr>
+<tr>
+  <td><strong>Railway Backend</strong></td>
+  <td>https://sparkling-abundance-production-0143.up.railway.app</td>
+</tr>
+</tbody>
+</table>
+
+<h3>Main Application Routes</h3>
+
+<table>
+<thead>
+<tr>
+  <th>Route</th>
+  <th>Description</th>
+  <th>Auth Required</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+  <td><code>/</code></td>
+  <td>Landing Page</td>
+  <td>No</td>
+</tr>
+<tr>
+  <td><code>/auth</code></td>
+  <td>Login/Register</td>
+  <td>No</td>
+</tr>
+<tr>
+  <td><code>/dashboard</code></td>
+  <td>User Dashboard</td>
+  <td>Yes</td>
+</tr>
+<tr>
+  <td><code>/education</code></td>
+  <td>Course Catalog</td>
+  <td>No</td>
+</tr>
+<tr>
+  <td><code>/education/course/:id</code></td>
+  <td>Course Details</td>
+  <td>Yes</td>
+</tr>
+<tr>
+  <td><code>/benefits</code></td>
+  <td>Citizen Benefits</td>
+  <td>No</td>
+</tr>
+<tr>
+  <td><code>/claim-benefits</code></td>
+  <td>Apply for Benefits</td>
+  <td>Yes</td>
+</tr>
+<tr>
+  <td><code>/news</code></td>
+  <td>News Feed</td>
+  <td>No</td>
+</tr>
+<tr>
+  <td><code>/issues</code></td>
+  <td>Issue Feed</td>
+  <td>Yes</td>
+</tr>
+<tr>
+  <td><code>/report</code></td>
+  <td>Report Issue</td>
+  <td>Yes</td>
+</tr>
+<tr>
+  <td><code>/fitness</code></td>
+  <td>Health &amp; Fitness</td>
+  <td>Yes</td>
+</tr>
+<tr>
+  <td><code>/astrology</code></td>
+  <td>Astrology/Kundali</td>
+  <td>Yes</td>
+</tr>
+<tr>
+  <td><code>/wall</code></td>
+  <td>Citizen Wall</td>
+  <td>Yes</td>
+</tr>
+<tr>
+  <td><code>/profile</code></td>
+  <td>User Profile</td>
+  <td>Yes</td>
+</tr>
+<tr>
+  <td><code>/portals</code></td>
+  <td>Staff Portal Selector</td>
+  <td>Yes (Staff)</td>
+</tr>
+<tr>
+  <td><code>/admin/panel</code></td>
+  <td>Admin Dashboard</td>
+  <td>Yes (Admin)</td>
+</tr>
+<tr>
+  <td><code>/manager</code></td>
+  <td>Manager Portal</td>
+  <td>Yes (Manager)</td>
+</tr>
+<tr>
+  <td><code>/instructor</code></td>
+  <td>Instructor Portal</td>
+  <td>Yes (Instructor)</td>
+</tr>
+<tr>
+  <td><code>/volunteer</code></td>
+  <td>Volunteer Dashboard</td>
+  <td>Yes (Volunteer)</td>
+</tr>
+</tbody>
+</table>
+
+<h3>API Base Paths</h3>
+
+<table>
+<thead>
+<tr>
+  <th>Prefix</th>
+  <th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+  <td><code>/api/auth</code></td>
+  <td>Authentication</td>
+</tr>
+<tr>
+  <td><code>/api/education</code></td>
+  <td>Courses &amp; Learning</td>
+</tr>
+<tr>
+  <td><code>/api/fitness</code></td>
+  <td>Health &amp; Fitness</td>
+</tr>
+<tr>
+  <td><code>/api/issues</code></td>
+  <td>Issue Management</td>
+</tr>
+<tr>
+  <td><code>/api/news</code></td>
+  <td>News &amp; RSS</td>
+</tr>
+<tr>
+  <td><code>/api/benefits</code></td>
+  <td>Citizen Benefits</td>
+</tr>
+<tr>
+  <td><code>/api/admin</code></td>
+  <td>Admin Operations</td>
+</tr>
+<tr>
+  <td><code>/api/manager</code></td>
+  <td>Manager Operations</td>
+</tr>
+<tr>
+  <td><code>/api/analytics</code></td>
+  <td>User Analytics</td>
+</tr>
+<tr>
+  <td><code>/api/notifications</code></td>
+  <td>Push Notifications</td>
+</tr>
+<tr>
+  <td><code>/api/aqi</code></td>
+  <td>Air Quality Index</td>
+</tr>
+<tr>
+  <td><code>/api/panchangam</code></td>
+  <td>Telugu Calendar</td>
+</tr>
+</tbody>
+</table>
+
+<hr />
+
+<h2>4. Test Credentials</h2>
+
+<h3>OTP-Based Login (Regular Users)</h3>
+
+<table>
+<thead>
+<tr>
+  <th>User Type</th>
+  <th>Phone Number</th>
+  <th>OTP</th>
+  <th>Notes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+  <td>Test User</td>
+  <td>9999999999</td>
+  <td>123456</td>
+  <td>Admin role</td>
+</tr>
+<tr>
+  <td>Test User 2</td>
+  <td>9876543210</td>
+  <td>123456</td>
+  <td>Citizen role</td>
+</tr>
+<tr>
+  <td>Test User 3</td>
+  <td>8888888888</td>
+  <td>123456</td>
+  <td>User role</td>
+</tr>
+<tr>
+  <td>Original Manager</td>
+  <td>9844548537</td>
+  <td>123456</td>
+  <td>Manager role</td>
+</tr>
+</tbody>
+</table>
+
+<h3>Password-Based Login (Staff Portal - <code>/portals</code>)</h3>
+
+<table>
+<thead>
+<tr>
+  <th>Role</th>
+  <th>Phone</th>
+  <th>Password</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+  <td><strong>Master Admin</strong></td>
+  <td>9100063133</td>
+  <td>Plan@123</td>
+</tr>
+<tr>
+  <td><strong>Manager</strong></td>
+  <td>7386917770</td>
+  <td>Manager@123</td>
+</tr>
+</tbody>
+</table>
+
+<h3>Quick Login Commands</h3>
+
+<div class="codehilite">
+<pre><span></span><code><span class="c1"># Send OTP</span>
+curl<span class="w"> </span>-X<span class="w"> </span>POST<span class="w"> </span><span class="s2">&quot;https://course-learn-1.preview.emergentagent.com/api/auth/otp&quot;</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>-H<span class="w"> </span><span class="s2">&quot;Content-Type: application/json&quot;</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>-d<span class="w"> </span><span class="s1">&#39;{&quot;phone&quot;:&quot;9999999999&quot;}&#39;</span>
+
+<span class="c1"># Verify OTP &amp; Get Token</span>
+curl<span class="w"> </span>-X<span class="w"> </span>POST<span class="w"> </span><span class="s2">&quot;https://course-learn-1.preview.emergentagent.com/api/auth/verify&quot;</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>-H<span class="w"> </span><span class="s2">&quot;Content-Type: application/json&quot;</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>-d<span class="w"> </span><span class="s1">&#39;{&quot;phone&quot;:&quot;9999999999&quot;,&quot;otp&quot;:&quot;123456&quot;}&#39;</span>
+
+<span class="c1"># Admin Login (Password)</span>
+curl<span class="w"> </span>-X<span class="w"> </span>POST<span class="w"> </span><span class="s2">&quot;https://course-learn-1.preview.emergentagent.com/api/auth/admin-login&quot;</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>-H<span class="w"> </span><span class="s2">&quot;Content-Type: application/json&quot;</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>-d<span class="w"> </span><span class="s1">&#39;{&quot;phone&quot;:&quot;9100063133&quot;,&quot;password&quot;:&quot;Plan@123&quot;}&#39;</span>
+</code></pre>
+</div>
+
+<hr />
+
+<h2>5. All Portals</h2>
+
+<h3>Portal Access Matrix</h3>
+
+<table>
+<thead>
+<tr>
+  <th>Portal</th>
+  <th>URL</th>
+  <th>Roles Allowed</th>
+  <th>Features</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+  <td><strong>Staff Portal Selector</strong></td>
+  <td><code>/portals</code></td>
+  <td>Admin, Manager, Instructor, Volunteer</td>
+  <td>Central hub for staff login</td>
+</tr>
+<tr>
+  <td><strong>Admin Panel</strong></td>
+  <td><code>/admin/panel</code></td>
+  <td>Admin</td>
+  <td>Full system control</td>
+</tr>
+<tr>
+  <td><strong>Manager Portal</strong></td>
+  <td><code>/manager</code></td>
+  <td>Admin, Manager</td>
+  <td>Area-specific management</td>
+</tr>
+<tr>
+  <td><strong>Instructor Portal</strong></td>
+  <td><code>/instructor</code></td>
+  <td>Admin, Instructor</td>
+  <td>Course creation &amp; student analytics</td>
+</tr>
+<tr>
+  <td><strong>Volunteer Dashboard</strong></td>
+  <td><code>/volunteer</code></td>
+  <td>Admin, Volunteer</td>
+  <td>Community service activities</td>
+</tr>
+</tbody>
+</table>
+
+<h3>Admin Panel Tabs</h3>
+
+<table>
+<thead>
+<tr>
+  <th>Tab</th>
+  <th>Features</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+  <td><strong>Dashboard</strong></td>
+  <td>Key metrics, charts, quick actions</td>
+</tr>
+<tr>
+  <td><strong>Users</strong></td>
+  <td>User management, role assignment, search</td>
+</tr>
+<tr>
+  <td><strong>Issues</strong></td>
+  <td>All reported issues, status updates</td>
+</tr>
+<tr>
+  <td><strong>Course Manager</strong></td>
+  <td>Full course CRUD (Course → Subject → Lesson)</td>
+</tr>
+<tr>
+  <td><strong>Content</strong></td>
+  <td>Headlines, banners, benefits management</td>
+</tr>
+<tr>
+  <td><strong>News</strong></td>
+  <td>News article creation, RSS management</td>
+</tr>
+<tr>
+  <td><strong>Benefits</strong></td>
+  <td>Review insurance/voucher applications</td>
+</tr>
+<tr>
+  <td><strong>Analytics</strong></td>
+  <td>User analytics, feature popularity</td>
+</tr>
+<tr>
+  <td><strong>Alerts</strong></td>
+  <td>System alerts configuration</td>
+</tr>
+<tr>
+  <td><strong>Reports</strong></td>
+  <td>Downloadable reports</td>
+</tr>
+<tr>
+  <td><strong>Settings</strong></td>
+  <td>Site branding, area configuration</td>
+</tr>
+<tr>
+  <td><strong>Clone Maker</strong></td>
+  <td>White-label app generator</td>
+</tr>
+</tbody>
+</table>
+
+<hr />
+
+<h2>6. Database Schema</h2>
+
+<h3>MongoDB Collections (60+)</h3>
+
+<pre><code>Database: dammaiguda_db
+
+USER &amp; AUTH
+├── users (13 docs) - User profiles, roles
+├── otp_store (1 doc) - Temporary OTP storage
+└── oauth_states (1 doc) - OAuth state management
+
+EDUCATION SYSTEM
+├── courses (7 docs) - Course definitions
+├── subjects (4 docs) - Course subjects
+├── lessons (47 docs) - Individual lessons
+├── enrollments (7 docs) - User enrollments
+├── lesson_progress (4 docs) - Progress tracking
+├── quizzes (3 docs) - Quiz questions
+├── certificates (1 doc) - Generated certificates
+└── course_reviews (1 doc) - User reviews
+
+HEALTH &amp; FITNESS
+├── fitness_profiles (3 docs) - User fitness data
+├── fitness_daily (8 docs) - Daily stats
+├── activities (27 docs) - Activity logs
+├── weight_logs (11 docs) - Weight tracking
+├── meals (24 docs) - Meal logging
+├── water_logs (4 docs) - Hydration tracking
+├── sleep_logs (3 docs) - Sleep tracking
+├── heart_rate_logs (3 docs) - Heart rate data
+├── live_activities (11 docs) - Real-time tracking
+└── fitness_points_log (8 docs) - Points earned
+
+BENEFITS &amp; VOUCHERS
+├── benefits (2 docs) - Benefit applications
+├── vouchers (3 docs) - Available vouchers
+└── voucher_claims (1 doc) - Claimed vouchers
+
+COMMUNITY
+├── issues (4 docs) - Reported issues
+├── wall_posts (14 docs) - Community posts
+├── wall_comments (3 docs) - Post comments
+├── groups (6 docs) - Community groups
+└── stories (9 docs) - User stories
+
+NOTIFICATIONS &amp; CHAT
+├── push_subscriptions (2 docs) - Web push
+├── pending_notifications (4 docs) - Queued notifs
+├── chat_rooms (3 docs) - Chat rooms
+└── chat_history (6 docs) - AI chat history
+
+ANALYTICS &amp; ADMIN
+├── user_analytics (3 docs) - Usage tracking
+├── alert_config (1 doc) - Alert settings
+├── site_content (4 docs) - CMS content
+├── site_banners (2 docs) - Banners
+└── app_settings (1 doc) - Global settings
+</code></pre>
+
+<h3>Key Data Models</h3>
+
+<h4>User Schema</h4>
+
+<div class="codehilite">
+<pre><span></span><code><span class="p">{</span>
+<span class="w">  </span><span class="s2">&quot;id&quot;</span><span class="o">:</span><span class="w"> </span><span class="s2">&quot;uuid-string&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="s2">&quot;phone&quot;</span><span class="o">:</span><span class="w"> </span><span class="s2">&quot;+919876543210&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="s2">&quot;name&quot;</span><span class="o">:</span><span class="w"> </span><span class="s2">&quot;User Name&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="s2">&quot;email&quot;</span><span class="o">:</span><span class="w"> </span><span class="s2">&quot;optional@email.com&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="s2">&quot;role&quot;</span><span class="o">:</span><span class="w"> </span><span class="s2">&quot;citizen|admin|manager|instructor|volunteer|user&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="s2">&quot;password_hash&quot;</span><span class="o">:</span><span class="w"> </span><span class="s2">&quot;sha256-hash (for staff)&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="s2">&quot;profile_image&quot;</span><span class="o">:</span><span class="w"> </span><span class="s2">&quot;cloudinary-url&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="s2">&quot;area_id&quot;</span><span class="o">:</span><span class="w"> </span><span class="s2">&quot;dammaiguda&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="s2">&quot;created_at&quot;</span><span class="o">:</span><span class="w"> </span><span class="s2">&quot;ISO-timestamp&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="s2">&quot;last_active&quot;</span><span class="o">:</span><span class="w"> </span><span class="s2">&quot;ISO-timestamp&quot;</span>
+<span class="p">}</span>
+</code></pre>
+</div>
+
+<h4>Course Schema</h4>
+
+<div class="codehilite">
+<pre><span></span><code><span class="p">{</span>
+<span class="w">  </span><span class="s2">&quot;id&quot;</span><span class="o">:</span><span class="w"> </span><span class="s2">&quot;uuid-string&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="s2">&quot;title&quot;</span><span class="o">:</span><span class="w"> </span><span class="s2">&quot;Full Stack Web Development&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="s2">&quot;title_te&quot;</span><span class="o">:</span><span class="w"> </span><span class="s2">&quot;Telugu translation&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="s2">&quot;description&quot;</span><span class="o">:</span><span class="w"> </span><span class="s2">&quot;Course description&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="s2">&quot;thumbnail_url&quot;</span><span class="o">:</span><span class="w"> </span><span class="s2">&quot;image-url&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="s2">&quot;category&quot;</span><span class="o">:</span><span class="w"> </span><span class="s2">&quot;professional|skill|language&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="s2">&quot;price&quot;</span><span class="o">:</span><span class="w"> </span><span class="mf">39999</span><span class="p">,</span>
+<span class="w">  </span><span class="s2">&quot;duration_hours&quot;</span><span class="o">:</span><span class="w"> </span><span class="mf">200</span><span class="p">,</span>
+<span class="w">  </span><span class="s2">&quot;difficulty&quot;</span><span class="o">:</span><span class="w"> </span><span class="s2">&quot;beginner|intermediate|advanced&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="s2">&quot;is_published&quot;</span><span class="o">:</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span>
+<span class="w">  </span><span class="s2">&quot;certificate_enabled&quot;</span><span class="o">:</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span>
+<span class="w">  </span><span class="s2">&quot;instructor_id&quot;</span><span class="o">:</span><span class="w"> </span><span class="s2">&quot;user-id&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="s2">&quot;instructor_name&quot;</span><span class="o">:</span><span class="w"> </span><span class="s2">&quot;Instructor Name&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="s2">&quot;enrollment_count&quot;</span><span class="o">:</span><span class="w"> </span><span class="mf">3</span><span class="p">,</span>
+<span class="w">  </span><span class="s2">&quot;rating_average&quot;</span><span class="o">:</span><span class="w"> </span><span class="mf">4.5</span><span class="p">,</span>
+<span class="w">  </span><span class="s2">&quot;created_at&quot;</span><span class="o">:</span><span class="w"> </span><span class="s2">&quot;ISO-timestamp&quot;</span>
+<span class="p">}</span>
+</code></pre>
+</div>
+
+<h4>Lesson Schema</h4>
+
+<div class="codehilite">
+<pre><span></span><code><span class="p">{</span>
+<span class="w">  </span><span class="s2">&quot;id&quot;</span><span class="o">:</span><span class="w"> </span><span class="s2">&quot;uuid-string&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="s2">&quot;course_id&quot;</span><span class="o">:</span><span class="w"> </span><span class="s2">&quot;course-uuid&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="s2">&quot;subject_id&quot;</span><span class="o">:</span><span class="w"> </span><span class="s2">&quot;subject-uuid&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="s2">&quot;title&quot;</span><span class="o">:</span><span class="w"> </span><span class="s2">&quot;Introduction to JavaScript&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="s2">&quot;description&quot;</span><span class="o">:</span><span class="w"> </span><span class="s2">&quot;Lesson description&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="s2">&quot;video_url&quot;</span><span class="o">:</span><span class="w"> </span><span class="s2">&quot;youtube-or-hosted-url&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="s2">&quot;duration_minutes&quot;</span><span class="o">:</span><span class="w"> </span><span class="mf">45</span><span class="p">,</span>
+<span class="w">  </span><span class="s2">&quot;order_index&quot;</span><span class="o">:</span><span class="w"> </span><span class="mf">0</span><span class="p">,</span>
+<span class="w">  </span><span class="s2">&quot;is_free_preview&quot;</span><span class="o">:</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span>
+<span class="w">  </span><span class="s2">&quot;requires_previous&quot;</span><span class="o">:</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span>
+<span class="w">  </span><span class="s2">&quot;study_materials&quot;</span><span class="o">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">    </span><span class="p">{</span><span class="s2">&quot;name&quot;</span><span class="o">:</span><span class="w"> </span><span class="s2">&quot;PDF Notes&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;url&quot;</span><span class="o">:</span><span class="w"> </span><span class="s2">&quot;download-url&quot;</span><span class="p">}</span>
+<span class="w">  </span><span class="p">],</span>
+<span class="w">  </span><span class="s2">&quot;created_at&quot;</span><span class="o">:</span><span class="w"> </span><span class="s2">&quot;ISO-timestamp&quot;</span>
+<span class="p">}</span>
+</code></pre>
+</div>
+
+<hr />
+
+<h2>7. API Reference</h2>
+
+<h3>Authentication APIs</h3>
+
+<pre><code>POST /api/auth/otp              - Send OTP
+POST /api/auth/verify           - Verify OTP &amp; Login
+POST /api/auth/admin-login      - Password login (staff)
+GET  /api/auth/me               - Get current user
+PUT  /api/auth/me               - Update profile
+DELETE /api/auth/delete-account - Account deletion
+</code></pre>
+
+<h3>Education APIs</h3>
+
+<pre><code>GET  /api/education/courses                    - List all courses
+GET  /api/education/courses/:id                - Course details
+GET  /api/education/courses/:id/subjects       - Course subjects
+GET  /api/education/subjects/:id/lessons       - Subject lessons
+GET  /api/education/lessons/:id                - Lesson details (sequential check)
+POST /api/education/enroll                     - Enroll in course
+POST /api/education/lessons/:id/progress       - Update progress
+GET  /api/education/my-courses                 - User's enrolled courses
+POST /api/education/quizzes/:id/submit         - Submit quiz
+POST /api/education/certificates/generate/:id  - Generate certificate
+</code></pre>
+
+<h3>Fitness APIs</h3>
+
+<pre><code>GET  /api/fitness/dashboard        - Dashboard data
+GET  /api/fitness/activities       - Activity list
+POST /api/fitness/activity         - Log activity
+POST /api/fitness/record           - Record exercise
+GET  /api/fitness/weight/history   - Weight history
+POST /api/fitness/weight           - Log weight
+GET  /api/fitness/today-stats      - Today's stats
+GET  /api/fitness/weekly-summary   - Weekly summary
+POST /api/fitness/live/start       - Start live activity
+POST /api/fitness/live/end         - End live activity
+</code></pre>
+
+<h3>Benefits APIs</h3>
+
+<pre><code>GET  /api/benefits/stats                  - Public stats
+POST /api/benefits/accidental-insurance   - Apply for insurance
+POST /api/benefits/health-insurance       - Apply for health ins.
+POST /api/benefits/education-voucher      - Get education voucher
+GET  /api/benefits/my-applications        - User's applications
+GET  /api/benefits/admin/applications     - Admin: all applications
+PUT  /api/benefits/admin/applications/:id - Admin: update status
+</code></pre>
+
+<h3>News APIs</h3>
+
+<pre><code>GET  /api/news/feed/all       - All news
+GET  /api/news/local          - Local news
+GET  /api/news/:category      - By category
+POST /api/news/admin/create   - Create article
+POST /api/news/admin/push     - Push notification
+</code></pre>
+
+<h3>Admin APIs</h3>
+
+<pre><code>GET  /api/admin/stats              - Admin statistics
+GET  /api/admin/users              - User list
+PUT  /api/admin/users/:id/role     - Change user role
+GET  /api/analytics/admin/summary  - Analytics summary
+GET  /api/reports/available        - Available reports
+</code></pre>
+
+<hr />
+
+<h2>8. Source Code Structure</h2>
+
+<h3>Frontend Structure</h3>
+
+<pre><code>/app/frontend/
+├── public/
+│   ├── manifest.json          # PWA manifest
+│   └── service-worker.js      # Service worker
+├── src/
+│   ├── components/
+│   │   ├── ui/                # Shadcn/UI components (40+)
+│   │   ├── Layout.jsx         # Main layout wrapper
+│   │   ├── AQIWidget.jsx      # Air quality widget
+│   │   ├── CalorieCounter.jsx # Calorie tracker
+│   │   ├── CourseManager.jsx  # Course CRUD UI
+│   │   ├── UserManager.jsx    # User management
+│   │   ├── BenefitsAdmin.jsx  # Benefits admin
+│   │   └── ...
+│   ├── pages/
+│   │   ├── LandingPage.jsx    # Home page
+│   │   ├── Dashboard.jsx      # User dashboard
+│   │   ├── AdminPanel.jsx     # Admin dashboard (52KB)
+│   │   ├── ManagerApp.jsx     # Manager portal
+│   │   ├── InstructorPortal.jsx
+│   │   ├── AITEducation.jsx   # Education catalog
+│   │   ├── CourseDetail.jsx   # Course viewer
+│   │   ├── KaizerFit.jsx      # Fitness module (72KB)
+│   │   ├── Astrology.jsx      # Astrology (66KB)
+│   │   ├── NewsPage.jsx       # News feed
+│   │   ├── PortalSelector.jsx # Staff portal hub
+│   │   └── ... (45+ pages)
+│   ├── context/
+│   │   ├── AuthContext.jsx    # Auth state
+│   │   ├── LanguageContext.jsx # i18n
+│   │   └── ThemeContext.jsx   # Theme
+│   ├── hooks/
+│   │   ├── useOffline.js      # Offline detection
+│   │   └── usePushNotifications.js
+│   └── App.js                 # Routes &amp; providers
+├── package.json
+└── tailwind.config.js
+</code></pre>
+
+<h3>Backend Structure</h3>
+
+<pre><code>/app/backend/
+├── server.py                  # FastAPI app entry
+├── models/
+│   ├── education.py           # Course/Lesson models
+│   └── ...
+├── routers/
+│   ├── auth.py                # Authentication
+│   ├── education.py           # Education (1592 lines)
+│   ├── fitness.py             # Fitness tracking
+│   ├── doctor.py              # Health metrics
+│   ├── benefits.py            # Benefits system
+│   ├── news.py                # News management
+│   ├── issues.py              # Issue reporting
+│   ├── analytics.py           # User analytics
+│   ├── manager.py             # Manager APIs
+│   ├── admin_users.py         # Admin user mgmt
+│   ├── aqi.py                 # Air quality
+│   ├── panchangam.py          # Telugu calendar
+│   ├── muhurtam.py            # Auspicious times
+│   ├── astrology.py           # Kundali generation
+│   ├── notifications.py       # Push notifications
+│   ├── websocket_chat.py      # Real-time chat
+│   ├── clone.py               # White-label generator
+│   └── ... (30+ routers)
+├── middleware/
+│   ├── rate_limiter.py        # Rate limiting
+│   └── sentry_config.py       # Error monitoring
+├── requirements.txt
+└── .env
+</code></pre>
+
+<h3>Key Files by Size</h3>
+
+<table>
+<thead>
+<tr>
+  <th>File</th>
+  <th>Lines</th>
+  <th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+  <td>education.py</td>
+  <td>1592</td>
+  <td>Education module backend</td>
+</tr>
+<tr>
+  <td>KaizerFit.jsx</td>
+  <td>2400+</td>
+  <td>Fitness frontend</td>
+</tr>
+<tr>
+  <td>Astrology.jsx</td>
+  <td>2200+</td>
+  <td>Astrology frontend</td>
+</tr>
+<tr>
+  <td>AdminPanel.jsx</td>
+  <td>1295</td>
+  <td>Admin dashboard</td>
+</tr>
+<tr>
+  <td>CourseDetail.jsx</td>
+  <td>1700+</td>
+  <td>Course viewer</td>
+</tr>
+<tr>
+  <td>CourseManager.jsx</td>
+  <td>1162</td>
+  <td>Course CRUD</td>
+</tr>
+</tbody>
+</table>
+
+<hr />
+
+<h2>9. Deployment Configuration</h2>
+
+<h3>Server Configuration</h3>
+
+<table>
+<thead>
+<tr>
+  <th>Parameter</th>
+  <th>Value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+  <td><strong>Frontend Port</strong></td>
+  <td>3000</td>
+</tr>
+<tr>
+  <td><strong>Backend Port</strong></td>
+  <td>8001</td>
+</tr>
+<tr>
+  <td><strong>MongoDB Port</strong></td>
+  <td>27017</td>
+</tr>
+<tr>
+  <td><strong>Database Name</strong></td>
+  <td>dammaiguda_db</td>
+</tr>
+</tbody>
+</table>
+
+<h3>Environment Variables</h3>
+
+<h4>Backend (.env)</h4>
+
+<pre><code>MONGO_URL="mongodb://localhost:27017"
+DB_NAME="dammaiguda_db"
+CORS_ORIGINS="*"
+JWT_SECRET="your-secret-key"
+
+# SMS (Authkey.io)
+AUTHKEY_API_KEY=bedfc307ae476372
+
+# Cloudinary (Media)
+CLOUDINARY_CLOUD_NAME=divb7z5yq
+CLOUDINARY_API_KEY=your-key
+CLOUDINARY_API_SECRET=your-secret
+
+# Google Fit
+GOOGLE_FIT_CLIENT_ID=203132203944-...
+GOOGLE_FIT_CLIENT_SECRET=your-secret
+GOOGLE_FIT_REDIRECT_URI=https://mydammaiguda.in/api/fitness/google-fit/callback
+
+# Push Notifications
+VAPID_PRIVATE_KEY=your-key
+VAPID_PUBLIC_KEY=your-key
+VAPID_CLAIMS_EMAIL=mailto:support@sharkify.ai
+
+# OpenAI (AI Chat)
+OPENAI_API_KEY=your-key
+
+# WhatsApp (Twilio)
+TWILIO_ACCOUNT_SID=AC6c4afd9715e25770fc1dd27af5322e6a
+TWILIO_AUTH_TOKEN=your-token
+TWILIO_WHATSAPP_NUMBER=+12692304345
+</code></pre>
+
+<h4>Frontend (.env)</h4>
+
+<pre><code>REACT_APP_BACKEND_URL=https://course-learn-1.preview.emergentagent.com
+WDS_SOCKET_PORT=443
+CI=false
+DISABLE_ESLINT_PLUGIN=true
+ESLINT_NO_DEV_ERRORS=true
+</code></pre>
+
+<h3>Supervisor Configuration</h3>
+
+<div class="codehilite">
+<pre><span></span><code><span class="c1"># Check status</span>
+sudo<span class="w"> </span>supervisorctl<span class="w"> </span>status
+
+<span class="c1"># Restart services</span>
+sudo<span class="w"> </span>supervisorctl<span class="w"> </span>restart<span class="w"> </span>backend
+sudo<span class="w"> </span>supervisorctl<span class="w"> </span>restart<span class="w"> </span>frontend
+
+<span class="c1"># View logs</span>
+tail<span class="w"> </span>-f<span class="w"> </span>/var/log/supervisor/backend.err.log
+tail<span class="w"> </span>-f<span class="w"> </span>/var/log/supervisor/frontend.err.log
+</code></pre>
+</div>
+
+<h3>Production Deployment (Railway)</h3>
+
+<div class="codehilite">
+<pre><span></span><code><span class="c1"># Backend</span>
+<span class="nt">Build</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">pip install -r requirements.txt</span>
+<span class="nt">Start</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">uvicorn server:app --host 0.0.0.0 --port $PORT</span>
+
+<span class="c1"># Frontend</span>
+<span class="nt">Build</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">yarn install &amp;&amp; yarn build</span>
+<span class="nt">Start</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">serve -s build -l $PORT</span>
+</code></pre>
+</div>
+
+<hr />
+
+<h2>10. Third-Party Integrations</h2>
+
+<h3>Active Integrations</h3>
+
+<table>
+<thead>
+<tr>
+  <th>Service</th>
+  <th>Purpose</th>
+  <th>Required Keys</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+  <td><strong>Authkey.io</strong></td>
+  <td>SMS OTP</td>
+  <td>AUTHKEY_API_KEY</td>
+</tr>
+<tr>
+  <td><strong>Cloudinary</strong></td>
+  <td>Image/Media storage</td>
+  <td>CLOUDINARY_*</td>
+</tr>
+<tr>
+  <td><strong>OpenAI</strong></td>
+  <td>AI Chat</td>
+  <td>OPENAI_API_KEY</td>
+</tr>
+<tr>
+  <td><strong>Google Fit</strong></td>
+  <td>Fitness sync</td>
+  <td>GOOGLE_FIT_*</td>
+</tr>
+<tr>
+  <td><strong>Twilio</strong></td>
+  <td>WhatsApp</td>
+  <td>TWILIO_*</td>
+</tr>
+<tr>
+  <td><strong>Kerykeion</strong></td>
+  <td>Astrology</td>
+  <td>(Python library)</td>
+</tr>
+<tr>
+  <td><strong>BeautifulSoup</strong></td>
+  <td>AQI scraping</td>
+  <td>(Python library)</td>
+</tr>
+</tbody>
+</table>
+
+<h3>Integration Endpoints</h3>
+
+<table>
+<thead>
+<tr>
+  <th>Integration</th>
+  <th>Endpoint</th>
+  <th>Notes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+  <td><strong>Authkey SMS</strong></td>
+  <td>api.authkey.io</td>
+  <td>OTP delivery</td>
+</tr>
+<tr>
+  <td><strong>Google Fit</strong></td>
+  <td>fitness.googleapis.com</td>
+  <td>OAuth2</td>
+</tr>
+<tr>
+  <td><strong>AQI Data</strong></td>
+  <td>aqi.in</td>
+  <td>Web scraping</td>
+</tr>
+<tr>
+  <td><strong>RSS Feeds</strong></td>
+  <td>Various</td>
+  <td>News aggregation</td>
+</tr>
+</tbody>
+</table>
+
+<hr />
+
+<h2>11. Features &amp; Modules</h2>
+
+<h3>Core Modules</h3>
+
+<table>
+<thead>
+<tr>
+  <th>Module</th>
+  <th>Status</th>
+  <th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+  <td><strong>Authentication</strong></td>
+  <td>✅ Complete</td>
+  <td>OTP + Password login</td>
+</tr>
+<tr>
+  <td><strong>Education</strong></td>
+  <td>✅ Complete</td>
+  <td>Byju's-style courses with sequential learning</td>
+</tr>
+<tr>
+  <td><strong>Fitness</strong></td>
+  <td>✅ Complete</td>
+  <td>Comprehensive health tracking</td>
+</tr>
+<tr>
+  <td><strong>Benefits</strong></td>
+  <td>✅ Complete</td>
+  <td>Insurance &amp; voucher claims</td>
+</tr>
+<tr>
+  <td><strong>News</strong></td>
+  <td>✅ Complete</td>
+  <td>Way2News style feed</td>
+</tr>
+<tr>
+  <td><strong>Issues</strong></td>
+  <td>✅ Complete</td>
+  <td>Civic issue reporting</td>
+</tr>
+<tr>
+  <td><strong>Wall</strong></td>
+  <td>✅ Complete</td>
+  <td>Community posts</td>
+</tr>
+<tr>
+  <td><strong>Analytics</strong></td>
+  <td>✅ Complete</td>
+  <td>User analytics dashboard</td>
+</tr>
+<tr>
+  <td><strong>Admin</strong></td>
+  <td>✅ Complete</td>
+  <td>Full admin control</td>
+</tr>
+<tr>
+  <td><strong>Manager</strong></td>
+  <td>✅ Complete</td>
+  <td>Area-specific management</td>
+</tr>
+<tr>
+  <td><strong>Clone Maker</strong></td>
+  <td>✅ Complete</td>
+  <td>White-label generator</td>
+</tr>
+</tbody>
+</table>
+
+<h3>Education Module Details</h3>
+
+<pre><code>Course Structure:
+├── Course (e.g., Full Stack Web Development)
+│   ├── Subject 1: HTML &amp; CSS Fundamentals (4 lessons)
+│   ├── Subject 2: JavaScript Programming (6 lessons)
+│   ├── Subject 3: React.js Framework (6 lessons)
+│   └── Subject 4: Node.js &amp; Backend (6 lessons)
+
+Sequential Learning:
+- Users CANNOT skip lessons
+- Must complete Lesson N before accessing Lesson N+1
+- Admins/Instructors bypass this restriction
+- Error: "Please complete '[Previous Lesson]' first"
+
+Progress Tracking:
+- Per-lesson completion status
+- Percentage calculation
+- Certificate generation on 100% completion
+</code></pre>
+
+<h3>Fitness Module Details</h3>
+
+<pre><code>Tracking Features:
+├── Daily Statistics
+│   ├── Steps
+│   ├── Calories
+│   ├── Distance
+│   └── Active Minutes
+├── Health Metrics
+│   ├── Weight (with goal tracking)
+│   ├── Heart Rate
+│   ├── Sleep
+│   ├── Water Intake
+│   └── SpO2
+├── Activities
+│   ├── Walking
+│   ├── Running
+│   ├── Cycling
+│   ├── Swimming
+│   ├── Yoga
+│   └── Gym/Strength
+├── Live Activity Tracking
+├── Challenges &amp; Badges
+└── Google Fit Integration
+</code></pre>
+
+<hr />
+
+<h2>12. Testing</h2>
+
+<h3>Test Reports Location</h3>
+
+<pre><code>/app/test_reports/
+├── iteration_42.json  # Previous QA
+├── iteration_43.json  # Full QA pass
+├── iteration_44.json  # Student experience
+└── pytest/
+    └── pytest_student_course.xml
+</code></pre>
+
+<h3>Backend Test Files</h3>
+
+<pre><code>/app/backend/tests/
+└── test_student_course_experience.py
+</code></pre>
+
+<h3>Quick Test Commands</h3>
+
+<div class="codehilite">
+<pre><span></span><code><span class="c1"># Health Check</span>
+curl<span class="w"> </span>https://course-learn-1.preview.emergentagent.com/api/health
+
+<span class="c1"># Test Authentication</span>
+curl<span class="w"> </span>-X<span class="w"> </span>POST<span class="w"> </span><span class="s2">&quot;...api/auth/otp&quot;</span><span class="w"> </span>-d<span class="w"> </span><span class="s1">&#39;{&quot;phone&quot;:&quot;9999999999&quot;}&#39;</span>
+curl<span class="w"> </span>-X<span class="w"> </span>POST<span class="w"> </span><span class="s2">&quot;...api/auth/verify&quot;</span><span class="w"> </span>-d<span class="w"> </span><span class="s1">&#39;{&quot;phone&quot;:&quot;9999999999&quot;,&quot;otp&quot;:&quot;123456&quot;}&#39;</span>
+
+<span class="c1"># Test Education API</span>
+curl<span class="w"> </span><span class="s2">&quot;...api/education/courses&quot;</span>
+curl<span class="w"> </span><span class="s2">&quot;...api/education/courses/b326b25e-97ac-439b-a691-ec06996c8fad/subjects&quot;</span>
+
+<span class="c1"># Test with Auth</span>
+<span class="nv">TOKEN</span><span class="o">=</span><span class="s2">&quot;your-jwt-token&quot;</span>
+curl<span class="w"> </span>-H<span class="w"> </span><span class="s2">&quot;Authorization: Bearer </span><span class="nv">$TOKEN</span><span class="s2">&quot;</span><span class="w"> </span><span class="s2">&quot;...api/education/my-courses&quot;</span>
+</code></pre>
+</div>
+
+<h3>Test Scenarios Verified</h3>
+
+<table>
+<thead>
+<tr>
+  <th>Test</th>
+  <th>Status</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+  <td>OTP Login</td>
+  <td>✅ Pass</td>
+</tr>
+<tr>
+  <td>Password Login</td>
+  <td>✅ Pass</td>
+</tr>
+<tr>
+  <td>Course Listing</td>
+  <td>✅ Pass</td>
+</tr>
+<tr>
+  <td>Course Enrollment</td>
+  <td>✅ Pass</td>
+</tr>
+<tr>
+  <td>Sequential Learning</td>
+  <td>✅ Pass</td>
+</tr>
+<tr>
+  <td>Progress Tracking</td>
+  <td>✅ Pass</td>
+</tr>
+<tr>
+  <td>Benefits Page (Public)</td>
+  <td>✅ Pass</td>
+</tr>
+<tr>
+  <td>Education Page (Public)</td>
+  <td>✅ Pass</td>
+</tr>
+<tr>
+  <td>Admin Panel Access</td>
+  <td>✅ Pass</td>
+</tr>
+<tr>
+  <td>Manager Portal</td>
+  <td>✅ Pass</td>
+</tr>
+</tbody>
+</table>
+
+<hr />
+
+<h2>Quick Reference Card</h2>
+
+<h3>Essential Commands</h3>
+
+<div class="codehilite">
+<pre><span></span><code><span class="c1"># Start/Restart Services</span>
+sudo<span class="w"> </span>supervisorctl<span class="w"> </span>restart<span class="w"> </span>backend
+sudo<span class="w"> </span>supervisorctl<span class="w"> </span>restart<span class="w"> </span>frontend
+
+<span class="c1"># View Logs</span>
+tail<span class="w"> </span>-f<span class="w"> </span>/var/log/supervisor/backend.err.log
+
+<span class="c1"># Test API</span>
+<span class="nv">API</span><span class="o">=</span><span class="s2">&quot;https://course-learn-1.preview.emergentagent.com/api&quot;</span>
+curl<span class="w"> </span><span class="nv">$API</span>/health
+</code></pre>
+</div>
+
+<h3>Key Course ID</h3>
+
+<pre><code>Full Stack Web Development: b326b25e-97ac-439b-a691-ec06996c8fad
+</code></pre>
+
+<h3>Login Quick Reference</h3>
+
+<pre><code>Staff Portal: /portals
+- Admin: 9100063133 / Plan@123
+- Manager: 7386917770 / Manager@123
+
+OTP Login: /auth
+- Test: 9999999999 / 123456
+</code></pre>
+
+<hr />
+
+<p><strong>Document End</strong></p>
+
+<p><em>Powered by Sharkify Technology Private Limited</em></p>
+
+</body>
+</html>
