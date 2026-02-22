@@ -49,28 +49,26 @@ def calculate_indian_aqi_pm25(pm25: float) -> int:
     else:
         return int(400 + ((pm25 - 250) / 130) * 100)
 
-def parse_hourly_aqi_data(page_text: str) -> list:
-    """Parse hourly AQI trend data from page text"""
+def parse_hourly_aqi_data(soup: BeautifulSoup) -> list:
+    """Parse hourly AQI trend data from HTML table rows"""
     hourly_data = []
-    # Pattern to match time and AQI pairs like "3:01 PM | 119" or "8:01 AM | 233"
-    lines = page_text.split('\n')
     
-    for i, line in enumerate(lines):
-        # Look for time patterns
-        time_match = re.search(r'(\d{1,2}:\d{2}\s*(?:AM|PM))', line, re.IGNORECASE)
-        if time_match:
-            time_str = time_match.group(1).strip()
-            # Look for AQI value in the same or next line
-            aqi_match = re.search(r'\b(\d{2,3})\b', line)
-            if not aqi_match and i + 1 < len(lines):
-                aqi_match = re.search(r'\b(\d{2,3})\b', lines[i + 1])
+    # Find all table rows
+    rows = soup.find_all('tr')
+    
+    for row in rows:
+        cells = row.find_all(['td', 'th'])
+        if len(cells) >= 2:
+            time_text = cells[0].get_text(strip=True)
+            aqi_text = cells[1].get_text(strip=True)
             
-            if aqi_match:
+            # Check if it's a time pattern like "3:01 PM" or "8:01 AM"
+            if re.match(r'\d{1,2}:\d{2}\s*(AM|PM)', time_text, re.IGNORECASE):
                 try:
-                    aqi_val = int(aqi_match.group(1))
-                    if 50 <= aqi_val <= 500:  # Valid AQI range
+                    aqi_val = int(aqi_text)
+                    if 20 <= aqi_val <= 500:  # Valid AQI range
                         hourly_data.append({
-                            "time": time_str,
+                            "time": time_text,
                             "aqi": aqi_val
                         })
                 except:
