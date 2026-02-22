@@ -61,16 +61,26 @@ export default function NewsPage() {
     else setLoading(true);
     
     try {
-      let url = `${API}/news?limit=30`;
+      let url = `${API}/news/local`;
       if (activeCategory !== "all" && activeCategory !== "trending") {
-        url += `&category=${activeCategory}`;
+        url = `${API}/news/${activeCategory}`;
       }
       const response = await axios.get(url);
-      let newsData = response.data?.news || [];
+      let newsData = response.data?.news || response.data || [];
+      
+      // Handle different response formats
+      if (!Array.isArray(newsData)) {
+        newsData = [];
+      }
       
       // Sort by views for trending
       if (activeCategory === "trending") {
         newsData = newsData.sort((a, b) => (b.views || 0) - (a.views || 0));
+      }
+      
+      // If no news from API, use sample news
+      if (newsData.length === 0) {
+        newsData = getSampleNews();
       }
       
       setNews(newsData);
