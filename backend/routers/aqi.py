@@ -49,8 +49,47 @@ def calculate_indian_aqi_pm25(pm25: float) -> int:
     else:
         return int(400 + ((pm25 - 250) / 130) * 100)
 
-async def scrape_aqi_in(url: str) -> dict:
-    """Scrape AQI data from aqi.in website"""
+def parse_hourly_aqi_data(page_text: str) -> list:
+    """Parse hourly AQI trend data from page text"""
+    hourly_data = []
+    # Pattern to match time and AQI pairs like "3:01 PM | 119" or "8:01 AM | 233"
+    lines = page_text.split('\n')
+    
+    for i, line in enumerate(lines):
+        # Look for time patterns
+        time_match = re.search(r'(\d{1,2}:\d{2}\s*(?:AM|PM))', line, re.IGNORECASE)
+        if time_match:
+            time_str = time_match.group(1).strip()
+            # Look for AQI value in the same or next line
+            aqi_match = re.search(r'\b(\d{2,3})\b', line)
+            if not aqi_match and i + 1 < len(lines):
+                aqi_match = re.search(r'\b(\d{2,3})\b', lines[i + 1])
+            
+            if aqi_match:
+                try:
+                    aqi_val = int(aqi_match.group(1))
+                    if 50 <= aqi_val <= 500:  # Valid AQI range
+                        hourly_data.append({
+                            "time": time_str,
+                            "aqi": aqi_val
+                        })
+                except:
+                    pass
+    
+    return hourly_data
+
+def find_daily_peak(hourly_data: list) -> dict:
+    """Find the highest AQI reading from hourly data"""
+    if not hourly_data:
+        return None
+    
+    peak = max(hourly_data, key=lambda x: x["aqi"])
+    return peak
+
+async def scrape_aqi_in(url: str, include_peak: bool = True) -> dict:
+    """Scrape AQI data from aqi.in website with daily peak tracking"""
+    global _aqi_cache
+    
     try:
         async with httpx.AsyncClient() as client:
             headers = {
@@ -68,14 +107,46 @@ async def scrape_aqi_in(url: str) -> dict:
             pm10_match = re.search(r'PM10\s*[:\s]+(\d+)\s*µg/m³', page_text, re.IGNORECASE)
             pm10_value = int(pm10_match.group(1)) if pm10_match else None
             
-            aqi_value = calculate_indian_aqi_pm25(pm25_value) if pm25_value else None
+            # Extract current AQI from the page (US AQI displayed)
+            aqi_us_match = re.search(r'Air Quality Index\s*(\d+)', page_text, re.IGNORECASE)
+            aqi_us_value = int(aqi_us_match.group(1)) if aqi_us_match else None
+            
+            # Calculate Indian AQI from PM2.5
+            aqi_in_value = calculate_indian_aqi_pm25(pm25_value) if pm25_value else None
+            
+            # Use US AQI if available (as shown on website), otherwise use calculated Indian AQI
+            aqi_value = aqi_us_value if aqi_us_value else aqi_in_value
+            
             category_info = get_indian_aqi_category(aqi_value) if aqi_value else {
                 "category": "Unknown", "category_te": "తెలియదు", "color": "#888888",
                 "health_impact": "Data unavailable", "health_impact_te": "డేటా అందుబాటులో లేదు"
             }
             
-            return {
+            # Parse hourly data to find today's peak
+            hourly_data = parse_hourly_aqi_data(page_text)
+            daily_peak = find_daily_peak(hourly_data)
+            
+            # Get current time in IST
+            ist_offset = timedelta(hours=5, minutes=30)
+            now_ist = datetime.now(timezone.utc) + ist_offset
+            today_str = now_ist.strftime("%Y-%m-%d")
+            
+            # Update cache with daily peak
+            if daily_peak:
+                if _aqi_cache.get("daily_peak_date") != today_str:
+                    # New day, reset peak
+                    _aqi_cache["daily_peak"] = daily_peak["aqi"]
+                    _aqi_cache["daily_peak_time"] = daily_peak["time"]
+                    _aqi_cache["daily_peak_date"] = today_str
+                elif daily_peak["aqi"] > (_aqi_cache.get("daily_peak") or 0):
+                    # Update peak if higher
+                    _aqi_cache["daily_peak"] = daily_peak["aqi"]
+                    _aqi_cache["daily_peak_time"] = daily_peak["time"]
+            
+            result = {
                 "aqi": aqi_value,
+                "aqi_us": aqi_us_value,
+                "aqi_in": aqi_in_value,
                 "category": category_info["category"],
                 "category_te": category_info["category_te"],
                 "color": category_info["color"],
@@ -87,8 +158,26 @@ async def scrape_aqi_in(url: str) -> dict:
                 ],
                 "last_updated": datetime.now(timezone.utc).isoformat(),
                 "source": "aqi.in",
-                "aqi_standard": "IN"
+                "aqi_standard": "US"
             }
+            
+            # Add daily peak info
+            if include_peak and _aqi_cache.get("daily_peak"):
+                result["daily_peak"] = {
+                    "aqi": _aqi_cache["daily_peak"],
+                    "time": _aqi_cache["daily_peak_time"],
+                    "date": _aqi_cache["daily_peak_date"]
+                }
+                peak_category = get_indian_aqi_category(_aqi_cache["daily_peak"])
+                result["daily_peak"]["category"] = peak_category["category"]
+                result["daily_peak"]["category_te"] = peak_category["category_te"]
+                result["daily_peak"]["color"] = peak_category["color"]
+            
+            # Add hourly trend (last 6 hours)
+            if hourly_data:
+                result["hourly_trend"] = hourly_data[-12:]  # Last 6 hours (30-min intervals)
+            
+            return result
     except Exception as e:
         logging.error(f"AQI scrape error: {str(e)}")
         return {
