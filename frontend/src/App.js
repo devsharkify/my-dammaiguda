@@ -275,6 +275,9 @@ function AppRoutes() {
         </ProtectedRoute>
       } />
       
+      {/* Staff Portal Selector */}
+      <Route path="/portals" element={<PortalSelector />} />
+      
       {/* Manager App - Separate Login */}
       <Route path="/manager" element={<ManagerApp />} />
       <Route path="/manager/*" element={<ManagerApp />} />
