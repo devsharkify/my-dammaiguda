@@ -150,6 +150,8 @@ export default function PortalSelector() {
     window.location.href = portal.path;
   };
 
+  const currentUser = loggedInUser || user;
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900">
       {/* Header */}
@@ -165,11 +167,11 @@ export default function PortalSelector() {
             </div>
           </div>
           
-          {user && (
+          {currentUser && (
             <div className="flex items-center gap-3">
               <div className="text-right">
-                <p className="text-sm text-white font-medium">{user.name}</p>
-                <p className="text-xs text-white/60 capitalize">{user.role}</p>
+                <p className="text-sm text-white font-medium">{currentUser.name}</p>
+                <p className="text-xs text-white/60 capitalize">{currentUser.role}</p>
               </div>
               <Button
                 variant="ghost"
