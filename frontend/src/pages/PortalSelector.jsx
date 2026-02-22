@@ -114,10 +114,13 @@ export default function PortalSelector() {
       });
 
       if (response.data.success) {
-        login(response.data.token, response.data.user);
+        // Note: login expects (user, token) order
+        login(response.data.user, response.data.token);
         setLoggedInUser(response.data.user);
         toast.success(`Welcome, ${response.data.user.name || "Admin"}!`);
         setShowLogin(false);
+        // Force page reload to update state
+        window.location.reload();
       }
     } catch (error) {
       toast.error(error.response?.data?.detail || "Login failed");
