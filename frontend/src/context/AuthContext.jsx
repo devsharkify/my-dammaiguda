@@ -6,7 +6,10 @@ const AuthContext = createContext();
 const API = `${process.env.REACT_APP_BACKEND_URL}/api`;
 
 export function AuthProvider({ children }) {
-  const [user, setUser] = useState(null);
+  const [user, setUser] = useState(() => {
+    const stored = localStorage.getItem("dammaiguda_user");
+    return stored ? JSON.parse(stored) : null;
+  });
   const [token, setToken] = useState(() => localStorage.getItem("dammaiguda_token"));
   const [loading, setLoading] = useState(true);
 
