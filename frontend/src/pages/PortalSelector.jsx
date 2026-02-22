@@ -76,11 +76,20 @@ const PORTALS = [
 export default function PortalSelector() {
   const navigate = useNavigate();
   const { user, login } = useAuth();
-  const [showLogin, setShowLogin] = useState(!user);
+  const [showLogin, setShowLogin] = useState(false);
   const [phone, setPhone] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [loggedInUser, setLoggedInUser] = useState(user);
+
+  // Update local state when auth context changes
+  useEffect(() => {
+    setLoggedInUser(user);
+    if (user) {
+      setShowLogin(false);
+    }
+  }, [user]);
 
   const handleLogin = async (e) => {
     e.preventDefault();
@@ -106,6 +115,7 @@ export default function PortalSelector() {
 
       if (response.data.success) {
         login(response.data.token, response.data.user);
+        setLoggedInUser(response.data.user);
         toast.success(`Welcome, ${response.data.user.name || "Admin"}!`);
         setShowLogin(false);
       }
@@ -117,13 +127,17 @@ export default function PortalSelector() {
   };
 
   const canAccessPortal = (portal) => {
-    if (!user) return false;
-    return portal.roles.includes(user.role);
+    const currentUser = loggedInUser || user;
+    if (!currentUser) return false;
+    return portal.roles.includes(currentUser.role);
   };
 
   const handlePortalClick = (portal) => {
-    if (!user) {
+    const currentUser = loggedInUser || user;
+    
+    if (!currentUser) {
       setShowLogin(true);
+      toast.info("Please login first");
       return;
     }
     
@@ -132,7 +146,8 @@ export default function PortalSelector() {
       return;
     }
     
-    navigate(portal.path);
+    // Navigate to the portal
+    window.location.href = portal.path;
   };
 
   return (
