@@ -8,6 +8,89 @@ import logging
 
 router = APIRouter(prefix="/education", tags=["AIT Education"])
 
+# ============== STREAK TRACKING ==============
+
+async def calculate_learning_streak(user_id: str) -> dict:
+    """Calculate current and longest learning streak for a user"""
+    # Get all lesson progress dates for this user
+    progress_records = await db.lesson_progress.find(
+        {"user_id": user_id, "completed": True},
+        {"_id": 0, "completed_at": 1}
+    ).sort("completed_at", -1).to_list(365)
+    
+    if not progress_records:
+        return {"current_streak": 0, "longest_streak": 0, "last_activity_date": None}
+    
+    # Extract unique dates
+    activity_dates = set()
+    for record in progress_records:
+        if record.get("completed_at"):
+            try:
+                date_str = record["completed_at"][:10]  # Get YYYY-MM-DD
+                activity_dates.add(date_str)
+            except:
+                pass
+    
+    if not activity_dates:
+        return {"current_streak": 0, "longest_streak": 0, "last_activity_date": None}
+    
+    # Sort dates
+    sorted_dates = sorted(activity_dates, reverse=True)
+    today = datetime.now(timezone.utc).strftime("%Y-%m-%d")
+    yesterday = (datetime.now(timezone.utc) - timedelta(days=1)).strftime("%Y-%m-%d")
+    
+    # Calculate current streak
+    current_streak = 0
+    if sorted_dates[0] == today or sorted_dates[0] == yesterday:
+        # Start counting from today or yesterday
+        check_date = datetime.strptime(sorted_dates[0], "%Y-%m-%d")
+        for date_str in sorted_dates:
+            expected_date = (check_date - timedelta(days=current_streak)).strftime("%Y-%m-%d")
+            if date_str == expected_date:
+                current_streak += 1
+            else:
+                break
+    
+    # Calculate longest streak
+    longest_streak = 0
+    temp_streak = 1
+    sorted_asc = sorted(activity_dates)
+    
+    for i in range(1, len(sorted_asc)):
+        prev_date = datetime.strptime(sorted_asc[i-1], "%Y-%m-%d")
+        curr_date = datetime.strptime(sorted_asc[i], "%Y-%m-%d")
+        
+        if (curr_date - prev_date).days == 1:
+            temp_streak += 1
+        else:
+            longest_streak = max(longest_streak, temp_streak)
+            temp_streak = 1
+    
+    longest_streak = max(longest_streak, temp_streak, current_streak)
+    
+    return {
+        "current_streak": current_streak,
+        "longest_streak": longest_streak,
+        "last_activity_date": sorted_dates[0] if sorted_dates else None
+    }
+
+async def update_streak_on_completion(user_id: str):
+    """Update user's streak data when they complete a lesson"""
+    streak_data = await calculate_learning_streak(user_id)
+    
+    # Store in user's education stats
+    await db.education_streaks.update_one(
+        {"user_id": user_id},
+        {"$set": {
+            "user_id": user_id,
+            "current_streak": streak_data["current_streak"],
+            "longest_streak": streak_data["longest_streak"],
+            "last_activity_date": streak_data["last_activity_date"],
+            "updated_at": now_iso()
+        }},
+        upsert=True
+    )
+
 # ============== MODELS ==============
 
 class CourseCreate(BaseModel):
