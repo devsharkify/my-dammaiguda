@@ -121,7 +121,7 @@ async def scrape_aqi_in(url: str, include_peak: bool = True) -> dict:
             }
             
             # Parse hourly data to find today's peak
-            hourly_data = parse_hourly_aqi_data(page_text)
+            hourly_data = parse_hourly_aqi_data(soup)
             daily_peak = find_daily_peak(hourly_data)
             
             # Get current time in IST
