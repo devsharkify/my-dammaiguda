@@ -22,9 +22,15 @@ export function AuthProvider({ children }) {
     }
   }, [token]);
 
-  // Fetch user on mount if token exists
+  // Fetch user on mount if token exists but user doesn't
   useEffect(() => {
     const fetchUser = async () => {
+      // If we already have user from localStorage, skip API call
+      if (user) {
+        setLoading(false);
+        return;
+      }
+      
       if (!token) {
         setLoading(false);
         return;
@@ -32,11 +38,14 @@ export function AuthProvider({ children }) {
 
       try {
         const response = await axios.get(`${API}/auth/me`);
-        setUser(response.data);
+        const userData = response.data;
+        setUser(userData);
+        localStorage.setItem("dammaiguda_user", JSON.stringify(userData));
       } catch (error) {
         console.error("Auth error:", error);
         // Token invalid, clear it
         localStorage.removeItem("dammaiguda_token");
+        localStorage.removeItem("dammaiguda_user");
         setToken(null);
         setUser(null);
       } finally {
