@@ -567,6 +567,7 @@ async def update_lesson_progress(lesson_id: str, progress: ProgressUpdate, user:
             {"$set": {
                 "completed": progress.completed,
                 "watch_time_seconds": existing.get("watch_time_seconds", 0) + progress.watch_time_seconds,
+                "completed_at": now_iso() if progress.completed else existing.get("completed_at"),
                 "updated_at": now_iso()
             }}
         )
@@ -578,9 +579,14 @@ async def update_lesson_progress(lesson_id: str, progress: ProgressUpdate, user:
             "lesson_id": lesson_id,
             "completed": progress.completed,
             "watch_time_seconds": progress.watch_time_seconds,
+            "completed_at": now_iso() if progress.completed else None,
             "created_at": now_iso()
         }
         await db.lesson_progress.insert_one(new_progress)
+    
+    # Update streak if lesson was completed
+    if progress.completed:
+        await update_streak_on_completion(user["id"])
     
     # Check if course is completed
     course_lessons = await db.lessons.find({"course_id": progress.course_id}).to_list(100)
