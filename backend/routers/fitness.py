@@ -1924,8 +1924,13 @@ async def get_today_stats(user: dict = Depends(get_current_user)):
         if ls.get("avg_heart_rate"):
             heart_rates.append(ls.get("avg_heart_rate"))
     
-    # Get sleep data (placeholder - would need sleep tracking integration)
-    sleep_hours = 7.5  # Default/placeholder
+    # Get sleep data from database
+    sleep_record = await db.sleep_logs.find_one(
+        {"user_id": user["id"], "date": today},
+        {"_id": 0}
+    )
+    sleep_hours = sleep_record.get("total_hours", 0) if sleep_record else 0
+    sleep_score = sleep_record.get("sleep_score", 0) if sleep_record else 0
     
     # Calculate average heart rate
     heart_rate_avg = round(sum(heart_rates) / len(heart_rates)) if heart_rates else 72
@@ -1936,6 +1941,7 @@ async def get_today_stats(user: dict = Depends(get_current_user)):
         "distance": round(total_distance, 1),
         "activeMinutes": total_active_minutes,
         "sleepHours": sleep_hours,
+        "sleepScore": sleep_score,
         "heartRateAvg": heart_rate_avg
     }
 
