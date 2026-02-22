@@ -1,0 +1,716 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>API REFERENCE</title>
+    <style>
+        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; max-width: 900px; margin: 0 auto; padding: 40px; line-height: 1.6; }
+        h1 { color: #1a1a1a; border-bottom: 2px solid #10b981; padding-bottom: 10px; }
+        h2 { color: #333; margin-top: 40px; }
+        h3 { color: #555; }
+        table { border-collapse: collapse; width: 100%; margin: 20px 0; }
+        th, td { border: 1px solid #ddd; padding: 12px; text-align: left; }
+        th { background: #10b981; color: white; }
+        tr:nth-child(even) { background: #f9f9f9; }
+        code { background: #f4f4f4; padding: 2px 6px; border-radius: 4px; font-family: 'Fira Code', monospace; }
+        pre { background: #1a1a1a; color: #fff; padding: 20px; border-radius: 8px; overflow-x: auto; }
+        pre code { background: transparent; color: #fff; }
+        hr { border: none; border-top: 1px solid #eee; margin: 30px 0; }
+        blockquote { border-left: 4px solid #10b981; padding-left: 20px; color: #666; }
+    </style>
+</head>
+<body>
+<h1>My Dammaiguda - Complete API Reference</h1>
+
+<h2>Base URL</h2>
+
+<pre><code>https://course-learn-1.preview.emergentagent.com/api
+</code></pre>
+
+<hr />
+
+<h2>Authentication APIs</h2>
+
+<h3>POST /auth/otp</h3>
+
+<p>Send OTP to phone number</p>
+
+<div class="codehilite">
+<pre><span></span><code><span class="c1">// Request</span>
+<span class="p">{</span><span class="w"> </span><span class="nt">&quot;phone&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;9999999999&quot;</span><span class="w"> </span><span class="p">}</span>
+
+<span class="c1">// Response</span>
+<span class="p">{</span><span class="w"> </span><span class="nt">&quot;success&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span><span class="w"> </span><span class="nt">&quot;message&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;OTP sent (test mode)&quot;</span><span class="p">,</span><span class="w"> </span><span class="nt">&quot;dev_otp&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;123456&quot;</span><span class="w"> </span><span class="p">}</span>
+</code></pre>
+</div>
+
+<h3>POST /auth/verify</h3>
+
+<p>Verify OTP and get JWT token</p>
+
+<div class="codehilite">
+<pre><span></span><code><span class="c1">// Request</span>
+<span class="p">{</span><span class="w"> </span><span class="nt">&quot;phone&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;9999999999&quot;</span><span class="p">,</span><span class="w"> </span><span class="nt">&quot;otp&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;123456&quot;</span><span class="w"> </span><span class="p">}</span>
+
+<span class="c1">// Response</span>
+<span class="p">{</span>
+<span class="w">  </span><span class="nt">&quot;success&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;is_new_user&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">false</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;user&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nt">&quot;id&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;...&quot;</span><span class="p">,</span><span class="w"> </span><span class="nt">&quot;phone&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;+919999999999&quot;</span><span class="p">,</span><span class="w"> </span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;User&quot;</span><span class="p">,</span><span class="w"> </span><span class="nt">&quot;role&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;admin&quot;</span><span class="w"> </span><span class="p">},</span>
+<span class="w">  </span><span class="nt">&quot;token&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;eyJhbGci...&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;access_token&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;eyJhbGci...&quot;</span>
+<span class="p">}</span>
+</code></pre>
+</div>
+
+<h3>POST /auth/admin-login</h3>
+
+<p>Staff portal password login</p>
+
+<div class="codehilite">
+<pre><span></span><code><span class="c1">// Request</span>
+<span class="p">{</span><span class="w"> </span><span class="nt">&quot;phone&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;9100063133&quot;</span><span class="p">,</span><span class="w"> </span><span class="nt">&quot;password&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Plan@123&quot;</span><span class="w"> </span><span class="p">}</span>
+
+<span class="c1">// Response</span>
+<span class="p">{</span><span class="w"> </span><span class="nt">&quot;success&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span><span class="w"> </span><span class="nt">&quot;user&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="err">...</span><span class="p">},</span><span class="w"> </span><span class="nt">&quot;token&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;...&quot;</span><span class="w"> </span><span class="p">}</span>
+</code></pre>
+</div>
+
+<h3>GET /auth/me</h3>
+
+<p>Get current user profile</p>
+
+<pre><code>Authorization: Bearer &lt;token&gt;
+</code></pre>
+
+<h3>PUT /auth/me</h3>
+
+<p>Update user profile</p>
+
+<div class="codehilite">
+<pre><span></span><code><span class="c1">// Request</span>
+<span class="p">{</span><span class="w"> </span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;New Name&quot;</span><span class="p">,</span><span class="w"> </span><span class="nt">&quot;email&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;new@email.com&quot;</span><span class="w"> </span><span class="p">}</span>
+</code></pre>
+</div>
+
+<hr />
+
+<h2>Education APIs</h2>
+
+<h3>GET /education/courses</h3>
+
+<p>List all published courses</p>
+
+<div class="codehilite">
+<pre><span></span><code><span class="c1">// Query Params</span>
+<span class="err">?ca</span><span class="kc">te</span><span class="err">gory=pro</span><span class="kc">fess</span><span class="err">io</span><span class="kc">nal</span><span class="err">&amp;di</span><span class="kc">ff</span><span class="err">icul</span><span class="kc">t</span><span class="err">y=begi</span><span class="kc">nner</span><span class="err">&amp;search=web&amp;limi</span><span class="kc">t</span><span class="err">=</span><span class="mi">10</span><span class="err">&amp;skip=</span><span class="mi">0</span>
+
+<span class="c1">// Response</span>
+<span class="p">{</span>
+<span class="w">  </span><span class="nt">&quot;courses&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="err">...</span><span class="p">],</span>
+<span class="w">  </span><span class="nt">&quot;total&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">7</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;categories&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="err">...</span><span class="p">]</span>
+<span class="p">}</span>
+</code></pre>
+</div>
+
+<h3>GET /education/courses/:courseId</h3>
+
+<p>Get course details with lessons</p>
+
+<div class="codehilite">
+<pre><span></span><code><span class="c1">// Response</span>
+<span class="p">{</span>
+<span class="w">  </span><span class="nt">&quot;course&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="err">...</span><span class="p">},</span>
+<span class="w">  </span><span class="nt">&quot;lessons&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="err">...</span><span class="p">],</span>
+<span class="w">  </span><span class="nt">&quot;quizzes&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="err">...</span><span class="p">],</span>
+<span class="w">  </span><span class="nt">&quot;is_enrolled&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;progress&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nt">&quot;completed&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="nt">&quot;total&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">22</span><span class="p">,</span><span class="w"> </span><span class="nt">&quot;percentage&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">9</span><span class="w"> </span><span class="p">}</span>
+<span class="p">}</span>
+</code></pre>
+</div>
+
+<h3>GET /education/courses/:courseId/subjects</h3>
+
+<p>Get subjects for a course</p>
+
+<div class="codehilite">
+<pre><span></span><code><span class="c1">// Response</span>
+<span class="p">{</span>
+<span class="w">  </span><span class="nt">&quot;subjects&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">    </span><span class="p">{</span><span class="w"> </span><span class="nt">&quot;id&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;...&quot;</span><span class="p">,</span><span class="w"> </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;HTML &amp; CSS Fundamentals&quot;</span><span class="p">,</span><span class="w"> </span><span class="nt">&quot;lesson_count&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">4</span><span class="w"> </span><span class="p">},</span>
+<span class="w">    </span><span class="p">{</span><span class="w"> </span><span class="nt">&quot;id&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;...&quot;</span><span class="p">,</span><span class="w"> </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;JavaScript Programming&quot;</span><span class="p">,</span><span class="w"> </span><span class="nt">&quot;lesson_count&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">6</span><span class="w"> </span><span class="p">}</span>
+<span class="w">  </span><span class="p">]</span>
+<span class="p">}</span>
+</code></pre>
+</div>
+
+<h3>GET /education/subjects/:subjectId/lessons</h3>
+
+<p>Get lessons for a subject</p>
+
+<div class="codehilite">
+<pre><span></span><code><span class="c1">// Response</span>
+<span class="p">{</span>
+<span class="w">  </span><span class="nt">&quot;lessons&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">    </span><span class="p">{</span><span class="w"> </span><span class="nt">&quot;id&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;...&quot;</span><span class="p">,</span><span class="w"> </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Introduction to JavaScript&quot;</span><span class="p">,</span><span class="w"> </span><span class="nt">&quot;is_free_preview&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="w"> </span><span class="p">},</span>
+<span class="w">    </span><span class="p">{</span><span class="w"> </span><span class="nt">&quot;id&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;...&quot;</span><span class="p">,</span><span class="w"> </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Variables &amp; Data Types&quot;</span><span class="p">,</span><span class="w"> </span><span class="nt">&quot;is_free_preview&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">false</span><span class="w"> </span><span class="p">}</span>
+<span class="w">  </span><span class="p">]</span>
+<span class="p">}</span>
+</code></pre>
+</div>
+
+<h3>GET /education/lessons/:lessonId</h3>
+
+<p>Get lesson details (with sequential access check)</p>
+
+<pre><code>Authorization: Bearer &lt;token&gt;
+
+// Success Response
+{ "id": "...", "title": "...", "video_url": "...", "description": "..." }
+
+// Blocked Response (if trying to skip)
+{ "detail": "Please complete 'Variables &amp; Data Types' first" }
+</code></pre>
+
+<h3>POST /education/enroll</h3>
+
+<p>Enroll in a course</p>
+
+<div class="codehilite">
+<pre><span></span><code><span class="c1">// Request</span>
+<span class="p">{</span><span class="w"> </span><span class="nt">&quot;course_id&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;b326b25e-97ac-439b-a691-ec06996c8fad&quot;</span><span class="w"> </span><span class="p">}</span>
+
+<span class="c1">// Response</span>
+<span class="p">{</span><span class="w"> </span><span class="nt">&quot;success&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span><span class="w"> </span><span class="nt">&quot;message&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Enrolled successfully&quot;</span><span class="p">,</span><span class="w"> </span><span class="nt">&quot;enrollment&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="err">...</span><span class="p">}</span><span class="w"> </span><span class="p">}</span>
+</code></pre>
+</div>
+
+<h3>POST /education/lessons/:lessonId/progress</h3>
+
+<p>Mark lesson complete</p>
+
+<div class="codehilite">
+<pre><span></span><code><span class="c1">// Request</span>
+<span class="p">{</span>
+<span class="w">  </span><span class="nt">&quot;course_id&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;...&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;lesson_id&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;...&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;completed&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span>
+<span class="p">}</span>
+
+<span class="c1">// Response</span>
+<span class="p">{</span><span class="w"> </span><span class="nt">&quot;success&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span><span class="w"> </span><span class="nt">&quot;message&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Progress updated&quot;</span><span class="w"> </span><span class="p">}</span>
+</code></pre>
+</div>
+
+<h3>GET /education/my-courses</h3>
+
+<p>Get user's enrolled courses with progress</p>
+
+<div class="codehilite">
+<pre><span></span><code><span class="c1">// Response</span>
+<span class="p">{</span>
+<span class="w">  </span><span class="nt">&quot;courses&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">    </span><span class="p">{</span>
+<span class="w">      </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Full Stack Web Development&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;progress&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nt">&quot;completed&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="nt">&quot;total&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">22</span><span class="p">,</span><span class="w"> </span><span class="nt">&quot;percentage&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">9</span><span class="w"> </span><span class="p">}</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">  </span><span class="p">]</span>
+<span class="p">}</span>
+</code></pre>
+</div>
+
+<h3>POST /education/quizzes/:quizId/submit</h3>
+
+<p>Submit quiz answers</p>
+
+<div class="codehilite">
+<pre><span></span><code><span class="c1">// Request</span>
+<span class="p">{</span>
+<span class="w">  </span><span class="nt">&quot;answers&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nt">&quot;q1&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;a&quot;</span><span class="p">,</span><span class="w"> </span><span class="nt">&quot;q2&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;b&quot;</span><span class="p">,</span><span class="w"> </span><span class="nt">&quot;q3&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;c&quot;</span><span class="w"> </span><span class="p">}</span>
+<span class="p">}</span>
+
+<span class="c1">// Response</span>
+<span class="p">{</span>
+<span class="w">  </span><span class="nt">&quot;score&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">80</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;passed&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;correct_answers&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">8</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;total_questions&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">10</span>
+<span class="p">}</span>
+</code></pre>
+</div>
+
+<h3>POST /education/certificates/generate/:courseId</h3>
+
+<p>Generate completion certificate</p>
+
+<div class="codehilite">
+<pre><span></span><code><span class="c1">// Response</span>
+<span class="p">{</span>
+<span class="w">  </span><span class="nt">&quot;certificate_id&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;...&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;certificate_url&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;...&quot;</span>
+<span class="p">}</span>
+</code></pre>
+</div>
+
+<hr />
+
+<h2>Fitness APIs</h2>
+
+<h3>GET /fitness/dashboard</h3>
+
+<p>Get fitness dashboard data</p>
+
+<div class="codehilite">
+<pre><span></span><code><span class="c1">// Response</span>
+<span class="p">{</span>
+<span class="w">  </span><span class="nt">&quot;today&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nt">&quot;steps&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">5000</span><span class="p">,</span><span class="w"> </span><span class="nt">&quot;calories&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">200</span><span class="p">,</span><span class="w"> </span><span class="nt">&quot;distance&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">3.5</span><span class="w"> </span><span class="p">},</span>
+<span class="w">  </span><span class="nt">&quot;weekly_summary&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="err">...</span><span class="p">},</span>
+<span class="w">  </span><span class="nt">&quot;recent_activities&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="err">...</span><span class="p">]</span>
+<span class="p">}</span>
+</code></pre>
+</div>
+
+<h3>POST /fitness/activity</h3>
+
+<p>Log an activity</p>
+
+<div class="codehilite">
+<pre><span></span><code><span class="c1">// Request</span>
+<span class="p">{</span>
+<span class="w">  </span><span class="nt">&quot;activity_type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;walking&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;duration_minutes&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">30</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;calories_burned&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">150</span>
+<span class="p">}</span>
+</code></pre>
+</div>
+
+<h3>GET /fitness/weight/history</h3>
+
+<p>Get weight history</p>
+
+<div class="codehilite">
+<pre><span></span><code><span class="c1">// Query: ?days=30</span>
+
+<span class="c1">// Response</span>
+<span class="p">{</span>
+<span class="w">  </span><span class="nt">&quot;weights&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">    </span><span class="p">{</span><span class="w"> </span><span class="nt">&quot;date&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;2026-02-22&quot;</span><span class="p">,</span><span class="w"> </span><span class="nt">&quot;weight&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">75.5</span><span class="p">,</span><span class="w"> </span><span class="nt">&quot;bmi&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">24.2</span><span class="w"> </span><span class="p">}</span>
+<span class="w">  </span><span class="p">],</span>
+<span class="w">  </span><span class="nt">&quot;goal&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nt">&quot;target_weight&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">70</span><span class="p">,</span><span class="w"> </span><span class="nt">&quot;deadline&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;2026-06-01&quot;</span><span class="w"> </span><span class="p">}</span>
+<span class="p">}</span>
+</code></pre>
+</div>
+
+<h3>POST /fitness/weight</h3>
+
+<p>Log weight</p>
+
+<div class="codehilite">
+<pre><span></span><code><span class="c1">// Request</span>
+<span class="p">{</span><span class="w"> </span><span class="nt">&quot;weight&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">75.5</span><span class="p">,</span><span class="w"> </span><span class="nt">&quot;notes&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Morning weight&quot;</span><span class="w"> </span><span class="p">}</span>
+</code></pre>
+</div>
+
+<h3>POST /fitness/live/start</h3>
+
+<p>Start live activity tracking</p>
+
+<div class="codehilite">
+<pre><span></span><code><span class="c1">// Request</span>
+<span class="p">{</span><span class="w"> </span><span class="nt">&quot;activity_type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;running&quot;</span><span class="w"> </span><span class="p">}</span>
+
+<span class="c1">// Response</span>
+<span class="p">{</span><span class="w"> </span><span class="nt">&quot;session_id&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;...&quot;</span><span class="p">,</span><span class="w"> </span><span class="nt">&quot;started_at&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;...&quot;</span><span class="w"> </span><span class="p">}</span>
+</code></pre>
+</div>
+
+<hr />
+
+<h2>Benefits APIs</h2>
+
+<h3>GET /benefits/stats</h3>
+
+<p>Get public benefit stats</p>
+
+<div class="codehilite">
+<pre><span></span><code><span class="c1">// Response</span>
+<span class="p">{</span>
+<span class="w">  </span><span class="nt">&quot;total_applications&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">50</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;approved&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">30</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;pending&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">15</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;by_type&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nt">&quot;accidental&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">20</span><span class="p">,</span><span class="w"> </span><span class="nt">&quot;health&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">15</span><span class="p">,</span><span class="w"> </span><span class="nt">&quot;education&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">15</span><span class="w"> </span><span class="p">}</span>
+<span class="p">}</span>
+</code></pre>
+</div>
+
+<h3>POST /benefits/accidental-insurance</h3>
+
+<p>Apply for accidental insurance</p>
+
+<div class="codehilite">
+<pre><span></span><code><span class="c1">// Request</span>
+<span class="p">{</span>
+<span class="w">  </span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;User Name&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;father_name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Father Name&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;dob&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;1990-01-01&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;aadhar&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;123456789012&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;voter_id&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;ABC1234567&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;whatsapp&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;9876543210&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;address&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;...&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;occupation&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;...&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;monthly_earning&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;50000&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;family_members&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="err">...</span><span class="p">]</span>
+<span class="p">}</span>
+</code></pre>
+</div>
+
+<h3>POST /benefits/education-voucher</h3>
+
+<p>Get education voucher (auto-approved)</p>
+
+<div class="codehilite">
+<pre><span></span><code><span class="c1">// Request</span>
+<span class="p">{</span>
+<span class="w">  </span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;User Name&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;education&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Graduate&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;occupation&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Software Developer&quot;</span>
+<span class="p">}</span>
+
+<span class="c1">// Response</span>
+<span class="p">{</span>
+<span class="w">  </span><span class="nt">&quot;success&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;voucher_code&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;BOSE-XXXX-XXXX&quot;</span>
+<span class="p">}</span>
+</code></pre>
+</div>
+
+<h3>GET /benefits/my-applications</h3>
+
+<p>Get user's applications</p>
+
+<div class="codehilite">
+<pre><span></span><code><span class="c1">// Response</span>
+<span class="p">{</span>
+<span class="w">  </span><span class="nt">&quot;applications&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">    </span><span class="p">{</span><span class="w"> </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;accidental-insurance&quot;</span><span class="p">,</span><span class="w"> </span><span class="nt">&quot;status&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;pending&quot;</span><span class="p">,</span><span class="w"> </span><span class="nt">&quot;applied_at&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;...&quot;</span><span class="w"> </span><span class="p">}</span>
+<span class="w">  </span><span class="p">]</span>
+<span class="p">}</span>
+</code></pre>
+</div>
+
+<hr />
+
+<h2>News APIs</h2>
+
+<h3>GET /news/feed/all</h3>
+
+<p>Get all news articles</p>
+
+<div class="codehilite">
+<pre><span></span><code><span class="c1">// Response</span>
+<span class="p">{</span>
+<span class="w">  </span><span class="nt">&quot;articles&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">    </span><span class="p">{</span><span class="w"> </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;...&quot;</span><span class="p">,</span><span class="w"> </span><span class="nt">&quot;summary&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;...&quot;</span><span class="p">,</span><span class="w"> </span><span class="nt">&quot;image_url&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;...&quot;</span><span class="p">,</span><span class="w"> </span><span class="nt">&quot;source&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;...&quot;</span><span class="w"> </span><span class="p">}</span>
+<span class="w">  </span><span class="p">]</span>
+<span class="p">}</span>
+</code></pre>
+</div>
+
+<h3>GET /news/:category</h3>
+
+<p>Get news by category (business, sports, tech, entertainment, local)</p>
+
+<div class="codehilite">
+<pre><span></span><code><span class="c1">// Response</span>
+<span class="p">{</span><span class="w"> </span><span class="nt">&quot;articles&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="err">...</span><span class="p">]</span><span class="w"> </span><span class="p">}</span>
+</code></pre>
+</div>
+
+<hr />
+
+<h2>Issues APIs</h2>
+
+<h3>GET /issues</h3>
+
+<p>Get all issues</p>
+
+<div class="codehilite">
+<pre><span></span><code><span class="c1">// Query: ?status=pending&amp;category=road</span>
+
+<span class="c1">// Response</span>
+<span class="p">{</span>
+<span class="w">  </span><span class="nt">&quot;issues&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">    </span><span class="p">{</span><span class="w"> </span><span class="nt">&quot;id&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;...&quot;</span><span class="p">,</span><span class="w"> </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Pothole on Main Road&quot;</span><span class="p">,</span><span class="w"> </span><span class="nt">&quot;status&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;pending&quot;</span><span class="p">,</span><span class="w"> </span><span class="nt">&quot;votes&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">5</span><span class="w"> </span><span class="p">}</span>
+<span class="w">  </span><span class="p">]</span>
+<span class="p">}</span>
+</code></pre>
+</div>
+
+<h3>POST /issues</h3>
+
+<p>Report a new issue</p>
+
+<div class="codehilite">
+<pre><span></span><code><span class="c1">// Request</span>
+<span class="p">{</span>
+<span class="w">  </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Pothole on Main Road&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Large pothole causing accidents&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;category&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;road&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;location&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Main Street, Block A&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;images&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;cloudinary-url&quot;</span><span class="p">]</span>
+<span class="p">}</span>
+</code></pre>
+</div>
+
+<h3>PUT /issues/:issueId/status</h3>
+
+<p>Update issue status (admin/manager)</p>
+
+<div class="codehilite">
+<pre><span></span><code><span class="c1">// Request</span>
+<span class="p">{</span><span class="w"> </span><span class="nt">&quot;status&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;in-progress&quot;</span><span class="p">,</span><span class="w"> </span><span class="nt">&quot;notes&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Team dispatched&quot;</span><span class="w"> </span><span class="p">}</span>
+</code></pre>
+</div>
+
+<hr />
+
+<h2>Admin APIs</h2>
+
+<h3>GET /admin/stats</h3>
+
+<p>Get admin dashboard stats</p>
+
+<div class="codehilite">
+<pre><span></span><code><span class="c1">// Response</span>
+<span class="p">{</span>
+<span class="w">  </span><span class="nt">&quot;users&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nt">&quot;total&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">13</span><span class="p">,</span><span class="w"> </span><span class="nt">&quot;active&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">5</span><span class="p">,</span><span class="w"> </span><span class="nt">&quot;new_today&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="p">},</span>
+<span class="w">  </span><span class="nt">&quot;issues&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nt">&quot;total&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">4</span><span class="p">,</span><span class="w"> </span><span class="nt">&quot;pending&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">2</span><span class="w"> </span><span class="p">},</span>
+<span class="w">  </span><span class="nt">&quot;courses&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nt">&quot;total&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">7</span><span class="p">,</span><span class="w"> </span><span class="nt">&quot;enrollments&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">7</span><span class="w"> </span><span class="p">},</span>
+<span class="w">  </span><span class="nt">&quot;benefits&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nt">&quot;pending&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">0</span><span class="w"> </span><span class="p">}</span>
+<span class="p">}</span>
+</code></pre>
+</div>
+
+<h3>GET /admin/users</h3>
+
+<p>List all users</p>
+
+<div class="codehilite">
+<pre><span></span><code><span class="c1">// Query: ?role=admin&amp;search=rohan&amp;limit=20</span>
+
+<span class="c1">// Response</span>
+<span class="p">{</span>
+<span class="w">  </span><span class="nt">&quot;users&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="err">...</span><span class="p">],</span>
+<span class="w">  </span><span class="nt">&quot;total&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">13</span>
+<span class="p">}</span>
+</code></pre>
+</div>
+
+<h3>PUT /admin/users/:userId/role</h3>
+
+<p>Change user role</p>
+
+<div class="codehilite">
+<pre><span></span><code><span class="c1">// Request</span>
+<span class="p">{</span><span class="w"> </span><span class="nt">&quot;role&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;manager&quot;</span><span class="w"> </span><span class="p">}</span>
+</code></pre>
+</div>
+
+<hr />
+
+<h2>Analytics APIs</h2>
+
+<h3>GET /analytics/admin/summary</h3>
+
+<p>Get analytics summary</p>
+
+<div class="codehilite">
+<pre><span></span><code><span class="c1">// Query: ?days=7</span>
+
+<span class="c1">// Response</span>
+<span class="p">{</span>
+<span class="w">  </span><span class="nt">&quot;page_views&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="err">...</span><span class="p">],</span>
+<span class="w">  </span><span class="nt">&quot;feature_usage&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="err">...</span><span class="p">],</span>
+<span class="w">  </span><span class="nt">&quot;active_users&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="err">...</span><span class="p">]</span>
+<span class="p">}</span>
+</code></pre>
+</div>
+
+<hr />
+
+<h2>Notifications APIs</h2>
+
+<h3>GET /notifications/vapid-public-key</h3>
+
+<p>Get VAPID public key for push subscriptions</p>
+
+<h3>POST /notifications/subscribe</h3>
+
+<p>Subscribe to push notifications</p>
+
+<div class="codehilite">
+<pre><span></span><code><span class="c1">// Request</span>
+<span class="p">{</span>
+<span class="w">  </span><span class="nt">&quot;subscription&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nt">&quot;endpoint&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;...&quot;</span><span class="p">,</span><span class="w"> </span><span class="nt">&quot;keys&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="err">...</span><span class="p">}</span><span class="w"> </span><span class="p">}</span>
+<span class="p">}</span>
+</code></pre>
+</div>
+
+<h3>POST /notifications/admin/broadcast</h3>
+
+<p>Send broadcast notification (admin)</p>
+
+<div class="codehilite">
+<pre><span></span><code><span class="c1">// Request</span>
+<span class="p">{</span>
+<span class="w">  </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Important Update&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;body&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Check out the new feature!&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;url&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;/dashboard&quot;</span>
+<span class="p">}</span>
+</code></pre>
+</div>
+
+<hr />
+
+<h2>AQI APIs</h2>
+
+<h3>GET /aqi/dammaiguda</h3>
+
+<p>Get Dammaiguda air quality</p>
+
+<div class="codehilite">
+<pre><span></span><code><span class="c1">// Response</span>
+<span class="p">{</span>
+<span class="w">  </span><span class="nt">&quot;aqi&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">85</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;category&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Moderate&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;pm25&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">35.2</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;pm10&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">65.1</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;daily_peak&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nt">&quot;aqi&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">120</span><span class="p">,</span><span class="w"> </span><span class="nt">&quot;time&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;14:00&quot;</span><span class="w"> </span><span class="p">},</span>
+<span class="w">  </span><span class="nt">&quot;updated_at&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;...&quot;</span>
+<span class="p">}</span>
+</code></pre>
+</div>
+
+<h3>GET /aqi/both</h3>
+
+<p>Get AQI for both Dammaiguda and Hyderabad</p>
+
+<hr />
+
+<h2>Panchangam APIs</h2>
+
+<h3>GET /panchangam/today</h3>
+
+<p>Get today's Telugu calendar</p>
+
+<div class="codehilite">
+<pre><span></span><code><span class="c1">// Response</span>
+<span class="p">{</span>
+<span class="w">  </span><span class="nt">&quot;date&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;2026-02-22&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;tithi&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;...&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;nakshatra&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;...&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;yoga&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;...&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;karana&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;...&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;rahu_kalam&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;09:00-10:30&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;yamaganda&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;12:00-13:30&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;varjyam&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;...&quot;</span>
+<span class="p">}</span>
+</code></pre>
+</div>
+
+<hr />
+
+<h2>WebSocket Endpoints</h2>
+
+<h3>/api/ws/chat</h3>
+
+<p>Real-time chat WebSocket</p>
+
+<div class="codehilite">
+<pre><span></span><code><span class="kd">const</span><span class="w"> </span><span class="nx">ws</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="ow">new</span><span class="w"> </span><span class="nx">WebSocket</span><span class="p">(</span><span class="s1">&#39;wss://...api/ws/chat?token=...&#39;</span><span class="p">);</span>
+<span class="nx">ws</span><span class="p">.</span><span class="nx">send</span><span class="p">(</span><span class="nb">JSON</span><span class="p">.</span><span class="nx">stringify</span><span class="p">({</span><span class="w"> </span><span class="nx">type</span><span class="o">:</span><span class="w"> </span><span class="s1">&#39;message&#39;</span><span class="p">,</span><span class="w"> </span><span class="nx">content</span><span class="o">:</span><span class="w"> </span><span class="s1">&#39;Hello&#39;</span><span class="w"> </span><span class="p">}));</span>
+</code></pre>
+</div>
+
+<h3>/api/alerts/ws</h3>
+
+<p>Real-time alerts WebSocket (admin)</p>
+
+<hr />
+
+<h2>Error Responses</h2>
+
+<h3>400 Bad Request</h3>
+
+<div class="codehilite">
+<pre><span></span><code><span class="p">{</span><span class="w"> </span><span class="nt">&quot;detail&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Invalid request data&quot;</span><span class="w"> </span><span class="p">}</span>
+</code></pre>
+</div>
+
+<h3>401 Unauthorized</h3>
+
+<div class="codehilite">
+<pre><span></span><code><span class="p">{</span><span class="w"> </span><span class="nt">&quot;detail&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Not authenticated&quot;</span><span class="w"> </span><span class="p">}</span>
+</code></pre>
+</div>
+
+<h3>403 Forbidden</h3>
+
+<div class="codehilite">
+<pre><span></span><code><span class="p">{</span><span class="w"> </span><span class="nt">&quot;detail&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Only admins and instructors can create courses&quot;</span><span class="w"> </span><span class="p">}</span>
+</code></pre>
+</div>
+
+<h3>404 Not Found</h3>
+
+<div class="codehilite">
+<pre><span></span><code><span class="p">{</span><span class="w"> </span><span class="nt">&quot;detail&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Course not found&quot;</span><span class="w"> </span><span class="p">}</span>
+</code></pre>
+</div>
+
+<h3>422 Validation Error</h3>
+
+<div class="codehilite">
+<pre><span></span><code><span class="p">{</span>
+<span class="w">  </span><span class="nt">&quot;detail&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">    </span><span class="p">{</span><span class="w"> </span><span class="nt">&quot;loc&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;body&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;phone&quot;</span><span class="p">],</span><span class="w"> </span><span class="nt">&quot;msg&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;field required&quot;</span><span class="p">,</span><span class="w"> </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;value_error.missing&quot;</span><span class="w"> </span><span class="p">}</span>
+<span class="w">  </span><span class="p">]</span>
+<span class="p">}</span>
+</code></pre>
+</div>
+
+<hr />
+
+<h2>Rate Limits</h2>
+
+<table>
+<thead>
+<tr>
+  <th>Endpoint</th>
+  <th>Limit</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+  <td>/auth/otp</td>
+  <td>5/minute</td>
+</tr>
+<tr>
+  <td>/auth/verify</td>
+  <td>10/minute</td>
+</tr>
+<tr>
+  <td>General API</td>
+  <td>60/minute</td>
+</tr>
+</tbody>
+</table>
+
+<hr />
+
+<p><em>API Version: 2.7.0</em></p>
+
+</body>
+</html>
