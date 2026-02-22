@@ -168,7 +168,7 @@ function AppRoutes() {
         </ProtectedRoute>
       } />
       <Route path="/aqi" element={<AQIReport />} />
-      <Route path="/news" element={<NewsShorts />} />
+      <Route path="/news" element={<NewsPage />} />
       <Route path="/wall" element={
         <ProtectedRoute>
           <CitizenWall />
