@@ -127,13 +127,17 @@ export default function PortalSelector() {
   };
 
   const canAccessPortal = (portal) => {
-    const currentUser = loggedInUser || user;
+    // Check localStorage directly for most up-to-date state
+    const storedUser = localStorage.getItem('user');
+    const currentUser = storedUser ? JSON.parse(storedUser) : (loggedInUser || user);
     if (!currentUser) return false;
     return portal.roles.includes(currentUser.role);
   };
 
   const handlePortalClick = (portal) => {
-    const currentUser = loggedInUser || user;
+    // Check localStorage directly for most up-to-date state
+    const storedUser = localStorage.getItem('user');
+    const currentUser = storedUser ? JSON.parse(storedUser) : (loggedInUser || user);
     
     if (!currentUser) {
       setShowLogin(true);
@@ -141,7 +145,7 @@ export default function PortalSelector() {
       return;
     }
     
-    if (!canAccessPortal(portal)) {
+    if (!portal.roles.includes(currentUser.role)) {
       toast.error(`You need ${portal.roles.join(" or ")} role to access this portal`);
       return;
     }
@@ -150,7 +154,9 @@ export default function PortalSelector() {
     window.location.href = portal.path;
   };
 
-  const currentUser = loggedInUser || user;
+  // Get current user from multiple sources
+  const storedUser = typeof window !== 'undefined' && localStorage.getItem('user');
+  const currentUser = storedUser ? JSON.parse(storedUser) : (loggedInUser || user);
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900">
