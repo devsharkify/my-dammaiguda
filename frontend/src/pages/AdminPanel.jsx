@@ -1306,10 +1306,11 @@ export default function AdminPanel() {
                   <span className="text-sm text-muted-foreground">+91</span>
                 </div>
                 <Input
-                  value={managerForm.phone}
+                  value={managerForm.phone.replace('+91', '')}
                   onChange={(e) => setManagerForm(f => ({ ...f, phone: `+91${e.target.value.replace(/\D/g, '').slice(0, 10)}` }))}
                   placeholder="10-digit number"
                   className="rounded-l-none"
+                  maxLength={10}
                 />
               </div>
             </div>
