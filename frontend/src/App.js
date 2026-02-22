@@ -148,11 +148,7 @@ function AppRoutes() {
           <AIChat />
         </ProtectedRoute>
       } />
-      <Route path="/benefits" element={
-        <ProtectedRoute>
-          <CitizenBenefits />
-        </ProtectedRoute>
-      } />
+      <Route path="/benefits" element={<CitizenBenefits />} />
       <Route path="/claim-benefits" element={
         <ProtectedRoute>
           <ClaimBenefits />
@@ -182,11 +178,7 @@ function AppRoutes() {
       } />
       
       {/* AIT Education Routes */}
-      <Route path="/education" element={
-        <ProtectedRoute>
-          <AITEducation />
-        </ProtectedRoute>
-      } />
+      <Route path="/education" element={<AITEducation />} />
       <Route path="/education/course/:courseId" element={
         <ProtectedRoute>
           <CourseDetail />
