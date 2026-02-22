@@ -198,7 +198,7 @@ export default function PortalSelector() {
 
       <div className="max-w-4xl mx-auto px-4 py-8">
         {/* Login Card */}
-        {(showLogin || !currentUser) && (
+        {!currentUser && (
           <Card className="mb-8 border-0 shadow-2xl bg-white/10 backdrop-blur-md">
             <CardContent className="p-6">
               <div className="flex items-center gap-3 mb-6">
