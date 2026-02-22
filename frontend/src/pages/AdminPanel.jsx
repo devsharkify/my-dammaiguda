@@ -899,65 +899,7 @@ export default function AdminPanel() {
 
           {/* Courses Tab */}
           <TabsContent value="courses">
-            <Card>
-              <CardHeader className="flex flex-row items-center justify-between">
-                <div>
-                  <CardTitle className="text-base">
-                    Courses {selectedArea !== "all" && `for ${AREAS[selectedArea]?.name}`}
-                  </CardTitle>
-                  <CardDescription>Manage educational content</CardDescription>
-                </div>
-                <Button onClick={() => {
-                  setCourseForm({ title: "", description: "", instructor: "", thumbnail: "", video_url: "", areas: selectedArea !== "all" ? [selectedArea] : ["all"] });
-                  setEditingItem(null);
-                  setShowCourseDialog(true);
-                }}>
-                  <Plus className="h-4 w-4 mr-2" />
-                  Add Course
-                </Button>
-              </CardHeader>
-              <CardContent>
-                {loading ? (
-                  <div className="flex items-center justify-center py-8">
-                    <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
-                  </div>
-                ) : filterByArea(courses).length === 0 ? (
-                  <div className="text-center py-8 text-muted-foreground">
-                    <GraduationCap className="h-12 w-12 mx-auto mb-2 opacity-20" />
-                    <p>No courses found</p>
-                  </div>
-                ) : (
-                  <div className="divide-y">
-                    {filterByArea(courses).map((course) => (
-                      <div key={course._id || course.id} className="py-3 flex items-center gap-4">
-                        <img
-                          src={course.thumbnail || "https://via.placeholder.com/80x60"}
-                          alt={course.title}
-                          className="w-20 h-14 object-cover rounded"
-                        />
-                        <div className="flex-1">
-                          <h4 className="font-medium">{course.title}</h4>
-                          <p className="text-sm text-muted-foreground">{course.instructor}</p>
-                        </div>
-                        <div className="flex gap-1">
-                          {(course.areas || ["all"]).map((areaId) => (
-                            <div
-                              key={areaId}
-                              className="w-3 h-3 rounded-full"
-                              style={{ backgroundColor: AREAS[areaId]?.color }}
-                              title={AREAS[areaId]?.name}
-                            />
-                          ))}
-                        </div>
-                        <Button size="sm" variant="ghost">
-                          <Edit className="h-4 w-4" />
-                        </Button>
-                      </div>
-                    ))}
-                  </div>
-                )}
-              </CardContent>
-            </Card>
+            <CourseManager />
           </TabsContent>
 
           {/* News Tab */}
