@@ -6,8 +6,64 @@ from datetime import datetime, date
 from .utils import db, generate_id, now_iso, get_current_user
 import random
 import string
+import httpx
+import os
 
 router = APIRouter(prefix="/benefits", tags=["Benefits"])
+
+# ============== SMS HELPER ==============
+
+async def send_benefits_sms(phone: str, benefit_type: str, status: str):
+    """Send SMS notification for benefit application status"""
+    authkey_api_key = os.environ.get("AUTHKEY_API_KEY")
+    if not authkey_api_key:
+        print("AUTHKEY_API_KEY not configured, skipping SMS")
+        return False
+    
+    # Clean phone number
+    mobile = phone.replace("+91", "").replace("+", "").replace(" ", "").strip()
+    if len(mobile) != 10:
+        print(f"Invalid phone number: {phone}")
+        return False
+    
+    # Create message based on status
+    benefit_names = {
+        "accidental_insurance": "Accidental Insurance (₹2 Lakhs)",
+        "health_insurance": "Health Insurance (25% Reimbursement)",
+        "education_voucher": "Education Voucher"
+    }
+    benefit_name = benefit_names.get(benefit_type, "Benefit")
+    
+    if status == "approved":
+        message = f"Congratulations! Your {benefit_name} application has been APPROVED by My Dammaiguda. Check the app for details."
+    else:
+        message = f"Your {benefit_name} application status has been updated. Please check the My Dammaiguda app for details."
+    
+    try:
+        # Send SMS via Authkey.io
+        async with httpx.AsyncClient() as client:
+            # Use transactional SMS template
+            response = await client.get(
+                "https://api.authkey.io/request",
+                params={
+                    "authkey": authkey_api_key,
+                    "mobile": mobile,
+                    "country_code": "91",
+                    "sms": message,
+                    "sender": "MYDAMM"  # 6 char sender ID
+                },
+                timeout=10.0
+            )
+            
+            if response.status_code == 200:
+                print(f"SMS sent successfully to {mobile}")
+                return True
+            else:
+                print(f"SMS failed: {response.text}")
+                return False
+    except Exception as e:
+        print(f"SMS error: {e}")
+        return False
 
 # ============== MODELS ==============
 
