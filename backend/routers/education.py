@@ -351,7 +351,7 @@ async def delete_subject(subject_id: str, user: dict = Depends(get_current_user)
 @router.post("/lessons")
 async def create_lesson(lesson_data: LessonCreate, user: dict = Depends(get_current_user)):
     """Create a new lesson"""
-    if user.get("role") not in ["admin", "instructor"]:
+    if user.get("role") not in ["admin", "instructor", "manager"]:
         raise HTTPException(status_code=403, detail="Unauthorized")
     
     new_lesson = {
@@ -363,7 +363,54 @@ async def create_lesson(lesson_data: LessonCreate, user: dict = Depends(get_curr
     await db.lessons.insert_one(new_lesson)
     new_lesson.pop("_id", None)
     
+    # Update lesson count in subject
+    if lesson_data.subject_id:
+        await db.subjects.update_one(
+            {"id": lesson_data.subject_id},
+            {"$inc": {"lesson_count": 1}}
+        )
+    
     return {"success": True, "lesson": new_lesson}
+
+@router.put("/lessons/{lesson_id}")
+async def update_lesson(lesson_id: str, updates: dict, user: dict = Depends(get_current_user)):
+    """Update a lesson"""
+    if user.get("role") not in ["admin", "instructor", "manager"]:
+        raise HTTPException(status_code=403, detail="Unauthorized")
+    
+    updates["updated_at"] = now_iso()
+    result = await db.lessons.update_one(
+        {"id": lesson_id},
+        {"$set": updates}
+    )
+    
+    if result.matched_count == 0:
+        raise HTTPException(status_code=404, detail="Lesson not found")
+    
+    updated = await db.lessons.find_one({"id": lesson_id}, {"_id": 0})
+    return {"success": True, "lesson": updated}
+
+@router.delete("/lessons/{lesson_id}")
+async def delete_lesson(lesson_id: str, user: dict = Depends(get_current_user)):
+    """Delete a lesson"""
+    if user.get("role") not in ["admin", "instructor", "manager"]:
+        raise HTTPException(status_code=403, detail="Unauthorized")
+    
+    lesson = await db.lessons.find_one({"id": lesson_id})
+    if not lesson:
+        raise HTTPException(status_code=404, detail="Lesson not found")
+    
+    # Delete lesson
+    await db.lessons.delete_one({"id": lesson_id})
+    
+    # Update subject lesson count
+    if lesson.get("subject_id"):
+        await db.subjects.update_one(
+            {"id": lesson["subject_id"]},
+            {"$inc": {"lesson_count": -1}}
+        )
+    
+    return {"success": True, "message": "Lesson deleted"}
 
 @router.get("/lessons/{lesson_id}")
 async def get_lesson(lesson_id: str, user: dict = Depends(get_current_user)):
