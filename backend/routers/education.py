@@ -348,6 +348,15 @@ async def delete_subject(subject_id: str, user: dict = Depends(get_current_user)
 
 # ============== LESSON ROUTES ==============
 
+@router.get("/subjects/{subject_id}/lessons")
+async def get_subject_lessons(subject_id: str):
+    """Get all lessons for a subject"""
+    lessons = await db.lessons.find(
+        {"subject_id": subject_id},
+        {"_id": 0}
+    ).sort("order_index", 1).to_list(100)
+    return {"lessons": lessons}
+
 @router.post("/lessons")
 async def create_lesson(lesson_data: LessonCreate, user: dict = Depends(get_current_user)):
     """Create a new lesson"""
