@@ -367,19 +367,50 @@ async def create_lesson(lesson_data: LessonCreate, user: dict = Depends(get_curr
 
 @router.get("/lessons/{lesson_id}")
 async def get_lesson(lesson_id: str, user: dict = Depends(get_current_user)):
-    """Get lesson content"""
+    """Get lesson content with sequential access check"""
     lesson = await db.lessons.find_one({"id": lesson_id}, {"_id": 0})
     if not lesson:
         raise HTTPException(status_code=404, detail="Lesson not found")
     
     # Check if user is enrolled or lesson is free preview
-    if not lesson.get("is_free_preview"):
+    is_admin = user.get("role") in ["admin", "instructor", "manager"]
+    
+    if not lesson.get("is_free_preview") and not is_admin:
         enrollment = await db.enrollments.find_one({
             "course_id": lesson["course_id"],
             "user_id": user["id"]
         })
-        if not enrollment and user.get("role") not in ["admin", "instructor"]:
+        if not enrollment:
             raise HTTPException(status_code=403, detail="Please enroll in the course to access this lesson")
+        
+        # Check sequential access - no skipping
+        if lesson.get("requires_previous", True) and lesson.get("order_index", 0) > 0:
+            # Get all lessons in same subject or course
+            query = {"course_id": lesson["course_id"]}
+            if lesson.get("subject_id"):
+                query["subject_id"] = lesson["subject_id"]
+            
+            all_lessons = await db.lessons.find(
+                query, {"_id": 0}
+            ).sort("order_index", 1).to_list(100)
+            
+            # Find previous lesson
+            current_index = next((i for i, l in enumerate(all_lessons) if l["id"] == lesson_id), 0)
+            
+            if current_index > 0:
+                prev_lesson = all_lessons[current_index - 1]
+                # Check if previous lesson is completed
+                prev_progress = await db.lesson_progress.find_one({
+                    "lesson_id": prev_lesson["id"],
+                    "user_id": user["id"],
+                    "completed": True
+                })
+                
+                if not prev_progress:
+                    raise HTTPException(
+                        status_code=403, 
+                        detail=f"Please complete '{prev_lesson.get('title', 'previous lesson')}' first"
+                    )
     
     return lesson
 
