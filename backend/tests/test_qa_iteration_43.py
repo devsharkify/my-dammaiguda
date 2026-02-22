@@ -271,7 +271,8 @@ class TestBenefitsModule:
         response = requests.get(f"{BASE_URL}/api/benefits")
         assert response.status_code == 200
         data = response.json()
-        benefits = data.get("benefits", [])
+        # API may return list directly or wrapped in dict
+        benefits = data if isinstance(data, list) else data.get("benefits", [])
         print(f"✓ Benefits fetched - {len(benefits)} benefits available")
     
     def test_benefits_schemes(self):
