@@ -1013,6 +1013,89 @@ async def get_heart_rate_history(days: int = 7, user: dict = Depends(get_current
     
     return {"records": records, "count": len(records)}
 
+# ============== SLEEP TRACKING ==============
+
+@router.post("/sleep")
+async def log_sleep(entry: SleepEntry, user: dict = Depends(get_current_user)):
+    """Log a sleep entry"""
+    
+    # Calculate total sleep duration
+    try:
+        sleep_start = datetime.strptime(entry.sleep_start, "%H:%M")
+        sleep_end = datetime.strptime(entry.sleep_end, "%H:%M")
+        
+        # Handle overnight sleep (e.g., 23:00 to 07:00)
+        if sleep_end < sleep_start:
+            # Sleep crosses midnight
+            total_minutes = (24 * 60 - (sleep_start.hour * 60 + sleep_start.minute)) + (sleep_end.hour * 60 + sleep_end.minute)
+        else:
+            total_minutes = (sleep_end.hour * 60 + sleep_end.minute) - (sleep_start.hour * 60 + sleep_start.minute)
+        
+        total_hours = round(total_minutes / 60, 1)
+    except:
+        total_hours = 0
+        total_minutes = 0
+    
+    # Calculate sleep score (0-100)
+    sleep_score = calculate_sleep_score(total_hours, entry.quality, entry.awakenings or 0)
+    
+    sleep_record = {
+        "id": generate_id(),
+        "user_id": user["id"],
+        "date": entry.date,
+        "sleep_start": entry.sleep_start,
+        "sleep_end": entry.sleep_end,
+        "total_hours": total_hours,
+        "total_minutes": total_minutes,
+        "quality": entry.quality,
+        "deep_sleep_minutes": entry.deep_sleep_minutes,
+        "light_sleep_minutes": entry.light_sleep_minutes,
+        "rem_sleep_minutes": entry.rem_sleep_minutes,
+        "awakenings": entry.awakenings or 0,
+        "sleep_score": sleep_score,
+        "notes": entry.notes,
+        "source": "manual",
+        "created_at": now_iso()
+    }
+    
+    # Check if entry exists for this date, update if so
+    existing = await db.sleep_logs.find_one({"user_id": user["id"], "date": entry.date})
+    if existing:
+        await db.sleep_logs.update_one(
+            {"id": existing["id"]},
+            {"$set": sleep_record}
+        )
+        sleep_record["id"] = existing["id"]
+    else:
+        await db.sleep_logs.insert_one(sleep_record)
+    
+    sleep_record.pop("_id", None)
+    
+    return {"success": True, "entry": sleep_record}
+
+def calculate_sleep_score(hours: float, quality: str, awakenings: int) -> int:
+    """Calculate sleep score from 0-100"""
+    score = 50  # Base score
+    
+    # Hours component (ideal is 7-9 hours)
+    if 7 <= hours <= 9:
+        score += 30
+    elif 6 <= hours < 7 or 9 < hours <= 10:
+        score += 20
+    elif 5 <= hours < 6 or 10 < hours <= 11:
+        score += 10
+    elif hours < 5:
+        score -= 10
+    
+    # Quality component
+    quality_scores = {"excellent": 20, "good": 15, "fair": 5, "poor": -10}
+    score += quality_scores.get(quality, 0)
+    
+    # Awakenings penalty
+    score -= min(awakenings * 5, 20)
+    
+    return max(0, min(100, score))
+
 @router.get("/health-data/sleep")
 async def get_sleep_history(days: int = 7, user: dict = Depends(get_current_user)):
     """Get sleep history from smart devices"""
