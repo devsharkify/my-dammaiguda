@@ -493,4 +493,3 @@ def get_deployment_instructions(config: CloneConfig) -> list:
             "description": f"Point {config.domain} to Railway deployment"
         }
     ]
-'''
