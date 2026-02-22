@@ -52,6 +52,7 @@ from routers.muhurtam import router as muhurtam_router
 from routers.reports import router as reports_router
 from routers.benefits import router as benefits_router
 from routers.admin_users import router as admin_users_router
+from routers.clone import router as clone_router
 
 # Create FastAPI app
 app = FastAPI(
