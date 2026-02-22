@@ -283,6 +283,69 @@ async def publish_course(course_id: str, user: dict = Depends(get_current_user))
     
     return {"success": True, "message": "Course published"}
 
+# ============== SUBJECT ROUTES ==============
+
+@router.get("/courses/{course_id}/subjects")
+async def get_course_subjects(course_id: str):
+    """Get all subjects for a course"""
+    subjects = await db.subjects.find(
+        {"course_id": course_id},
+        {"_id": 0}
+    ).sort("order_index", 1).to_list(50)
+    return {"subjects": subjects}
+
+@router.post("/subjects")
+async def create_subject(subject_data: SubjectCreate, user: dict = Depends(get_current_user)):
+    """Create a new subject within a course"""
+    if user.get("role") not in ["admin", "instructor", "manager"]:
+        raise HTTPException(status_code=403, detail="Unauthorized")
+    
+    new_subject = {
+        "id": generate_id(),
+        **subject_data.dict(),
+        "lesson_count": 0,
+        "created_at": now_iso()
+    }
+    
+    await db.subjects.insert_one(new_subject)
+    new_subject.pop("_id", None)
+    
+    return {"success": True, "subject": new_subject}
+
+@router.put("/subjects/{subject_id}")
+async def update_subject(subject_id: str, updates: dict, user: dict = Depends(get_current_user)):
+    """Update a subject"""
+    if user.get("role") not in ["admin", "instructor", "manager"]:
+        raise HTTPException(status_code=403, detail="Unauthorized")
+    
+    updates["updated_at"] = now_iso()
+    result = await db.subjects.update_one(
+        {"id": subject_id},
+        {"$set": updates}
+    )
+    
+    if result.matched_count == 0:
+        raise HTTPException(status_code=404, detail="Subject not found")
+    
+    updated = await db.subjects.find_one({"id": subject_id}, {"_id": 0})
+    return {"success": True, "subject": updated}
+
+@router.delete("/subjects/{subject_id}")
+async def delete_subject(subject_id: str, user: dict = Depends(get_current_user)):
+    """Delete a subject and its lessons"""
+    if user.get("role") not in ["admin", "instructor", "manager"]:
+        raise HTTPException(status_code=403, detail="Unauthorized")
+    
+    # Delete associated lessons
+    await db.lessons.delete_many({"subject_id": subject_id})
+    # Delete subject
+    result = await db.subjects.delete_one({"id": subject_id})
+    
+    if result.deleted_count == 0:
+        raise HTTPException(status_code=404, detail="Subject not found")
+    
+    return {"success": True, "message": "Subject deleted"}
+
 # ============== LESSON ROUTES ==============
 
 @router.post("/lessons")
