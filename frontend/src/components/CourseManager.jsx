@@ -673,15 +673,57 @@ export default function CourseManager() {
                   {/* Settings Tab */}
                   <TabsContent value="settings" className="space-y-4">
                     <div className="grid gap-4">
+                      {/* Publish/Unpublish */}
+                      <div className="flex items-center justify-between p-4 border rounded-lg bg-muted/30">
+                        <div>
+                          <p className="font-medium">Course Status</p>
+                          <p className="text-sm text-muted-foreground">
+                            {selectedCourse.is_published 
+                              ? "Course is live and visible to students" 
+                              : "Course is in draft mode"}
+                          </p>
+                        </div>
+                        <Button
+                          variant={selectedCourse.is_published ? "destructive" : "default"}
+                          size="sm"
+                          onClick={() => publishCourse(selectedCourse.id, selectedCourse.is_published)}
+                        >
+                          {selectedCourse.is_published ? (
+                            <><EyeOff className="h-4 w-4 mr-1" /> Unpublish</>
+                          ) : (
+                            <><Eye className="h-4 w-4 mr-1" /> Publish</>
+                          )}
+                        </Button>
+                      </div>
+
+                      {/* Certificate Toggle */}
                       <div className="flex items-center justify-between p-4 border rounded-lg">
                         <div>
                           <p className="font-medium">Certificate</p>
                           <p className="text-sm text-muted-foreground">Award certificate on completion</p>
                         </div>
-                        <Badge variant={selectedCourse.has_certificate ? "default" : "secondary"}>
+                        <Button
+                          variant={selectedCourse.has_certificate ? "default" : "outline"}
+                          size="sm"
+                          onClick={async () => {
+                            try {
+                              await axios.put(`${API}/education/courses/${selectedCourse.id}`, 
+                                { has_certificate: !selectedCourse.has_certificate }, 
+                                { headers }
+                              );
+                              toast.success(selectedCourse.has_certificate ? "Certificate disabled" : "Certificate enabled");
+                              fetchCourses();
+                              setSelectedCourse({...selectedCourse, has_certificate: !selectedCourse.has_certificate});
+                            } catch (err) {
+                              toast.error("Failed to update");
+                            }
+                          }}
+                        >
+                          <Award className="h-4 w-4 mr-1" />
                           {selectedCourse.has_certificate ? "Enabled" : "Disabled"}
-                        </Badge>
+                        </Button>
                       </div>
+
                       <div className="flex items-center justify-between p-4 border rounded-lg">
                         <div>
                           <p className="font-medium">Quiz Frequency</p>
