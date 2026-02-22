@@ -79,6 +79,7 @@ export function AuthProvider({ children }) {
 
   const logout = () => {
     localStorage.removeItem("dammaiguda_token");
+    localStorage.removeItem("dammaiguda_user");
     setToken(null);
     setUser(null);
   };
