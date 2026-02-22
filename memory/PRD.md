@@ -141,14 +141,17 @@ DISABLE_ESLINT_PLUGIN=true
 
 ### P0 - Immediate:
 - [x] ✅ Admin/Manager Login Fix (COMPLETED - Feb 21, 2026)
+- [x] ✅ QA Pass - Backend 100%, Frontend 95% (COMPLETED - Feb 22, 2026)
+- [x] ✅ Course Content Population (22 lessons) (COMPLETED - Feb 22, 2026)
 - [ ] Complete Google Play Store submission
 - [ ] Google Fit OAuth verification (user testing on live domain)
 
 ### P1 - High Priority:
-- [ ] Update Play Store listing with production URLs
-- [ ] Test OTP flow with real phone numbers
+- [x] ✅ Benefits page public access fix (COMPLETED - Feb 22, 2026)
+- [x] ✅ Education page public access fix (COMPLETED - Feb 22, 2026)
+- [ ] Test student-facing course experience (sequential learning)
+- [ ] Generate phone and tablet screenshots for Play Store
 - [ ] Apple App Store submission
-- [x] ✅ Calorie Counter Enhancement (COMPLETED - Feb 21, 2026)
 
 **NOTE:** Test OTP backdoor (123456) is intentionally KEPT for Play Store testing as requested by user.
 
