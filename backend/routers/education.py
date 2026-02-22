@@ -121,8 +121,8 @@ def calculate_course_progress(enrollments: list, lessons: list) -> dict:
     if not lessons:
         return {"completed": 0, "total": 0, "percentage": 0}
     
-    completed = len([l for l in lessons if any(
-        e.get("lesson_id") == l.get("id") and e.get("completed") 
+    completed = len([lesson for lesson in lessons if any(
+        e.get("lesson_id") == lesson.get("id") and e.get("completed") 
         for e in enrollments
     )])
     
