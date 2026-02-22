@@ -1,11 +1,10 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect } from "react";
 import { useLanguage } from "../context/LanguageContext";
 import { useAuth } from "../context/AuthContext";
 import axios from "axios";
 import { Card, CardContent } from "../components/ui/card";
 import { Button } from "../components/ui/button";
 import { Badge } from "../components/ui/badge";
-import { Tabs, TabsList, TabsTrigger } from "../components/ui/tabs";
 import { toast } from "sonner";
 import Layout from "../components/Layout";
 import {
@@ -14,27 +13,35 @@ import {
   Eye,
   ThumbsUp,
   Heart,
-  Angry,
-  Frown,
   Share2,
-  ExternalLink,
   RefreshCw,
   Loader2,
-  AlertTriangle,
-  ChevronUp,
-  ChevronDown,
-  Play,
-  Zap,
   MapPin,
   Building2,
   Calendar,
   Stethoscope,
   GraduationCap,
   Trophy,
-  Sparkles
+  Sparkles,
+  TrendingUp,
+  Flame,
+  ChevronRight,
+  Bookmark,
+  MessageCircle
 } from "lucide-react";
 
 const API = `${process.env.REACT_APP_BACKEND_URL}/api`;
+
+const CATEGORIES = [
+  { id: "all", name: "All", name_te: "అన్నీ", icon: Sparkles, color: "bg-gradient-to-r from-purple-500 to-pink-500" },
+  { id: "trending", name: "Trending", name_te: "ట్రెండింగ్", icon: TrendingUp, color: "bg-gradient-to-r from-red-500 to-orange-500" },
+  { id: "local", name: "Local", name_te: "స్థానికం", icon: MapPin, color: "bg-blue-500" },
+  { id: "government", name: "Government", name_te: "ప్రభుత్వం", icon: Building2, color: "bg-purple-600" },
+  { id: "health", name: "Health", name_te: "ఆరోగ్యం", icon: Stethoscope, color: "bg-red-500" },
+  { id: "education", name: "Education", name_te: "విద్య", icon: GraduationCap, color: "bg-indigo-500" },
+  { id: "sports", name: "Sports", name_te: "క్రీడలు", icon: Trophy, color: "bg-green-500" },
+  { id: "events", name: "Events", name_te: "ఈవెంట్స్", icon: Calendar, color: "bg-pink-500" }
+];
 
 export default function NewsPage() {
   const { language } = useLanguage();
@@ -43,13 +50,10 @@ export default function NewsPage() {
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
   const [activeCategory, setActiveCategory] = useState("all");
-  const [currentIndex, setCurrentIndex] = useState(0);
-  const [viewMode, setViewMode] = useState("shorts"); // "shorts" or "feed"
-  const containerRef = useRef(null);
+  const [savedNews, setSavedNews] = useState([]);
 
   useEffect(() => {
     fetchNews();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [activeCategory]);
 
   const fetchNews = async (isRefresh = false) => {
@@ -58,85 +62,94 @@ export default function NewsPage() {
     
     try {
       let url = `${API}/news?limit=30`;
-      if (activeCategory !== "all") {
+      if (activeCategory !== "all" && activeCategory !== "trending") {
         url += `&category=${activeCategory}`;
       }
       const response = await axios.get(url);
-      setNews(response.data?.news || []);
+      let newsData = response.data?.news || [];
+      
+      // Sort by views for trending
+      if (activeCategory === "trending") {
+        newsData = newsData.sort((a, b) => (b.views || 0) - (a.views || 0));
+      }
+      
+      setNews(newsData);
       if (isRefresh) {
-        toast.success(language === "te" ? "వార్తలు రిఫ్రెష్ అయ్యాయి" : "News refreshed");
-        setCurrentIndex(0);
+        toast.success(language === "te" ? "రిఫ్రెష్ అయింది" : "Refreshed");
       }
     } catch (error) {
       console.error("Error fetching news:", error);
       // Fallback sample news
-      setNews([
-        {
-          id: "sample-1",
-          title: "New Metro Line Approved for Dammaiguda",
-          title_te: "దమ్మాయిగూడకు కొత్త మెట్రో లైన్ ఆమోదం",
-          summary: "The Telangana government has approved the extension of Metro Rail to Dammaiguda, connecting the suburb to the city center. Construction is expected to begin next year.",
-          summary_te: "తెలంగాణ ప్రభుత్వం దమ్మాయిగూడకు మెట్రో రైల్ విస్తరణను ఆమోదించింది. నిర్మాణం వచ్చే సంవత్సరం ప్రారంభం కానుంది.",
-          category: "local",
-          image_url: "https://images.unsplash.com/photo-1565043589221-1a6fd9ae45c7?w=600",
-          created_at: new Date().toISOString(),
-          views: 1234,
-          reactions: { like: 156, love: 89, angry: 12, sad: 5 }
-        },
-        {
-          id: "sample-2",
-          title: "Free Health Camp at Community Hall",
-          title_te: "కమ్యూనిటీ హాల్‌లో ఉచిత ఆరోగ్య క్యాంప్",
-          summary: "A free health camp will be organized this Sunday at Dammaiguda Community Hall. Services include general checkup, eye testing, and dental screening.",
-          summary_te: "ఈ ఆదివారం దమ్మాయిగూడ కమ్యూనిటీ హాల్‌లో ఉచిత ఆరోగ్య క్యాంప్ నిర్వహించబడుతుంది.",
-          category: "health",
-          image_url: "https://images.unsplash.com/photo-1576091160399-112ba8d25d1d?w=600",
-          created_at: new Date(Date.now() - 86400000).toISOString(),
-          views: 567,
-          reactions: { like: 234, love: 156, angry: 0, sad: 0 }
-        },
-        {
-          id: "sample-3",
-          title: "Local School Wins State Level Quiz",
-          title_te: "స్థానిక పాఠశాల రాష్ట్ర స్థాయి క్విజ్ గెలిచింది",
-          summary: "Students from Government High School Dammaiguda won first place in the State Level Science Quiz competition held in Hyderabad.",
-          summary_te: "హైదరాబాద్‌లో నిర్వహించిన రాష్ట్ర స్థాయి సైన్స్ క్విజ్ పోటీలో దమ్మాయిగూడ ప్రభుత్వ హైస్కూల్ విద్యార్థులు మొదటి స్థానం సాధించారు.",
-          category: "education",
-          image_url: "https://images.unsplash.com/photo-1427504494785-3a9ca7044f45?w=600",
-          created_at: new Date(Date.now() - 172800000).toISOString(),
-          views: 890,
-          reactions: { like: 345, love: 234, angry: 0, sad: 0 }
-        }
-      ]);
+      setNews(getSampleNews());
     } finally {
       setLoading(false);
       setRefreshing(false);
     }
   };
 
-  const getCategoryIcon = (category) => {
-    switch (category) {
-      case "local": return <MapPin className="h-3.5 w-3.5" />;
-      case "government": return <Building2 className="h-3.5 w-3.5" />;
-      case "events": return <Calendar className="h-3.5 w-3.5" />;
-      case "health": return <Stethoscope className="h-3.5 w-3.5" />;
-      case "education": return <GraduationCap className="h-3.5 w-3.5" />;
-      case "sports": return <Trophy className="h-3.5 w-3.5" />;
-      default: return <Sparkles className="h-3.5 w-3.5" />;
+  const getSampleNews = () => [
+    {
+      id: "1",
+      title: "Metro Extension to Dammaiguda Approved",
+      title_te: "దమ్మాయిగూడకు మెట్రో విస్తరణ ఆమోదం",
+      summary: "Telangana government approves metro extension connecting Dammaiguda to city center. Work to begin next year.",
+      summary_te: "తెలంగాణ ప్రభుత్వం దమ్మాయిగూడను సిటీ సెంటర్‌కు కలుపుతూ మెట్రో విస్తరణను ఆమోదించింది.",
+      category: "local",
+      image_url: "https://images.unsplash.com/photo-1565043589221-1a6fd9ae45c7?w=800",
+      created_at: new Date().toISOString(),
+      views: 2456,
+      reactions: { like: 234, love: 156 },
+      is_breaking: true
+    },
+    {
+      id: "2",
+      title: "Free Health Camp This Sunday",
+      title_te: "ఈ ఆదివారం ఉచిత ఆరోగ్య క్యాంప్",
+      summary: "Free health screening at Community Hall including general checkup, eye testing, and dental screening.",
+      summary_te: "కమ్యూనిటీ హాల్‌లో ఉచిత ఆరోగ్య పరీక్ష - జనరల్ చెకప్, కంటి పరీక్ష, దంత పరీక్ష.",
+      category: "health",
+      image_url: "https://images.unsplash.com/photo-1576091160399-112ba8d25d1d?w=800",
+      created_at: new Date(Date.now() - 3600000).toISOString(),
+      views: 1823,
+      reactions: { like: 345, love: 234 }
+    },
+    {
+      id: "3",
+      title: "Local School Wins State Quiz Championship",
+      title_te: "స్థానిక పాఠశాల రాష్ట్ర క్విజ్ ఛాంపియన్‌షిప్ గెలిచింది",
+      summary: "Government High School students win first place in State Science Quiz held in Hyderabad.",
+      summary_te: "హైదరాబాద్‌లో జరిగిన రాష్ట్ర సైన్స్ క్విజ్‌లో ప్రభుత్వ హైస్కూల్ విద్యార్థులు మొదటి స్థానం.",
+      category: "education",
+      image_url: "https://images.unsplash.com/photo-1427504494785-3a9ca7044f45?w=800",
+      created_at: new Date(Date.now() - 7200000).toISOString(),
+      views: 1234,
+      reactions: { like: 456, love: 123 }
+    },
+    {
+      id: "4",
+      title: "New Road Development Project Launched",
+      title_te: "కొత్త రోడ్డు అభివృద్ధి ప్రాజెక్ట్ ప్రారంభం",
+      summary: "MLA inaugurates new road widening project connecting main junction to bypass road.",
+      summary_te: "మెయిన్ జంక్షన్ నుండి బైపాస్ రోడ్డుకు కలుపుతూ కొత్త రోడ్డు విస్తరణ ప్రాజెక్ట్‌ను MLA ప్రారంభించారు.",
+      category: "government",
+      image_url: "https://images.unsplash.com/photo-1515162816999-a0c47dc192f7?w=800",
+      created_at: new Date(Date.now() - 14400000).toISOString(),
+      views: 987,
+      reactions: { like: 123, love: 45 }
+    },
+    {
+      id: "5",
+      title: "Cricket Tournament Finals This Weekend",
+      title_te: "ఈ వారాంతంలో క్రికెట్ టోర్నమెంట్ ఫైనల్స్",
+      summary: "Annual inter-colony cricket tournament finals at local stadium. Entry free for all.",
+      summary_te: "స్థానిక స్టేడియంలో వార్షిక ఇంటర్-కాలనీ క్రికెట్ టోర్నమెంట్ ఫైనల్స్. అందరికీ ఉచిత ప్రవేశం.",
+      category: "sports",
+      image_url: "https://images.unsplash.com/photo-1531415074968-036ba1b575da?w=800",
+      created_at: new Date(Date.now() - 28800000).toISOString(),
+      views: 2100,
+      reactions: { like: 567, love: 234 }
     }
-  };
-
-  const getCategoryColor = (category) => {
-    switch (category) {
-      case "local": return "bg-blue-500";
-      case "government": return "bg-purple-500";
-      case "events": return "bg-pink-500";
-      case "health": return "bg-red-500";
-      case "education": return "bg-indigo-500";
-      case "sports": return "bg-green-500";
-      default: return "bg-gray-500";
-    }
-  };
+  ];
 
   const formatTime = (dateStr) => {
     if (!dateStr) return "";
@@ -147,10 +160,14 @@ export default function NewsPage() {
     const diffHours = Math.floor(diffMs / 3600000);
     const diffDays = Math.floor(diffMs / 86400000);
     
-    if (diffMins < 60) return `${diffMins}m`;
-    if (diffHours < 24) return `${diffHours}h`;
-    if (diffDays < 7) return `${diffDays}d`;
+    if (diffMins < 60) return language === "te" ? `${diffMins} ని. క్రితం` : `${diffMins}m ago`;
+    if (diffHours < 24) return language === "te" ? `${diffHours} గం. క్రితం` : `${diffHours}h ago`;
+    if (diffDays < 7) return language === "te" ? `${diffDays} రోజుల క్రితం` : `${diffDays}d ago`;
     return date.toLocaleDateString();
+  };
+
+  const getCategoryInfo = (categoryId) => {
+    return CATEGORIES.find(c => c.id === categoryId) || CATEGORIES[0];
   };
 
   const handleReact = async (newsId, reaction) => {
@@ -165,15 +182,11 @@ export default function NewsPage() {
         {},
         { headers: { Authorization: `Bearer ${token}` } }
       );
-      // Update local state
       setNews(prev => prev.map(n => {
         if (n.id === newsId) {
           return {
             ...n,
-            reactions: {
-              ...n.reactions,
-              [reaction]: (n.reactions?.[reaction] || 0) + 1
-            }
+            reactions: { ...n.reactions, [reaction]: (n.reactions?.[reaction] || 0) + 1 }
           };
         }
         return n;
@@ -183,65 +196,55 @@ export default function NewsPage() {
     }
   };
 
+  const toggleSave = (newsId) => {
+    setSavedNews(prev => 
+      prev.includes(newsId) 
+        ? prev.filter(id => id !== newsId)
+        : [...prev, newsId]
+    );
+    toast.success(savedNews.includes(newsId) 
+      ? (language === "te" ? "తీసివేయబడింది" : "Removed from saved")
+      : (language === "te" ? "సేవ్ చేయబడింది" : "Saved")
+    );
+  };
+
   const shareNews = (newsItem) => {
-    const text = `${language === "te" && newsItem.title_te ? newsItem.title_te : newsItem.title}\n\n${language === "te" && newsItem.summary_te ? newsItem.summary_te : newsItem.summary}`;
+    const text = `${language === "te" && newsItem.title_te ? newsItem.title_te : newsItem.title}`;
     
     if (navigator.share) {
-      navigator.share({
-        title: newsItem.title,
-        text: text,
-        url: newsItem.source_url || window.location.href
-      });
+      navigator.share({ title: newsItem.title, text, url: window.location.href });
     } else {
       navigator.clipboard.writeText(text);
-      toast.success(language === "te" ? "కాపీ అయింది" : "Copied to clipboard");
+      toast.success(language === "te" ? "కాపీ అయింది" : "Copied");
     }
   };
 
-  const goToNext = () => {
-    if (currentIndex < news.length - 1) {
-      setCurrentIndex(prev => prev + 1);
-    }
-  };
-
-  const goToPrev = () => {
-    if (currentIndex > 0) {
-      setCurrentIndex(prev => prev - 1);
-    }
-  };
-
-  const categories = [
-    { value: "all", label: language === "te" ? "అన్నీ" : "All" },
-    { value: "local", label: language === "te" ? "స్థానికం" : "Local" },
-    { value: "government", label: language === "te" ? "ప్రభుత్వం" : "Govt" },
-    { value: "health", label: language === "te" ? "ఆరోగ్యం" : "Health" },
-    { value: "education", label: language === "te" ? "విద్య" : "Edu" },
-    { value: "sports", label: language === "te" ? "క్రీడలు" : "Sports" }
-  ];
-
-  const currentNews = news[currentIndex];
+  const featuredNews = news[0];
+  const otherNews = news.slice(1);
 
   return (
     <Layout title={language === "te" ? "వార్తలు" : "News"}>
       <div className="space-y-4 pb-20" data-testid="news-page">
-        {/* Header with Refresh */}
+        {/* Way2News Style Header */}
         <div className="flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <div className="h-10 w-10 rounded-xl bg-gradient-to-br from-red-500 to-orange-500 flex items-center justify-center">
-              <Newspaper className="h-5 w-5 text-white" />
+          <div className="flex items-center gap-3">
+            <div className="h-11 w-11 rounded-2xl bg-gradient-to-br from-red-600 to-red-700 flex items-center justify-center shadow-lg">
+              <Newspaper className="h-6 w-6 text-white" />
             </div>
             <div>
-              <h1 className="font-bold text-lg">
-                {language === "te" ? "వార్తలు" : "News Shorts"}
+              <h1 className="font-bold text-xl text-foreground">
+                {language === "te" ? "వార్తలు" : "News"}
               </h1>
-              <p className="text-xs text-muted-foreground">
-                {language === "te" ? "స్వైప్ చేయండి" : "Swipe to read"}
+              <p className="text-xs text-muted-foreground flex items-center gap-1">
+                <Flame className="h-3 w-3 text-orange-500" />
+                {language === "te" ? "తాజా వార్తలు" : "Latest updates"}
               </p>
             </div>
           </div>
           <Button 
             variant="ghost" 
-            size="icon" 
+            size="icon"
+            className="rounded-full"
             onClick={() => fetchNews(true)}
             disabled={refreshing}
           >
@@ -249,25 +252,36 @@ export default function NewsPage() {
           </Button>
         </div>
 
-        {/* Category Filters */}
-        <div className="flex gap-2 overflow-x-auto pb-2 scrollbar-hide">
-          {categories.map((cat) => (
-            <Button
-              key={cat.value}
-              variant={activeCategory === cat.value ? "default" : "outline"}
-              size="sm"
-              onClick={() => { setActiveCategory(cat.value); setCurrentIndex(0); }}
-              className="flex-shrink-0"
-            >
-              {cat.label}
-            </Button>
-          ))}
+        {/* Category Pills - Horizontal Scroll */}
+        <div className="flex gap-2 overflow-x-auto pb-2 scrollbar-hide -mx-4 px-4">
+          {CATEGORIES.map((cat) => {
+            const Icon = cat.icon;
+            const isActive = activeCategory === cat.id;
+            return (
+              <button
+                key={cat.id}
+                onClick={() => setActiveCategory(cat.id)}
+                className={`flex items-center gap-1.5 px-4 py-2 rounded-full text-sm font-medium whitespace-nowrap transition-all ${
+                  isActive
+                    ? `${cat.color} text-white shadow-lg scale-105`
+                    : "bg-muted text-muted-foreground hover:bg-muted/80"
+                }`}
+              >
+                <Icon className="h-4 w-4" />
+                {language === "te" ? cat.name_te : cat.name}
+              </button>
+            );
+          })}
         </div>
 
-        {/* News Content */}
         {loading ? (
           <div className="flex items-center justify-center py-20">
-            <Loader2 className="h-8 w-8 animate-spin text-primary" />
+            <div className="text-center">
+              <Loader2 className="h-10 w-10 animate-spin text-red-500 mx-auto mb-3" />
+              <p className="text-sm text-muted-foreground">
+                {language === "te" ? "వార్తలు లోడ్ అవుతున్నాయి..." : "Loading news..."}
+              </p>
+            </div>
           </div>
         ) : news.length === 0 ? (
           <div className="text-center py-20">
@@ -277,161 +291,202 @@ export default function NewsPage() {
             </p>
           </div>
         ) : (
-          /* Shorts Style View */
-          <div className="relative" ref={containerRef}>
-            {/* News Card - Full Height */}
-            <Card className="overflow-hidden border-0 shadow-xl">
-              {/* Image Section */}
-              <div className="relative h-48 bg-gradient-to-br from-gray-800 to-gray-900">
-                {currentNews?.image_url ? (
-                  <img
-                    src={currentNews.image_url}
-                    alt={currentNews.title}
-                    className="w-full h-full object-cover"
-                    onError={(e) => { e.target.style.display = 'none'; }}
-                  />
-                ) : (
-                  <div className="w-full h-full flex items-center justify-center">
-                    <Newspaper className="h-16 w-16 text-gray-600" />
+          <div className="space-y-4">
+            {/* Featured/Breaking News - Large Card */}
+            {featuredNews && (
+              <Card className="overflow-hidden border-0 shadow-xl bg-gradient-to-br from-slate-900 to-slate-800">
+                <div className="relative">
+                  {/* Image */}
+                  <div className="relative h-52">
+                    {featuredNews.image_url ? (
+                      <img
+                        src={featuredNews.image_url}
+                        alt=""
+                        className="w-full h-full object-cover"
+                      />
+                    ) : (
+                      <div className="w-full h-full bg-gradient-to-br from-red-600 to-orange-500 flex items-center justify-center">
+                        <Newspaper className="h-16 w-16 text-white/50" />
+                      </div>
+                    )}
+                    <div className="absolute inset-0 bg-gradient-to-t from-black via-black/50 to-transparent" />
+                    
+                    {/* Breaking Badge */}
+                    {featuredNews.is_breaking && (
+                      <div className="absolute top-3 left-3 flex items-center gap-1.5 bg-red-600 text-white px-3 py-1 rounded-full text-xs font-bold animate-pulse">
+                        <Flame className="h-3 w-3" />
+                        {language === "te" ? "బ్రేకింగ్" : "BREAKING"}
+                      </div>
+                    )}
+                    
+                    {/* Category */}
+                    {!featuredNews.is_breaking && (
+                      <Badge className={`absolute top-3 left-3 ${getCategoryInfo(featuredNews.category).color} text-white`}>
+                        {language === "te" 
+                          ? getCategoryInfo(featuredNews.category).name_te 
+                          : getCategoryInfo(featuredNews.category).name}
+                      </Badge>
+                    )}
+                    
+                    {/* Title overlay */}
+                    <div className="absolute bottom-0 left-0 right-0 p-4">
+                      <h2 className="text-white font-bold text-xl leading-tight mb-2">
+                        {language === "te" && featuredNews.title_te 
+                          ? featuredNews.title_te 
+                          : featuredNews.title}
+                      </h2>
+                      <div className="flex items-center gap-3 text-white/70 text-xs">
+                        <span className="flex items-center gap-1">
+                          <Clock className="h-3 w-3" />
+                          {formatTime(featuredNews.created_at)}
+                        </span>
+                        <span className="flex items-center gap-1">
+                          <Eye className="h-3 w-3" />
+                          {featuredNews.views?.toLocaleString() || 0}
+                        </span>
+                      </div>
+                    </div>
                   </div>
-                )}
-                
-                {/* Overlay */}
-                <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
-                
-                {/* Category Badge */}
-                <Badge 
-                  className={`absolute top-3 left-3 ${getCategoryColor(currentNews?.category)} text-white`}
+                  
+                  {/* Actions */}
+                  <div className="flex items-center justify-between p-3 bg-slate-900">
+                    <div className="flex items-center gap-1">
+                      <Button 
+                        variant="ghost" 
+                        size="sm" 
+                        className="text-white/70 hover:text-white hover:bg-white/10 h-8 px-2"
+                        onClick={() => handleReact(featuredNews.id, "like")}
+                      >
+                        <ThumbsUp className="h-4 w-4 mr-1" />
+                        <span className="text-xs">{featuredNews.reactions?.like || 0}</span>
+                      </Button>
+                      <Button 
+                        variant="ghost" 
+                        size="sm" 
+                        className="text-white/70 hover:text-red-400 hover:bg-white/10 h-8 px-2"
+                        onClick={() => handleReact(featuredNews.id, "love")}
+                      >
+                        <Heart className="h-4 w-4 mr-1" />
+                        <span className="text-xs">{featuredNews.reactions?.love || 0}</span>
+                      </Button>
+                    </div>
+                    <div className="flex items-center gap-1">
+                      <Button 
+                        variant="ghost" 
+                        size="icon"
+                        className="text-white/70 hover:text-white hover:bg-white/10 h-8 w-8"
+                        onClick={() => toggleSave(featuredNews.id)}
+                      >
+                        <Bookmark className={`h-4 w-4 ${savedNews.includes(featuredNews.id) ? "fill-current text-yellow-400" : ""}`} />
+                      </Button>
+                      <Button 
+                        variant="ghost" 
+                        size="icon"
+                        className="text-white/70 hover:text-white hover:bg-white/10 h-8 w-8"
+                        onClick={() => shareNews(featuredNews)}
+                      >
+                        <Share2 className="h-4 w-4" />
+                      </Button>
+                    </div>
+                  </div>
+                </div>
+              </Card>
+            )}
+
+            {/* News List - Way2News Style Cards */}
+            <div className="space-y-3">
+              {otherNews.map((item) => (
+                <Card 
+                  key={item.id} 
+                  className="overflow-hidden border-0 shadow-md hover:shadow-lg transition-shadow"
                 >
-                  {getCategoryIcon(currentNews?.category)}
-                  <span className="ml-1 capitalize">{currentNews?.category}</span>
-                </Badge>
-                
-                {/* Counter */}
-                <div className="absolute top-3 right-3 bg-black/50 px-2 py-1 rounded-full text-white text-xs">
-                  {currentIndex + 1} / {news.length}
-                </div>
-                
-                {/* Title on Image */}
-                <div className="absolute bottom-3 left-3 right-3">
-                  <h2 className="text-white font-bold text-lg leading-tight">
-                    {language === "te" && currentNews?.title_te 
-                      ? currentNews.title_te 
-                      : currentNews?.title}
-                  </h2>
-                </div>
-              </div>
-
-              {/* Content Section */}
-              <CardContent className="p-4">
-                {/* Summary */}
-                <p className="text-sm text-muted-foreground leading-relaxed mb-4">
-                  {language === "te" && currentNews?.summary_te 
-                    ? currentNews.summary_te 
-                    : currentNews?.summary}
-                </p>
-
-                {/* Meta Info */}
-                <div className="flex items-center justify-between text-xs text-muted-foreground mb-4">
-                  <div className="flex items-center gap-3">
-                    <span className="flex items-center gap-1">
-                      <Clock className="h-3 w-3" />
-                      {formatTime(currentNews?.created_at)}
-                    </span>
-                    <span className="flex items-center gap-1">
-                      <Eye className="h-3 w-3" />
-                      {currentNews?.views || 0}
-                    </span>
+                  <div className="flex">
+                    {/* Thumbnail */}
+                    <div className="w-28 h-24 flex-shrink-0 relative">
+                      {item.image_url ? (
+                        <img
+                          src={item.image_url}
+                          alt=""
+                          className="w-full h-full object-cover"
+                        />
+                      ) : (
+                        <div className={`w-full h-full ${getCategoryInfo(item.category).color} flex items-center justify-center`}>
+                          {(() => {
+                            const Icon = getCategoryInfo(item.category).icon;
+                            return <Icon className="h-8 w-8 text-white/70" />;
+                          })()}
+                        </div>
+                      )}
+                      {/* Category overlay */}
+                      <div className={`absolute bottom-0 left-0 right-0 py-0.5 px-1.5 text-[10px] font-medium text-white text-center ${getCategoryInfo(item.category).color}`}>
+                        {language === "te" 
+                          ? getCategoryInfo(item.category).name_te 
+                          : getCategoryInfo(item.category).name}
+                      </div>
+                    </div>
+                    
+                    {/* Content */}
+                    <div className="flex-1 p-3 flex flex-col justify-between">
+                      <div>
+                        <h3 className="font-semibold text-sm leading-tight line-clamp-2 text-foreground">
+                          {language === "te" && item.title_te ? item.title_te : item.title}
+                        </h3>
+                      </div>
+                      
+                      <div className="flex items-center justify-between mt-2">
+                        <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                          <span className="flex items-center gap-0.5">
+                            <Clock className="h-3 w-3" />
+                            {formatTime(item.created_at)}
+                          </span>
+                          <span className="flex items-center gap-0.5">
+                            <Eye className="h-3 w-3" />
+                            {item.views?.toLocaleString() || 0}
+                          </span>
+                        </div>
+                        
+                        <div className="flex items-center gap-0.5">
+                          <button 
+                            className="p-1.5 hover:bg-muted rounded-full"
+                            onClick={(e) => { e.stopPropagation(); handleReact(item.id, "like"); }}
+                          >
+                            <ThumbsUp className="h-3.5 w-3.5 text-muted-foreground" />
+                          </button>
+                          <button 
+                            className="p-1.5 hover:bg-muted rounded-full"
+                            onClick={(e) => { e.stopPropagation(); toggleSave(item.id); }}
+                          >
+                            <Bookmark className={`h-3.5 w-3.5 ${savedNews.includes(item.id) ? "fill-current text-yellow-500" : "text-muted-foreground"}`} />
+                          </button>
+                          <button 
+                            className="p-1.5 hover:bg-muted rounded-full"
+                            onClick={(e) => { e.stopPropagation(); shareNews(item); }}
+                          >
+                            <Share2 className="h-3.5 w-3.5 text-muted-foreground" />
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                    
+                    {/* Arrow indicator */}
+                    <div className="flex items-center pr-2">
+                      <ChevronRight className="h-5 w-5 text-muted-foreground/50" />
+                    </div>
                   </div>
-                  {currentNews?.source && (
-                    <span className="text-primary">{currentNews.source}</span>
-                  )}
-                </div>
-
-                {/* Reactions */}
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-1">
-                    <Button 
-                      variant="ghost" 
-                      size="sm" 
-                      className="h-8 px-2"
-                      onClick={() => handleReact(currentNews?.id, "like")}
-                    >
-                      <ThumbsUp className="h-4 w-4 mr-1" />
-                      <span className="text-xs">{currentNews?.reactions?.like || 0}</span>
-                    </Button>
-                    <Button 
-                      variant="ghost" 
-                      size="sm" 
-                      className="h-8 px-2"
-                      onClick={() => handleReact(currentNews?.id, "love")}
-                    >
-                      <Heart className="h-4 w-4 mr-1 text-red-500" />
-                      <span className="text-xs">{currentNews?.reactions?.love || 0}</span>
-                    </Button>
-                    <Button 
-                      variant="ghost" 
-                      size="sm" 
-                      className="h-8 px-2"
-                      onClick={() => handleReact(currentNews?.id, "angry")}
-                    >
-                      <Angry className="h-4 w-4 mr-1 text-orange-500" />
-                      <span className="text-xs">{currentNews?.reactions?.angry || 0}</span>
-                    </Button>
-                  </div>
-                  <Button 
-                    variant="ghost" 
-                    size="sm"
-                    onClick={() => shareNews(currentNews)}
-                  >
-                    <Share2 className="h-4 w-4" />
-                  </Button>
-                </div>
-              </CardContent>
-            </Card>
-
-            {/* Navigation Buttons */}
-            <div className="flex justify-center gap-4 mt-4">
-              <Button
-                variant="outline"
-                size="lg"
-                className="flex-1"
-                onClick={goToPrev}
-                disabled={currentIndex === 0}
-              >
-                <ChevronUp className="h-5 w-5 mr-2" />
-                {language === "te" ? "మునుపటి" : "Previous"}
-              </Button>
-              <Button
-                variant="default"
-                size="lg"
-                className="flex-1"
-                onClick={goToNext}
-                disabled={currentIndex === news.length - 1}
-              >
-                {language === "te" ? "తదుపరి" : "Next"}
-                <ChevronDown className="h-5 w-5 ml-2" />
-              </Button>
-            </div>
-
-            {/* Dots Indicator */}
-            <div className="flex justify-center gap-1 mt-4">
-              {news.slice(0, 10).map((_, idx) => (
-                <div
-                  key={idx}
-                  className={`h-1.5 rounded-full transition-all ${
-                    idx === currentIndex 
-                      ? "w-6 bg-primary" 
-                      : "w-1.5 bg-muted-foreground/30"
-                  }`}
-                />
+                </Card>
               ))}
-              {news.length > 10 && (
-                <span className="text-xs text-muted-foreground ml-2">
-                  +{news.length - 10}
-                </span>
-              )}
             </div>
+
+            {/* Load More */}
+            {news.length > 0 && (
+              <Button 
+                variant="outline" 
+                className="w-full"
+                onClick={() => fetchNews()}
+              >
+                {language === "te" ? "మరిన్ని వార్తలు చూడండి" : "Load more news"}
+              </Button>
+            )}
           </div>
         )}
       </div>
