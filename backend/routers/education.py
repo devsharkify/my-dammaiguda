@@ -1289,7 +1289,7 @@ async def get_course_analytics(course_id: str, user: dict = Depends(get_current_
     }
 
 @router.put("/instructor/lessons/{lesson_id}")
-async def update_lesson(lesson_id: str, updates: dict, user: dict = Depends(get_current_user)):
+async def instructor_update_lesson(lesson_id: str, updates: dict, user: dict = Depends(get_current_user)):
     """Update a lesson"""
     if user.get("role") not in ["admin", "instructor"]:
         raise HTTPException(status_code=403, detail="Instructor access required")
@@ -1306,7 +1306,7 @@ async def update_lesson(lesson_id: str, updates: dict, user: dict = Depends(get_
     return {"success": True, "lesson": updated}
 
 @router.delete("/instructor/lessons/{lesson_id}")
-async def delete_lesson(lesson_id: str, user: dict = Depends(get_current_user)):
+async def instructor_delete_lesson(lesson_id: str, user: dict = Depends(get_current_user)):
     """Delete a lesson"""
     if user.get("role") not in ["admin", "instructor"]:
         raise HTTPException(status_code=403, detail="Instructor access required")
