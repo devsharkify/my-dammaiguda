@@ -1184,6 +1184,9 @@ async def get_my_stats(user: dict = Depends(get_current_user)):
     
     rank = next((i+1 for i, u in enumerate(all_xp) if u["_id"] == user["id"]), len(all_xp) + 1)
     
+    # Get streak data
+    streak_data = await calculate_learning_streak(user["id"])
+    
     return {
         "total_courses_enrolled": len(enrollments),
         "courses_completed": completed_courses,
@@ -1193,7 +1196,9 @@ async def get_my_stats(user: dict = Depends(get_current_user)):
         "quizzes_taken": len(quiz_attempts),
         "quizzes_passed": quizzes_passed,
         "average_quiz_score": round(avg_quiz_score, 1),
-        "current_streak": 0,  # TODO: Implement streak tracking
+        "current_streak": streak_data["current_streak"],
+        "longest_streak": streak_data["longest_streak"],
+        "last_activity_date": streak_data["last_activity_date"],
         "total_xp": xp,
         "level": level,
         "badge": badge,
