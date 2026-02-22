@@ -353,13 +353,16 @@ async def update_application_status(
         {"$set": update_data}
     )
     
-    # Send SMS notification if approved (placeholder - integrate with Authkey.io)
+    # Send SMS notification if approved
     if update.status == "approved":
         # Get user phone from application
         user_phone = application.get("user_phone") or application.get("primary_applicant", {}).get("whatsapp_number")
         if user_phone:
-            # TODO: Send SMS via Authkey.io
-            pass
+            await send_benefits_sms(user_phone, application.get("type", "benefit"), "approved")
+    elif update.status == "rejected":
+        user_phone = application.get("user_phone") or application.get("primary_applicant", {}).get("whatsapp_number")
+        if user_phone:
+            await send_benefits_sms(user_phone, application.get("type", "benefit"), "rejected")
     
     updated = await db.benefit_applications.find_one({"id": application_id}, {"_id": 0})
     
