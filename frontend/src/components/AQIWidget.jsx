@@ -104,8 +104,7 @@ export default function AQIWidget({ onViewFullReport }) {
     return null;
   }
 
-  const dammaiguda = aqiData.dammaiguda;
-  const hyderabad = aqiData.hyderabad;
+  const dailyPeak = aqiData.daily_peak;
 
   return (
     <Card className="border-border/50 overflow-hidden" data-testid="aqi-widget">
@@ -140,49 +139,36 @@ export default function AQIWidget({ onViewFullReport }) {
       </div>
 
       <CardContent className="p-0">
-        {/* Info Banner - AQI Display Logic */}
-        <div className="px-4 py-2 bg-blue-50 border-b border-blue-100 flex items-center gap-2">
-          <Info className="h-3 w-3 text-blue-500 flex-shrink-0" />
-          <p className="text-xs text-blue-700">
-            {language === "te" 
-              ? "రాత్రి 8 గంటల వరకు రోజంతా అత్యధిక AQI చూపిస్తుంది. 8 గంటల తర్వాత ప్రస్తుత విలువ చూపిస్తుంది."
-              : "Shows day's highest AQI until 8 PM, then shows live value."}
-          </p>
-        </div>
-        
-        {/* Dammaiguda AQI - Main */}
+        {/* Current AQI */}
         <div className="p-4 border-b border-border/30">
           <div className="flex items-center justify-between mb-3">
             <div>
               <p className="text-sm text-text-muted">
-                {language === "te" ? dammaiguda.location_te : dammaiguda.location}
+                {language === "te" ? aqiData.location_te || "దమ్మాయిగూడ" : aqiData.location || "Dammaiguda"}
               </p>
               <p className="text-xs text-text-muted opacity-70">
-                {language === "te" ? "మీ ప్రాంతం" : "Your Area"}
+                {language === "te" ? "ప్రస్తుత AQI" : "Current AQI"}
               </p>
             </div>
             <div className="text-right">
               <div className="flex items-center gap-2">
-                <span className="text-4xl font-bold" style={{ color: dammaiguda.color }}>
-                  {getDisplayAqi('dammaiguda', dammaiguda.aqi) || "—"}
+                <span className="text-4xl font-bold" style={{ color: aqiData.color }}>
+                  {aqiData.aqi || "—"}
                 </span>
-                <span className="text-2xl">{getAQIEmoji(dammaiguda.category)}</span>
+                <span className="text-2xl">{getAQIEmoji(aqiData.category)}</span>
               </div>
               <Badge 
                 className="mt-1"
-                style={{ backgroundColor: dammaiguda.color, color: dammaiguda.color === "#FFFF00" ? "#333" : "#fff" }}
+                style={{ backgroundColor: aqiData.color, color: aqiData.color === "#FFFF00" ? "#333" : "#fff" }}
               >
-                {language === "te" ? dammaiguda.category_te : dammaiguda.category}
+                {language === "te" ? aqiData.category_te : aqiData.category}
               </Badge>
-              {dailyMaxAqi.dammaiguda && dailyMaxAqi.dammaiguda !== dammaiguda.aqi && !isPastResetTime() && (
-                <p className="text-xs text-gray-400 mt-1">Live: {dammaiguda.aqi}</p>
-              )}
             </div>
           </div>
           
           {/* Pollutants */}
           <div className="flex gap-4 mb-3">
-            {dammaiguda.pollutants?.map((p, i) => (
+            {aqiData.pollutants?.map((p, i) => (
               <div key={i} className="bg-muted/50 rounded-lg px-3 py-2 flex-1 text-center">
                 <p className="text-xs text-text-muted">{p.name}</p>
                 <p className="font-bold text-lg text-text-primary">
@@ -196,27 +182,50 @@ export default function AQIWidget({ onViewFullReport }) {
           <div className="flex items-start gap-2 bg-orange-50 rounded-lg p-3">
             <AlertTriangle className="h-4 w-4 text-orange-500 mt-0.5 flex-shrink-0" />
             <p className="text-xs text-orange-700">
-              {language === "te" ? dammaiguda.health_impact_te : dammaiguda.health_impact}
+              {language === "te" ? aqiData.health_impact_te : aqiData.health_impact}
             </p>
           </div>
         </div>
 
-        {/* Hyderabad AQI - Secondary */}
+        {/* Today's Peak AQI */}
+        {dailyPeak && (
+          <div className="px-4 py-3 bg-gradient-to-r from-red-50 to-orange-50 border-b border-border/30">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <div className="h-8 w-8 rounded-full flex items-center justify-center" style={{ backgroundColor: dailyPeak.color }}>
+                  <ArrowUp className="h-4 w-4 text-white" />
+                </div>
+                <div>
+                  <p className="text-sm font-medium text-text-primary">
+                    {language === "te" ? "నేటి అత్యధిక AQI" : "Today's Peak AQI"}
+                  </p>
+                  <p className="text-xs text-text-muted">
+                    {language === "te" ? `సమయం: ${dailyPeak.time}` : `at ${dailyPeak.time}`}
+                  </p>
+                </div>
+              </div>
+              <div className="text-right">
+                <span className="text-2xl font-bold" style={{ color: dailyPeak.color }}>
+                  {dailyPeak.aqi}
+                </span>
+                <Badge 
+                  className="ml-2"
+                  style={{ backgroundColor: dailyPeak.color, color: dailyPeak.color === "#FFFF00" ? "#333" : "#fff" }}
+                >
+                  {language === "te" ? dailyPeak.category_te : dailyPeak.category}
+                </Badge>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* View Full Report Button */}
         <div className="px-4 py-3 bg-muted/30 flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <div 
-              className={`h-10 w-10 rounded-full flex items-center justify-center text-white font-bold ${getAQIBgClass(hyderabad.category)}`}
-            >
-              {getDisplayAqi('hyderabad', hyderabad.aqi) || "—"}
-            </div>
-            <div>
-              <p className="font-medium text-sm text-text-primary">
-                {language === "te" ? hyderabad.location_te : hyderabad.location}
-              </p>
-              <p className="text-xs text-text-muted">
-                {language === "te" ? hyderabad.category_te : hyderabad.category}
-              </p>
-            </div>
+          <div className="flex items-center gap-2">
+            <TrendingUp className="h-4 w-4 text-blue-500" />
+            <span className="text-sm text-text-muted">
+              {language === "te" ? "24 గంటల ట్రెండ్ చూడండి" : "View 24hr Trend"}
+            </span>
           </div>
           <Button
             variant="ghost"
