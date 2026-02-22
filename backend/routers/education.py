@@ -1,4 +1,4 @@
-"""AIT Education Router - Comprehensive EdTech platform"""
+"""AIT Education Router - Comprehensive EdTech platform (Byju's style)"""
 from fastapi import APIRouter, HTTPException, Depends, Query
 from pydantic import BaseModel
 from typing import Optional, List
@@ -25,27 +25,48 @@ class CourseCreate(BaseModel):
     difficulty: str = "beginner"  # beginner, intermediate, advanced
     tags: List[str] = []
     is_featured: bool = False
-    is_live: bool = False  # For live classes
+    is_live: bool = False
+    # New fields for Byju's-style structure
+    subjects: List[str] = []  # List of subject IDs
+    quiz_frequency: int = 3  # Quiz after every X lessons
+    has_certificate: bool = True
+    certificate_template: Optional[str] = None
 
-class LessonCreate(BaseModel):
+class SubjectCreate(BaseModel):
     course_id: str
     title: str
     title_te: Optional[str] = None
     description: Optional[str] = None
+    thumbnail_url: Optional[str] = None
+    order_index: int = 0
+
+class LessonCreate(BaseModel):
+    course_id: str
+    subject_id: Optional[str] = None  # New: Link to subject
+    title: str
+    title_te: Optional[str] = None
+    description: Optional[str] = None
     video_url: Optional[str] = None
+    video_duration_seconds: int = 0
     content_html: Optional[str] = None
     duration_minutes: int = 0
     order_index: int
     is_free_preview: bool = False
+    # New fields for study materials
+    pre_lesson_material: Optional[str] = None  # PDF/notes URL
+    study_materials: List[dict] = []  # [{type: 'pdf'|'image', url, title}]
+    requires_previous: bool = True  # No skipping - must complete previous
 
 class QuizCreate(BaseModel):
     course_id: str
+    subject_id: Optional[str] = None  # New: Link to subject
     lesson_id: Optional[str] = None
     title: str
     title_te: Optional[str] = None
     questions: List[dict]  # [{question, options, correct_answer, explanation}]
     passing_score: int = 70
     time_limit_minutes: Optional[int] = None
+    quiz_type: str = "lesson"  # lesson, subject, final
 
 class QuizSubmission(BaseModel):
     quiz_id: str
