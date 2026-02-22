@@ -86,6 +86,7 @@ export function AuthProvider({ children }) {
   // Direct login function for external auth flows
   const login = (newUser, newToken) => {
     localStorage.setItem("dammaiguda_token", newToken);
+    localStorage.setItem("dammaiguda_user", JSON.stringify(newUser));
     setToken(newToken);
     setUser(newUser);
   };
