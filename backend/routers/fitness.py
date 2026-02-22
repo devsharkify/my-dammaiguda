@@ -89,6 +89,18 @@ class ManualActivityRecord(BaseModel):
     heart_rate_avg: Optional[int] = None
     notes: Optional[str] = None
 
+class SleepEntry(BaseModel):
+    """Sleep tracking entry"""
+    date: str  # YYYY-MM-DD - the date you woke up
+    sleep_start: str  # HH:MM - time went to bed (previous day if after midnight)
+    sleep_end: str  # HH:MM - time woke up
+    quality: Optional[str] = "good"  # poor, fair, good, excellent
+    deep_sleep_minutes: Optional[int] = None
+    light_sleep_minutes: Optional[int] = None
+    rem_sleep_minutes: Optional[int] = None
+    awakenings: Optional[int] = 0
+    notes: Optional[str] = None
+
 # ============== HELPER ==============
 
 # Fitness Points Configuration
