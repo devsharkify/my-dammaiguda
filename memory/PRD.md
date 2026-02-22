@@ -524,6 +524,11 @@ The app now supports easy replication for different areas (e.g., "My AS Rao Naga
 - **Manager Phone:** 9876543211 (assigned to Dammaiguda)
 - **Test OTP:** 123456 (REMOVE IN PRODUCTION)
 
+### Staff Portal Credentials (Password Login at /portals)
+- **Master Admin:** 9100063133 / Plan@123
+- **Manager (rohan):** 7386917770 / Manager@123
+- **Original Manager:** 9844548537 / OTP 123456
+
 ---
 
 ## Security Notes
