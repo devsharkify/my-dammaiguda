@@ -1,12 +1,21 @@
-"""AQI Router - Live air quality data from aqi.in"""
+"""AQI Router - Live air quality data from aqi.in with daily peak tracking"""
 from fastapi import APIRouter
-from datetime import datetime, timezone
+from datetime import datetime, timezone, timedelta
 import httpx
 from bs4 import BeautifulSoup
 import re
 import logging
 
 router = APIRouter(prefix="/aqi", tags=["Air Quality"])
+
+# Cache for AQI data with daily peak
+_aqi_cache = {
+    "data": None,
+    "last_fetched": None,
+    "daily_peak": None,
+    "daily_peak_time": None,
+    "daily_peak_date": None
+}
 
 # ============== AQI HELPER FUNCTIONS ==============
 
