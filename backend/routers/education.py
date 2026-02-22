@@ -442,7 +442,7 @@ async def get_lesson(lesson_id: str, user: dict = Depends(get_current_user)):
             ).sort("order_index", 1).to_list(100)
             
             # Find previous lesson
-            current_index = next((i for i, l in enumerate(all_lessons) if l["id"] == lesson_id), 0)
+            current_index = next((i for i, les in enumerate(all_lessons) if les["id"] == lesson_id), 0)
             
             if current_index > 0:
                 prev_lesson = all_lessons[current_index - 1]
