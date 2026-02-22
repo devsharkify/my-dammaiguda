@@ -1,0 +1,156 @@
+{
+  "summary": "Comprehensive QA test of My Dammaiguda civic engagement platform. Backend APIs: 22/33 passed (67%). Frontend UI tested - main pages and navigation working. Key issues: Rate limiting blocking some tests, some API endpoints returning 404/405, protected routes not maintaining auth state properly.",
+
+  "backend_issues": {
+    "critical": [
+      {"endpoint": "GET /api/admin/analytics", "issue": "Returns 404 - endpoint not found", "priority": "HIGH"},
+      {"endpoint": "GET /api/news", "issue": "Returns 404 - needs /api/news/feed endpoint", "priority": "HIGH"},
+      {"endpoint": "GET /api/news/admin", "issue": "Returns 400 - requires valid category parameter", "priority": "MEDIUM"},
+      {"endpoint": "GET /api/aqi", "issue": "Returns 404 - needs /api/aqi/current endpoint", "priority": "MEDIUM"}
+    ],
+    "minor": [
+      {"endpoint": "POST /api/fitness/log", "issue": "Returns 404 - endpoint structure differs from expected", "priority": "LOW"},
+      {"endpoint": "GET /api/manager/list", "issue": "Returns 401 - auth token not being accepted properly", "priority": "MEDIUM"},
+      {"endpoint": "GET /api/manager/dashboard", "issue": "Returns 405 Method Not Allowed - may need POST", "priority": "MEDIUM"},
+      {"endpoint": "GET /api/clone/areas", "issue": "Returns 405 - different method expected", "priority": "LOW"},
+      {"endpoint": "POST /api/clone/generate-config", "issue": "Returns 405 - endpoint exists as /api/clone/generate", "priority": "LOW"},
+      {"endpoint": "GET /api/reports/available", "issue": "Returns 401 - auth not being accepted", "priority": "MEDIUM"}
+    ]
+  },
+
+  "frontend_issues": {
+    "ui_bugs": [
+      {
+        "component": "PortalSelector.jsx",
+        "issue": "Admin login shows 'Login failed' due to rate limiting (429)",
+        "selector": "button[type='submit']",
+        "priority": "MEDIUM"
+      },
+      {
+        "component": "Protected Routes",
+        "issue": "Auth state not persisting across page navigations - protected routes redirect to login even with valid token in localStorage",
+        "selector": "N/A",
+        "priority": "HIGH"
+      }
+    ],
+    "integration_issues": [
+      {
+        "flow": "Staff Portal Login -> Admin Panel",
+        "issue": "After login, user is redirected to main dashboard instead of admin panel",
+        "affected_selectors": ["/portals", "/admin/panel"]
+      },
+      {
+        "flow": "News Page",
+        "issue": "Shows 'Error fetching news: AxiosError' in console - API endpoint mismatch",
+        "affected_selectors": ["/news"]
+      }
+    ],
+    "design_issues": []
+  },
+
+  "passed_tests": [
+    "GET /api/health - Returns 200 with healthy status",
+    "POST /api/auth/admin-login - Admin login with 9100063133/Plan@123 works",
+    "POST /api/auth/admin-login - Invalid password correctly rejected (401)",
+    "POST /api/auth/otp - OTP sending works (returns dev_otp: 123456 for test numbers)",
+    "POST /api/auth/verify - OTP verification works",
+    "GET /api/admin/stats - Returns issue/user statistics",
+    "GET /api/news/categories - Returns news categories",
+    "GET /api/education/courses - Returns courses list",
+    "GET /api/education/courses/categories - Returns 6 course categories",
+    "POST /api/education/courses - Course creation works for admin",
+    "GET /api/education/instructor/courses - Returns instructor courses",
+    "GET /api/education/instructor/dashboard - Returns dashboard stats",
+    "GET /api/benefits - Returns 4 citizen benefits",
+    "GET /api/benefits/schemes - Returns benefit schemes",
+    "GET /api/benefits/admin/applications - Admin benefits endpoint",
+    "GET /api/aqi/current - Returns AQI data (Dammaiguda: 86, Hyderabad: 78)",
+    "GET /api/issues - Returns issue list",
+    "GET /api/issues/categories - Returns issue categories",
+    "GET /api/fitness/profile - Returns fitness profile (404 for new users)",
+    "GET /api/fitness/leaderboard - Returns leaderboard",
+    "GET /api/settings/branding - Returns branding settings",
+    "GET /api/reports/admin/users - Returns user reports",
+    "POST /api/fitness/activity/start - Activity tracking works",
+    "Frontend: News page loads with categories and articles",
+    "Frontend: Issues page shows reported issues with filters",
+    "Frontend: OTP login flow works (Send OTP -> OTP boxes -> Verify)",
+    "Frontend: Main dashboard shows AQI widget, Citizen Wall, feature icons",
+    "Frontend: Portal selector page loads with login form"
+  ],
+
+  "test_report_links": [
+    "/app/backend/tests/test_comprehensive_features.py",
+    "/app/test_reports/pytest/pytest_comprehensive.xml"
+  ],
+
+  "action_items": [
+    "Fix Auth context persistence - token stored as 'dammaiguda_token' but protected routes may not be reading it correctly during initial load",
+    "Add /api/admin/analytics endpoint or update frontend to use correct endpoint path",
+    "Fix news API endpoint - frontend expects /api/news but backend uses /api/news/feed",
+    "Fix AQI API endpoint - frontend expects /api/aqi but backend uses /api/aqi/current",
+    "Fix manager API authentication - GET /api/manager/list returns 401 even with valid admin token",
+    "Add rate limit handling or increase limits for staff portal login"
+  ],
+
+  "critical_code_review_comments": [
+    "AuthContext uses 'dammaiguda_token' key but some pages may be checking 'token' key in localStorage",
+    "PortalSelector.jsx stores token in both 'dammaiguda_token' and 'token' keys but AuthContext only reads 'dammaiguda_token'",
+    "Rate limiting on /api/auth/admin-login may be too aggressive (10/minute)",
+    "Frontend news API calls don't match backend endpoint structure",
+    "Protected routes redirect to /auth before token validation completes"
+  ],
+
+  "updated_files": [
+    "/app/backend/tests/test_comprehensive_features.py"
+  ],
+
+  "success_rate": {
+    "backend": "67% (22/33 tests passed)",
+    "frontend": "70% (UI loads but some integrations broken)"
+  },
+
+  "test_credentials": {
+    "admin_phone": "9100063133",
+    "admin_password": "Plan@123",
+    "test_phone": "9999999999",
+    "test_otp": "123456",
+    "manager_phone": "7386917770"
+  },
+
+  "seed_data_creation": "None - used existing test data",
+
+  "retest_needed": true,
+
+  "should_main_agent_self_test": false,
+
+  "context_for_next_testing_agent": "Auth persistence is the main blocker for testing protected routes (admin panel, instructor, manager, fitness, education, benefits). The backend APIs are mostly working but have some endpoint path mismatches. The staff portal login at /portals works but rate limiting blocks repeated tests. News page shows error fetching news due to API endpoint mismatch (/api/news vs /api/news/feed). AQI widget on dashboard works correctly showing live data. Issues page is public and works without auth.",
+
+  "features_verified": {
+    "working": [
+      "Health check API",
+      "Admin password login API",
+      "OTP send/verify flow",
+      "Education courses CRUD",
+      "Instructor dashboard",
+      "Benefits listing",
+      "AQI current data",
+      "Issues listing",
+      "Fitness leaderboard",
+      "Settings branding",
+      "Reports admin users",
+      "News page UI (with fallback data)",
+      "Issues page UI",
+      "Portal selector UI",
+      "OTP input UI"
+    ],
+    "broken": [
+      "Admin analytics endpoint",
+      "News feed endpoint",
+      "Manager dashboard",
+      "Clone maker APIs",
+      "Protected route auth persistence",
+      "Staff portal -> Admin panel navigation"
+    ]
+  }
+}
