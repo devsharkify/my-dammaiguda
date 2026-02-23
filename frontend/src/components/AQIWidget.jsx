@@ -238,32 +238,6 @@ export default function AQIWidget({ onViewFullReport }) {
             <ChevronRight className="h-4 w-4 ml-1" />
           </Button>
         </div>
-
-        {/* Data Source Attribution */}
-        <div className="px-4 py-2 bg-gray-50 dark:bg-gray-900 border-t border-border/30">
-          <p className="text-xs text-gray-500 dark:text-gray-400">
-            {language === "te" ? "డేటా మూలం: " : "Data source: "}
-            <a 
-              href="https://cpcb.nic.in" 
-              target="_blank" 
-              rel="noopener noreferrer"
-              className="text-teal-600 dark:text-teal-400 hover:underline inline-flex items-center gap-1"
-            >
-              CPCB.nic.in
-              <ExternalLink className="h-3 w-3" />
-            </a>
-            {" | "}
-            <a 
-              href="https://www.aqi.in" 
-              target="_blank" 
-              rel="noopener noreferrer"
-              className="text-teal-600 dark:text-teal-400 hover:underline inline-flex items-center gap-1"
-            >
-              AQI.in
-              <ExternalLink className="h-3 w-3" />
-            </a>
-          </p>
-        </div>
       </CardContent>
     </Card>
   );
