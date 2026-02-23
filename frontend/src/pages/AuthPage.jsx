@@ -460,7 +460,7 @@ export default function AuthPage() {
         <Card className="w-full max-w-md border-dashed border-2 border-muted bg-muted/30">
           <CardContent className="p-4">
             <p className="text-xs text-center text-muted-foreground mb-3 font-medium">
-              Quick Access (For Testing)
+              Quick Access
             </p>
             <div className="grid grid-cols-3 gap-2">
               <Button
