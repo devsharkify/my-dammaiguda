@@ -172,5 +172,9 @@
   "iarc_rating_id": "e84b072d-71b3-4d3e-86ae-31a8ce4e53b7",
   "edge_side_panel": {
     "preferred_width": 400
-  }
+  },
+  "scope_extensions": [
+    {"origin": "https://mydammaiguda.in"},
+    {"origin": "https://www.mydammaiguda.in"}
+  ]
 }
