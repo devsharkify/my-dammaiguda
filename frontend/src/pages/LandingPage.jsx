@@ -25,6 +25,36 @@ export default function LandingPage() {
   const [otp, setOtp] = useState("");
   const [loading, setLoading] = useState(false);
 
+  // Quick login for different roles
+  const handleQuickLogin = async (role) => {
+    const credentials = {
+      admin: { phone: "+919876543210", otp: "123456" },
+      manager: { phone: "+917386917770", otp: "123456" },
+      instructor: { phone: "+919876543210", otp: "123456" }
+    };
+    
+    const cred = credentials[role];
+    setLoading(true);
+    
+    try {
+      await sendOTP(cred.phone);
+      await verifyOTP(cred.phone, cred.otp);
+      toast.success(`Logged in as ${role}!`);
+      
+      if (role === "admin") {
+        navigate("/admin/panel");
+      } else if (role === "manager") {
+        navigate("/manager");
+      } else {
+        navigate("/education");
+      }
+    } catch (error) {
+      toast.error(error.response?.data?.detail || "Login failed");
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const handleSendOTP = async () => {
     if (!phone || phone.length < 10) {
       toast.error("Enter valid phone number");
