@@ -72,10 +72,12 @@ export default function AuthPage() {
       toast.success(`Logged in as ${role}!`);
       
       // Redirect based on role
-      if (role === "admin" || role === "manager") {
-        navigate("/staff-login");
-      } else {
-        navigate("/");
+      if (role === "admin") {
+        navigate("/admin/panel");
+      } else if (role === "manager") {
+        navigate("/manager");
+      } else if (role === "instructor") {
+        navigate("/admin/panel?tab=courses");
       }
     } catch (error) {
       toast.error(error.response?.data?.detail || "Login failed");
