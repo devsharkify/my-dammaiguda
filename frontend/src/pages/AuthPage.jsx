@@ -425,29 +425,49 @@ export default function AuthPage() {
           </CardContent>
         </Card>
 
-        {/* Test Credentials for Google Play Review */}
+        {/* Quick Access Buttons for App Review */}
         <Card className="w-full max-w-md border-dashed border-2 border-muted bg-muted/30">
           <CardContent className="p-4">
             <p className="text-xs text-center text-muted-foreground mb-3 font-medium">
-              🔐 Test Credentials (For App Review)
+              Quick Access (For Testing)
             </p>
-            <div className="space-y-2 text-sm">
-              <div className="flex justify-between items-center p-2 bg-background rounded border">
-                <span className="text-muted-foreground">Test User:</span>
-                <code className="font-mono text-primary">9876543210</code>
-              </div>
-              <div className="flex justify-between items-center p-2 bg-background rounded border">
-                <span className="text-muted-foreground">Test OTP:</span>
-                <code className="font-mono text-primary">123456</code>
-              </div>
-            </div>
-            <div className="mt-3 pt-3 border-t border-dashed space-y-1">
-              <p className="text-xs text-muted-foreground text-center">
-                Admin & Manager Portal: <code className="text-primary">/staff-login</code>
-              </p>
-              <p className="text-xs text-muted-foreground text-center">
-                Phone: <code className="text-primary">9876543210</code> | OTP: <code className="text-primary">123456</code>
-              </p>
+            <div className="grid grid-cols-3 gap-2">
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => {
+                  setPhone("9876543210");
+                  setTimeout(() => handleQuickLogin("admin"), 100);
+                }}
+                className="text-xs h-10"
+                data-testid="quick-admin-btn"
+              >
+                👤 Admin
+              </Button>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => {
+                  setPhone("7386917770");
+                  setTimeout(() => handleQuickLogin("manager"), 100);
+                }}
+                className="text-xs h-10"
+                data-testid="quick-manager-btn"
+              >
+                👔 Manager
+              </Button>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => {
+                  setPhone("9876543210");
+                  setTimeout(() => handleQuickLogin("instructor"), 100);
+                }}
+                className="text-xs h-10"
+                data-testid="quick-instructor-btn"
+              >
+                📚 Instructor
+              </Button>
             </div>
           </CardContent>
         </Card>
