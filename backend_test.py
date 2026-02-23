@@ -10,7 +10,7 @@ import json
 from datetime import datetime
 
 class DammaigiudaAPITester:
-    def __init__(self, base_url="https://civic-mvp.preview.emergentagent.com"):
+    def __init__(self, base_url="https://engagement-hub-63.preview.emergentagent.com"):
         self.base_url = base_url
         self.api_url = f"{base_url}/api"
         self.token = None
