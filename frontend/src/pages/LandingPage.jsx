@@ -27,22 +27,34 @@ export default function LandingPage() {
 
   // Quick login for different roles
   const handleQuickLogin = async (role) => {
+    const redirects = {
+      admin: "/admin/panel",
+      manager: "/manager",
+      instructor: "/admin/panel?tab=courses"
+    };
+    
     const credentials = {
-      admin: { phone: "+919876543210", otp: "123456", redirect: "/admin/panel" },
-      manager: { phone: "+917386917770", otp: "123456", redirect: "/manager" },
-      instructor: { phone: "+919876543210", otp: "123456", redirect: "/admin/panel?tab=courses" }
+      admin: { phone: "+919876543210", otp: "123456" },
+      manager: { phone: "+917386917770", otp: "123456" },
+      instructor: { phone: "+919876543210", otp: "123456" }
     };
     
     const cred = credentials[role];
+    const redirectUrl = redirects[role];
     setLoading(true);
     
     try {
       await sendOTP(cred.phone);
-      await verifyOTP(cred.phone, cred.otp);
-      toast.success(`Logged in as ${role}!`);
+      const result = await verifyOTP(cred.phone, cred.otp);
       
-      // Force redirect using window.location for immediate navigation
-      window.location.replace(cred.redirect);
+      if (result.success) {
+        // Store redirect in sessionStorage and immediately redirect
+        sessionStorage.setItem('postLoginRedirect', redirectUrl);
+        toast.success(`Logged in as ${role}!`);
+        // Immediate hard redirect
+        window.location.href = redirectUrl;
+        return; // Stop execution
+      }
     } catch (error) {
       toast.error(error.response?.data?.detail || "Login failed");
       setLoading(false);
