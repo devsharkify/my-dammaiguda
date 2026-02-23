@@ -684,17 +684,23 @@ export default function ClaimBenefits() {
                 </div>
               </div>
               
-              {/* T&C */}
-              <div className="flex items-start gap-2 p-3 bg-amber-50 dark:bg-amber-950/30 rounded-lg border border-amber-200">
+              {/* Provider Info */}
+              <div className="p-3 bg-purple-50 dark:bg-purple-950/30 rounded-lg border border-purple-200 text-sm text-purple-800 dark:text-purple-200">
+                <p className="font-medium mb-1">Provided by Rohan Kulkarni in association with Bose American Academy.</p>
+                <p className="text-xs text-purple-600 dark:text-purple-400">Applying does not guarantee approval. All applications are subject to verification and T&C.</p>
+              </div>
+
+              {/* Confirmation */}
+              <div className="flex items-start gap-2">
                 <Checkbox id="terms-education" checked={termsAccepted} onCheckedChange={setTermsAccepted} />
                 <label htmlFor="terms-education" className="text-sm">
-                  I understand my application will be processed and the voucher will be generated for eligible users.
+                  I confirm all information provided is accurate.
                 </label>
               </div>
               
               <DialogFooter>
                 <Button variant="outline" onClick={() => { setShowModal(null); resetForms(); }}>Cancel</Button>
-                <Button onClick={submitEducationVoucher} disabled={loading} className="bg-purple-500 hover:bg-purple-600">
+                <Button onClick={submitEducationVoucher} disabled={loading || !termsAccepted} className="bg-purple-500 hover:bg-purple-600">
                   {loading ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : null}
                   Generate Voucher
                 </Button>
