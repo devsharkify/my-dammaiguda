@@ -201,7 +201,7 @@ export default function AuthPage() {
       </header>
 
       {/* Main Content */}
-      <div className="flex-1 flex items-center justify-center p-4">
+      <div className="flex-1 flex flex-col items-center justify-center p-4 gap-4">
         <Card className="w-full max-w-md shadow-lg border-border/50">
           <CardHeader className="text-center space-y-4 pb-2">
             <div className="mx-auto h-16 w-16 rounded-full bg-primary flex items-center justify-center">
