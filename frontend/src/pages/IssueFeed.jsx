@@ -241,6 +241,27 @@ export default function IssueFeed() {
   return (
     <Layout showBackButton title={language === "te" ? "సమస్యలు" : "Issues"}>
       <div className="space-y-4" data-testid="issue-feed">
+        {/* Municipal Disclaimer */}
+        <Card className="border-amber-200 dark:border-amber-800 bg-amber-50/50 dark:bg-amber-950/30">
+          <CardContent className="p-3">
+            <p className="text-xs text-amber-800 dark:text-amber-200">
+              {language === "te" 
+                ? "ఈ యాప్ ప్రభుత్వ సంస్థ కాదు. అధికారిక ఫిర్యాదుల కోసం GHMC సందర్శించండి."
+                : "This app is not a government entity. For official complaints, visit GHMC."}
+              {" "}
+              <a 
+                href="https://www.ghmc.gov.in" 
+                target="_blank" 
+                rel="noopener noreferrer"
+                className="text-amber-600 dark:text-amber-400 hover:underline inline-flex items-center gap-1 font-medium"
+              >
+                ghmc.gov.in
+                <ExternalLink className="h-3 w-3" />
+              </a>
+            </p>
+          </CardContent>
+        </Card>
+
         {/* Tabs for All Issues and My Issues */}
         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
           <TabsList className="grid w-full grid-cols-2 h-11">
