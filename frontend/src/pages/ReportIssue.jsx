@@ -39,6 +39,7 @@ export default function ReportIssue() {
   const [mediaFiles, setMediaFiles] = useState([]);
   const [loading, setLoading] = useState(false);
   const [locationLoading, setLocationLoading] = useState(false);
+  const [agreedToTerms, setAgreedToTerms] = useState(false);
 
   const categories = [
     { 
