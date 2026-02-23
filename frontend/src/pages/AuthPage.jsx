@@ -71,17 +71,18 @@ export default function AuthPage() {
       await verifyOTP(cred.phone, cred.otp);
       toast.success(`Logged in as ${role}!`);
       
-      // Redirect based on role
-      if (role === "admin") {
-        navigate("/admin/panel");
-      } else if (role === "manager") {
-        navigate("/manager");
-      } else if (role === "instructor") {
-        navigate("/admin/panel?tab=courses");
-      }
+      // Use setTimeout to ensure navigation happens after auth state updates
+      setTimeout(() => {
+        if (role === "admin") {
+          window.location.href = "/admin/panel";
+        } else if (role === "manager") {
+          window.location.href = "/manager";
+        } else if (role === "instructor") {
+          window.location.href = "/admin/panel?tab=courses";
+        }
+      }, 500);
     } catch (error) {
       toast.error(error.response?.data?.detail || "Login failed");
-    } finally {
       setLoading(false);
     }
   };
