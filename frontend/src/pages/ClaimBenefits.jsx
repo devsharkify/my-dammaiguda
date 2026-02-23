@@ -599,7 +599,7 @@ export default function ClaimBenefits() {
             <div className="flex items-start gap-2 p-3 bg-amber-50 dark:bg-amber-950/30 rounded-lg border border-amber-200">
               <Checkbox id="terms-health" checked={termsAccepted} onCheckedChange={setTermsAccepted} />
               <label htmlFor="terms-health" className="text-sm">
-                I accept the <span className="text-green-600 underline cursor-pointer">Terms & Conditions</span>.
+                I understand my application will be submitted to relevant authorities on my behalf. I confirm all information is accurate.
               </label>
             </div>
           </div>
