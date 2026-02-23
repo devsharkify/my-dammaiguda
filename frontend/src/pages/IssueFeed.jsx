@@ -9,7 +9,7 @@ import { Badge } from "../components/ui/badge";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../components/ui/select";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "../components/ui/tabs";
 import Layout from "../components/Layout";
-import { GovernmentDisclaimer, OFFICIAL_SOURCES } from "../components/GovernmentDisclaimer";
+import { IssueDisclaimer } from "../components/GovernmentDisclaimer";
 import {
   AlertTriangle,
   Filter,
@@ -24,8 +24,7 @@ import {
   XCircle,
   Clock3,
   Send,
-  Phone,
-  ExternalLink
+  Phone
 } from "lucide-react";
 
 const API = `${process.env.REACT_APP_BACKEND_URL}/api`;
