@@ -4,7 +4,7 @@ import axios from "axios";
 import { Card, CardContent } from "./ui/card";
 import { Button } from "./ui/button";
 import { Badge } from "./ui/badge";
-import { Wind, AlertTriangle, ChevronRight, RefreshCw, Loader2, Clock, TrendingUp, ArrowUp, ExternalLink } from "lucide-react";
+import { Wind, AlertTriangle, ChevronRight, RefreshCw, Loader2, Clock, TrendingUp, ArrowUp } from "lucide-react";
 
 const API = `${process.env.REACT_APP_BACKEND_URL}/api`;
 
