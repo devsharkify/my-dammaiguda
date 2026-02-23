@@ -17,6 +17,35 @@ load_dotenv()
 
 router = APIRouter(prefix="/news", tags=["News"])
 
+# ============== HELPER: TIME AGO ==============
+
+def get_time_ago(date_str: str) -> str:
+    """Convert datetime string to relative time ago"""
+    if not date_str:
+        return "Just now"
+    try:
+        from datetime import datetime, timezone
+        if isinstance(date_str, str):
+            dt = datetime.fromisoformat(date_str.replace("Z", "+00:00"))
+        else:
+            dt = date_str
+        now = datetime.now(timezone.utc)
+        diff = now - dt
+        seconds = diff.total_seconds()
+        
+        if seconds < 60:
+            return "Just now"
+        elif seconds < 3600:
+            return f"{int(seconds // 60)}m ago"
+        elif seconds < 86400:
+            return f"{int(seconds // 3600)}h ago"
+        elif seconds < 604800:
+            return f"{int(seconds // 86400)}d ago"
+        else:
+            return dt.strftime("%b %d")
+    except Exception:
+        return "Just now"
+
 # ============== AI REPHRASING SETUP ==============
 
 async def rephrase_with_ai(title: str, summary: str) -> Dict:
