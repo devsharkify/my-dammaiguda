@@ -736,76 +736,59 @@ export default function Dashboard() {
           <div className="flex items-center justify-between mb-3">
             <h3 className="font-semibold text-base flex items-center gap-2">
               <Gift className="h-5 w-5 text-primary" />
-              {language === "te" ? "పౌర ప్రయోజనాలు" : "Citizen Benefits"}
+              {language === "te" ? "ప్రత్యేక ప్రయోజనాలు" : "Special Benefits"}
             </h3>
             <Link to="/benefits" className="text-xs text-primary flex items-center">
-              {language === "te" ? "అన్నీ" : "All"}
+              {language === "te" ? "దరఖాస్తు చేయండి" : "Apply Now"}
               <ChevronRight className="h-3.5 w-3.5" />
             </Link>
           </div>
+          <p className="text-xs text-muted-foreground mb-3">
+            {language === "te" ? "రోహన్ కులకర్ణి & భాగస్వాములు అందించారు" : "Provided by Rohan Kulkarni & Partners"}
+          </p>
           <div className="flex gap-3 overflow-x-auto pb-2 scrollbar-hide -mx-4 px-4">
-            {/* Static benefit cards */}
+            {/* Free Accidental Insurance */}
             <Link to="/benefits" className="flex-shrink-0 w-56">
-              <div className="h-32 rounded-xl overflow-hidden relative shadow-md">
-                <img 
-                  src="https://images.unsplash.com/photo-1579684385127-1ef15d508118?w=400&h=200&fit=crop" 
-                  alt="Senior Pension" 
-                  className="w-full h-full object-cover"
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent" />
-                <div className="absolute bottom-0 left-0 right-0 p-3">
+              <div className="h-32 rounded-xl overflow-hidden relative shadow-md bg-gradient-to-br from-blue-500 to-blue-700">
+                <div className="absolute inset-0 flex flex-col justify-end p-3">
+                  <div className="flex items-center gap-2 mb-1">
+                    <Shield className="h-5 w-5 text-white" />
+                    <span className="text-white/80 text-xs font-medium">FREE</span>
+                  </div>
                   <p className="text-white font-semibold text-sm">
-                    {language === "te" ? "వృద్ధాప్య పెన్షన్" : "Senior Pension Scheme"}
+                    {language === "te" ? "ఉచిత ప్రమాద బీమా" : "Free Accidental Insurance"}
                   </p>
-                  <p className="text-white/80 text-xs">₹2,500/month</p>
+                  <p className="text-white/80 text-xs">{language === "te" ? "₹2 లక్షల కవరేజ్" : "₹2 Lakhs coverage"}</p>
                 </div>
               </div>
             </Link>
+            {/* Health Insurance 25% off */}
             <Link to="/benefits" className="flex-shrink-0 w-56">
-              <div className="h-32 rounded-xl overflow-hidden relative shadow-md">
-                <img 
-                  src="https://images.unsplash.com/photo-1576091160550-2173dba999ef?w=400&h=200&fit=crop" 
-                  alt="Health Camp" 
-                  className="w-full h-full object-cover"
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent" />
-                <div className="absolute bottom-0 left-0 right-0 p-3">
+              <div className="h-32 rounded-xl overflow-hidden relative shadow-md bg-gradient-to-br from-green-500 to-green-700">
+                <div className="absolute inset-0 flex flex-col justify-end p-3">
+                  <div className="flex items-center gap-2 mb-1">
+                    <Heart className="h-5 w-5 text-white" />
+                    <span className="text-white/80 text-xs font-medium">25% OFF</span>
+                  </div>
                   <p className="text-white font-semibold text-sm">
-                    {language === "te" ? "ఉచిత ఆరోగ్య క్యాంప్" : "Free Health Camp"}
+                    {language === "te" ? "ఆరోగ్య బీమా" : "Health Insurance"}
                   </p>
-                  <p className="text-white/80 text-xs">{language === "te" ? "ప్రతి ఆదివారం" : "Every Sunday"}</p>
+                  <p className="text-white/80 text-xs">{language === "te" ? "ప్రీమియం రీయింబర్స్‌మెంట్" : "Premium reimbursement"}</p>
                 </div>
               </div>
             </Link>
+            {/* Education Vouchers */}
             <Link to="/benefits" className="flex-shrink-0 w-56">
-              <div className="h-32 rounded-xl overflow-hidden relative shadow-md">
-                <img 
-                  src="https://images.unsplash.com/photo-1503676260728-1c00da094a0b?w=400&h=200&fit=crop" 
-                  alt="Education" 
-                  className="w-full h-full object-cover"
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent" />
-                <div className="absolute bottom-0 left-0 right-0 p-3">
+              <div className="h-32 rounded-xl overflow-hidden relative shadow-md bg-gradient-to-br from-purple-500 to-purple-700">
+                <div className="absolute inset-0 flex flex-col justify-end p-3">
+                  <div className="flex items-center gap-2 mb-1">
+                    <GraduationCap className="h-5 w-5 text-white" />
+                    <span className="text-white/80 text-xs font-medium">₹54,999</span>
+                  </div>
                   <p className="text-white font-semibold text-sm">
-                    {language === "te" ? "విద్యా స్కాలర్‌షిప్" : "Education Scholarship"}
+                    {language === "te" ? "విద్యా వౌచర్లు" : "Education Vouchers"}
                   </p>
-                  <p className="text-white/80 text-xs">₹15,000/year</p>
-                </div>
-              </div>
-            </Link>
-            <Link to="/benefits" className="flex-shrink-0 w-56">
-              <div className="h-32 rounded-xl overflow-hidden relative shadow-md">
-                <img 
-                  src="https://images.unsplash.com/photo-1582213782179-e0d53f98f2ca?w=400&h=200&fit=crop" 
-                  alt="Ration" 
-                  className="w-full h-full object-cover"
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent" />
-                <div className="absolute bottom-0 left-0 right-0 p-3">
-                  <p className="text-white font-semibold text-sm">
-                    {language === "te" ? "రేషన్ కార్డు" : "Ration Card Benefits"}
-                  </p>
-                  <p className="text-white/80 text-xs">{language === "te" ? "ఉచిత బియ్యం" : "Free Rice"}</p>
+                  <p className="text-white/80 text-xs">{language === "te" ? "బోస్ అమెరికన్ అకాడమీ" : "Bose American Academy"}</p>
                 </div>
               </div>
             </Link>
