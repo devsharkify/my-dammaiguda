@@ -173,23 +173,9 @@ function ManagerLogin({ onLogin }) {
               variant="outline"
               size="sm"
               className="w-full"
-              onClick={async () => {
-                setLoading(true);
-                try {
-                  await axios.post(`${API}/auth/send-otp`, { phone: "+917386917770" });
-                  const res = await axios.post(`${API}/auth/verify-otp`, {
-                    phone: "+917386917770",
-                    otp: "123456"
-                  });
-                  if (res.data.success && res.data.user?.role === 'manager') {
-                    onLogin(res.data.user, res.data.access_token);
-                    toast.success(`Welcome, ${res.data.user.name}!`);
-                  }
-                } catch (err) {
-                  toast.error("Quick login failed");
-                } finally {
-                  setLoading(false);
-                }
+              onClick={() => {
+                setPhone("7386917770");
+                toast.info("Manager: 7386917770 | OTP: 123456");
               }}
               disabled={loading}
             >
