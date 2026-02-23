@@ -55,6 +55,7 @@ import ManagerApp from "./pages/ManagerApp";
 import PortalSelector from "./pages/PortalSelector";
 import MuhurtamCalculator from "./pages/MuhurtamCalculator";
 import ClaimBenefits from "./pages/ClaimBenefits";
+import SafetyStandards from "./pages/SafetyStandards";
 
 import "./App.css";
 
