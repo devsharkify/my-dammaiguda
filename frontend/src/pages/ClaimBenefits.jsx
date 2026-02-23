@@ -394,7 +394,7 @@ export default function ClaimBenefits() {
           </Button>
           <div>
             <h1 className="font-bold text-lg">Claim Benefits</h1>
-            <p className="text-xs text-muted-foreground">Apply for government schemes</p>
+            <p className="text-xs text-muted-foreground">Provided by Rohan Kulkarni & Partners</p>
           </div>
         </div>
       </header>
