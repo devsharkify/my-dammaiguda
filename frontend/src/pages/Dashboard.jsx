@@ -42,8 +42,7 @@ import {
   GraduationCap,
   Sparkles,
   Star,
-  Shield,
-  Heart
+  Shield
 } from "lucide-react";
 
 const API = `${process.env.REACT_APP_BACKEND_URL}/api`;
