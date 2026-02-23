@@ -463,7 +463,7 @@ export default function AuthPage() {
                 size="sm"
                 onClick={() => {
                   setPhone("9876543210");
-                  setTimeout(() => handleQuickLogin("admin"), 100);
+                  toast.info("Admin: 9876543210 | OTP: 123456");
                 }}
                 className="text-xs h-10"
                 data-testid="quick-admin-btn"
@@ -476,7 +476,7 @@ export default function AuthPage() {
                 size="sm"
                 onClick={() => {
                   setPhone("7386917770");
-                  setTimeout(() => handleQuickLogin("manager"), 100);
+                  toast.info("Manager: 7386917770 | OTP: 123456");
                 }}
                 className="text-xs h-10"
                 data-testid="quick-manager-btn"
@@ -489,7 +489,7 @@ export default function AuthPage() {
                 size="sm"
                 onClick={() => {
                   setPhone("9876543210");
-                  setTimeout(() => handleQuickLogin("instructor"), 100);
+                  toast.info("Instructor: 9876543210 | OTP: 123456");
                 }}
                 className="text-xs h-10"
                 data-testid="quick-instructor-btn"
