@@ -676,7 +676,7 @@ export default function ClaimBenefits() {
               <div className="flex items-start gap-2 p-3 bg-amber-50 dark:bg-amber-950/30 rounded-lg border border-amber-200">
                 <Checkbox id="terms-education" checked={termsAccepted} onCheckedChange={setTermsAccepted} />
                 <label htmlFor="terms-education" className="text-sm">
-                  I accept the <span className="text-purple-600 underline cursor-pointer">Terms & Conditions</span>.
+                  I understand my application will be processed and the voucher will be generated for eligible users.
                 </label>
               </div>
               
