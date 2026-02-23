@@ -89,8 +89,8 @@ export default function NewsPage() {
       }
     } catch (error) {
       console.error("Error fetching news:", error);
-      // Fallback sample news
-      setNews(getSampleNews());
+      // Show empty state instead of mock data
+      setNews([]);
     } finally {
       setLoading(false);
       setRefreshing(false);
