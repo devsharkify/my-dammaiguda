@@ -11,7 +11,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "../components/ui/tabs"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogFooter } from "../components/ui/dialog";
 import { toast } from "sonner";
 import Layout from "../components/Layout";
-import { GovernmentDisclaimer, OFFICIAL_SOURCES } from "../components/GovernmentDisclaimer";
+import { GovernmentDisclaimer } from "../components/GovernmentDisclaimer";
 import {
   Heart,
   GraduationCap,
@@ -32,8 +32,7 @@ import {
   Gift,
   ShoppingBag,
   Utensils,
-  Sparkles,
-  ExternalLink
+  Sparkles
 } from "lucide-react";
 
 const API = `${process.env.REACT_APP_BACKEND_URL}/api`;
