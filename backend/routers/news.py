@@ -578,50 +578,26 @@ async def get_news_by_category(
 
 @router.get("/feed/all")
 async def get_all_news(
-    limit: int = 5,
+    limit: int = 30,
     use_ai: bool = Query(False, description="Use AI to rephrase articles")
 ):
-    """Get mixed news from all categories"""
+    """Get all news - admin-pushed only (no scraping)"""
     all_news = []
     
-    # Get pinned news from all categories
-    pinned = await db.admin_news.find(
-        {"is_active": True, "is_pinned": True},
+    # Get all admin-pushed news
+    admin_news = await db.admin_news.find(
+        {"is_active": {"$ne": False}},
         {"_id": 0}
-    ).sort("priority", 1).to_list(10)
+    ).sort([("is_pinned", -1), ("priority", 1), ("created_at", -1)]).to_list(limit)
     
-    for news in pinned:
+    for news in admin_news:
         news["is_admin_pushed"] = True
+        news["time_ago"] = get_time_ago(news.get("created_at", ""))
+        news.setdefault("content_type", "text")
         all_news.append(news)
     
-    # Fetch from main categories concurrently
-    categories_to_fetch = ["local", "city", "national", "sports", "entertainment"]
-    tasks = []
-    
-    for category in categories_to_fetch:
-        feeds = RSS_FEEDS.get(category, [])
-        if feeds:
-            tasks.append(scrape_rss_feed(feeds[0], category, limit, use_ai=use_ai))
-    
-    results = await asyncio.gather(*tasks, return_exceptions=True)
-    
-    for result in results:
-        if isinstance(result, list):
-            all_news.extend(result)
-    
-    # Remove duplicates
-    seen_titles = set()
-    unique_news = []
-    for news in all_news:
-        title_key = news.get("title", "")[:50].lower()
-        if title_key not in seen_titles:
-            seen_titles.add(title_key)
-            unique_news.append(news)
-    
-    unique_news.sort(key=lambda x: (not x.get("is_pinned", False), x.get("published_at", "")), reverse=True)
-    
     return {
-        "news": unique_news[:limit * 6],
+        "news": all_news,
         "categories": list(NEWS_CATEGORIES.keys()),
         "fetched_at": now_iso()
     }
