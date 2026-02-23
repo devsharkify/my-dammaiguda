@@ -294,9 +294,6 @@ export default function CitizenBenefits() {
   return (
     <Layout showBackButton title={language === "te" ? "పౌర ప్రయోజనాలు" : "Citizen Benefits"}>
       <div className="space-y-6 pb-20" data-testid="citizen-benefits">
-        {/* How it works Disclaimer */}
-        <GovernmentDisclaimer className="mb-4" />
-
         {/* Claim Benefits Banner */}
         <Card className="border-2 border-primary bg-gradient-to-r from-primary/10 to-primary/5">
           <CardContent className="p-4">
