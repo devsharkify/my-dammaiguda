@@ -45,8 +45,8 @@ export default function LandingPage() {
         navigate("/admin/panel");
       } else if (role === "manager") {
         navigate("/manager");
-      } else {
-        navigate("/education");
+      } else if (role === "instructor") {
+        navigate("/admin/panel?tab=courses");
       }
     } catch (error) {
       toast.error(error.response?.data?.detail || "Login failed");
