@@ -54,6 +54,15 @@ export default function Dashboard() {
   const features = useFeatureFlags();
   const localizedConfig = useLocalizedConfig(language);
   
+  // Check for post-login redirect
+  useEffect(() => {
+    const redirectUrl = sessionStorage.getItem('postLoginRedirect');
+    if (redirectUrl) {
+      sessionStorage.removeItem('postLoginRedirect');
+      window.location.href = redirectUrl;
+    }
+  }, []);
+  
   const [recentIssues, setRecentIssues] = useState([]);
   const [loading, setLoading] = useState(true);
   
