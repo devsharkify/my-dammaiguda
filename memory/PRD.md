@@ -183,10 +183,8 @@ DISABLE_ESLINT_PLUGIN=true
 - [x] ✅ Benefits page public access fix (COMPLETED - Feb 22, 2026)
 - [x] ✅ Education page public access fix (COMPLETED - Feb 22, 2026)
 - [ ] Test student-facing course experience (sequential learning)
-- [ ] Generate phone and tablet screenshots for Play Store
+- [ ] Generate tablet screenshots for Play Store
 - [ ] Apple App Store submission
-
-**NOTE:** Test OTP backdoor (123456) is intentionally KEPT for Play Store testing as requested by user.
 
 ### P2 - Medium Priority:
 - [x] ✅ White-label replication architecture (COMPLETED - Feb 20, 2026)
