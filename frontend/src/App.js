@@ -279,6 +279,7 @@ function AppRoutes() {
       <Route path="/privacy-policy" element={<PrivacyPolicy />} />
       <Route path="/terms-of-service" element={<TermsOfService />} />
       <Route path="/child-safety" element={<ChildSafety />} />
+      <Route path="/safety-standards" element={<SafetyStandards />} />
       <Route path="/share" element={<ShareHandler />} />
       <Route path="/delete-account" element={<DeleteAccount />} />
       
