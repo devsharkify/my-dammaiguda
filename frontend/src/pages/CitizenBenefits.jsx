@@ -295,49 +295,8 @@ export default function CitizenBenefits() {
   return (
     <Layout showBackButton title={language === "te" ? "పౌర ప్రయోజనాలు" : "Citizen Benefits"}>
       <div className="space-y-6 pb-20" data-testid="citizen-benefits">
-        {/* Government Disclaimer */}
-        <GovernmentDisclaimer 
-          sources={OFFICIAL_SOURCES.benefits}
-          className="mb-4"
-        />
-
-        {/* Official Government Links */}
-        <Card className="border-blue-200 dark:border-blue-800 bg-blue-50/50 dark:bg-blue-950/30">
-          <CardContent className="p-4">
-            <p className="text-sm font-medium text-blue-800 dark:text-blue-200 mb-2">
-              {language === "te" ? "అధికారిక ప్రభుత్వ పథకాలు:" : "Official Government Schemes:"}
-            </p>
-            <div className="flex flex-wrap gap-2">
-              <a 
-                href="https://www.myscheme.gov.in" 
-                target="_blank" 
-                rel="noopener noreferrer"
-                className="inline-flex items-center gap-1 text-xs bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-300 px-3 py-1.5 rounded-full hover:bg-blue-200 dark:hover:bg-blue-800 transition-colors"
-              >
-                <ExternalLink className="h-3 w-3" />
-                MyScheme.gov.in
-              </a>
-              <a 
-                href="https://www.telangana.gov.in/government-initiatives" 
-                target="_blank" 
-                rel="noopener noreferrer"
-                className="inline-flex items-center gap-1 text-xs bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-300 px-3 py-1.5 rounded-full hover:bg-blue-200 dark:hover:bg-blue-800 transition-colors"
-              >
-                <ExternalLink className="h-3 w-3" />
-                Telangana.gov.in
-              </a>
-              <a 
-                href="https://www.india.gov.in" 
-                target="_blank" 
-                rel="noopener noreferrer"
-                className="inline-flex items-center gap-1 text-xs bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-300 px-3 py-1.5 rounded-full hover:bg-blue-200 dark:hover:bg-blue-800 transition-colors"
-              >
-                <ExternalLink className="h-3 w-3" />
-                India.gov.in
-              </a>
-            </div>
-          </CardContent>
-        </Card>
+        {/* How it works Disclaimer */}
+        <GovernmentDisclaimer className="mb-4" />
 
         {/* Claim Benefits Banner */}
         <Card className="border-2 border-primary bg-gradient-to-r from-primary/10 to-primary/5">
