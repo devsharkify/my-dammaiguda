@@ -263,6 +263,48 @@ export default function LandingPage() {
                       : <>New user? <span className="text-emerald-400 font-medium">Register</span></>
                     }
                   </button>
+
+                  {/* Quick Access Buttons */}
+                  <div className="mt-4 pt-4 border-t border-slate-800">
+                    <p className="text-center text-slate-600 text-[10px] uppercase tracking-widest mb-3">
+                      Quick Access
+                    </p>
+                    <div className="grid grid-cols-3 gap-2">
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => handleQuickLogin("admin")}
+                        disabled={loading}
+                        className="text-xs h-9 bg-slate-900/50 border-slate-700 text-slate-300 hover:bg-slate-800 hover:text-white hover:border-emerald-500/50"
+                        data-testid="quick-admin-btn"
+                      >
+                        <Shield className="w-3 h-3 mr-1" />
+                        Admin
+                      </Button>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => handleQuickLogin("manager")}
+                        disabled={loading}
+                        className="text-xs h-9 bg-slate-900/50 border-slate-700 text-slate-300 hover:bg-slate-800 hover:text-white hover:border-emerald-500/50"
+                        data-testid="quick-manager-btn"
+                      >
+                        <Briefcase className="w-3 h-3 mr-1" />
+                        Manager
+                      </Button>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => handleQuickLogin("instructor")}
+                        disabled={loading}
+                        className="text-xs h-9 bg-slate-900/50 border-slate-700 text-slate-300 hover:bg-slate-800 hover:text-white hover:border-emerald-500/50"
+                        data-testid="quick-instructor-btn"
+                      >
+                        <GraduationCap className="w-3 h-3 mr-1" />
+                        Instructor
+                      </Button>
+                    </div>
+                  </div>
                 </>
               ) : (
                 <>
