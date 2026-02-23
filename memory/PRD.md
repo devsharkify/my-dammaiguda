@@ -155,8 +155,10 @@ DISABLE_ESLINT_PLUGIN=true
 - [x] ✅ Admin/Manager Login Fix (COMPLETED - Feb 21, 2026)
 - [x] ✅ QA Pass - Backend 100%, Frontend 95% (COMPLETED - Feb 22, 2026)
 - [x] ✅ Course Content Population (22 lessons) (COMPLETED - Feb 22, 2026)
+- [x] ✅ Finalize "Claim Benefits" Page - Show only 3 benefits (COMPLETED - Feb 23, 2026)
 - [ ] Complete Google Play Store submission
 - [ ] Google Fit OAuth verification (user testing on live domain)
+- [ ] **Remove Test OTP Backdoor** - CRITICAL security fix before public launch
 
 ### P1 - High Priority:
 - [x] ✅ Benefits page public access fix (COMPLETED - Feb 22, 2026)
