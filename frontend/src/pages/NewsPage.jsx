@@ -78,9 +78,9 @@ export default function NewsPage() {
         newsData = newsData.sort((a, b) => (b.views || 0) - (a.views || 0));
       }
       
-      // If no news from API, use sample news
+      // If no news from API, show empty state
       if (newsData.length === 0) {
-        newsData = getSampleNews();
+        // No fallback to mock data - show empty state
       }
       
       setNews(newsData);
