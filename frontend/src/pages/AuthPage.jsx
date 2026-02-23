@@ -475,7 +475,8 @@ export default function AuthPage() {
                 className="text-xs h-10"
                 data-testid="quick-admin-btn"
               >
-                👤 Admin
+                <Shield className="w-3 h-3 mr-1" />
+                Admin
               </Button>
               <Button
                 variant="outline"
@@ -487,7 +488,8 @@ export default function AuthPage() {
                 className="text-xs h-10"
                 data-testid="quick-manager-btn"
               >
-                👔 Manager
+                <Briefcase className="w-3 h-3 mr-1" />
+                Manager
               </Button>
               <Button
                 variant="outline"
@@ -499,7 +501,8 @@ export default function AuthPage() {
                 className="text-xs h-10"
                 data-testid="quick-instructor-btn"
               >
-                📚 Instructor
+                <GraduationCap className="w-3 h-3 mr-1" />
+                Instructor
               </Button>
             </div>
           </CardContent>
