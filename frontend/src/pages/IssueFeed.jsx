@@ -240,9 +240,6 @@ export default function IssueFeed() {
   return (
     <Layout showBackButton title={language === "te" ? "సమస్యలు" : "Issues"}>
       <div className="space-y-4" data-testid="issue-feed">
-        {/* Issue Disclaimer */}
-        <IssueDisclaimer />
-
         {/* Tabs for All Issues and My Issues */}
         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
           <TabsList className="grid w-full grid-cols-2 h-11">
