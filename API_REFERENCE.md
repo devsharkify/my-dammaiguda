@@ -2,7 +2,7 @@
 
 ## Base URL
 ```
-https://course-learn-1.preview.emergentagent.com/api
+https://civic-mvp.preview.emergentagent.com/api
 ```
 
 ---

@@ -6,7 +6,7 @@ import pytest
 import requests
 import os
 
-BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', 'https://course-learn-1.preview.emergentagent.com')
+BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', 'https://civic-mvp.preview.emergentagent.com')
 
 # Test credentials from review request
 ADMIN_PHONE = "9100063133"
