@@ -601,18 +601,24 @@ export default function ClaimBenefits() {
               </Select>
             </div>
             
-            {/* T&C */}
-            <div className="flex items-start gap-2 p-3 bg-amber-50 dark:bg-amber-950/30 rounded-lg border border-amber-200">
+            {/* Provider Info */}
+            <div className="p-3 bg-green-50 dark:bg-green-950/30 rounded-lg border border-green-200 text-sm text-green-800 dark:text-green-200">
+              <p className="font-medium mb-1">Provided by Rohan Kulkarni in association with partner organizations.</p>
+              <p className="text-xs text-green-600 dark:text-green-400">Applying does not guarantee approval. All applications are subject to verification and T&C.</p>
+            </div>
+
+            {/* Confirmation */}
+            <div className="flex items-start gap-2">
               <Checkbox id="terms-health" checked={termsAccepted} onCheckedChange={setTermsAccepted} />
               <label htmlFor="terms-health" className="text-sm">
-                I understand my application will be submitted to relevant authorities on my behalf. I confirm all information is accurate.
+                I confirm all information provided is accurate.
               </label>
             </div>
           </div>
           
           <DialogFooter>
             <Button variant="outline" onClick={() => { setShowModal(null); resetForms(); }}>Cancel</Button>
-            <Button onClick={submitHealthInsurance} disabled={loading} className="bg-green-500 hover:bg-green-600">
+            <Button onClick={submitHealthInsurance} disabled={loading || !termsAccepted} className="bg-green-500 hover:bg-green-600">
               {loading ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : null}
               Apply Now
             </Button>
