@@ -141,14 +141,14 @@
   ],
   "screenshots": [
     {
-      "src": "/screenshots/screenshot-wide.png",
+      "src": "/screenshots/dashboard-wide.png",
       "sizes": "1280x720",
       "type": "image/png",
       "form_factor": "wide",
       "label": "Dashboard showing local issues and AQI"
     },
     {
-      "src": "/screenshots/screenshot-narrow.png",
+      "src": "/screenshots/dashboard.png",
       "sizes": "750x1334",
       "type": "image/png",
       "form_factor": "narrow",
