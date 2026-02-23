@@ -450,56 +450,6 @@ export default function AuthPage() {
             )}
           </CardContent>
         </Card>
-
-        {/* Quick Access Buttons for App Review */}
-        <Card className="w-full max-w-md border-dashed border-2 border-muted bg-muted/30">
-          <CardContent className="p-4">
-            <p className="text-xs text-center text-muted-foreground mb-3 font-medium">
-              Quick Access
-            </p>
-            <div className="grid grid-cols-3 gap-2">
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => {
-                  setPhone("9876543210");
-                  toast.info("Admin: 9876543210 | OTP: 123456");
-                }}
-                className="text-xs h-10"
-                data-testid="quick-admin-btn"
-              >
-                <Shield className="w-3 h-3 mr-1" />
-                Admin
-              </Button>
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => {
-                  setPhone("7386917770");
-                  toast.info("Manager: 7386917770 | OTP: 123456");
-                }}
-                className="text-xs h-10"
-                data-testid="quick-manager-btn"
-              >
-                <Briefcase className="w-3 h-3 mr-1" />
-                Manager
-              </Button>
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => {
-                  setPhone("9876543210");
-                  toast.info("Instructor: 9876543210 | OTP: 123456");
-                }}
-                className="text-xs h-10"
-                data-testid="quick-instructor-btn"
-              >
-                <GraduationCap className="w-3 h-3 mr-1" />
-                Instructor
-              </Button>
-            </div>
-          </CardContent>
-        </Card>
       </div>
     </div>
   );
