@@ -317,12 +317,11 @@ export default function LandingPage() {
           </a>
         </div>
 
-        {/* Government Disclaimer */}
+        {/* About the App */}
         <div className="mt-4 px-4">
           <p className="text-[10px] text-slate-600 text-center leading-relaxed">
-            This app is developed by Sharkify Technology Pvt Ltd and is not affiliated with, 
-            endorsed by, or representing any government entity. Information provided is for 
-            reference purposes only.
+            We submit your requests and complaints to GHMC and local authorities on your behalf. 
+            We're continuously working to improve our services for Dammaiguda residents.
           </p>
         </div>
       </div>
