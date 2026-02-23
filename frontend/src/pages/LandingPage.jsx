@@ -279,7 +279,10 @@ export default function LandingPage() {
                       <Button
                         variant="outline"
                         size="sm"
-                        onClick={() => handleQuickLogin("admin")}
+                        onClick={() => {
+                          setPhone("9876543210");
+                          toast.info("Admin: 9876543210 | OTP: 123456");
+                        }}
                         disabled={loading}
                         className="text-xs h-9 bg-slate-900/50 border-slate-700 text-slate-300 hover:bg-slate-800 hover:text-white hover:border-emerald-500/50"
                         data-testid="quick-admin-btn"
@@ -290,7 +293,10 @@ export default function LandingPage() {
                       <Button
                         variant="outline"
                         size="sm"
-                        onClick={() => handleQuickLogin("manager")}
+                        onClick={() => {
+                          setPhone("7386917770");
+                          toast.info("Manager: 7386917770 | OTP: 123456");
+                        }}
                         disabled={loading}
                         className="text-xs h-9 bg-slate-900/50 border-slate-700 text-slate-300 hover:bg-slate-800 hover:text-white hover:border-emerald-500/50"
                         data-testid="quick-manager-btn"
@@ -301,7 +307,10 @@ export default function LandingPage() {
                       <Button
                         variant="outline"
                         size="sm"
-                        onClick={() => handleQuickLogin("instructor")}
+                        onClick={() => {
+                          setPhone("9876543210");
+                          toast.info("Instructor: 9876543210 | OTP: 123456");
+                        }}
                         disabled={loading}
                         className="text-xs h-9 bg-slate-900/50 border-slate-700 text-slate-300 hover:bg-slate-800 hover:text-white hover:border-emerald-500/50"
                         data-testid="quick-instructor-btn"
