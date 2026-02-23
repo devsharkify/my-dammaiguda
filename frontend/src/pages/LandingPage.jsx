@@ -317,13 +317,7 @@ export default function LandingPage() {
           </a>
         </div>
 
-        {/* About the App */}
-        <div className="mt-4 px-4">
-          <p className="text-[10px] text-slate-600 text-center leading-relaxed">
-            We submit your requests and complaints to GHMC and local authorities on your behalf. 
-            We're continuously working to improve our services for Dammaiguda residents.
-          </p>
-        </div>
+        {/* About the App - Removed */}
       </div>
     </div>
   );
