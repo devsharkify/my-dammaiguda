@@ -9,7 +9,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "../co
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../components/ui/select";
 import { InputOTP, InputOTPGroup, InputOTPSlot } from "../components/ui/input-otp";
 import { toast } from "sonner";
-import { Shield, Phone, ArrowLeft, Globe, User, MapPin, Calendar, Timer } from "lucide-react";
+import { Shield, Phone, ArrowLeft, Globe, User, MapPin, Calendar, Timer, Briefcase, GraduationCap } from "lucide-react";
 import { Link } from "react-router-dom";
 
 const colonies = [
