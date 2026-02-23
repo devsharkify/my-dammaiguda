@@ -114,6 +114,17 @@ DISABLE_ESLINT_PLUGIN=true
 
 ## Completed Tasks (This Session - Feb 23, 2026)
 
+### Session 2 (Latest)
+1. ✅ **FIXED News Page** - Removed all scraped/mock data, now shows only admin-pushed news
+   - Modified `/api/news/{category}` endpoint to exclude RSS scraping
+   - Modified `/api/news/feed/all` endpoint to exclude RSS scraping
+   - News now displays: "IMD Predicts Rain...", "Metro Rail Phase 2...", "GHMC Smart Lighting..."
+2. ✅ **REMOVED Test OTP Backdoor (CRITICAL SECURITY FIX)**
+   - Disabled TEST_PHONES list in `auth.py`
+   - All users now require real SMS OTP via Authkey.io
+   - No more static "123456" OTP bypass
+
+### Session 1
 1. ✅ **Finalized "Claim Benefits" Page** - Removed generic benefits list, now shows only 3 specific benefits from "Rohan Kulkarni & Partners":
    - Free Accidental Insurance (₹2 Lakhs coverage)
    - Health Insurance 25% off (Premium reimbursement)
@@ -126,6 +137,7 @@ DISABLE_ESLINT_PLUGIN=true
    - Instructor → Course Manager (/admin/panel?tab=courses)
 5. ✅ **Created Google Play Store Submission Guide** - Complete step-by-step documentation
 6. ✅ **Fixed user roles in database** - Updated test users to have correct admin/manager roles
+7. ✅ **Removed Quick Access Buttons** - Per user request after testing
 
 ## Completed Tasks (Previous Session - Feb 22, 2026)
 
