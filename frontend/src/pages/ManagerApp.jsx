@@ -165,24 +165,6 @@ function ManagerLogin({ onLogin }) {
               </Button>
             </>
           )}
-          
-          {/* Quick Access for Testing */}
-          <div className="pt-4 border-t">
-            <p className="text-xs text-center text-muted-foreground mb-2">Quick Access</p>
-            <Button
-              variant="outline"
-              size="sm"
-              className="w-full"
-              onClick={() => {
-                setPhone("7386917770");
-                toast.info("Manager: 7386917770 | OTP: 123456");
-              }}
-              disabled={loading}
-            >
-              <Shield className="w-4 h-4 mr-2" />
-              Manager Access
-            </Button>
-          </div>
         </CardContent>
       </Card>
     </div>
