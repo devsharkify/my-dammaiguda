@@ -294,110 +294,77 @@ export default function CitizenBenefits() {
   return (
     <Layout showBackButton title={language === "te" ? "పౌర ప్రయోజనాలు" : "Citizen Benefits"}>
       <div className="space-y-6 pb-20" data-testid="citizen-benefits">
-        {/* Claim Benefits Banner */}
+        {/* Special Benefits Card */}
         <Card className="border-2 border-primary bg-gradient-to-r from-primary/10 to-primary/5">
-          <CardContent className="p-4">
-            <div className="flex items-center gap-4">
-              <div className="h-14 w-14 rounded-2xl bg-primary flex items-center justify-center shrink-0">
-                <Gift className="h-7 w-7 text-white" />
+          <CardContent className="p-5">
+            <div className="flex items-center gap-4 mb-4">
+              <div className="h-16 w-16 rounded-2xl bg-primary flex items-center justify-center shrink-0">
+                <Gift className="h-8 w-8 text-white" />
               </div>
               <div className="flex-1">
-                <h3 className="font-bold text-lg">
+                <h3 className="font-bold text-xl">
                   {language === "te" ? "ప్రత్యేక ప్రయోజనాలు" : "Special Benefits"}
                 </h3>
-                <p className="text-sm text-muted-foreground">
+                <p className="text-sm text-muted-foreground mt-1">
                   {language === "te" 
-                    ? "₹2 లక్షల ప్రమాద బీమా, 25% ఆరోగ్య బీమా, ₹54,999 విద్యా వౌచర్" 
-                    : "₹2L Accidental Insurance, 25% Health Insurance, ₹54,999 Education Voucher"}
+                    ? "రోహన్ కులకర్ణి మరియు భాగస్వాములు అందించారు" 
+                    : "Provided by Rohan Kulkarni & Partners"}
                 </p>
               </div>
             </div>
+
+            {/* 3 Benefits List */}
+            <div className="space-y-3 mb-4">
+              <div className="flex items-center gap-3 p-3 bg-blue-50 dark:bg-blue-950/30 rounded-lg">
+                <Shield className="h-6 w-6 text-blue-600" />
+                <div>
+                  <p className="font-medium text-sm">{language === "te" ? "₹2 లక్షల ప్రమాద బీమా" : "₹2 Lakhs Accidental Insurance"}</p>
+                  <p className="text-xs text-muted-foreground">{language === "te" ? "ఉచిత కవరేజ్" : "Free coverage"}</p>
+                </div>
+              </div>
+              <div className="flex items-center gap-3 p-3 bg-green-50 dark:bg-green-950/30 rounded-lg">
+                <Heart className="h-6 w-6 text-green-600" />
+                <div>
+                  <p className="font-medium text-sm">{language === "te" ? "25% ఆరోగ్య బీమా" : "25% Health Insurance"}</p>
+                  <p className="text-xs text-muted-foreground">{language === "te" ? "రీయింబర్స్‌మెంట్ సహాయం" : "Reimbursement support"}</p>
+                </div>
+              </div>
+              <div className="flex items-center gap-3 p-3 bg-purple-50 dark:bg-purple-950/30 rounded-lg">
+                <GraduationCap className="h-6 w-6 text-purple-600" />
+                <div>
+                  <p className="font-medium text-sm">{language === "te" ? "₹54,999 విద్యా వౌచర్" : "₹54,999 Education Voucher"}</p>
+                  <p className="text-xs text-muted-foreground">{language === "te" ? "Bose American Academy" : "Bose American Academy"}</p>
+                </div>
+              </div>
+            </div>
+
+            {/* Disclaimer */}
+            <p className="text-xs text-muted-foreground mb-4">
+              {language === "te" 
+                ? "దరఖాస్తు చేయడం ఆమోదానికి హామీ ఇవ్వదు. అన్ని దరఖాస్తులు ధృవీకరణ మరియు T&C కి లోబడి ఉంటాయి."
+                : "Applying does not guarantee approval. All applications are subject to verification and T&C."}
+            </p>
+
             <a href="/claim-benefits">
-              <Button className="w-full mt-3 bg-primary hover:bg-primary/90">
-                <Sparkles className="h-4 w-4 mr-2" />
+              <Button className="w-full bg-primary hover:bg-primary/90 h-12 text-base">
+                <Sparkles className="h-5 w-5 mr-2" />
                 {language === "te" ? "ఇప్పుడే దరఖాస్తు చేయండి" : "Apply Now"}
-                <ArrowRight className="h-4 w-4 ml-2" />
+                <ArrowRight className="h-5 w-5 ml-2" />
               </Button>
             </a>
           </CardContent>
         </Card>
 
-        <Tabs defaultValue="benefits" className="w-full">
-          <TabsList className="grid w-full grid-cols-2 h-12">
-            <TabsTrigger value="benefits" className="text-sm">
-              <Heart className="h-4 w-4 mr-2" />
-              {language === "te" ? "ప్రయోజనాలు" : "Benefits"}
-            </TabsTrigger>
+        <Tabs defaultValue="applications" className="w-full">
+          <TabsList className="grid w-full grid-cols-1 h-12">
             <TabsTrigger value="applications" className="text-sm">
               <FileText className="h-4 w-4 mr-2" />
-              {language === "te" ? "దరఖాస్తులు" : "My Applications"}
+              {language === "te" ? "నా దరఖాస్తులు" : "My Applications"}
             </TabsTrigger>
           </TabsList>
 
-          {/* Benefits Tab */}
-          <TabsContent value="benefits" className="mt-4 space-y-4">
-            {benefits.map((benefit) => (
-              <Card key={benefit.type} className="border-border/50" data-testid={`benefit-${benefit.type}`}>
-                <CardContent className="p-4">
-                  <div className="flex items-start gap-4">
-                    <div className={`h-14 w-14 rounded-xl ${benefit.color} flex items-center justify-center flex-shrink-0`}>
-                      {benefit.icon}
-                    </div>
-                    <div className="flex-1">
-                      <h3 className="font-semibold text-text-primary">
-                        {benefit.title[language]}
-                      </h3>
-                      <p className="text-sm text-text-muted mt-1">
-                        {benefit.description[language]}
-                      </p>
-                    </div>
-                  </div>
-
-                  {/* Eligibility */}
-                  <div className="mt-4 p-3 bg-muted/50 rounded-lg">
-                    <p className="text-xs font-medium text-text-secondary mb-2">
-                      {language === "te" ? "అర్హత:" : "Eligibility:"}
-                    </p>
-                    <ul className="space-y-1">
-                      {benefit.eligibility[language].map((item, idx) => (
-                        <li key={idx} className="text-xs text-text-muted flex items-center gap-2">
-                          <CheckCircle className="h-3 w-3 text-green-500" />
-                          {item}
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-
-                  <Dialog>
-                    <DialogTrigger asChild>
-                      <Button
-                        className="w-full mt-4 bg-primary text-white rounded-full"
-                        onClick={() => setSelectedBenefit(benefit)}
-                        data-testid={`apply-${benefit.type}`}
-                      >
-                        {language === "te" ? "దరఖాస్తు చేయండి" : "Apply Now"}
-                        <ArrowRight className="h-4 w-4 ml-2" />
-                      </Button>
-                    </DialogTrigger>
-                    <DialogContent className="max-w-md">
-                      <DialogHeader>
-                        <DialogTitle>
-                          {language === "te" ? "దరఖాస్తు" : "Application"} - {benefit.title[language]}
-                        </DialogTitle>
-                      </DialogHeader>
-                      <div className="space-y-4 mt-4">
-                        <div className="space-y-2">
-                          <Label>{language === "te" ? "పేరు" : "Name"} *</Label>
-                          <Input
-                            value={formData.applicant_name}
-                            onChange={(e) => setFormData({...formData, applicant_name: e.target.value})}
-                            className="h-12"
-                            data-testid="apply-name-input"
-                          />
-                        </div>
-                        <div className="space-y-2">
-                          <Label>{language === "te" ? "ఫోన్" : "Phone"} *</Label>
-                          <Input
+          {/* Applications Tab */}
+          <TabsContent value="applications" className="mt-4 space-y-4">
                             value={formData.phone}
                             onChange={(e) => setFormData({...formData, phone: e.target.value})}
                             className="h-12"
