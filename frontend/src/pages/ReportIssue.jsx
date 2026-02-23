@@ -416,6 +416,26 @@ export default function ReportIssue() {
               </CardContent>
             </Card>
 
+            {/* Agreement Checkbox */}
+            <Card className="bg-blue-50 dark:bg-blue-950/30 border-blue-200 dark:border-blue-800">
+              <CardContent className="p-4">
+                <label className="flex items-start gap-3 cursor-pointer">
+                  <input
+                    type="checkbox"
+                    checked={agreedToTerms}
+                    onChange={(e) => setAgreedToTerms(e.target.checked)}
+                    className="mt-1 h-5 w-5 rounded border-blue-300 text-blue-600 focus:ring-blue-500"
+                    data-testid="agree-checkbox"
+                  />
+                  <span className="text-sm text-blue-800 dark:text-blue-200">
+                    {language === "te" 
+                      ? "మేము మీ తరపున GHMC మరియు స్థానిక అధికారులకు ఈ సమస్యను సమర్పిస్తాము. ఏదైనా సేవ పని చేయకపోతే, మేము దాన్ని మెరుగుపరచడానికి ప్రయత్నిస్తాము."
+                      : "I understand that this complaint will be submitted to GHMC and local authorities on my behalf. If any service is not working, we will work on improving it."}
+                  </span>
+                </label>
+              </CardContent>
+            </Card>
+
             <div className="flex gap-3 mt-4">
               <Button
                 variant="outline"
@@ -427,8 +447,8 @@ export default function ReportIssue() {
               </Button>
               <Button
                 onClick={handleSubmit}
-                disabled={loading}
-                className="flex-1 h-12 bg-secondary text-white rounded-full"
+                disabled={loading || !agreedToTerms}
+                className="flex-1 h-12 bg-secondary text-white rounded-full disabled:opacity-50"
                 data-testid="submit-btn"
               >
                 {loading ? (
