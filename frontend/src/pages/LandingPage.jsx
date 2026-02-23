@@ -347,48 +347,6 @@ export default function LandingPage() {
           </a>
         </div>
 
-        {/* Quick Access Buttons */}
-        <div className="mt-6 w-full max-w-sm mx-auto">
-          <p className="text-center text-slate-600 text-[10px] uppercase tracking-widest mb-3">
-            Quick Access
-          </p>
-          <div className="grid grid-cols-3 gap-2">
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => handleQuickLogin("admin")}
-              disabled={loading}
-              className="text-xs h-10 bg-slate-900/50 border-slate-700 text-slate-300 hover:bg-slate-800 hover:text-white hover:border-emerald-500/50"
-              data-testid="quick-admin-btn"
-            >
-              <Shield className="w-3 h-3 mr-1" />
-              Admin
-            </Button>
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => handleQuickLogin("manager")}
-              disabled={loading}
-              className="text-xs h-10 bg-slate-900/50 border-slate-700 text-slate-300 hover:bg-slate-800 hover:text-white hover:border-emerald-500/50"
-              data-testid="quick-manager-btn"
-            >
-              <Briefcase className="w-3 h-3 mr-1" />
-              Manager
-            </Button>
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => handleQuickLogin("instructor")}
-              disabled={loading}
-              className="text-xs h-10 bg-slate-900/50 border-slate-700 text-slate-300 hover:bg-slate-800 hover:text-white hover:border-emerald-500/50"
-              data-testid="quick-instructor-btn"
-            >
-              <GraduationCap className="w-3 h-3 mr-1" />
-              Instructor
-            </Button>
-          </div>
-        </div>
-
         {/* About the App - Removed */}
       </div>
     </div>
