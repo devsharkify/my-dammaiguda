@@ -546,63 +546,32 @@ async def get_news_by_category(
     limit: int = 20,
     use_ai: bool = Query(False, description="Use AI to rephrase articles")
 ):
-    """Get news for a category with optional AI rephrasing"""
+    """Get news for a category - admin-pushed news only (no scraping)"""
     if category not in NEWS_CATEGORIES:
         raise HTTPException(status_code=400, detail="Invalid category")
     
     all_news = []
     
-    # First, get admin-pushed/pinned news for this category
-    pinned_news = await db.admin_news.find(
-        {"category": category, "is_active": True},
+    # Get admin-pushed news for this category only (no scraping)
+    admin_news = await db.admin_news.find(
+        {"$or": [
+            {"category": {"$regex": category, "$options": "i"}},
+            {"is_pinned": True}
+        ], "is_active": {"$ne": False}},
         {"_id": 0}
-    ).sort([("is_pinned", -1), ("priority", 1), ("created_at", -1)]).to_list(5)
+    ).sort([("is_pinned", -1), ("priority", 1), ("created_at", -1)]).to_list(limit)
     
-    for news in pinned_news:
+    for news in admin_news:
         news["is_admin_pushed"] = True
+        news["time_ago"] = get_time_ago(news.get("created_at", ""))
+        news.setdefault("content_type", "text")
         all_news.append(news)
-    
-    # Scrape from RSS feeds concurrently
-    feeds = RSS_FEEDS.get(category, [])
-    if feeds:
-        tasks = [scrape_rss_feed(feed_url, category, limit=limit // len(feeds), use_ai=use_ai) for feed_url in feeds]
-        results = await asyncio.gather(*tasks, return_exceptions=True)
-        
-        for result in results:
-            if isinstance(result, list):
-                all_news.extend(result)
-    
-    # Try Telugu sources for local/state/city news
-    if category in ["local", "city", "state"]:
-        for source_key in ["siasat", "eenadu"]:
-            telugu_news = await scrape_website(source_key, category, limit=3)
-            all_news.extend(telugu_news)
-    
-    # If no news found, use placeholders
-    if len(all_news) <= len(pinned_news):
-        all_news.extend(generate_placeholder_news(category, limit))
-    
-    # Remove duplicates based on title similarity
-    seen_titles = set()
-    unique_news = []
-    for news in all_news:
-        title_key = news.get("title", "")[:50].lower()
-        if title_key not in seen_titles:
-            seen_titles.add(title_key)
-            unique_news.append(news)
-    
-    # Sort: pinned first, then admin-pushed, then by date (newest first)
-    unique_news.sort(key=lambda x: (
-        x.get("is_pinned", False),  # True = 1, False = 0 (pinned first)
-        x.get("is_admin_pushed", False),  # Admin pushed second
-        x.get("published_at", "") or ""
-    ), reverse=True)
     
     return {
         "category": category,
         "category_info": NEWS_CATEGORIES[category],
-        "news": unique_news[:limit],
-        "count": len(unique_news[:limit]),
+        "news": all_news,
+        "count": len(all_news),
         "ai_enabled": use_ai,
         "fetched_at": now_iso()
     }
