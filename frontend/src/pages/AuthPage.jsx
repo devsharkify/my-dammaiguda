@@ -53,6 +53,37 @@ export default function AuthPage() {
   const [colony, setColony] = useState("");
   const [ageRange, setAgeRange] = useState("");
 
+  // Quick login for testing
+  const handleQuickLogin = async (role) => {
+    const credentials = {
+      admin: { phone: "+919876543210", otp: "123456" },
+      manager: { phone: "+917386917770", otp: "123456" },
+      instructor: { phone: "+919876543210", otp: "123456" }
+    };
+    
+    const cred = credentials[role];
+    setLoading(true);
+    
+    try {
+      // First send OTP
+      await sendOTP(cred.phone);
+      // Then verify with test OTP
+      await verifyOTP(cred.phone, cred.otp);
+      toast.success(`Logged in as ${role}!`);
+      
+      // Redirect based on role
+      if (role === "admin" || role === "manager") {
+        navigate("/staff-login");
+      } else {
+        navigate("/");
+      }
+    } catch (error) {
+      toast.error(error.response?.data?.detail || "Login failed");
+    } finally {
+      setLoading(false);
+    }
+  };
+
   // Timer effect for resend OTP
   useEffect(() => {
     let interval;
