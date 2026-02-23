@@ -3,6 +3,16 @@
   "short_name": "My Dammaiguda",
   "version": "1.0.0",
   "description": "Track Issues. Protect Health. Claim Benefits. Your civic engagement platform for Dammaiguda, Telangana.",
+  "id": "my-dammaiguda-app",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "display_override": ["standalone", "minimal-ui"],
+  "orientation": "portrait",
+  "theme_color": "#0F766E",
+  "background_color": "#0a0a0a",
+  "lang": "en",
+  "dir": "ltr",
   "icons": [
     {
       "src": "/icons/icon-72x72.png",
@@ -65,19 +75,88 @@
       "purpose": "maskable"
     }
   ],
-  "start_url": "/",
-  "display": "standalone",
-  "theme_color": "#0F766E",
-  "background_color": "#0a0a0a",
-  "orientation": "portrait",
-  "scope": "/",
-  "lang": "en",
-  "id": "my-dammaiguda-app",
   "categories": [
     "government",
     "utilities",
     "lifestyle",
     "health"
   ],
-  "prefer_related_applications": false
+  "shortcuts": [
+    {
+      "name": "Report Issue",
+      "short_name": "Report",
+      "description": "Report a civic issue in your area",
+      "url": "/issues?action=new",
+      "icons": [{"src": "/icons/icon-96x96.png", "sizes": "96x96"}]
+    },
+    {
+      "name": "View News",
+      "short_name": "News",
+      "description": "Latest local news and updates",
+      "url": "/news",
+      "icons": [{"src": "/icons/icon-96x96.png", "sizes": "96x96"}]
+    },
+    {
+      "name": "Check Benefits",
+      "short_name": "Benefits",
+      "description": "View available citizen benefits",
+      "url": "/benefits",
+      "icons": [{"src": "/icons/icon-96x96.png", "sizes": "96x96"}]
+    },
+    {
+      "name": "Health & Fitness",
+      "short_name": "Fitness",
+      "description": "Track your health and fitness",
+      "url": "/fitness",
+      "icons": [{"src": "/icons/icon-96x96.png", "sizes": "96x96"}]
+    }
+  ],
+  "share_target": {
+    "action": "/share",
+    "method": "POST",
+    "enctype": "multipart/form-data",
+    "params": {
+      "title": "title",
+      "text": "text",
+      "url": "url",
+      "files": [
+        {
+          "name": "images",
+          "accept": ["image/*"]
+        }
+      ]
+    }
+  },
+  "launch_handler": {
+    "client_mode": ["navigate-existing", "auto"]
+  },
+  "handle_links": "preferred",
+  "prefer_related_applications": false,
+  "related_applications": [
+    {
+      "platform": "play",
+      "url": "https://play.google.com/store/apps/details?id=com.mydammaiguda.app",
+      "id": "com.mydammaiguda.app"
+    }
+  ],
+  "screenshots": [
+    {
+      "src": "/screenshots/screenshot-wide.png",
+      "sizes": "1280x720",
+      "type": "image/png",
+      "form_factor": "wide",
+      "label": "Dashboard showing local issues and AQI"
+    },
+    {
+      "src": "/screenshots/screenshot-narrow.png",
+      "sizes": "750x1334",
+      "type": "image/png",
+      "form_factor": "narrow",
+      "label": "Mobile view of the app"
+    }
+  ],
+  "iarc_rating_id": "e84b072d-71b3-4d3e-86ae-31a8ce4e53b7",
+  "edge_side_panel": {
+    "preferred_width": 400
+  }
 }
