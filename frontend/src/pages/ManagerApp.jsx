@@ -165,6 +165,38 @@ function ManagerLogin({ onLogin }) {
               </Button>
             </>
           )}
+          
+          {/* Quick Access for Testing */}
+          <div className="pt-4 border-t">
+            <p className="text-xs text-center text-muted-foreground mb-2">Quick Access</p>
+            <Button
+              variant="outline"
+              size="sm"
+              className="w-full"
+              onClick={async () => {
+                setLoading(true);
+                try {
+                  await axios.post(`${API}/auth/send-otp`, { phone: "+917386917770" });
+                  const res = await axios.post(`${API}/auth/verify-otp`, {
+                    phone: "+917386917770",
+                    otp: "123456"
+                  });
+                  if (res.data.success && res.data.user?.role === 'manager') {
+                    onLogin(res.data.user, res.data.access_token);
+                    toast.success(`Welcome, ${res.data.user.name}!`);
+                  }
+                } catch (err) {
+                  toast.error("Quick login failed");
+                } finally {
+                  setLoading(false);
+                }
+              }}
+              disabled={loading}
+            >
+              <Shield className="w-4 h-4 mr-2" />
+              Manager Access
+            </Button>
+          </div>
         </CardContent>
       </Card>
     </div>
