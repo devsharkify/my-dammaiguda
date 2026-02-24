@@ -265,6 +265,71 @@ export default function CloneMaker() {
     toast.success("All files downloaded!");
   };
 
+  const downloadZip = async () => {
+    if (!config.area_id) {
+      toast.error("Please configure the clone first");
+      return;
+    }
+    
+    setLoading(true);
+    try {
+      const response = await axios.post(`${API}/clone/download-zip`, config, {
+        headers,
+        responseType: 'blob'
+      });
+      
+      const url = window.URL.createObjectURL(new Blob([response.data]));
+      const link = document.createElement('a');
+      link.href = url;
+      link.setAttribute('download', `my-${config.area_id}-clone.zip`);
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      window.URL.revokeObjectURL(url);
+      
+      toast.success("ZIP downloaded successfully!");
+    } catch (err) {
+      toast.error("Failed to download ZIP");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const pushToGitHub = async () => {
+    if (!githubToken) {
+      toast.error("Please enter your GitHub token");
+      return;
+    }
+    if (!config.area_id) {
+      toast.error("Please configure the clone first");
+      return;
+    }
+    
+    setPushingToGithub(true);
+    try {
+      const res = await axios.post(`${API}/clone/push-to-github`, {
+        config,
+        github_token: githubToken,
+        repo_name: repoName || `my-${config.area_id}`,
+        is_private: isPrivate
+      }, { headers });
+      
+      toast.success("Pushed to GitHub successfully!");
+      setShowGitHub(false);
+      
+      // Open repo in new tab
+      window.open(res.data.repo_url, '_blank');
+    } catch (err) {
+      toast.error(err.response?.data?.detail || "Failed to push to GitHub");
+    } finally {
+      setPushingToGithub(false);
+    }
+  };
+
+  const openGitHubTokenPage = () => {
+    window.open("https://github.com/settings/tokens/new?scopes=repo&description=CloneMaker", "_blank");
+  };
+
   if (user?.role !== "admin") {
     return (
       <Layout title="Clone Maker">
