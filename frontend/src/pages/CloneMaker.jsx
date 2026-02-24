@@ -43,61 +43,85 @@ import {
 
 const API = `${process.env.REACT_APP_BACKEND_URL}/api`;
 
-// Area presets
-const AREA_PRESETS = {
-  dammaiguda: {
-    id: "dammaiguda", name: "Dammaiguda", name_te: "దమ్మాయిగూడ",
-    primaryColor: "#0F766E", domain: "mydammaiguda.in",
-    packageName: "com.sharkify.mydammaiguda", senderName: "MYDAMM",
-    lat: 17.4534, lon: 78.5674,
-    stats: { benefits: "₹10Cr+", problems: "100+", people: "50K+" }
-  },
-  vengalraonagar: {
-    id: "vengalraonagar", name: "Vengal Rao Nagar", name_te: "వెంగళ్ రావు నగర్",
-    primaryColor: "#7C3AED", domain: "myvengalraonagar.in",
-    packageName: "com.vengalraonagar.civic", senderName: "MYVRN",
-    lat: 17.4256, lon: 78.4489,
-    stats: { benefits: "₹8Cr+", problems: "70+", people: "40K+" }
-  },
-  asraonagar: {
-    id: "asraonagar", name: "AS Rao Nagar", name_te: "ఏఎస్ రావు నగర్",
-    primaryColor: "#2563EB", domain: "myasraonagar.in",
-    packageName: "com.sharkify.myasraonagar", senderName: "MYASRN",
-    lat: 17.4456, lon: 78.5563,
-    stats: { benefits: "₹8Cr+", problems: "80+", people: "40K+" }
-  },
-  kapra: {
-    id: "kapra", name: "Kapra", name_te: "కాప్ర",
-    primaryColor: "#7C3AED", domain: "mykapra.in",
-    packageName: "com.sharkify.mykapra", senderName: "MYKAPR",
-    lat: 17.4789, lon: 78.5321,
-    stats: { benefits: "₹7Cr+", problems: "60+", people: "35K+" }
-  },
-  kukatpally: {
-    id: "kukatpally", name: "Kukatpally", name_te: "కూకట్‌పల్లి",
-    primaryColor: "#EA580C", domain: "mykukatpally.in",
-    packageName: "com.sharkify.mykukatpally", senderName: "MYKKTL",
-    lat: 17.4947, lon: 78.3996,
-    stats: { benefits: "₹12Cr+", problems: "120+", people: "60K+" }
-  },
-  malkajgiri: {
-    id: "malkajgiri", name: "Malkajgiri", name_te: "మల్కాజ్‌గిరి",
-    primaryColor: "#059669", domain: "mymalkajgiri.in",
-    packageName: "com.sharkify.mymalkajgiri", senderName: "MYMLKJ",
-    lat: 17.4589, lon: 78.5234,
-    stats: { benefits: "₹9Cr+", problems: "90+", people: "45K+" }
-  },
-  uppal: {
-    id: "uppal", name: "Uppal", name_te: "ఉప్పల్",
-    primaryColor: "#DC2626", domain: "myuppal.in",
-    packageName: "com.sharkify.myuppal", senderName: "MYUPPL",
-    lat: 17.4012, lon: 78.5587,
-    stats: { benefits: "₹11Cr+", problems: "110+", people: "55K+" }
-  },
-  secunderabad: {
-    id: "secunderabad", name: "Secunderabad", name_te: "సికింద్రాబాద్",
-    primaryColor: "#0EA5E9", domain: "mysecunderabad.in",
-    packageName: "com.sharkify.mysecunderabad", senderName: "MYSECN",
+// Gradient presets for themes
+const GRADIENT_PRESETS = [
+  { name: "Teal", colors: ["#0F766E", "#14B8A6"], id: "teal" },
+  { name: "Purple", colors: ["#7C3AED", "#A855F7"], id: "purple" },
+  { name: "Blue", colors: ["#2563EB", "#3B82F6"], id: "blue" },
+  { name: "Orange", colors: ["#EA580C", "#F97316"], id: "orange" },
+  { name: "Red", colors: ["#DC2626", "#EF4444"], id: "red" },
+  { name: "Green", colors: ["#059669", "#10B981"], id: "green" },
+  { name: "Pink", colors: ["#DB2777", "#EC4899"], id: "pink" },
+  { name: "Indigo", colors: ["#4F46E5", "#6366F1"], id: "indigo" },
+  { name: "Cyan", colors: ["#0891B2", "#06B6D4"], id: "cyan" },
+  { name: "Amber", colors: ["#D97706", "#F59E0B"], id: "amber" },
+  { name: "Emerald", colors: ["#047857", "#10B981"], id: "emerald" },
+  { name: "Rose", colors: ["#E11D48", "#F43F5E"], id: "rose" },
+];
+
+// All 300 Hyderabad areas
+const ALL_AREAS = [
+  "Keesara", "Chandpuri Colony", "Jawahar Nagar", "Dammaiguda", "Nagaram", "Ghatkesar", "Edulabad", "Pocharam", "Medipally", "Peerzadi Guda",
+  "Boduppal", "Changi Charla", "Kapra", "Vampuguda", "Dr. A.S. Rao Nagar", "Chakripuram", "Charla Pally", "Shakti Sai Nagar", "Meerpet HB Colony", "Mallapur",
+  "Nacharam", "HMT Nagar", "Chilkanagar", "Beerappagadda", "Habshi Guda", "Ramantapur", "Venkat Reddy Nagar", "Uppal", "Nagole", "Kothapet",
+  "Chaitanya Puri", "Gaddiannaram", "Saroor Nagar", "Doctors Colony", "R.K. Puram", "NTR Nagar", "Lingoji Guda", "Champapet", "Karman Ghat", "Biramal Guda",
+  "Hastinapuram", "B.N. Reddy Nagar", "Vanatsalipuram", "Chittalkunta", "Mansoorabad", "Sai Nagar", "Lecturers Colony", "High Court Colony", "Sahib Nagar", "Hayath Nagar",
+  "Pedda Ambarpet", "Thorur", "Kongara Kalan", "Adibatla", "Turkayamjal", "Balapur", "Nadargul", "Prashanti Hills", "Jalilguda", "Meerpet",
+  "Badangpet", "Bandlaguda", "Shaheen Nagar", "Pahadi Sharif", "Jalpalli", "Thukuguda", "Imamguda", "Bandlaguda Jagir", "Noori Nagar", "Barkas",
+  "Kanchanbagh", "Chandrayanagutta", "Riyasatnagar", "Eidi Bazaar", "Jangammet", "Kandikal Gate", "Quadri Chaman", "Gowlipura", "Aman Nagar", "Yakutpura",
+  "Dabirpura", "Rain Bazaar", "Madanapet", "Banunagar", "Santosh Nagar", "IS Sadan", "Saraswati Nagar", "Saidabad", "Asmangarh", "Moosaram Bagh",
+  "Old Malakpet", "MCH Colony", "Akbar Bagh", "Chawani", "Kala Dera", "Azampura", "Purani Haveli", "Pathergatti", "Hari Bowli", "Qazipura",
+  "Ghansi Bazar", "Puranapul", "Bahadurpura", "Shah Ali Banda", "Falaknuma", "Jahanuma", "Nawab Sahab Kunta", "Teegal Kunta", "Chandu Lal Baradari", "Ramnastpura",
+  "Kishanbagh", "Attapur", "Hydergowda", "Sulaiman Nagar", "Shastripuram", "Katedhan", "Melardevpalli", "Shamshabad", "Kotwalgowda", "Rajendranagar",
+  "Bandlaguda Colony", "Kismatapur", "Hydershahkote", "Narsingi", "Gandipet", "Kokapet", "Manikonda", "Neknampur", "Nizam Colony", "Nanal Nagar",
+  "Tolichowki", "Golconda", "Ibrahim Bagh", "Langar Houz", "Guddi Malkapur", "Karwan", "Tappachabutra", "Zia Guda", "Asif Nagar", "Padmanabha Nagar",
+  "Mehdipatnam", "Syed Nagar", "Vijay Nagar Colony", "Ahmed Nagar", "Shanti Nagar", "Red Hills", "Mallepalli", "Dattatreya Nagar", "Manghalhat", "Goshamahal",
+  "Begum Bazaar", "Jambagh", "Exhibition Ground", "Gun Foundry", "Kachiguda", "Tulsi Ramnagar", "Gol Naka", "Patel Nagar", "Amberpet", "DD Colony",
+  "Tilak Nagar", "Nallakunta", "Adikmet", "Bagh Lingampally", "Gandhi Nagar", "Kavadiguda", "Bakaram", "Bholakpur", "Musheerabad", "Ram Nagar",
+  "Bapuji Nagar", "Buddha Nagar", "Tarnaka", "Sitaphal Mandi", "Chilkal Guda", "Mettuguda", "Lalapet", "North Lalaguda", "Addagutta", "East Anandbagh",
+  "Mirjal Guda", "Gautam Nagar", "Malkajgiri", "Balram Nagar", "Safil Guda", "Moula Ali", "Vinayak Nagar", "Neredmet", "Yapral", "Turkapally",
+  "Macha Bollaram", "Temple Alwal", "Venkatapuram", "Bhudevi Nagar", "Kanaji Guda", "Monda Market", "Padmarao Nagar", "Bhansi Lalpet", "Ram Gopalpet", "Begumpet",
+  "Ameerpet", "SR Nagar", "BK Guda", "Sanath Nagar", "Erragadda", "Madhura Nagar", "Srinagar Colony", "Yusuf Guda", "Vengal Rao Nagar", "Krishna Nagar",
+  "Rehmat Nagar", "Karmika Nagar", "Rajiv Nagar", "Borabanda", "Jubilee Hills", "Venkateshwara Colony", "Iram Manzil", "Somajiguda", "Khairatabad", "Himayat Nagar",
+  "Banjara Hills", "Film Nagar", "Sheikhpet", "OU Colony", "Gachibowli", "Nallagandla", "Serilingampally", "Masjid Banda", "Sri Ram Nagar", "Anjaiah Nagar",
+  "Hi-Tech City", "Madhapur", "Izzath Nagar", "Kondapur", "Matrusri Nagar", "Hafeezpet", "Madeenaguda", "Chanda Nagar", "Deepthisri Nagar", "Miyapur",
+  "BK Enclave", "Mayuri Nagar", "Hydernagar", "Bhagyanagar Colony", "Shamshiguda", "Allwyn Colony", "Vevikanand Nagar Colony", "Kamlaprasa Nagar", "Kukatpally", "Balaji Nagar",
+  "Vasnath Nagar", "KPHB Colony", "Kaithalapur", "Gayatri Nagar", "Allapur", "Moti Nagar", "Moosapet", "Prashant Nagar", "Balanagar", "Fateh Nagar",
+  "Prakash Nagar", "Old Bowenpally", "Tellapur", "Hashmatpet", "Muthangi", "Patancheru", "JP Colony", "Ramachandrapuram", "Bharathi Nagar", "Aminpur",
+  "Sultanpur", "Bollaram", "Nizampet", "Bachupally", "Bandari Layout", "Pragathi Nagar", "Mahadevpuram", "Gajularamaram", "Rodsmestri Nagar", "Jagatgiri Gutta",
+  "Rangareddy Nagar", "Chintal", "Giri Nagar", "Qutubullahpur", "Padma Nagar", "Suchitra", "Jeedimetla", "Kompally", "Doolapally", "Ram Reddy Nagar",
+  "Shahpur Nagar", "Subhash Nagar", "Suraram", "Bahadurpally", "Bowrampet", "Dundigal", "Medchal", "Kistapur", "Gundlapochampally", "Thumkunta", "Secunderabad"
+];
+
+// Helper to generate area ID from name
+const generateAreaId = (name) => name.toLowerCase().replace(/[^a-z0-9]/g, '').slice(0, 20);
+
+// Helper to generate sender name (max 6 chars)
+const generateSenderName = (name) => {
+  const words = name.split(' ');
+  if (words.length === 1) return ('MY' + words[0].slice(0, 4)).toUpperCase();
+  return ('MY' + words.map(w => w[0]).join('')).toUpperCase().slice(0, 6);
+};
+
+// Generate area presets dynamically
+const AREA_PRESETS = {};
+ALL_AREAS.forEach((name, index) => {
+  const id = generateAreaId(name);
+  const colorIndex = index % GRADIENT_PRESETS.length;
+  AREA_PRESETS[id] = {
+    id,
+    name,
+    name_te: "",
+    primaryColor: GRADIENT_PRESETS[colorIndex].colors[0],
+    gradientColors: GRADIENT_PRESETS[colorIndex].colors,
+    domain: `my${id}.in`,
+    packageName: `com.civic.my${id}`,
+    senderName: generateSenderName(name),
+    lat: 17.385 + (Math.random() * 0.2 - 0.1),
+    lon: 78.486 + (Math.random() * 0.2 - 0.1),
+    stats: { benefits: "₹5Cr+", problems: "50+", people: "25K+" }
+  };
+});
     lat: 17.4399, lon: 78.4983,
     stats: { benefits: "₹15Cr+", problems: "150+", people: "75K+" }
   }
