@@ -167,3 +167,31 @@ async def get_area_config(area_id: str):
     }
     
     return config
+
+@router.put("/config/{area_id}")
+async def update_area_config(
+    area_id: str,
+    config: dict,
+    admin: dict = Depends(get_admin)
+):
+    """Update area config including sections - admin only"""
+    update_doc = {
+        "area_id": area_id,
+        "updated_at": now_iso(),
+        "updated_by": admin.get("id")
+    }
+    
+    if "sections" in config:
+        update_doc["sections"] = config["sections"]
+    
+    if "features" in config:
+        update_doc["features"] = config["features"]
+    
+    await db.app_settings.update_one(
+        {"area_id": area_id},
+        {"$set": update_doc},
+        upsert=True
+    )
+    
+    return {"success": True, "message": f"Config updated for {area_id}"}
+
