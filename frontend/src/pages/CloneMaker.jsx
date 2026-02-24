@@ -90,7 +90,7 @@ const ALL_AREAS = [
   "Prakash Nagar", "Old Bowenpally", "Tellapur", "Hashmatpet", "Muthangi", "Patancheru", "JP Colony", "Ramachandrapuram", "Bharathi Nagar", "Aminpur",
   "Sultanpur", "Bollaram", "Nizampet", "Bachupally", "Bandari Layout", "Pragathi Nagar", "Mahadevpuram", "Gajularamaram", "Rodsmestri Nagar", "Jagatgiri Gutta",
   "Rangareddy Nagar", "Chintal", "Giri Nagar", "Qutubullahpur", "Padma Nagar", "Suchitra", "Jeedimetla", "Kompally", "Doolapally", "Ram Reddy Nagar",
-  "Shahpur Nagar", "Subhash Nagar", "Suraram", "Bahadurpally", "Bowrampet", "Dundigal", "Medchal", "Kistapur", "Gundlapochampally", "Thumkunta", "Secunderabad"
+  "Shahpur Nagar", "Subhash Nagar", "Suraram", "Bahadurpally", "Bowrampet", "Dundigal", "Medchal", "Kistapur", "Gundlapochampally", "Thumkunta"
 ];
 
 // Helper to generate area ID from name
