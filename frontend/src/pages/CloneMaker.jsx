@@ -139,6 +139,15 @@ export default function CloneMaker() {
   const [isPrivate, setIsPrivate] = useState(false);
   const [pushingToGithub, setPushingToGithub] = useState(false);
   
+  // Area search state
+  const [areaSearch, setAreaSearch] = useState("");
+  const [showAreaDropdown, setShowAreaDropdown] = useState(false);
+  
+  // Filter areas based on search
+  const filteredAreas = Object.entries(AREA_PRESETS).filter(([key, preset]) =>
+    preset.name.toLowerCase().includes(areaSearch.toLowerCase())
+  ).slice(0, 20); // Limit to 20 results for performance
+  
   // Form state
   const [config, setConfig] = useState({
     area_id: "",
