@@ -497,25 +497,125 @@ export default function CloneMaker() {
                 </div>
 
                 {/* Action Buttons */}
-                <div className="flex gap-3 pt-4">
-                  <Button
-                    onClick={generateConfig}
-                    disabled={loading || !config.area_id}
-                    className="flex-1"
-                    variant="outline"
-                  >
-                    {loading ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : <Code className="h-4 w-4 mr-2" />}
-                    Generate Files
-                  </Button>
-                  <Button
-                    onClick={deployClone}
-                    disabled={loading || !config.area_id}
-                    className="flex-1 bg-gradient-to-r from-violet-500 to-purple-600"
-                  >
-                    {loading ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : <Rocket className="h-4 w-4 mr-2" />}
-                    Deploy Clone
-                  </Button>
+                <div className="flex flex-col gap-3 pt-4">
+                  <div className="flex gap-3">
+                    <Button
+                      onClick={generateConfig}
+                      disabled={loading || !config.area_id}
+                      className="flex-1"
+                      variant="outline"
+                    >
+                      {loading ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : <Code className="h-4 w-4 mr-2" />}
+                      Generate Files
+                    </Button>
+                    <Button
+                      onClick={deployClone}
+                      disabled={loading || !config.area_id}
+                      className="flex-1 bg-gradient-to-r from-violet-500 to-purple-600"
+                    >
+                      {loading ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : <Rocket className="h-4 w-4 mr-2" />}
+                      Deploy Clone
+                    </Button>
+                  </div>
+                  
+                  {/* GitHub & ZIP Actions */}
+                  <div className="flex gap-3">
+                    <Button
+                      onClick={downloadZip}
+                      disabled={loading || !config.area_id}
+                      className="flex-1"
+                      variant="secondary"
+                    >
+                      <Archive className="h-4 w-4 mr-2" />
+                      Download ZIP
+                    </Button>
+                    <Button
+                      onClick={() => setShowGitHub(true)}
+                      disabled={!config.area_id}
+                      className="flex-1 bg-gray-900 hover:bg-gray-800 text-white"
+                    >
+                      <Github className="h-4 w-4 mr-2" />
+                      Push to GitHub
+                    </Button>
+                  </div>
                 </div>
+                
+                {/* GitHub Modal */}
+                {showGitHub && (
+                  <Card className="mt-4 border-2 border-gray-800">
+                    <CardHeader className="pb-3 bg-gray-900 text-white rounded-t-lg">
+                      <CardTitle className="text-base flex items-center gap-2">
+                        <Github className="h-5 w-5" /> Push to GitHub
+                      </CardTitle>
+                      <CardDescription className="text-gray-400">
+                        Create a new repository with clone files
+                      </CardDescription>
+                    </CardHeader>
+                    <CardContent className="space-y-4 pt-4">
+                      <div className="space-y-2">
+                        <Label>GitHub Personal Access Token</Label>
+                        <div className="flex gap-2">
+                          <Input
+                            type="password"
+                            value={githubToken}
+                            onChange={(e) => setGithubToken(e.target.value)}
+                            placeholder="ghp_xxxxxxxxxxxx"
+                            className="flex-1"
+                          />
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={openGitHubTokenPage}
+                          >
+                            <ExternalLink className="h-4 w-4 mr-1" /> Get Token
+                          </Button>
+                        </div>
+                        <p className="text-xs text-muted-foreground">
+                          Need 'repo' scope. <span className="text-blue-500 cursor-pointer" onClick={openGitHubTokenPage}>Create one here</span>
+                        </p>
+                      </div>
+                      
+                      <div className="space-y-2">
+                        <Label>Repository Name</Label>
+                        <Input
+                          value={repoName}
+                          onChange={(e) => setRepoName(e.target.value)}
+                          placeholder={`my-${config.area_id}`}
+                        />
+                      </div>
+                      
+                      <div className="flex items-center justify-between">
+                        <Label>Private Repository</Label>
+                        <Switch
+                          checked={isPrivate}
+                          onCheckedChange={setIsPrivate}
+                        />
+                      </div>
+                      
+                      <div className="flex gap-2 pt-2">
+                        <Button
+                          variant="outline"
+                          onClick={() => setShowGitHub(false)}
+                          className="flex-1"
+                        >
+                          Cancel
+                        </Button>
+                        <Button
+                          onClick={pushToGitHub}
+                          disabled={pushingToGithub || !githubToken}
+                          className="flex-1 bg-gray-900 hover:bg-gray-800"
+                        >
+                          {pushingToGithub ? (
+                            <Loader2 className="h-4 w-4 animate-spin mr-2" />
+                          ) : (
+                            <Github className="h-4 w-4 mr-2" />
+                          )}
+                          {pushingToGithub ? "Pushing..." : "Push to GitHub"}
+                        </Button>
+                      </div>
+                    </CardContent>
+                  </Card>
+                )}
               </CardContent>
             </Card>
 
