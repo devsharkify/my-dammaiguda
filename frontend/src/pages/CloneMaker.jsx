@@ -34,7 +34,11 @@ import {
   ChevronRight,
   Loader2,
   CheckCircle,
-  MapPin
+  MapPin,
+  Github,
+  Link,
+  ExternalLink,
+  Archive
 } from "lucide-react";
 
 const API = `${process.env.REACT_APP_BACKEND_URL}/api`;
