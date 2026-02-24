@@ -122,10 +122,6 @@ ALL_AREAS.forEach((name, index) => {
     stats: { benefits: "₹5Cr+", problems: "50+", people: "25K+" }
   };
 });
-    lat: 17.4399, lon: 78.4983,
-    stats: { benefits: "₹15Cr+", problems: "150+", people: "75K+" }
-  }
-};
 
 export default function CloneMaker() {
   const { user, token } = useAuth();
