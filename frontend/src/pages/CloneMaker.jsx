@@ -408,26 +408,135 @@ export default function CloneMaker() {
 
           {/* Create Tab */}
           <TabsContent value="create" className="space-y-4">
-            {/* Preset Selection */}
+            {/* Area Selection with Search */}
             <Card>
               <CardHeader className="pb-3">
                 <CardTitle className="text-base flex items-center gap-2">
-                  <MapPin className="h-4 w-4" /> Quick Presets
+                  <MapPin className="h-4 w-4" /> Select Area ({ALL_AREAS.length} areas available)
                 </CardTitle>
+                <CardDescription>Search from 300 Hyderabad areas</CardDescription>
               </CardHeader>
               <CardContent>
-                <div className="flex flex-wrap gap-2">
-                  {Object.entries(AREA_PRESETS).map(([key, preset]) => (
-                    <Button
-                      key={key}
-                      variant={config.area_id === key ? "default" : "outline"}
-                      size="sm"
-                      onClick={() => loadPreset(key)}
-                      style={config.area_id === key ? { backgroundColor: preset.primaryColor } : {}}
+                <div className="relative">
+                  <Input
+                    value={areaSearch}
+                    onChange={(e) => {
+                      setAreaSearch(e.target.value);
+                      setShowAreaDropdown(true);
+                    }}
+                    onFocus={() => setShowAreaDropdown(true)}
+                    placeholder="Type to search... e.g., Jubilee Hills, Kukatpally"
+                    className="w-full"
+                  />
+                  {showAreaDropdown && areaSearch && (
+                    <div className="absolute z-50 w-full mt-1 bg-card border rounded-lg shadow-lg max-h-64 overflow-y-auto">
+                      {filteredAreas.length > 0 ? (
+                        filteredAreas.map(([key, preset]) => (
+                          <button
+                            key={key}
+                            onClick={() => loadPreset(key)}
+                            className="w-full px-4 py-2 text-left hover:bg-muted flex items-center justify-between"
+                          >
+                            <span>{preset.name}</span>
+                            <div 
+                              className="w-4 h-4 rounded-full"
+                              style={{ background: `linear-gradient(135deg, ${preset.gradientColors?.[0]}, ${preset.gradientColors?.[1]})` }}
+                            />
+                          </button>
+                        ))
+                      ) : (
+                        <div className="px-4 py-2 text-muted-foreground">No areas found</div>
+                      )}
+                    </div>
+                  )}
+                </div>
+                
+                {/* Selected Area Badge */}
+                {config.area_name && (
+                  <div className="mt-3 flex items-center gap-2">
+                    <Badge 
+                      className="text-white"
+                      style={{ background: `linear-gradient(135deg, ${config.gradient_color_1}, ${config.gradient_color_2})` }}
                     >
-                      {preset.name}
-                    </Button>
+                      {config.area_name}
+                    </Badge>
+                    <span className="text-sm text-muted-foreground">Selected</span>
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+
+            {/* Gradient Color Picker */}
+            <Card>
+              <CardHeader className="pb-3">
+                <CardTitle className="text-base flex items-center gap-2">
+                  <Palette className="h-4 w-4" /> Theme Colors
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                {/* Gradient Presets */}
+                <div className="flex flex-wrap gap-2">
+                  {GRADIENT_PRESETS.map((gradient) => (
+                    <button
+                      key={gradient.id}
+                      onClick={() => setConfig({
+                        ...config,
+                        gradient_color_1: gradient.colors[0],
+                        gradient_color_2: gradient.colors[1],
+                        primary_color: gradient.colors[0],
+                        use_gradient: true
+                      })}
+                      className={`w-10 h-10 rounded-lg shadow-md transition-transform hover:scale-110 ${
+                        config.gradient_color_1 === gradient.colors[0] ? 'ring-2 ring-white ring-offset-2' : ''
+                      }`}
+                      style={{ background: `linear-gradient(135deg, ${gradient.colors[0]}, ${gradient.colors[1]})` }}
+                      title={gradient.name}
+                    />
                   ))}
+                </div>
+                
+                {/* Custom Color Pickers */}
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <Label>Color 1</Label>
+                    <div className="flex gap-2">
+                      <Input
+                        type="color"
+                        value={config.gradient_color_1}
+                        onChange={(e) => setConfig({ ...config, gradient_color_1: e.target.value, primary_color: e.target.value })}
+                        className="w-12 h-10 p-1 cursor-pointer"
+                      />
+                      <Input
+                        value={config.gradient_color_1}
+                        onChange={(e) => setConfig({ ...config, gradient_color_1: e.target.value, primary_color: e.target.value })}
+                        className="flex-1"
+                      />
+                    </div>
+                  </div>
+                  <div className="space-y-2">
+                    <Label>Color 2</Label>
+                    <div className="flex gap-2">
+                      <Input
+                        type="color"
+                        value={config.gradient_color_2}
+                        onChange={(e) => setConfig({ ...config, gradient_color_2: e.target.value })}
+                        className="w-12 h-10 p-1 cursor-pointer"
+                      />
+                      <Input
+                        value={config.gradient_color_2}
+                        onChange={(e) => setConfig({ ...config, gradient_color_2: e.target.value })}
+                        className="flex-1"
+                      />
+                    </div>
+                  </div>
+                </div>
+                
+                {/* Gradient Preview */}
+                <div 
+                  className="h-12 rounded-lg flex items-center justify-center text-white font-semibold"
+                  style={{ background: `linear-gradient(135deg, ${config.gradient_color_1}, ${config.gradient_color_2})` }}
+                >
+                  My {config.area_name || "Area"}
                 </div>
               </CardContent>
             </Card>
