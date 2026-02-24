@@ -578,21 +578,13 @@ export default function CloneMaker() {
                     />
                   </div>
                   <div className="space-y-2">
-                    <Label>Primary Color</Label>
-                    <div className="flex gap-2">
-                      <Input
-                        type="color"
-                        value={config.primary_color}
-                        onChange={(e) => setConfig({ ...config, primary_color: e.target.value })}
-                        className="w-12 h-10 p-1 cursor-pointer"
-                      />
-                      <Input
-                        value={config.primary_color}
-                        onChange={(e) => setConfig({ ...config, primary_color: e.target.value })}
-                        placeholder="#0F766E"
-                        className="flex-1"
-                      />
-                    </div>
+                    <Label>Sender Name (SMS)</Label>
+                    <Input
+                      value={config.sender_name}
+                      onChange={(e) => setConfig({ ...config, sender_name: e.target.value.toUpperCase().slice(0, 6) })}
+                      placeholder="e.g., MYDAMM"
+                      maxLength={6}
+                    />
                   </div>
                 </div>
 
