@@ -197,6 +197,9 @@ export default function CloneMaker() {
         area_name: preset.name,
         area_name_te: preset.name_te,
         primary_color: preset.primaryColor,
+        gradient_color_1: preset.gradientColors?.[0] || preset.primaryColor,
+        gradient_color_2: preset.gradientColors?.[1] || preset.primaryColor,
+        use_gradient: true,
         domain: preset.domain,
         package_name: preset.packageName,
         sender_name: preset.senderName,
@@ -211,6 +214,8 @@ export default function CloneMaker() {
         lat: preset.lat,
         lon: preset.lon
       });
+      setAreaSearch(preset.name);
+      setShowAreaDropdown(false);
       toast.success(`Loaded ${preset.name} preset`);
     }
   };
