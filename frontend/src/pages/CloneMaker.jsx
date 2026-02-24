@@ -48,6 +48,13 @@ const AREA_PRESETS = {
     lat: 17.4534, lon: 78.5674,
     stats: { benefits: "₹10Cr+", problems: "100+", people: "50K+" }
   },
+  vengalraonagar: {
+    id: "vengalraonagar", name: "Vengal Rao Nagar", name_te: "వెంగళ్ రావు నగర్",
+    primaryColor: "#7C3AED", domain: "myvengalraonagar.in",
+    packageName: "com.vengalraonagar.civic", senderName: "MYVRN",
+    lat: 17.4256, lon: 78.4489,
+    stats: { benefits: "₹8Cr+", problems: "70+", people: "40K+" }
+  },
   asraonagar: {
     id: "asraonagar", name: "AS Rao Nagar", name_te: "ఏఎస్ రావు నగర్",
     primaryColor: "#2563EB", domain: "myasraonagar.in",
