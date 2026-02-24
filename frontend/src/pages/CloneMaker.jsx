@@ -112,6 +112,13 @@ export default function CloneMaker() {
   const [generatedFiles, setGeneratedFiles] = useState(null);
   const [copied, setCopied] = useState({});
   
+  // GitHub state
+  const [showGitHub, setShowGitHub] = useState(false);
+  const [githubToken, setGithubToken] = useState("");
+  const [repoName, setRepoName] = useState("");
+  const [isPrivate, setIsPrivate] = useState(false);
+  const [pushingToGithub, setPushingToGithub] = useState(false);
+  
   // Form state
   const [config, setConfig] = useState({
     area_id: "",
