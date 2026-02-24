@@ -10,6 +10,7 @@ import { Textarea } from "../components/ui/textarea";
 import { toast } from "sonner";
 import axios from "axios";
 import ReportsPanel from "../components/ReportsPanel";
+import ContentManager from "../components/ContentManager";
 import {
   Shield,
   Users,
