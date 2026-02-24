@@ -1,11 +1,16 @@
 """Clone Maker Router - Automated white-label app deployment"""
 from fastapi import APIRouter, HTTPException, Depends
+from fastapi.responses import StreamingResponse
 from pydantic import BaseModel
 from typing import Optional, List
 from datetime import datetime, timezone
 from .utils import db, generate_id, now_iso, get_current_user
 import json
 import os
+import zipfile
+import io
+import base64
+import aiohttp
 
 router = APIRouter(prefix="/clone", tags=["Clone Maker"])
 
