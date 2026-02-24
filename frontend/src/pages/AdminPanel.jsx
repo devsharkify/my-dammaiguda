@@ -531,6 +531,11 @@ export default function AdminPanel() {
             <ReportsPanel userRole="admin" />
           </TabsContent>
 
+          {/* Content Manager Tab */}
+          <TabsContent value="content">
+            <ContentManager areaId={selectedArea === "all" ? "dammaiguda" : selectedArea} />
+          </TabsContent>
+
           {/* Benefits Tab */}
           <TabsContent value="benefits">
             <BenefitsAdmin token={token} />
