@@ -2,7 +2,7 @@
 
 ## Base URL
 ```
-https://engagement-hub-63.preview.emergentagent.com/api
+https://area-manager.preview.emergentagent.com/api
 ```
 
 ---

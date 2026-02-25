@@ -6,7 +6,7 @@ import pytest
 import requests
 import os
 
-BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', 'https://engagement-hub-63.preview.emergentagent.com').rstrip('/')
+BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', 'https://area-manager.preview.emergentagent.com').rstrip('/')
 
 # Test credentials (MOCKED - static OTP)
 TEST_PHONE = "9876543210"

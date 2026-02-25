@@ -1,5 +1,5 @@
 <analysis>**original_problem_statement:**
-Build a production-ready, mobile-first civic engagement platform “My Dammaiguda”. The platform must be minimalistic, fast, low-data, and trust-focused.
+Build a production-ready, mobile-first civic engagement platform “My Dammaiguda”. The platform must be minimalistic, fast, low-data, and trust-focused. The long-term vision is a white-label, multi-tenant architecture with a CloneMaker tool to easily generate new, branded instances of the application for different localities.
 
 **PRODUCT REQUIREMENTS:**
 - **Core Modules:** User Auth (OTP), Issue Reporting, Dump Yard/Environment info, Health & Fitness (Kaizer Fit), Citizen Benefits, Ward Expenditure Dashboard, Polls, Volunteer Module, Admin Dashboard.
@@ -8,207 +8,209 @@ Build a production-ready, mobile-first civic engagement platform “My Dammaigud
 - **Multi-Area Admin Panel:** Develop a centralized admin dashboard to manage all cloned areas.
 - **Manager Portal:** Create a separate portal for area-specific Managers.
 - **Recent User Requests:**
-    - Implement a new Claim Benefits module with three forms: Accidental Insurance, Health Insurance Reimbursement, and an Education Voucher.
-    - Fix admin/manager login issues on the production site.
-    - Remove fake/mock data from the live fitness activity tracker.
-    - Add a User Management section to the admin panel.
-    - Implement password-based login for the admin account.
+    - **(In Progress)** Fix several bugs: Google Fit Access Blocked error, news not syncing on production, accelerometer not working as expected, and phone number inputs requiring .
+    - **(In Progress)** Improve the native feel of the app to resolve issues with zooming, slow loading, and non-native transitions.
+    - **(In Progress)** Enhance the Admin/Manager portals to allow editing of all frontend content (text, banners) and enabling/disabling entire app sections.
+    - **(In Progress)** Enhance the CloneMaker to support a large list of areas and gradient color schemes.
 
 **User's preferred language**: English
 
 **what currently exists?**
-A mature, full-stack, multi-tenant Progressive Web App (PWA) with a FastAPI backend and React frontend. In this session, the agent implemented several key features and fixes:
-1.  **Claim Benefits Module:** A complete module was built with a frontend page, three distinct forms, backend APIs, and a corresponding review section in the Admin Panel.
-2.  **Fitness Tracker Fix:** The live activity tracker was fixed to calculate steps and calories based on actual GPS movement, removing the previous fake data generation.
-3.  **Admin User Manager:** A new Users tab was added to the Admin Panel, allowing admins to search for users and change their roles.
-4.  **Password-Based Admin Login:** The admin login was switched from OTP to a phone/password system as requested by the user.
-5.  **Production Debugging:** A significant amount of time was spent diagnosing why the production site  was failing. The agent identified that the frontend service on Railway was not configured to communicate with the separate backend service.
+A mature, full-stack, multi-tenant Progressive Web App (PWA) built with FastAPI and React. The platform is live on the Google Play Store as a Trusted Web Activity (TWA).
+
+This session focused on significant feature enhancements and bug-fixing:
+1.  **Content Management System:** A new Content tab was added to the Admin and Manager portals, allowing full CRUD operations on banners, benefits, and site-wide text. It also allows toggling entire app sections (e.g., Fitness, News) on or off.
+2.  **CloneMaker V2:** The cloning tool was massively upgraded. It now features a searchable dropdown with 300 pre-configured areas, a dozen gradient theme presets with custom color pickers, and direct Push to GitHub and Download ZIP functionality.
+3.  **Native Feel Improvements:** The application's user experience was enhanced with a splash screen, skeleton loaders, framer-motion page transitions, and a pull-to-refresh mechanism. The viewport was locked to prevent zooming on web/PWA versions.
+4.  **Bug Fixes & Diagnostics:**
+    *   Fixed inconsistent phone number inputs by creating a standardized  component.
+    *   Resolved the News not syncing and OTP backdoor security issues from the previous session.
+    *   Diagnosed the production backend on Railway being down and guided the user on how to check its status.
+    *   Correctly identified that the Google Fit Access Blocked error is a Google Cloud Console configuration issue on the user's side.
+    *   Diagnosed that the Play Store app's zoom issue is specific to the TWA build and requires rebuilding in PWABuilder.
 
 **Last working item**:
-    - Last item agent was working: Actively debugging a critical production deployment failure on Railway. The user reported that all login attempts on the live site were failing with a Connection failed error. The agent determined the root cause was a misconfiguration in the production environment where the frontend service was not pointing to the correct backend service URL.
-    - Status: IN PROGRESS
-    - Agent Testing Done: Y (Locally for all code changes)
-    - Which testing method agent to use? manual testing by curl. The agent needs to guide the user to update the environment variables on their Railway project and then test the live production URL via curl to confirm the backend is reachable.
-    - User Testing Done: Y (User confirmed the live site is failing)
+    - Last item agent was working: Diagnosing why the user's production backend was down. The user provided a failing Google Fit callback URL. The agent confirmed via  that  routes were returning HTML, indicating the backend service was not running or not proxied correctly on Railway. After the user seemingly restarted it, the agent confirmed the  endpoint was responding correctly.
+    - Status: USER VERIFICATION PENDING
+    - Agent Testing Done: Y
+    - Which testing method agent to use? The user needs to manually re-attempt the Google Fit connection flow to see if it proceeds past the Access Blocked error. The next step depends on the user's Google Cloud Console configuration.
+    - User Testing Done: N
 
 **All Pending/In progress Issue list**:
-  - Issue 1: **Production Login and Connectivity Failure (Priority: P0)**
-  - Issue 2: **Review and Finalize Claim Benefits Module (Priority: P1)**
-  - Issue 3: **Remove Test OTP Backdoor in Production (Priority: P2)**
-  - Issue 4: **Complete Google Play Store Submission (Priority: P3)**
-  - Issue 5: **Google Fit OAuth Flow User Verification (Priority: P3)**
+  - Issue 1:  **Google Fit Access blocked Error (P0)**
+  - Issue 2:  **News Not Syncing on Production (P1)**
+  - Issue 3:  **App Zoom Issue in Play Store TWA (P1)**
+  - Issue 4:  **Full Clone Generation (P2)**
+  - Issue 5:  **Remove Test OTP Backdoor (P2)**
 
   Issues Detail:
   - Issue 1: 
-     - Attempted fixes: The agent successfully debugged and fixed all code-level bugs related to login. It then diagnosed the production issue, identifying that the frontend Railway service () was not using the correct backend URL for the backend service (). The agent instructed the user on the required fix.
+     - Attempted fixes: The agent correctly diagnosed this as a Google Cloud Console configuration error and provided the user with a step-by-step guide to fix it (add authorized JS origins and redirect URIs).
      - Next debug checklist: 
-        1. Guide the user to go to the **** service in their Railway dashboard.
-        2. Navigate to the **Variables** tab.
-        3. Update the  variable to .
-        4. Trigger a re-deploy of the  service.
-        5. Once deployed, test the login on the live production domain.
-     - Why fix this issue and what will be achieved with the fix? This is a critical blocker making the entire production application non-functional. Fixing it will restore all services for end-users.
-     - Status: IN PROGRESS
-     - Is recurring issue? Y
-     - Should Test frontend/backend/both after fix? both
-     - Blocked on other issue: None. This is the primary blocker.
+        1. Ask the user to confirm they have added the correct URIs ( and ) to their Google Cloud OAuth client settings.
+        2. Ask the user to ensure the OAuth consent screen is set to In Production.
+        3. Once confirmed, ask the user to try the Google Fit connection again.
+     - Why fix this issue and what will be achieved with the fix? This is a core feature (fitness tracking) that is completely broken for users.
+     - Status:  BLOCKED
+     - Is recurring issue? N
+     - Should Test frontend/backend/both after fix? frontend
+     - Blocked on other issue: User action in Google Cloud Console.
 
   - Issue 2: 
-     - Attempted fixes: N/A. The feature was just built.
-     - Next debug checklist: 
-        1. Once production is working, guide the user to the  page.
-        2. Have the user test submitting each of the three forms.
-        3. Guide the user to the Admin Panel's new Benefits tab to verify the applications appear for review.
-        4. Make any necessary adjustments based on user feedback.
-     - Why fix this issue and what will be achieved with the fix? To complete and validate a major new feature requested by the user.
-     - Status: USER VERIFICATION PENDING
-     - Is recurring issue? N
-     - Should Test frontend/backend/both after fix? both
-     - Blocked on other issue: Issue 1: Production Login and Connectivity Failure
+     - Attempted fixes: The agent identified that the production backend API was returning HTML instead of JSON, indicating a deployment/proxy issue on Railway. While the backend service came back online, it's not confirmed if the news sync issue is resolved.
+     - Next debug checklist:
+        1. <!doctype html><html lang="en"><head><meta charset="utf-8"/><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,minimum-scale=1,user-scalable=0,shrink-to-fit=no,viewport-fit=cover"/><meta name="theme-color" content="#0F766E"/><meta name="description" content="My Dammaiguda - Track Issues. Protect Health. Claim Benefits. Your civic engagement platform for Dammaiguda ward, Telangana."/><meta http-equiv="X-UA-Compatible" content="IE=edge"/><meta http-equiv="Content-Security-Policy" content="frame-ancestors 'none';"/><meta name="referrer" content="strict-origin-when-cross-origin"/><meta name="robots" content="noarchive, noimageindex"/><meta name="application-name" content="My Dammaiguda"/><meta name="apple-mobile-web-app-capable" content="yes"/><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/><meta name="apple-mobile-web-app-title" content="My Dammaiguda"/><meta name="mobile-web-app-capable" content="yes"/><meta name="format-detection" content="telephone=no"/><meta name="msapplication-TileColor" content="#0F766E"/><meta name="msapplication-tap-highlight" content="no"/><meta name="HandheldFriendly" content="true"/><meta name="MobileOptimized" content="width"/><meta property="og:type" content="website"/><meta property="og:title" content="My Dammaiguda - Civic Engagement Platform"/><meta property="og:description" content="Track Issues. Protect Health. Claim Benefits. Your one-stop civic engagement platform."/><meta property="og:site_name" content="My Dammaiguda"/><meta property="og:locale" content="en_IN"/><meta name="twitter:card" content="summary_large_image"/><meta name="twitter:title" content="My Dammaiguda"/><meta name="twitter:description" content="Track Issues. Protect Health. Claim Benefits."/><link rel="manifest" href="/manifest.json"/><link rel="apple-touch-icon" href="/icons/icon-192x192.png"/><link rel="apple-touch-icon" sizes="152x152" href="/icons/icon-152x152.png"/><link rel="apple-touch-icon" sizes="180x180" href="/icons/icon-192x192.png"/><link rel="apple-touch-icon" sizes="167x167" href="/icons/icon-192x192.png"/><link rel="icon" type="image/png" sizes="32x32" href="/favicon.ico"/><link rel="icon" type="image/png" sizes="192x192" href="/icons/icon-192x192.png"/><link rel="mask-icon" href="/icons/maskable-icon-512x512.png" color="#0F766E"/><link rel="apple-touch-startup-image" href="/icons/icon-512x512.png"/><link rel="preconnect" href="https://fonts.googleapis.com"/><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Merriweather:wght@400;700;900&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet"/><title>My Dammaiguda</title><script>"serviceWorker"in navigator&&window.addEventListener("load",function(){navigator.serviceWorker.register("/service-worker.js").then(function(e){console.log("SW registered: ",e.scope)}).catch(function(e){console.log("SW registration failed: ",e)})})</script><script defer="defer" src="/static/js/main.fa22d93e.js"></script><link href="/static/css/main.e0bfef26.css" rel="stylesheet"></head><body><noscript>You need to enable JavaScript to run this app.</noscript><script>!function(){"use strict";function e(){window.visualViewport&&1!==window.visualViewport.scale&&(document.body.style.transform="scale("+1/window.visualViewport.scale+")",document.body.style.transformOrigin="0 0",document.body.style.width=100*window.visualViewport.scale+"%")}window.visualViewport&&(window.visualViewport.addEventListener("resize",e),window.visualViewport.addEventListener("scroll",e)),document.addEventListener("touchstart",function(e){if(e.touches.length>1)return e.preventDefault(),e.stopPropagation(),!1},{passive:!1,capture:!0}),document.addEventListener("touchmove",function(e){if(e.touches.length>1||1!==e.scale)return e.preventDefault(),e.stopPropagation(),!1},{passive:!1,capture:!0}),["gesturestart","gesturechange","gestureend"].forEach(function(e){document.addEventListener(e,function(e){return e.preventDefault(),e.stopPropagation(),!1},{passive:!1,capture:!0})});var t=0;document.addEventListener("touchend",function(e){var n=Date.now();n-t<=300&&(e.preventDefault(),e.stopPropagation()),t=n},{passive:!1,capture:!0}),document.addEventListener("wheel",function(e){if(e.ctrlKey||e.metaKey)return e.preventDefault(),e.stopPropagation(),!1},{passive:!1,capture:!0}),document.addEventListener("keydown",function(e){if((e.ctrlKey||e.metaKey)&&("+"===e.key||"-"===e.key||"="===e.key||"0"===e.key||187===e.keyCode||189===e.keyCode||48===e.keyCode))return e.preventDefault(),e.stopPropagation(),!1},{passive:!1,capture:!0}),setInterval(function(){window.visualViewport&&1!==window.visualViewport.scale&&window.scrollTo(0,0)},500)}()</script><div id="root"><div id="app-loader" style="position:fixed;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;background:linear-gradient(135deg,#0f766e 0,#0d9488 100%);z-index:9999"><div style="width:80px;height:80px;border-radius:20px;background:rgba(255,255,255,.2);display:flex;align-items:center;justify-content:center;margin-bottom:16px;animation:pulse 1.5s ease-in-out infinite"><span style="font-size:40px;font-weight:700;color:#fff">M</span></div><div style="color:#fff;font-size:18px;font-weight:600">My Dammaiguda</div><div style="color:rgba(255,255,255,.7);font-size:12px;margin-top:4px">Loading...</div></div></div><style>@keyframes pulse{0%,100%{transform:scale(1);opacity:1}50%{transform:scale(1.05);opacity:.8}}#root:not(:empty) #app-loader{display:none!important}</style></body></html> to verify if the endpoint returns JSON data.
+        2. If it returns HTML, guide the user to check their Railway proxy/routing configuration for the backend service.
+        3. If it returns JSON, the issue is resolved.
+     - Why fix this issue and what will be achieved with the fix? The news feature is a key part of user engagement and currently shows no data on the production app.
+     - Status:  TESTING PENDING
+     - Is recurring issue? Y
+     - Should Test frontend/backend/both after fix? backend
+     - Blocked on other issue: None.
 
   - Issue 3: 
-     - Attempted fixes: The user explicitly requested to keep the backdoor for Play Store testing.
-     - Next debug checklist: In , remove or comment out the  list and the logic that allows a static OTP ().
-     - Why fix this issue and what will be achieved with the fix? Critical security hardening before the app is widely used.
-     - Status: NOT STARTED
+     - Attempted fixes: The agent successfully disabled zoom on the web/PWA version. The agent correctly explained that the TWA (Play Store app) caches its own settings and needs to be rebuilt.
+     - Next debug checklist: Guide the user to go to PWABuilder, rebuild the Android package, and ensure any enable zoom setting is disabled in the TWA options before generating the new AAB/APK.
+     - Why fix this issue and what will be achieved with the fix? It will make the app feel more native and less like a wrapped website, which was a direct user complaint.
+     - Status:  BLOCKED
+     - Is recurring issue? N
+     - Should Test frontend/backend/both after fix? N/A
+     - Blocked on other issue: User action in PWABuilder.
+
+  - Issue 4: 
+     - Attempted fixes: The user tried to use the CloneMaker-generated files but realized it only provided config files, not the full source code.
+     - Next debug checklist: 
+        1. Confirm with the user if they want the CloneMaker to generate a full source code ZIP.
+        2. If yes, update the  endpoint in  to copy the entire  directory structure, replace the config files, and then create the ZIP.
+     - Why fix this issue and what will be achieved with the fix? This will fulfill the user's goal of being able to quickly create and deploy full, independent frontend clones.
+     - Status:  NOT STARTED
      - Is recurring issue? N
      - Should Test frontend/backend/both after fix? backend
      - Blocked on other issue: None.
 
-  - Issue 4: 
-     - Attempted fixes: Awaiting Google's review.
-     - Next debug checklist: Await confirmation of approval or rejection from Google.
-     - Why fix this issue and what will be achieved with the fix? Primary project goal to make the app publicly available.
-     - Status: USER VERIFICATION PENDING
-     - Is recurring issue? N
-     - Should Test frontend/backend/both after fix? N/A
-     - Blocked on other issue: Google's review process.
-
   - Issue 5: 
-     - Attempted fixes: Feature is implemented.
-     - Next debug checklist: Guide the user to test the Google Fit connection flow once the app is live on the Play Store.
-     - Why fix this issue and what will be achieved with the fix? To confirm a key third-party integration works in production.
-     - Status: USER VERIFICATION PENDING
-     - Is recurring issue? N
-     - Should Test frontend/backend/both after fix? frontend
-     - Blocked on other issue: Issue 4: Complete Google Play Store Submission
+     - Attempted fixes: The agent added a  flag in  to disable the  OTP backdoor.
+     - Next debug checklist: 
+        1. Open .
+        2. Completely remove the  list and the associated conditional logic. The  flag was a good temporary measure, but the dead code should be removed for security.
+     - Why fix this issue and what will be achieved with the fix? Removes a critical security vulnerability from the codebase.
+     - Status:  IN PROGRESS
+     - Is recurring issue? Y
+     - Should Test frontend/backend/both after fix? backend
+     - Blocked on other issue: None.
 
 **In progress Task List**:
-  - Task 1: **Fix Production Deployment**
-     - Where to resume: Guiding the user to update the  environment variable in their frontend Railway service.
-     - What will be achieved with this? A functional production application where users can log in and use features.
-     - Status: IN PROGRESS
-     - Should Test frontend/backend/both after fix? both
-     - Blocked on something: User action to update their Railway environment variables.
+  - None.
 
 **Upcoming and Future Tasks**
     Upcoming Tasks:
-    - P1: Generate phone and tablet screenshots for the Play Store listing.
+    - P1: Enhance CloneMaker to generate a full frontend source code ZIP.
+    - P2: Generate **tablet** screenshots for the Play Store listing.
     - P2: Guide user through the Apple App Store submission process.
 
     Future Tasks:
-    - P3: User analytics dashboard enhancements.
-    - P3: Enhance WebSocket Chat with more features (e.g., message history persistence).
-    - P3: Deprecate and fully remove the old  route and component.
+    - P3: Refactor the monolithic  router (2000+ lines).
+    - P3: Deprecate and fully remove the old  route.
+    - P3: Clean up redundant course management UI from .
+    - P3: Refactor  router.
 
 **Completed work in this session**
-- **Production Admin/Manager Login Fix:** Switched admin login from OTP to a password-based system () and updated the production database with the credentials and correct roles.
-- **Fitness Tracker Fake Data Fix:** Modified the live activity tracker in  to use real GPS data for steps/calories, removing timer-based estimations.
-- **Claim Benefits Module Implementation:**
-    - Created a new page () with forms for Accidental Insurance, Health Reimbursement, and Education Vouchers.
-    - Built the backend API () and database models to handle submissions.
-    - Added a Benefits tab to the Admin Panel for application review.
-- **Admin User Manager Creation:** Implemented a Users tab in the Admin Panel with functionality to search for users and update their roles via a new API ().
-- **Branding Update:** Updated Powered by text to Rohan Kulkarni.
-- **Production Deployment Diagnosis:** Identified the root cause of the production failure was a misconfigured frontend environment variable () preventing it from communicating with the backend service on Railway.
+- **Content Management System:** Implemented a new Content section in the Admin/Manager portals to edit banners, benefits, text, and toggle app sections on/off.
+- **CloneMaker V2:** Massively enhanced the app cloning tool with a searchable 300-area dropdown, gradient theme presets, and Push to GitHub / Download ZIP actions.
+- **Native App Feel:** Added a splash screen, skeleton loaders, framer-motion page transitions, pull-to-refresh, hardware back button support, and disabled viewport zoom to make the PWA feel more like a native application.
+- **News Page Fix:** Correctly implemented logic to show only admin-pushed news, removing mock data.
+- **Security Fix:** Implemented a  flag in  to disable the test OTP backdoor.
+- **Phone Input Standardization:** Created a reusable  component with a fixed  prefix and updated relevant forms.
+- **PWA Manifest Fixes:** Resolved issues in  for better PWABuilder scores and store compliance, and created a  page.
+- **Production Diagnostics:** Diagnosed and guided the user through several production issues, including the backend service being down on Railway and the Google Fit OAuth Access Blocked configuration error.
+
+**Earlier issues found/mentioned but not fixed**
+   - **Test OTP Backdoor:** A critical security risk in  allowing login with a static OTP remains in the code, albeit behind a  flag. It should be removed entirely.
+
+**Known issue recurrence from previous fork**
+  - **Test OTP Backdoor:** This was a pending P0 issue from the last fork. It was partially addressed but not fully resolved.
 
 **Code Architecture**
 
 
 **Key Technical Concepts**
-- **Production Deployment Debugging:** Diagnosing connectivity issues between separate frontend and backend services on a platform like Railway.
-- **Environment Variables:** Critical role of  in connecting a React frontend to a backend API.
-- **Password Hashing:** Implemented secure password storage using  and .
-- **Complex React Forms:** Building forms with conditional fields and dynamic lists (e.g., adding family members).
-- **API-driven UI:** Building admin panel features (User Manager, Benefits Review) that perform CRUD operations against a backend.
+- **PWA to Native Feel:** Enhancing a PWA with splash screens, skeleton loaders, framer-motion transitions, and viewport locks to mimic native app behavior.
+- **Dynamic App Generation (CloneMaker):** Building a sophisticated tool within the app to configure and export new, branded frontend instances with options for themes, and direct deployment via GitHub integration or ZIP download.
+- **Headless CMS:** Implementing a content management system within the existing admin panel to control frontend content (banners, text, features) dynamically from the backend.
+- **Production Debugging:** Diagnosing live environment issues, including service downtime on Railway, proxy misconfigurations, and third-party OAuth errors (Google Fit).
+- **TWA vs. PWA Configuration:** Differentiating between web-level settings (e.g., viewport meta tags for PWA) and wrapper-level settings (e.g., TWA build options in PWABuilder for the Play Store app).
 
 **key DB schema**
-  - **users:** Modified to add an optional  field for admin accounts.
-  - **benefit_applications:** New collection. 
+  - The architecture relies on an  or  field in various collections (, , , etc.) to support the multi-tenant design. No new collections were added in this session.
 
 **changes in tech stack**
-  - Added  to  for password hashing.
+  - None.
 
 **All files of reference**
-- **Current Issue (Production Debugging):** The user's Railway dashboard configuration for the  (frontend) and  (backend) services.
-- **Password Login:** , 
-- **Benefits Module:** , , 
-- **Fitness Fix:** 
-- **User Manager:** , 
+- **Clone Maker:** , , 
+- **Content Manager:** , , 
+- **Native Feel:** , , , 
+- **Phone Input Fix:** , , 
+- **Security:** 
 
 **Areas that need refactoring**:
-- The old  route in  should be removed entirely, as it's only a redirect.
-- The Railway service names (, ) are confusing. The user could be advised to rename them to  and  for clarity.
+- ** router:** Extremely large (2000+ lines) and needs to be broken down into smaller, domain-specific files.
+- **:** Contains redundant UI for course management that should be removed.
+- ** router:** Could be split by role.
+- **:** The  logic, while currently disabled by a flag, should be removed entirely.
 
 **key api endpoints**
-- **POST /api/auth/admin-login**: New password-based login for admins.
-- **POST /api/benefits/apply**: Submits a new benefit application.
-- **GET /api/benefits/applications**: Fetches all benefit applications for the admin panel.
-- **GET /api/users**: Searches for users in the admin panel.
-- **PUT /api/users/{user_id}/role**: Updates a user's role from the admin panel.
+- : Generates and downloads a ZIP of configuration files for a new clone.
+- : Pushes a new clone's configuration to a new GitHub repository.
+- : A new set of endpoints for the headless CMS (banners, benefits, text).
+- : Gets and updates which app sections are enabled/disabled.
+- : The endpoint that is currently failing due to a Google Cloud configuration issue on the user's end.
 
 **Critical Info for New Agent**
-- **The #1 priority is fixing the production login.** The entire live application is down. You must guide the user to update the  environment variable on their **frontend** Railway service () to point to the **backend** service's URL ().
-- Do not attempt to debug the code for the login failure; the code is correct. The problem is purely in the production environment's configuration on Railway.
-- Once the production site is working, the next step is to get user feedback on the newly created Claim Benefits module.
-- The admin password for  is .
+- **Production vs. Preview:** The user's production environment on Railway has been unstable. If the user reports an issue, first verify the production services are running correctly with . Many recent problems were due to deployment issues, not code bugs.
+- **User-Side Configurations are Blocking:** Two key issues are blocked on user action:
+    1.  **Google Fit:** The Access Blocked error requires the user to update their Google Cloud Console settings. The agent has already provided the correct instructions.
+    2.  **TWA Zoom:** The zoom issue in the Play Store app requires the user to rebuild the app in PWABuilder with zoom disabled. The web/PWA version is already fixed. You must reinforce this distinction.
+- **CloneMaker is the Core Focus:** The user is heavily invested in the multi-area cloning functionality. The next logical step is to make it generate the full source code. Prioritize any requests related to this feature.
 
 **documents and test reports created in this job**
-  -  was updated with the latest progress.
+  - None.
 
 **Last 10 User Messages and any pending HUMAN messages**
-1.  **User:** same conenc tion failed.. giv eme a way..psl i mneed to login to admin panel - Reporting continued production failure. (INCOMPLETE)
-2.  **User:** user also cannot logimn:Pl sdo testign ocne agian of the compelte code... and comnfirm - Asking for a full re-test. (COMPLETED - Agent confirmed all local tests pass).
-3.  **User:** Shares a screenshot of a successful Railway deployment for the frontend service. (COMPLETED - Agent identified this was only the frontend, not the backend).
-4.  **User:** Shares the build logs for the frontend service. (COMPLETED - Agent confirmed the backend service was the one failing).
-5.  **User:** Shares a screenshot of the Railway services list, showing the backend my-dammaiguda build failed. (COMPLETED - Agent identified this as the key problem).
-6.  **User:** Shares a screenshot showing a new backend service sparkling-abundance. (COMPLETED)
-7.  **User:** Provides the URL for the new backend service: . (COMPLETED)
-8.  **User:** Confirms the frontend is  and is the  service. (COMPLETED - Agent now has all info to recommend the fix).
-9.  **User:** Reports conenction faile dpls trya gian after pushing the code. (INCOMPLETE - This is the current state).
-10. **User:** i alrady pushed it - Confirms they have pushed the code to GitHub. (COMPLETED)
+1.  **Still (able to zoom)**: User reports zoom is still possible. (Agent clarified it's a TWA issue requiring rebuild).
+2.  **No (I can't zoom on the preview URL)**: User confirms the web/PWA version is fixed. (This confirms the issue is isolated to the Play Store TWA).
+3.  **App still has that (zoom issue)**: User re-iterates the issue is present in their app. (Agent asks for clarification on where they are testing).
+4.  **Google Fit callback URL provided**: User shares the failing URL. (Agent diagnoses production backend is down).
+5.  **Image of Railway logs**: User provides logs showing the backend is now active. (Agent confirms it's back online).
+6.  **Access blocked: This app’s request is invalid**: User reports the Google Fit error. (Agent provides fix instructions for Google Cloud Console).
+7.  **Like a mobile view 2eb.. able to zoom and zoom out...need a fix view**: User requests to disable zoom. (COMPLETED for PWA).
+8.  **Accelerometer is not working...**: User reports multiple bugs: accelerometer, phone input, and news sync. (Partially COMPLETED/Diagnosed).
+9.  **All 5**: User confirms their app feels like a website wrapper in all 5 ways the agent listed. (COMPLETED - Native Feel improvements implemented).
+10. **Even my dammaiguda app (feels like a wrapper)**: User clarifies the wrapper feeling is about the main app, not just the clone. (Agent begins native feel improvements).
 
 **Project Health Check:**
-- **Broken:** The entire production application at  is non-functional due to a misconfiguration on Railway, where the frontend cannot connect to the backend.
-- **Mocked:** None.
-- **User Verification Pending:**
-    - The new Claim Benefits module.
-    - Google Play Store submission status.
-    - Google Fit Integration on the live application.
+- **Broken:**
+    - Google Fit integration is non-functional due to an OAuth configuration error on the user's side.
+    - Production backend on Railway is unstable and has recently experienced downtime, which may have broken news syncing and other features.
+- **Mocked:** The  OTP backdoor still exists in the code, though it is disabled by a feature flag. This remains a security risk.
 
 **3rd Party Integrations**
-- **Authkey.io (SMS)** — requires User API Key
-- **Kerykeion (Astrology)** — Python library
-- **Cloudinary (Media Storage)** — requires User API Key
-- **Google Fit API** — requires User API Key
-- **OpenAI API** — requires User API Key
+- **Google Fit API:** **(BROKEN)** - Blocked by user-side OAuth configuration error in Google Cloud Console.
+- **Authkey.io (SMS):** Functional.
+- **Cloudinary (Media Storage):** Functional.
+- **OpenAI API:** Functional.
+- **BeautifulSoup4/lxml (Web Scraping):** Functional, but disabled in the news router.
 
 **Testing status**
   - Testing agent used after significant changes: NO
   - Troubleshoot agent used after agent stuck in loop: NO
   - Test files created: []
-  - Known regressions: None in the code. A major production deployment regression is the active issue.
+  - Known regressions: None.
 
 **Credentials to test flow:**
-- **Production Admin (Password):**
+- **Admin/Manager/User:**
     - Phone: 
-    - Password: 
-- **Production Test Admin (OTP):**
-    - Phone: 
-    - OTP: 
-- **Production Manager (OTP):**
-    - Phone: 
-    - OTP: 
+    - OTP:  (This works only if  is  in ).
 
 **What agent forgot to execute**
-- The agent correctly identified the production issue and the solution but the session ended before the user could confirm they had applied the fix. The next step is to resume that debugging conversation and confirm the environment variable has been updated.</analysis>
+- The agent did not fully remove the test OTP backdoor from , which was a P0 security task from the previous fork. It was put behind a  flag, which is a good temporary step but not the final solution. The dead code should be removed.</analysis>
