@@ -4,6 +4,7 @@ import { motion, useMotionValue, useTransform } from "framer-motion";
 
 export default function PullToRefresh({ children, onRefresh, disabled = false }) {
   const [refreshing, setRefreshing] = useState(false);
+  const [isPulling, setIsPulling] = useState(false);
   const containerRef = useRef(null);
   const startY = useRef(0);
   const pullDistance = useMotionValue(0);
@@ -15,27 +16,45 @@ export default function PullToRefresh({ children, onRefresh, disabled = false })
   const handleTouchStart = useCallback((e) => {
     if (disabled || refreshing) return;
     const scrollTop = containerRef.current?.scrollTop || 0;
-    if (scrollTop === 0) {
+    // Only start pull tracking if already at top of scroll
+    if (scrollTop <= 0) {
       startY.current = e.touches[0].clientY;
+    } else {
+      startY.current = 0;
     }
+    setIsPulling(false);
   }, [disabled, refreshing]);
   
   const handleTouchMove = useCallback((e) => {
     if (disabled || refreshing || startY.current === 0) return;
     
     const scrollTop = containerRef.current?.scrollTop || 0;
+    
+    // If user has scrolled down, disable pull-to-refresh
     if (scrollTop > 0) {
       startY.current = 0;
       pullDistance.set(0);
+      setIsPulling(false);
       return;
     }
     
     const currentY = e.touches[0].clientY;
-    const diff = Math.max(0, (currentY - startY.current) * 0.5);
+    const diff = (currentY - startY.current) * 0.5;
     
-    if (diff > 0) {
-      e.preventDefault();
+    // Only activate pull-to-refresh when pulling DOWN (positive diff)
+    // and only after a significant threshold to avoid interfering with scroll
+    if (diff > 10) {
+      setIsPulling(true);
       pullDistance.set(Math.min(diff, 120));
+      // ONLY prevent default when actively pulling to refresh
+      // This allows normal scrolling to work on Android
+      if (diff > 20) {
+        e.preventDefault();
+      }
+    } else {
+      // Allow normal scroll - don't prevent default
+      setIsPulling(false);
+      pullDistance.set(0);
     }
   }, [disabled, refreshing, pullDistance]);
   
@@ -44,7 +63,7 @@ export default function PullToRefresh({ children, onRefresh, disabled = false })
     
     const distance = pullDistance.get();
     
-    if (distance >= 60 && onRefresh) {
+    if (distance >= 60 && onRefresh && isPulling) {
       setRefreshing(true);
       try {
         await onRefresh();
@@ -55,7 +74,8 @@ export default function PullToRefresh({ children, onRefresh, disabled = false })
     
     pullDistance.set(0);
     startY.current = 0;
-  }, [disabled, refreshing, pullDistance, onRefresh]);
+    setIsPulling(false);
+  }, [disabled, refreshing, pullDistance, onRefresh, isPulling]);
   
   return (
     <div 
@@ -64,6 +84,7 @@ export default function PullToRefresh({ children, onRefresh, disabled = false })
       onTouchStart={handleTouchStart}
       onTouchMove={handleTouchMove}
       onTouchEnd={handleTouchEnd}
+      style={{ touchAction: 'pan-y' }} /* Allow vertical scrolling */
     >
       {/* Pull indicator */}
       <motion.div 
