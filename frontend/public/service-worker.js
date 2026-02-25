@@ -32,7 +32,7 @@ const CACHE_DURATIONS = {
 
 // Install event - cache static assets
 self.addEventListener('install', (event) => {
-  console.log('[SW] Installing service worker v4...');
+  console.log('[SW] Installing service worker v5...');
   event.waitUntil(
     caches.open(CACHE_NAME).then((cache) => {
       console.log('[SW] Caching static assets');
