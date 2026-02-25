@@ -45,9 +45,13 @@
 - Daily/Weekly/Monthly horoscopes
 
 ### 6. Kaizer Fit (Health & Fitness) ✅
-- Google Fit integration
-- Workout tracking
+- **Accelerometer-based Step Counter** (replaces deprecated Google Fit)
+- Phone sensor step tracking for TWA/PWA apps
+- Live activity tracking with GPS
+- Workout tracking & manual recording
 - AI nutrition advisor
+- Weight tracking with goal setting
+- Water & calorie tracking
 
 ### 7. Admin Dashboard ✅
 - News management
