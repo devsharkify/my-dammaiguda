@@ -69,90 +69,42 @@
     <body>
         <noscript>You need to enable JavaScript to run this app.</noscript>
         
-        <!-- FORCE: Prevent ALL zoom and reset if zoomed -->
+        <!-- Zoom prevention that doesn't block scrolling -->
         <script>
             (function() {
                 'use strict';
                 
-                // Force reset zoom using visualViewport
-                function resetZoom() {
-                    if (window.visualViewport && window.visualViewport.scale !== 1) {
-                        document.body.style.transform = 'scale(' + (1 / window.visualViewport.scale) + ')';
-                        document.body.style.transformOrigin = '0 0';
-                        document.body.style.width = (window.visualViewport.scale * 100) + '%';
-                    }
-                }
-                
-                // Monitor visualViewport for zoom changes
-                if (window.visualViewport) {
-                    window.visualViewport.addEventListener('resize', resetZoom);
-                    window.visualViewport.addEventListener('scroll', resetZoom);
-                }
-                
-                // Block ALL touch events with more than 1 finger
-                document.addEventListener('touchstart', function(e) {
-                    if (e.touches.length > 1) {
-                        e.preventDefault();
-                        e.stopPropagation();
-                        return false;
-                    }
-                }, { passive: false, capture: true });
-                
-                document.addEventListener('touchmove', function(e) {
-                    if (e.touches.length > 1 || e.scale !== 1) {
-                        e.preventDefault();
-                        e.stopPropagation();
-                        return false;
-                    }
-                }, { passive: false, capture: true });
-                
-                // Block gesture events completely
+                // Block gesture events for zoom (iOS Safari)
                 ['gesturestart', 'gesturechange', 'gestureend'].forEach(function(gesture) {
                     document.addEventListener(gesture, function(e) {
                         e.preventDefault();
-                        e.stopPropagation();
-                        return false;
-                    }, { passive: false, capture: true });
+                    }, { passive: false });
                 });
                 
-                // Block double-tap zoom
+                // Block double-tap zoom - but only for rapid successive taps
                 var lastTouchEnd = 0;
                 document.addEventListener('touchend', function(e) {
                     var now = Date.now();
-                    if (now - lastTouchEnd <= 300) {
+                    if (now - lastTouchEnd <= 300 && e.target.tagName !== 'INPUT' && e.target.tagName !== 'TEXTAREA') {
                         e.preventDefault();
-                        e.stopPropagation();
                     }
                     lastTouchEnd = now;
-                }, { passive: false, capture: true });
+                }, { passive: false });
                 
-                // Block Ctrl/Cmd + wheel zoom
+                // Block Ctrl/Cmd + wheel zoom (desktop)
                 document.addEventListener('wheel', function(e) {
                     if (e.ctrlKey || e.metaKey) {
                         e.preventDefault();
-                        e.stopPropagation();
-                        return false;
                     }
-                }, { passive: false, capture: true });
+                }, { passive: false });
                 
-                // Block keyboard zoom shortcuts
+                // Block keyboard zoom shortcuts (desktop)
                 document.addEventListener('keydown', function(e) {
                     if ((e.ctrlKey || e.metaKey) && 
-                        (e.key === '+' || e.key === '-' || e.key === '=' || e.key === '0' || 
-                         e.keyCode === 187 || e.keyCode === 189 || e.keyCode === 48)) {
+                        (e.key === '+' || e.key === '-' || e.key === '=' || e.key === '0')) {
                         e.preventDefault();
-                        e.stopPropagation();
-                        return false;
                     }
-                }, { passive: false, capture: true });
-                
-                // Periodically check and reset zoom
-                setInterval(function() {
-                    if (window.visualViewport && window.visualViewport.scale !== 1) {
-                        // Try to reset by scrolling
-                        window.scrollTo(0, 0);
-                    }
-                }, 500);
+                }, { passive: false });
                 
             })();
         </script>
