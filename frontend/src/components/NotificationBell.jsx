@@ -352,18 +352,17 @@ export default function NotificationBell() {
 
               {/* Footer */}
               {notifications.length > 0 && (
-                <div className="border-t border-gray-100 p-2 bg-gray-50">
+                <div className="border-t border-gray-100 p-4 bg-gray-50 flex-shrink-0">
                   <Button
-                    variant="ghost"
-                    size="sm"
-                    className="w-full text-teal-600 hover:text-teal-700 hover:bg-teal-50 text-xs font-medium"
+                    variant="outline"
+                    className="w-full text-gray-700 hover:text-gray-900 hover:bg-gray-100 font-medium"
                     onClick={() => {
                       navigate("/notifications");
                       setIsOpen(false);
                     }}
                   >
                     {language === "te" ? "అన్ని నోటిఫికేషన్లు చూడండి" : "View all notifications"}
-                    <ChevronRight className="h-3 w-3 ml-1" />
+                    <ChevronRight className="h-4 w-4 ml-1" />
                   </Button>
                 </div>
               )}
