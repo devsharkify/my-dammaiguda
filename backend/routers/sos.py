@@ -56,8 +56,8 @@ async def get_sos_contacts(user: dict = Depends(get_current_user)):
     return user_data.get("emergency_contacts", [])
 
 @router.post("/trigger")
-async def trigger_sos(sos: SOSTrigger, user: dict = Depends(get_current_user)):
-    """Trigger SOS alert to all emergency contacts"""
+async def trigger_sos(sos: SOSTrigger, background_tasks: BackgroundTasks, user: dict = Depends(get_current_user)):
+    """Trigger SOS alert to all emergency contacts via Push + SMS"""
     user_data = await db.users.find_one({"id": user["id"]}, {"_id": 0})
     
     if not user_data:
@@ -74,6 +74,8 @@ async def trigger_sos(sos: SOSTrigger, user: dict = Depends(get_current_user)):
         if location:
             lat, lng = location["latitude"], location["longitude"]
     
+    map_link = f"https://www.google.com/maps?q={lat},{lng}" if lat and lng else None
+    
     sos_record = {
         "id": generate_id(),
         "user_id": user["id"],
@@ -82,7 +84,7 @@ async def trigger_sos(sos: SOSTrigger, user: dict = Depends(get_current_user)):
         "message": sos.message or "EMERGENCY! I need help!",
         "latitude": lat,
         "longitude": lng,
-        "map_link": f"https://www.google.com/maps?q={lat},{lng}" if lat and lng else None,
+        "map_link": map_link,
         "contacts_notified": [c["phone"] for c in emergency_contacts],
         "status": "triggered",
         "triggered_at": now_iso()
@@ -91,9 +93,39 @@ async def trigger_sos(sos: SOSTrigger, user: dict = Depends(get_current_user)):
     await db.sos_alerts.insert_one(sos_record)
     sos_record.pop("_id", None)
     
+    # Get user IDs of emergency contacts (if they have accounts)
+    contact_phones = [c["phone"] for c in emergency_contacts]
+    contact_users = await db.users.find(
+        {"phone": {"$in": contact_phones}},
+        {"_id": 0, "id": 1, "phone": 1, "name": 1}
+    ).to_list(10)
+    
+    # Send push notifications to contacts who have accounts
+    if contact_users:
+        await trigger_sos_notification(
+            sos_alert=sos_record,
+            triggered_by_name=user_data.get("name", "Someone"),
+            emergency_contacts=contact_users
+        )
+    
+    # Send SMS to ALL emergency contacts (regardless of whether they have accounts)
+    sms_message = f"🚨 SOS ALERT from {user_data.get('name', 'Your family member')}! {sos.message or 'Emergency - needs help!'}"
+    if map_link:
+        sms_message += f" Location: {map_link}"
+    
+    sms_sent = 0
+    for contact in emergency_contacts:
+        phone = contact.get("phone")
+        if phone:
+            background_tasks.add_task(send_sms_notification, phone, sms_message)
+            sms_sent += 1
+            logging.info(f"SOS SMS queued for {contact.get('name')} at {phone}")
+    
     return {
         "success": True,
         "message": f"SOS alert sent to {len(emergency_contacts)} contacts",
+        "push_sent": len(contact_users),
+        "sms_queued": sms_sent,
         "alert": sos_record,
         "contacts_notified": emergency_contacts
     }
