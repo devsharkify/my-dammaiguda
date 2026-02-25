@@ -448,7 +448,7 @@ export default function ReportIssue() {
               <Button
                 onClick={handleSubmit}
                 disabled={loading || !agreedToTerms}
-                className="flex-1 h-12 bg-secondary text-white rounded-full disabled:opacity-50"
+                className="flex-1 h-12 bg-gradient-to-r from-teal-500 to-emerald-600 text-white rounded-full disabled:opacity-50 shadow-lg"
                 data-testid="submit-btn"
               >
                 {loading ? (

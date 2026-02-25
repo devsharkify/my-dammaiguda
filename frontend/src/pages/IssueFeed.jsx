@@ -303,7 +303,7 @@ export default function IssueFeed() {
                 </p>
                 {user && (
                   <Link to="/report">
-                    <Button className="bg-secondary text-white rounded-full" data-testid="report-issue-cta">
+                    <Button className="bg-gradient-to-r from-teal-500 to-emerald-600 text-white rounded-full shadow-lg" data-testid="report-issue-cta">
                       <Plus className="h-4 w-4 mr-2" />
                       {language === "te" ? "సమస్య నివేదించు" : "Report Issue"}
                     </Button>
@@ -333,7 +333,7 @@ export default function IssueFeed() {
                   {language === "te" ? "మీరు ఇంకా సమస్యలు నివేదించలేదు" : "You haven't reported any issues yet"}
                 </p>
                 <Link to="/report">
-                  <Button className="bg-secondary text-white rounded-full" data-testid="report-first-issue">
+                  <Button className="bg-gradient-to-r from-teal-500 to-emerald-600 text-white rounded-full shadow-lg" data-testid="report-first-issue">
                     <Plus className="h-4 w-4 mr-2" />
                     {language === "te" ? "మొదటి సమస్య నివేదించు" : "Report Your First Issue"}
                   </Button>
@@ -351,7 +351,7 @@ export default function IssueFeed() {
         {user && (
           <Link to="/report" className="fixed bottom-20 right-4 z-40">
             <Button 
-              className="h-14 w-14 rounded-full bg-secondary text-white shadow-lg hover:bg-secondary/90"
+              className="h-14 w-14 rounded-full bg-gradient-to-r from-teal-500 to-emerald-600 text-white shadow-lg hover:from-teal-400 hover:to-emerald-500"
               data-testid="fab-report-issue"
             >
               <Plus className="h-6 w-6" />
