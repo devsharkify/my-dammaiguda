@@ -40,6 +40,14 @@ const API = `${process.env.REACT_APP_BACKEND_URL}/api`;
 // Supported device types
 const DEVICE_TYPES = [
   {
+    id: "phone_pedometer",
+    name: "Phone Step Counter",
+    icon: "📱",
+    platform: "all",
+    description: "Use your phone's sensors",
+    color: "from-blue-500 to-cyan-600"
+  },
+  {
     id: "apple_watch",
     name: "Apple Watch",
     icon: "⌚",
@@ -70,14 +78,6 @@ const DEVICE_TYPES = [
     platform: "all",
     description: "Connect via Bluetooth",
     color: "from-red-500 to-orange-600"
-  },
-  {
-    id: "google_fit",
-    name: "Google Fit",
-    icon: "🏃",
-    platform: "android",
-    description: "Sync via Health Connect",
-    color: "from-green-500 to-emerald-600"
   },
   {
     id: "mi_band",
