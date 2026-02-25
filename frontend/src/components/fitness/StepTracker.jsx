@@ -346,7 +346,13 @@ export default function StepTracker({ onDataUpdate, compact = false }) {
             <div className="mb-6">
               <div className="flex justify-between text-sm mb-1">
                 <span className="text-muted-foreground">{language === 'te' ? 'రోజువారీ లక్ష్యం' : 'Daily Goal'}</span>
-                <span className="font-medium">{steps.toLocaleString()} / 10,000</span>
+                <button 
+                  onClick={() => setShowGoalDialog(true)}
+                  className="font-medium flex items-center gap-1 text-blue-600 hover:underline"
+                >
+                  {steps.toLocaleString()} / {stepGoal.toLocaleString()}
+                  <Settings className="h-3 w-3" />
+                </button>
               </div>
               <Progress value={progress} className="h-3" />
               {progress >= 100 && (
