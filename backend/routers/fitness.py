@@ -2154,12 +2154,83 @@ async def check_and_award_badges(user: dict = Depends(get_current_user)):
     if "streak_30" not in existing_ids and current_streak >= 30:
         new_badges.append("streak_30")
     
-    # Check steps (10k in a day)
-    if "steps_10k" not in existing_ids:
+    # Check step goal streaks
+    goal_pref = await db.user_preferences.find_one(
+        {"user_id": user_id, "type": "step_goal"},
+        {"_id": 0, "value": 1}
+    )
+    step_goal = goal_pref.get("value", 10000) if goal_pref else 10000
+    
+    start_date = (today - timedelta(days=60)).isoformat()
+    step_records = await db.step_counts.find({
+        "user_id": user_id,
+        "date": {"$gte": start_date}
+    }, {"_id": 0, "date": 1, "steps": 1}).to_list(60)
+    
+    daily_summaries = await db.fitness_daily_summary.find({
+        "user_id": user_id,
+        "date": {"$gte": start_date}
+    }, {"_id": 0, "date": 1, "total_steps": 1}).to_list(60)
+    
+    steps_by_date = {}
+    for rec in step_records:
+        date_str = rec.get("date")
+        if date_str:
+            steps_by_date[date_str] = max(steps_by_date.get(date_str, 0), rec.get("steps", 0))
+    for summary in daily_summaries:
+        date_str = summary.get("date")
+        if date_str:
+            steps_by_date[date_str] = max(steps_by_date.get(date_str, 0), summary.get("total_steps", 0))
+    
+    goal_hit_dates = set()
+    for date_str, steps in steps_by_date.items():
+        if steps >= step_goal:
+            try:
+                d = datetime.strptime(date_str, "%Y-%m-%d").date()
+                goal_hit_dates.add(d)
+            except:
+                pass
+    
+    # Calculate goal streak
+    goal_streak = 0
+    goal_check_date = today
+    if today in goal_hit_dates:
+        goal_streak = 1
+        goal_check_date = today - timedelta(days=1)
+    elif (today - timedelta(days=1)) in goal_hit_dates:
+        goal_streak = 1
+        goal_check_date = today - timedelta(days=2)
+    
+    if goal_check_date:
+        while goal_check_date in goal_hit_dates:
+            goal_streak += 1
+            goal_check_date -= timedelta(days=1)
+    
+    if "goal_streak_3" not in existing_ids and goal_streak >= 3:
+        new_badges.append("goal_streak_3")
+    if "goal_streak_7" not in existing_ids and goal_streak >= 7:
+        new_badges.append("goal_streak_7")
+    if "goal_streak_14" not in existing_ids and goal_streak >= 14:
+        new_badges.append("goal_streak_14")
+    if "goal_streak_30" not in existing_ids and goal_streak >= 30:
+        new_badges.append("goal_streak_30")
+    
+    # Check steps (10k and 15k in a day)
+    if "steps_10k" not in existing_ids or "steps_15k" not in existing_ids:
+        max_daily_steps = max(steps_by_date.values()) if steps_by_date else 0
         for a in activities:
-            if a.get("steps", 0) >= 10000:
-                new_badges.append("steps_10k")
-                break
+            max_daily_steps = max(max_daily_steps, a.get("steps", 0))
+        
+        if "steps_10k" not in existing_ids and max_daily_steps >= 10000:
+            new_badges.append("steps_10k")
+        if "steps_15k" not in existing_ids and max_daily_steps >= 15000:
+            new_badges.append("steps_15k")
+    
+    # Check total steps (100k)
+    if "steps_total_100k" not in existing_ids:
+        total_steps = sum(steps_by_date.values())
+        if total_steps >= 100000:
+            new_badges.append("steps_total_100k")
     
     # Check calories (500 in a day)
     if "calories_500" not in existing_ids:
