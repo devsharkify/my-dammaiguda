@@ -562,18 +562,9 @@ export default function LiveActivity() {
         )}
       </div>
 
-      {/* Control Buttons */}
-      <div className="p-4 pb-8">
-        {!isRunning ? (
-          <Button
-            onClick={startActivity}
-            className={`w-full h-16 text-lg font-semibold bg-gradient-to-r ${config.color} rounded-2xl shadow-lg`}
-            data-testid="start-btn"
-          >
-            <Play className="h-6 w-6 mr-2" />
-            {language === "te" ? "ప్రారంభించు" : "Start"}
-          </Button>
-        ) : (
+      {/* Control Buttons - Only show when activity is running */}
+      {isRunning && (
+        <div className="p-4 pb-8">
           <div className="flex gap-3">
             <Button
               onClick={togglePause}
@@ -594,8 +585,8 @@ export default function LiveActivity() {
               {language === "te" ? "ఆపు" : "Stop"}
             </Button>
           </div>
-        )}
-      </div>
+        </div>
+      )}
     </div>
   );
 }
