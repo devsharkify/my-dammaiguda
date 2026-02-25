@@ -58,6 +58,10 @@ class LiveActivityEnd(BaseModel):
     total_steps: Optional[int] = None
     avg_heart_rate: Optional[int] = None
     max_heart_rate: Optional[int] = None
+    avg_speed_kmh: Optional[float] = None
+    avg_pace_min_per_km: Optional[float] = None
+    route_polyline: Optional[str] = None
+    gps_points: Optional[List[dict]] = None
 
 class WeightEntry(BaseModel):
     weight_kg: float
@@ -65,10 +69,6 @@ class WeightEntry(BaseModel):
 
 class GoalWeight(BaseModel):
     target_weight_kg: float
-    avg_speed_kmh: Optional[float] = None
-    avg_pace_min_per_km: Optional[float] = None
-    route_polyline: Optional[str] = None
-    gps_points: Optional[List[dict]] = None
 
 class FitnessProfile(BaseModel):
     """Required profile for first-time fitness users"""
