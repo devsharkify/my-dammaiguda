@@ -231,7 +231,7 @@ async def get_dumpyard_info():
         "name_te": "దమ్మాయిగూడ డంప్ యార్డ్",
         "location": {"lat": 17.4875, "lng": 78.5625},
         "status": "active",
-        "daily_waste_tons": 1200,
+        "daily_waste_tons": 10000,
         "area_acres": 350,
         "pollution_zones": [
             {

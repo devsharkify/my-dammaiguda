@@ -22,7 +22,7 @@ class ContentUpdate(BaseModel):
     description: Optional[str] = None
 
 class DumpYardConfig(BaseModel):
-    daily_waste_tons: float = 1200
+    daily_waste_tons: float = 10000
     area_acres: float = 350
     red_zone_km: float = 2
     status: str = "Active"
