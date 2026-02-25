@@ -33,6 +33,7 @@ import {
   Settings,
   GraduationCap
 } from "lucide-react";
+import PhoneInput from "../components/PhoneInput";
 
 const API = `${process.env.REACT_APP_BACKEND_URL}/api`;
 
