@@ -699,6 +699,29 @@ Replaced Google Fit with a native accelerometer-based step counter that works on
 
 ---
 
+## Bug Fixes & Enhancements (Feb 25, 2026)
+
+### 1. Scroll Issue Fixed
+- **Problem:** Users could not scroll down on any page
+- **Cause:** `position: fixed` and `overflow: hidden` on `html, body` in App.css was blocking scroll
+- **Fix:** Changed to `min-height: 100%` and removed `position: fixed` to allow normal scroll behavior
+
+### 2. Live Activity Speed Tracking Added
+- **New stat:** Speed (km/h) now displayed alongside Distance, Steps, Calories, and Pace
+- **How it works:** Speed is calculated from distance traveled over time
+- **Formula:** `speed = (distance_km / elapsed_hours)`
+- **Files Modified:** `/app/frontend/src/pages/LiveActivity.jsx`
+
+### 3. My Family Map Location Picker
+- **Enhancement:** Users can now choose location for Safe Zones (geofence) via:
+  1. "Use My Current Location" button (GPS)
+  2. Manual coordinate entry (lat/lng)
+  3. "View on Map" opens Google Maps for reference
+- **Files Modified:** `/app/frontend/src/pages/MyFamily.jsx`
+
+
+---
+
 ## Step Goal Streak & Achievement System (Feb 25, 2026)
 
 ### Features Added:
