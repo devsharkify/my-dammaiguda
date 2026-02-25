@@ -696,3 +696,37 @@ Replaced Google Fit with a native accelerometer-based step counter that works on
 - TWA apps CANNOT access: Native Pedometer sensor, Health Connect API, Bluetooth (limited)
 - The accelerometer-based approach is the best solution for PWA/TWA step counting
 
+
+---
+
+## Step Goal Streak & Achievement System (Feb 25, 2026)
+
+### Features Added:
+1. **Step Goal Streak Tracking**
+   - Track consecutive days hitting daily step goal
+   - Milestones: 3, 7, 14, 30 days
+   - Current streak, longest streak, total days statistics
+
+2. **New Achievement Badges:**
+   - 🎯 Goal Getter - 3-day step goal streak
+   - 🏆 Weekly Winner - 7-day step goal streak
+   - 💎 Fortnight Champion - 14-day step goal streak
+   - 👑 Step Master - 30-day step goal streak
+   - 🚀 15K Elite - 15,000 steps in a day
+   - 🎖️ 100K Total - 100,000 total steps
+
+3. **UI Enhancements:**
+   - Streak badge (🔥) displayed on Step Tracker
+   - "X days to Y-day streak" progress message
+   - Milestone progress indicators in goal dialog
+   - Streak statistics panel showing current/best/total
+
+### New API Endpoints:
+- `GET /api/fitness/step-goal-streak` - Get user's step goal streak data
+- Updated `POST /api/fitness/badges/check` - Awards new step goal badges
+
+### Files Modified:
+- `/app/frontend/src/components/fitness/StepTracker.jsx` - Added streak display
+- `/app/backend/routers/fitness.py` - Added streak badges and endpoint
+- `/app/backend/routers/fitness_models.py` - Created (for future refactoring)
+
