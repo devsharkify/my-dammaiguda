@@ -58,7 +58,7 @@ class UserUpdate(BaseModel):
 # ============== ROUTES ==============
 
 # Internal test access - DISABLED in PRODUCTION_MODE
-_TA = [] if PRODUCTION_MODE else ["9876543210", "+919876543210"]
+_TA = [] if PRODUCTION_MODE else ["9876543210", "+919876543210", "9876543211", "+919876543211"]
 
 async def send_authkey_otp(phone: str) -> dict:
     """Send OTP via Authkey.io API using SID template"""
