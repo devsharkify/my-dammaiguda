@@ -232,37 +232,76 @@ export default function MyFamily() {
   };
 
   // Geofence Functions
+  const getMyLocation = () => {
+    setLoadingLocation(true);
+    if ("geolocation" in navigator) {
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          const loc = { lat: position.coords.latitude, lng: position.coords.longitude };
+          setMapLocation(loc);
+          setNewGeofence({ ...newGeofence, lat: loc.lat, lng: loc.lng });
+          setLoadingLocation(false);
+        },
+        () => {
+          toast.error(language === "te" ? "లొకేషన్ పొందడం విఫలమైంది" : "Failed to get location");
+          setLoadingLocation(false);
+        },
+        { enableHighAccuracy: true }
+      );
+    }
+  };
+
   const addGeofence = async () => {
     if (!selectedMember || !newGeofence.name) {
       toast.error(language === "te" ? "పేరు అవసరం" : "Name required");
       return;
     }
 
-    // Get current location for the geofence center
-    if ("geolocation" in navigator) {
-      navigator.geolocation.getCurrentPosition(
-        async (position) => {
-          try {
-            await axios.post(`${API}/family/geofence`, {
-              name: newGeofence.name,
-              member_id: selectedMember.family_member_id,
-              latitude: position.coords.latitude,
-              longitude: position.coords.longitude,
-              radius_meters: newGeofence.radius_meters
-            }, { headers });
-            
-            toast.success(language === "te" ? "సేఫ్ జోన్ జోడించబడింది" : "Safe zone added");
-            setShowGeofenceDialog(false);
-            setNewGeofence({ name: "", radius_meters: 500 });
-          } catch (error) {
-            toast.error(error.response?.data?.detail || "Failed to add safe zone");
-          }
-        },
-        () => {
-          toast.error(language === "te" ? "లొకేషన్ పొందడం విఫలమైంది" : "Failed to get location");
-        },
-        { enableHighAccuracy: true }
-      );
+    // Use selected location or get current
+    if (newGeofence.lat && newGeofence.lng) {
+      try {
+        await axios.post(`${API}/family/geofence`, {
+          name: newGeofence.name,
+          member_id: selectedMember.family_member_id,
+          latitude: newGeofence.lat,
+          longitude: newGeofence.lng,
+          radius_meters: newGeofence.radius_meters
+        }, { headers });
+        
+        toast.success(language === "te" ? "సేఫ్ జోన్ జోడించబడింది" : "Safe zone added");
+        setShowGeofenceDialog(false);
+        setNewGeofence({ name: "", radius_meters: 500, lat: null, lng: null });
+        setMapLocation(null);
+      } catch (error) {
+        toast.error(error.response?.data?.detail || "Failed to add safe zone");
+      }
+    } else {
+      // Get current location if not selected on map
+      if ("geolocation" in navigator) {
+        navigator.geolocation.getCurrentPosition(
+          async (position) => {
+            try {
+              await axios.post(`${API}/family/geofence`, {
+                name: newGeofence.name,
+                member_id: selectedMember.family_member_id,
+                latitude: position.coords.latitude,
+                longitude: position.coords.longitude,
+                radius_meters: newGeofence.radius_meters
+              }, { headers });
+              
+              toast.success(language === "te" ? "సేఫ్ జోన్ జోడించబడింది" : "Safe zone added");
+              setShowGeofenceDialog(false);
+              setNewGeofence({ name: "", radius_meters: 500, lat: null, lng: null });
+            } catch (error) {
+              toast.error(error.response?.data?.detail || "Failed to add safe zone");
+            }
+          },
+          () => {
+            toast.error(language === "te" ? "లొకేషన్ పొందడం విఫలమైంది" : "Failed to get location");
+          },
+          { enableHighAccuracy: true }
+        );
+      }
     }
   };
 
