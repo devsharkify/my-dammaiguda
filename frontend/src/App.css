@@ -54,21 +54,27 @@ html {
   -webkit-text-size-adjust: 100%;
   -moz-text-size-adjust: 100%;
   text-size-adjust: 100%;
+  height: auto !important;
+  overflow: visible !important;
 }
 
 html, body {
   margin: 0;
   padding: 0;
   width: 100%;
-  min-height: 100%;
+  height: auto !important;
+  min-height: 100vh !important;
+  overflow-y: scroll !important;
+  overflow-x: hidden !important;
+  -webkit-overflow-scrolling: touch !important;
   overscroll-behavior-y: contain;
-  -webkit-overflow-scrolling: touch;
-  -webkit-tap-highlight-color: transparent;
 }
 
 #root {
   width: 100%;
   min-height: 100vh;
+  height: auto !important;
+  overflow: visible !important;
   -webkit-overflow-scrolling: touch;
 }
 
