@@ -209,14 +209,30 @@ export default function LiveActivity() {
   const startActivity = async () => {
     try {
       const res = await axios.post(`${API}/fitness/live/start`, { activity_type: activityType }, { headers });
-      setSessionId(res.data.session?.id);
+      const session = res.data.session;
+      if (!session?.id) {
+        toast.error(language === "te" ? "సెషన్ ప్రారంభించడం విఫలమైంది" : "Failed to start session");
+        return;
+      }
+      setSessionId(session.id);
       setIsRunning(true);
       setIsPaused(false);
       
-      // Start timer
+      // Clear any existing timer first
+      if (timerRef.current) {
+        clearInterval(timerRef.current);
+        timerRef.current = null;
+      }
+      
+      // Initialize timer with proper timestamp tracking
+      lastTickRef.current = Date.now();
       timerRef.current = setInterval(() => {
+        const now = Date.now();
+        const delta = Math.round((now - lastTickRef.current) / 1000);
+        lastTickRef.current = now;
+        
         setElapsedSeconds(prev => {
-          const newSec = prev + 1;
+          const newSec = prev + 1; // Always increment by 1 for consistent timing
           
           // For non-GPS activities (yoga, gym, etc.), calculate calories based on time
           // GPS activities calculate calories based on actual distance moved
@@ -239,6 +255,7 @@ export default function LiveActivity() {
 
       toast.success(language === "te" ? "యాక్టివిటీ ప్రారంభమైంది!" : "Activity started!");
     } catch (error) {
+      console.error("Start activity error:", error);
       toast.error(language === "te" ? "ప్రారంభించడం విఫలమైంది" : "Failed to start");
     }
   };
