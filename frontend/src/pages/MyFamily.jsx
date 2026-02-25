@@ -56,6 +56,7 @@ export default function MyFamily() {
   const [triggeringSOS, setTriggeringSOS] = useState(false);
   const [mapLocation, setMapLocation] = useState(null);
   const [loadingLocation, setLoadingLocation] = useState(false);
+  const [refreshingMember, setRefreshingMember] = useState(null); // Track which member location is being refreshed
 
   const headers = { Authorization: `Bearer ${token}` };
 
