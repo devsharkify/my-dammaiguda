@@ -318,6 +318,7 @@ function AnimatedRoutes() {
         variants={pageVariants}
         transition={pageTransition}
         className="min-h-screen"
+        style={{ touchAction: 'pan-y' }}
       >
         <Suspense fallback={<PageSkeleton />}>
           <AppRoutes />
