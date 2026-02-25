@@ -4,16 +4,16 @@
 
 | Environment | URL |
 |-------------|-----|
-| **Preview App** | https://area-manager.preview.emergentagent.com |
+| **Preview App** | https://civic-connect-59.preview.emergentagent.com |
 | **Production** | https://www.mydammaiguda.in |
-| **API Docs** | https://area-manager.preview.emergentagent.com/docs |
+| **API Docs** | https://civic-connect-59.preview.emergentagent.com/docs |
 
 ---
 
 ## All Login Credentials
 
 ### Staff Portal Login (Password-based)
-**URL:** https://area-manager.preview.emergentagent.com/portals
+**URL:** https://civic-connect-59.preview.emergentagent.com/portals
 
 | Role | Phone | Password |
 |------|-------|----------|
@@ -21,7 +21,7 @@
 | Manager (Rohan) | 7386917770 | Manager@123 |
 
 ### OTP Login (Regular Auth)
-**URL:** https://area-manager.preview.emergentagent.com/auth
+**URL:** https://civic-connect-59.preview.emergentagent.com/auth
 
 | User Type | Phone | OTP |
 |-----------|-------|-----|
@@ -68,40 +68,40 @@
 
 ### 1. Health Check
 ```bash
-curl https://area-manager.preview.emergentagent.com/api/health
+curl https://civic-connect-59.preview.emergentagent.com/api/health
 ```
 
 ### 2. Send OTP
 ```bash
-curl -X POST "https://area-manager.preview.emergentagent.com/api/auth/otp" \
+curl -X POST "https://civic-connect-59.preview.emergentagent.com/api/auth/otp" \
   -H "Content-Type: application/json" \
   -d '{"phone":"9999999999"}'
 ```
 
 ### 3. Verify OTP & Get Token
 ```bash
-curl -X POST "https://area-manager.preview.emergentagent.com/api/auth/verify" \
+curl -X POST "https://civic-connect-59.preview.emergentagent.com/api/auth/verify" \
   -H "Content-Type: application/json" \
   -d '{"phone":"9999999999","otp":"123456"}'
 ```
 
 ### 4. Admin Login (Password)
 ```bash
-curl -X POST "https://area-manager.preview.emergentagent.com/api/auth/admin-login" \
+curl -X POST "https://civic-connect-59.preview.emergentagent.com/api/auth/admin-login" \
   -H "Content-Type: application/json" \
   -d '{"phone":"9100063133","password":"Plan@123"}'
 ```
 
 ### 5. Get Courses (Public)
 ```bash
-curl https://area-manager.preview.emergentagent.com/api/education/courses
+curl https://civic-connect-59.preview.emergentagent.com/api/education/courses
 ```
 
 ### 6. Get My Profile (Authenticated)
 ```bash
 TOKEN="your-token-here"
 curl -H "Authorization: Bearer $TOKEN" \
-  https://area-manager.preview.emergentagent.com/api/auth/me
+  https://civic-connect-59.preview.emergentagent.com/api/auth/me
 ```
 
 ---
@@ -159,7 +159,7 @@ DB_NAME="dammaiguda_db"
 
 ### Frontend: /app/frontend/.env
 ```
-REACT_APP_BACKEND_URL=https://area-manager.preview.emergentagent.com
+REACT_APP_BACKEND_URL=https://civic-connect-59.preview.emergentagent.com
 ```
 
 ---

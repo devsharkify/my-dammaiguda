@@ -152,7 +152,7 @@
                               ▼
 ┌─────────────────────────────────────────────────────────────┐
 │                     KUBERNETES INGRESS                       │
-│            https://area-manager.preview.emergentagent.com │
+│            https://civic-connect-59.preview.emergentagent.com │
 └─────────────────────────────────────────────────────────────┘
                               │
             ┌─────────────────┴─────────────────┐
@@ -191,7 +191,7 @@
 <tbody>
 <tr>
   <td><strong>Preview</strong></td>
-  <td>https://area-manager.preview.emergentagent.com</td>
+  <td>https://civic-connect-59.preview.emergentagent.com</td>
 </tr>
 <tr>
   <td><strong>Production</strong></td>
@@ -445,17 +445,17 @@
 
 <div class="codehilite">
 <pre><span></span><code><span class="c1"># Send OTP</span>
-curl<span class="w"> </span>-X<span class="w"> </span>POST<span class="w"> </span><span class="s2">&quot;https://area-manager.preview.emergentagent.com/api/auth/otp&quot;</span><span class="w"> </span><span class="se">\</span>
+curl<span class="w"> </span>-X<span class="w"> </span>POST<span class="w"> </span><span class="s2">&quot;https://civic-connect-59.preview.emergentagent.com/api/auth/otp&quot;</span><span class="w"> </span><span class="se">\</span>
 <span class="w">  </span>-H<span class="w"> </span><span class="s2">&quot;Content-Type: application/json&quot;</span><span class="w"> </span><span class="se">\</span>
 <span class="w">  </span>-d<span class="w"> </span><span class="s1">&#39;{&quot;phone&quot;:&quot;9999999999&quot;}&#39;</span>
 
 <span class="c1"># Verify OTP &amp; Get Token</span>
-curl<span class="w"> </span>-X<span class="w"> </span>POST<span class="w"> </span><span class="s2">&quot;https://area-manager.preview.emergentagent.com/api/auth/verify&quot;</span><span class="w"> </span><span class="se">\</span>
+curl<span class="w"> </span>-X<span class="w"> </span>POST<span class="w"> </span><span class="s2">&quot;https://civic-connect-59.preview.emergentagent.com/api/auth/verify&quot;</span><span class="w"> </span><span class="se">\</span>
 <span class="w">  </span>-H<span class="w"> </span><span class="s2">&quot;Content-Type: application/json&quot;</span><span class="w"> </span><span class="se">\</span>
 <span class="w">  </span>-d<span class="w"> </span><span class="s1">&#39;{&quot;phone&quot;:&quot;9999999999&quot;,&quot;otp&quot;:&quot;123456&quot;}&#39;</span>
 
 <span class="c1"># Admin Login (Password)</span>
-curl<span class="w"> </span>-X<span class="w"> </span>POST<span class="w"> </span><span class="s2">&quot;https://area-manager.preview.emergentagent.com/api/auth/admin-login&quot;</span><span class="w"> </span><span class="se">\</span>
+curl<span class="w"> </span>-X<span class="w"> </span>POST<span class="w"> </span><span class="s2">&quot;https://civic-connect-59.preview.emergentagent.com/api/auth/admin-login&quot;</span><span class="w"> </span><span class="se">\</span>
 <span class="w">  </span>-H<span class="w"> </span><span class="s2">&quot;Content-Type: application/json&quot;</span><span class="w"> </span><span class="se">\</span>
 <span class="w">  </span>-d<span class="w"> </span><span class="s1">&#39;{&quot;phone&quot;:&quot;9100063133&quot;,&quot;password&quot;:&quot;Plan@123&quot;}&#39;</span>
 </code></pre>
@@ -962,7 +962,7 @@ TWILIO_WHATSAPP_NUMBER=+12692304345
 
 <h4>Frontend (.env)</h4>
 
-<pre><code>REACT_APP_BACKEND_URL=https://area-manager.preview.emergentagent.com
+<pre><code>REACT_APP_BACKEND_URL=https://civic-connect-59.preview.emergentagent.com
 WDS_SOCKET_PORT=443
 CI=false
 DISABLE_ESLINT_PLUGIN=true
@@ -1229,7 +1229,7 @@ Progress Tracking:
 
 <div class="codehilite">
 <pre><span></span><code><span class="c1"># Health Check</span>
-curl<span class="w"> </span>https://area-manager.preview.emergentagent.com/api/health
+curl<span class="w"> </span>https://civic-connect-59.preview.emergentagent.com/api/health
 
 <span class="c1"># Test Authentication</span>
 curl<span class="w"> </span>-X<span class="w"> </span>POST<span class="w"> </span><span class="s2">&quot;...api/auth/otp&quot;</span><span class="w"> </span>-d<span class="w"> </span><span class="s1">&#39;{&quot;phone&quot;:&quot;9999999999&quot;}&#39;</span>
@@ -1313,7 +1313,7 @@ sudo<span class="w"> </span>supervisorctl<span class="w"> </span>restart<span cl
 tail<span class="w"> </span>-f<span class="w"> </span>/var/log/supervisor/backend.err.log
 
 <span class="c1"># Test API</span>
-<span class="nv">API</span><span class="o">=</span><span class="s2">&quot;https://area-manager.preview.emergentagent.com/api&quot;</span>
+<span class="nv">API</span><span class="o">=</span><span class="s2">&quot;https://civic-connect-59.preview.emergentagent.com/api&quot;</span>
 curl<span class="w"> </span><span class="nv">$API</span>/health
 </code></pre>
 </div>
