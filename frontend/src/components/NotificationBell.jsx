@@ -270,26 +270,26 @@ export default function NotificationBell() {
               </div>
 
               {/* Notifications List */}
-              <div className="overflow-y-auto" style={{ maxHeight: 'calc(100vh - 200px)' }}>
+              <div className="flex-1 overflow-y-auto">
                 {loading ? (
-                  <div className="flex flex-col items-center justify-center py-12">
-                    <Loader2 className="h-8 w-8 animate-spin text-teal-500 mb-2" />
-                    <p className="text-xs text-gray-400">Loading...</p>
+                  <div className="flex flex-col items-center justify-center py-16">
+                    <Loader2 className="h-10 w-10 animate-spin text-gray-300 mb-3" />
+                    <p className="text-sm text-gray-400">Loading notifications...</p>
                   </div>
                 ) : notifications.length === 0 ? (
-                  <div className="py-12 px-6 text-center">
-                    <div className="h-16 w-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                      <Bell className="h-8 w-8 text-gray-300" />
+                  <div className="py-16 px-6 text-center">
+                    <div className="h-20 w-20 bg-gray-100 rounded-2xl flex items-center justify-center mx-auto mb-5">
+                      <Sparkles className="h-10 w-10 text-gray-300" />
                     </div>
-                    <p className="text-gray-500 font-medium mb-1">
-                      {language === "te" ? "నోటిఫికేషన్లు లేవు" : "All caught up!"}
+                    <p className="text-gray-700 font-semibold text-lg mb-2">
+                      {language === "te" ? "అన్నీ చదివారు!" : "All caught up!"}
                     </p>
-                    <p className="text-xs text-gray-400">
+                    <p className="text-sm text-gray-400 max-w-[200px] mx-auto">
                       {language === "te" ? "కొత్త నోటిఫికేషన్లు ఇక్కడ కనిపిస్తాయి" : "New notifications will appear here"}
                     </p>
                   </div>
                 ) : (
-                  <div className="divide-y divide-gray-50">
+                  <div className="py-2">
                     {notifications.map((notification, index) => {
                       const config = getNotificationConfig(notification.type, notification.priority);
                       const IconComponent = config.icon;
@@ -299,50 +299,49 @@ export default function NotificationBell() {
                           key={notification.id}
                           initial={{ opacity: 0, x: 20 }}
                           animate={{ opacity: 1, x: 0 }}
-                          transition={{ delay: index * 0.05 }}
+                          transition={{ delay: index * 0.03 }}
                           onClick={() => handleNotificationClick(notification)}
-                          className={`p-3 cursor-pointer hover:bg-gray-50 active:bg-gray-100 transition-colors border-l-4 ${config.borderColor} ${
-                            !notification.read ? "bg-teal-50/40" : ""
+                          className={`mx-3 mb-2 p-4 cursor-pointer rounded-xl transition-all border-l-4 ${config.borderColor} ${
+                            !notification.read 
+                              ? "bg-gray-50 hover:bg-gray-100" 
+                              : "bg-white hover:bg-gray-50 border border-gray-100"
                           }`}
                         >
                           <div className="flex gap-3">
                             {/* Icon */}
-                            <div className={`flex-shrink-0 h-10 w-10 rounded-xl ${config.iconBg} flex items-center justify-center`}>
+                            <div className={`flex-shrink-0 h-11 w-11 rounded-xl ${config.iconBg} flex items-center justify-center`}>
                               <IconComponent className={`h-5 w-5 ${config.iconColor}`} />
                             </div>
                             
                             {/* Content */}
                             <div className="flex-1 min-w-0">
                               <div className="flex items-start justify-between gap-2">
-                                <div className="flex-1 min-w-0">
-                                  <p className={`text-sm leading-tight ${!notification.read ? "font-semibold text-gray-900" : "font-medium text-gray-700"}`}>
-                                    {language === "te" && notification.title_te ? notification.title_te : notification.title}
-                                  </p>
-                                  <p className="text-xs text-gray-500 mt-0.5 line-clamp-2">
-                                    {language === "te" && notification.message_te ? notification.message_te : notification.message}
-                                  </p>
-                                </div>
+                                <p className={`text-sm leading-snug ${!notification.read ? "font-semibold text-gray-900" : "font-medium text-gray-700"}`}>
+                                  {language === "te" && notification.title_te ? notification.title_te : notification.title}
+                                </p>
                                 {!notification.read && (
-                                  <span className="h-2 w-2 bg-teal-500 rounded-full flex-shrink-0 mt-1.5"></span>
+                                  <span className="h-2.5 w-2.5 bg-teal-500 rounded-full flex-shrink-0 mt-1 animate-pulse"></span>
                                 )}
                               </div>
+                              <p className="text-xs text-gray-500 mt-1 line-clamp-2">
+                                {language === "te" && notification.message_te ? notification.message_te : notification.message}
+                              </p>
                               
                               {/* Footer */}
-                              <div className="flex items-center justify-between mt-2">
-                                <div className="flex items-center gap-2">
-                                  <span className={`text-[10px] px-1.5 py-0.5 rounded-full ${config.iconBg} ${config.iconColor} font-medium`}>
-                                    {config.label}
-                                  </span>
-                                  <span className="text-[10px] text-gray-400 flex items-center gap-0.5">
-                                    <Clock className="h-2.5 w-2.5" />
-                                    {notification.time_ago}
-                                  </span>
-                                </div>
-                                {notification.action_url && (
-                                  <ChevronRight className="h-4 w-4 text-gray-300" />
-                                )}
+                              <div className="flex items-center gap-3 mt-2">
+                                <span className={`text-[10px] px-2 py-0.5 rounded-full ${config.iconBg} ${config.iconColor} font-semibold uppercase tracking-wide`}>
+                                  {config.label}
+                                </span>
+                                <span className="text-[10px] text-gray-400 flex items-center gap-1">
+                                  <Clock className="h-3 w-3" />
+                                  {notification.time_ago}
+                                </span>
                               </div>
                             </div>
+                            
+                            {notification.action_url && (
+                              <ChevronRight className="h-5 w-5 text-gray-300 flex-shrink-0 self-center" />
+                            )}
                           </div>
                         </motion.div>
                       );
