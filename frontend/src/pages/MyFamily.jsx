@@ -139,6 +139,33 @@ export default function MyFamily() {
     );
   };
 
+  // Refresh a specific family member's location
+  const refreshMemberLocation = async (memberId) => {
+    setRefreshingMember(memberId);
+    try {
+      const res = await axios.get(`${API}/family/member/${memberId}/location`, { headers });
+      
+      // Update the member's location in state
+      setMembers(prevMembers => 
+        prevMembers.map(m => 
+          m.family_member_id === memberId 
+            ? { ...m, last_location: res.data.location }
+            : m
+        )
+      );
+      
+      if (res.data.location) {
+        toast.success(language === "te" ? "లొకేషన్ అప్డేట్ అయింది" : "Location refreshed");
+      } else {
+        toast.info(language === "te" ? "లొకేషన్ అందుబాటులో లేదు" : "Location not available");
+      }
+    } catch (error) {
+      toast.error(language === "te" ? "లొకేషన్ పొందడం విఫలమైంది" : "Failed to get location");
+    } finally {
+      setRefreshingMember(null);
+    }
+  };
+
   // SOS Functions
   const triggerSOS = async () => {
     if (sosContacts.length === 0) {
