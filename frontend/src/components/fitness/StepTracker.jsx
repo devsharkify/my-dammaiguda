@@ -89,6 +89,17 @@ export default function StepTracker({ onDataUpdate, compact = false }) {
     loadGoalStreak();
   }, []);
 
+  // Auto-start tracking on mount (always on)
+  useEffect(() => {
+    if (isSupported && permissionStatus !== 'denied' && !isTracking) {
+      startTracking().then((started) => {
+        if (started) {
+          console.log('Step counter auto-started');
+        }
+      });
+    }
+  }, [isSupported, permissionStatus]);
+
   const loadTodaySteps = async () => {
     try {
       const res = await axios.get(`${API}/fitness/dashboard`, { headers });
