@@ -50,10 +50,12 @@ export default function MyFamily() {
   const [selectedMember, setSelectedMember] = useState(null);
   const [newMember, setNewMember] = useState({ phone: "", relationship: "spouse" });
   const [newContact, setNewContact] = useState({ name: "", phone: "", relationship: "" });
-  const [newGeofence, setNewGeofence] = useState({ name: "", radius_meters: 500 });
+  const [newGeofence, setNewGeofence] = useState({ name: "", radius_meters: 500, lat: null, lng: null });
   const [sending, setSending] = useState(false);
   const [updatingLocation, setUpdatingLocation] = useState(false);
   const [triggeringSOS, setTriggeringSOS] = useState(false);
+  const [mapLocation, setMapLocation] = useState(null);
+  const [loadingLocation, setLoadingLocation] = useState(false);
 
   const headers = { Authorization: `Bearer ${token}` };
 
