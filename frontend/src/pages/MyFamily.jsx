@@ -712,16 +712,32 @@ export default function MyFamily() {
                     {member.last_location ? (
                       <div className="bg-white rounded-lg p-3 space-y-2">
                         <div className="flex items-center justify-between">
-                          <div className="flex items-center gap-2 text-text-muted text-sm">
+                          <div className="flex items-center gap-2 text-muted-foreground text-sm">
                             <Clock className="h-4 w-4" />
                             <span>{formatTime(member.last_location.updated_at)}</span>
                           </div>
-                          {member.last_location.battery_level && (
-                            <div className="flex items-center gap-1 text-sm">
-                              <Battery className="h-4 w-4" />
-                              <span>{member.last_location.battery_level}%</span>
-                            </div>
-                          )}
+                          <div className="flex items-center gap-2">
+                            {member.last_location.battery_level && (
+                              <div className="flex items-center gap-1 text-sm">
+                                <Battery className="h-4 w-4" />
+                                <span>{member.last_location.battery_level}%</span>
+                              </div>
+                            )}
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              onClick={() => refreshMemberLocation(member.family_member_id)}
+                              disabled={refreshingMember === member.family_member_id}
+                              className="h-8 w-8 p-0 text-blue-500 hover:bg-blue-50"
+                              title={language === "te" ? "లొకేషన్ రిఫ్రెష్ చేయండి" : "Refresh Location"}
+                            >
+                              {refreshingMember === member.family_member_id ? (
+                                <Loader2 className="h-4 w-4 animate-spin" />
+                              ) : (
+                                <RefreshCw className="h-4 w-4" />
+                              )}
+                            </Button>
+                          </div>
                         </div>
                         <Button
                           onClick={() => openInMaps(member.last_location.latitude, member.last_location.longitude)}
@@ -732,12 +748,30 @@ export default function MyFamily() {
                         </Button>
                       </div>
                     ) : (
-                      <div className="bg-yellow-50 rounded-lg p-3 text-center">
-                        <p className="text-sm text-yellow-700">
-                          {language === "te" 
-                            ? "లొకేషన్ అందుబాటులో లేదు" 
-                            : "Location not available yet"}
-                        </p>
+                      <div className="bg-yellow-50 rounded-lg p-3">
+                        <div className="flex items-center justify-between">
+                          <p className="text-sm text-yellow-700">
+                            {language === "te" 
+                              ? "లొకేషన్ అందుబాటులో లేదు" 
+                              : "Location not available yet"}
+                          </p>
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => refreshMemberLocation(member.family_member_id)}
+                            disabled={refreshingMember === member.family_member_id}
+                            className="h-8 px-2 text-yellow-700 hover:bg-yellow-100"
+                          >
+                            {refreshingMember === member.family_member_id ? (
+                              <Loader2 className="h-4 w-4 animate-spin" />
+                            ) : (
+                              <>
+                                <RefreshCw className="h-4 w-4 mr-1" />
+                                {language === "te" ? "రిఫ్రెష్" : "Refresh"}
+                              </>
+                            )}
+                          </Button>
+                        </div>
                       </div>
                     )}
 
