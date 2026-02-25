@@ -227,7 +227,7 @@ from routers.utils import db, now_iso
 async def get_dumpyard_info():
     """Get dump yard information"""
     return {
-        "name": "Dammaiguda Dump Yard",
+        "name": "Jawaharnagar Dump Yard",
         "name_te": "దమ్మాయిగూడ డంప్ యార్డ్",
         "location": {"lat": 17.4875, "lng": 78.5625},
         "status": "active",
