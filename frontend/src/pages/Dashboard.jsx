@@ -679,25 +679,16 @@ export default function Dashboard() {
           </Link>
         </div>
 
-        {/* Quick Actions Row 2 - Fit (Coming Soon), Doctor, My Family */}
+        {/* Quick Actions Row 2 - Fit, Doctor, My Family */}
         <div className="grid grid-cols-3 gap-2.5">
-          {/* Kaizer Fitness - Coming Soon */}
-          <div 
-            onClick={() => setShowFitnessComingSoon(true)}
-            className="cursor-pointer relative"
-            data-testid="quick-action-fit"
-          >
-            <div className="h-20 rounded-2xl bg-blue-50/60 flex flex-col items-center justify-center shadow-sm transition-all border-2 border-dashed border-blue-200 backdrop-blur-sm opacity-70">
-              <div className="h-10 w-10 rounded-xl bg-blue-100/80 flex items-center justify-center mb-1">
-                <Activity className="h-5 w-5 text-blue-400" />
+          <Link to="/fitness" data-testid="quick-action-fit">
+            <div className="h-20 rounded-2xl bg-blue-50 flex flex-col items-center justify-center shadow-sm active:scale-95 transition-all border border-blue-100 hover:bg-blue-100">
+              <div className="h-10 w-10 rounded-xl bg-blue-100 flex items-center justify-center mb-1">
+                <Activity className="h-5 w-5 text-blue-600" />
               </div>
-              <span className="text-[11px] font-semibold text-blue-400">{language === "te" ? "ఫిట్‌నెస్" : "Fitness"}</span>
+              <span className="text-[11px] font-semibold text-blue-700">{language === "te" ? "ఫిట్‌నెస్" : "Fitness"}</span>
             </div>
-            {/* Coming Soon Badge */}
-            <div className="absolute -top-1 -right-1 px-1.5 py-0.5 bg-gradient-to-r from-amber-400 to-orange-500 rounded-full shadow-lg">
-              <span className="text-[8px] font-bold text-white whitespace-nowrap">COMING SOON</span>
-            </div>
-          </div>
+          </Link>
           <Link to="/doctor" data-testid="quick-action-doctor">
             <div className="h-20 rounded-2xl bg-teal-50 flex flex-col items-center justify-center shadow-sm active:scale-95 transition-all border border-teal-100 hover:bg-teal-100">
               <div className="h-10 w-10 rounded-xl bg-teal-100 flex items-center justify-center mb-1">
