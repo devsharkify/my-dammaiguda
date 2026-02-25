@@ -858,6 +858,39 @@ async def sync_steps_simple(data: StepSyncData, user: dict = Depends(get_current
         "data": record
     }
 
+class StepGoalData(BaseModel):
+    """Step goal preference"""
+    goal: int  # 5000, 8000, 10000, 12000, 15000
+
+@router.get("/step-goal")
+async def get_step_goal(user: dict = Depends(get_current_user)):
+    """Get user's daily step goal preference"""
+    pref = await db.user_preferences.find_one(
+        {"user_id": user["id"], "type": "step_goal"},
+        {"_id": 0}
+    )
+    return {"goal": pref.get("value", 10000) if pref else 10000}
+
+@router.post("/step-goal")
+async def set_step_goal(data: StepGoalData, user: dict = Depends(get_current_user)):
+    """Set user's daily step goal preference"""
+    valid_goals = [5000, 8000, 10000, 12000, 15000]
+    if data.goal not in valid_goals:
+        raise HTTPException(status_code=400, detail=f"Invalid goal. Choose from: {valid_goals}")
+    
+    await db.user_preferences.update_one(
+        {"user_id": user["id"], "type": "step_goal"},
+        {"$set": {
+            "user_id": user["id"],
+            "type": "step_goal",
+            "value": data.goal,
+            "updated_at": now_iso()
+        }},
+        upsert=True
+    )
+    
+    return {"success": True, "goal": data.goal}
+
 @router.post("/sync/smartwatch")
 async def sync_smartwatch_data(data: SmartWatchData, user: dict = Depends(get_current_user)):
     """Sync comprehensive health data from smartwatch"""
