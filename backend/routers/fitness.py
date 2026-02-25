@@ -1950,6 +1950,118 @@ async def get_user_streaks(user: dict = Depends(get_current_user)):
         "streak_status": "active" if current_streak > 0 else "broken"
     }
 
+@router.get("/step-goal-streak")
+async def get_step_goal_streak(user: dict = Depends(get_current_user)):
+    """Get user's step goal streak - days hitting daily step goal in a row"""
+    today = datetime.now(timezone.utc).date()
+    user_id = user["id"]
+    
+    # Get user's step goal (default 10000)
+    goal_pref = await db.user_preferences.find_one(
+        {"user_id": user_id, "type": "step_goal"},
+        {"_id": 0, "value": 1}
+    )
+    step_goal = goal_pref.get("value", 10000) if goal_pref else 10000
+    
+    # Get step counts for last 60 days
+    start_date = (today - timedelta(days=60)).isoformat()
+    step_records = await db.step_counts.find({
+        "user_id": user_id,
+        "date": {"$gte": start_date}
+    }, {"_id": 0, "date": 1, "steps": 1}).to_list(60)
+    
+    # Also check daily summaries
+    daily_summaries = await db.fitness_daily_summary.find({
+        "user_id": user_id,
+        "date": {"$gte": start_date}
+    }, {"_id": 0, "date": 1, "total_steps": 1}).to_list(60)
+    
+    # Merge step data by date (take max)
+    steps_by_date = {}
+    for rec in step_records:
+        date_str = rec.get("date")
+        if date_str:
+            steps_by_date[date_str] = max(steps_by_date.get(date_str, 0), rec.get("steps", 0))
+    for summary in daily_summaries:
+        date_str = summary.get("date")
+        if date_str:
+            steps_by_date[date_str] = max(steps_by_date.get(date_str, 0), summary.get("total_steps", 0))
+    
+    # Find dates where goal was hit
+    goal_hit_dates = set()
+    for date_str, steps in steps_by_date.items():
+        if steps >= step_goal:
+            try:
+                d = datetime.strptime(date_str, "%Y-%m-%d").date()
+                goal_hit_dates.add(d)
+            except:
+                pass
+    
+    # Calculate current goal streak
+    current_goal_streak = 0
+    check_date = today
+    
+    # Check if user hit goal today or yesterday
+    if today in goal_hit_dates:
+        current_goal_streak = 1
+        check_date = today - timedelta(days=1)
+    elif (today - timedelta(days=1)) in goal_hit_dates:
+        current_goal_streak = 1
+        check_date = today - timedelta(days=2)
+    else:
+        current_goal_streak = 0
+        check_date = None
+    
+    # Count consecutive days
+    if check_date:
+        while check_date in goal_hit_dates:
+            current_goal_streak += 1
+            check_date -= timedelta(days=1)
+    
+    # Calculate longest goal streak
+    sorted_goal_dates = sorted(goal_hit_dates)
+    longest_goal_streak = 0
+    temp_streak = 1
+    
+    for i in range(1, len(sorted_goal_dates)):
+        if (sorted_goal_dates[i] - sorted_goal_dates[i-1]).days == 1:
+            temp_streak += 1
+        else:
+            longest_goal_streak = max(longest_goal_streak, temp_streak)
+            temp_streak = 1
+    longest_goal_streak = max(longest_goal_streak, temp_streak) if sorted_goal_dates else 0
+    
+    # Calculate total steps
+    total_steps = sum(steps_by_date.values())
+    
+    # Next milestone calculation
+    milestones = [3, 7, 14, 30]
+    next_milestone = None
+    days_to_next = None
+    for m in milestones:
+        if current_goal_streak < m:
+            next_milestone = m
+            days_to_next = m - current_goal_streak
+            break
+    
+    return {
+        "current_streak": current_goal_streak,
+        "longest_streak": longest_goal_streak,
+        "step_goal": step_goal,
+        "goal_hit_today": today in goal_hit_dates,
+        "total_days_goal_hit": len(goal_hit_dates),
+        "total_steps_all_time": total_steps,
+        "streak_status": "active" if current_goal_streak > 0 else "broken",
+        "next_milestone": next_milestone,
+        "days_to_next_milestone": days_to_next,
+        "milestones": {
+            "3_day": current_goal_streak >= 3,
+            "7_day": current_goal_streak >= 7,
+            "14_day": current_goal_streak >= 14,
+            "30_day": current_goal_streak >= 30
+        }
+    }
+
 @router.get("/badges")
 async def get_user_badges(user: dict = Depends(get_current_user)):
     """Get all badges - earned and locked"""
