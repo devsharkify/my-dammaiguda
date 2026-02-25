@@ -183,11 +183,13 @@ export default function LiveActivity() {
             });
             setRoutePath(prev => [...prev, newPos]);
             
-            // Calculate pace (min/km)
+            // Calculate pace (min/km) and speed (km/h)
             if (elapsedSeconds > 0 && distance > 0) {
               const km = (distance + dist) / 1000;
               const mins = elapsedSeconds / 60;
+              const hours = elapsedSeconds / 3600;
               setPace(Math.round((mins / km) * 10) / 10);
+              setSpeed(Math.round((km / hours) * 10) / 10);
             }
           }
         }
