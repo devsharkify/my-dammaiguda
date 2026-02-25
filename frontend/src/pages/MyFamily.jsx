@@ -7,6 +7,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "../components/ui/card"
 import { Button } from "../components/ui/button";
 import { Input } from "../components/ui/input";
 import { Badge } from "../components/ui/badge";
+import { Switch } from "../components/ui/switch";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "../components/ui/dialog";
 import { toast } from "sonner";
 import {
@@ -31,9 +32,12 @@ import {
   Siren,
   Plus,
   Settings,
-  GraduationCap
+  GraduationCap,
+  Radio,
+  Bell
 } from "lucide-react";
 import PhoneInput from "../components/PhoneInput";
+import { useBackgroundLocation } from "../hooks/useBackgroundLocation";
 
 const API = `${process.env.REACT_APP_BACKEND_URL}/api`;
 
