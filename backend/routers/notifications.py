@@ -448,3 +448,329 @@ async def trigger_community_notification(post: dict, action: str = "new_post"):
     # Notify post author for comments/likes
     if action in ["comment", "like"] and post.get("user_id"):
         await notify_user(post["user_id"], "community", payload)
+
+# ============== IN-APP NOTIFICATION ENDPOINTS ==============
+
+def get_time_ago(date_str):
+    """Convert datetime to relative time string"""
+    if not date_str:
+        return "Just now"
+    try:
+        if isinstance(date_str, str):
+            dt = datetime.fromisoformat(date_str.replace("Z", "+00:00"))
+        else:
+            dt = date_str
+        now = datetime.now(timezone.utc)
+        diff = now - dt
+        seconds = diff.total_seconds()
+        
+        if seconds < 60:
+            return "Just now"
+        elif seconds < 3600:
+            return f"{int(seconds // 60)}m ago"
+        elif seconds < 86400:
+            return f"{int(seconds // 3600)}h ago"
+        elif seconds < 604800:
+            return f"{int(seconds // 86400)}d ago"
+        else:
+            return dt.strftime("%b %d")
+    except:
+        return "Just now"
+
+@router.get("/user")
+async def get_user_notifications(limit: int = 30, user: dict = Depends(get_current_user)):
+    """Get in-app notifications for the notification bell dropdown"""
+    # Get notifications from pending_notifications and notification_broadcasts
+    notifications = await db.pending_notifications.find(
+        {"user_id": user["id"]},
+        {"_id": 0}
+    ).sort("created_at", -1).limit(limit).to_list(limit)
+    
+    # Also get broadcast notifications targeted to this user or all users
+    broadcasts = await db.notification_broadcasts.find(
+        {"$or": [
+            {"target_users": user["id"]},
+            {"target_users": None},
+            {"target_users": {"$exists": False}}
+        ]},
+        {"_id": 0}
+    ).sort("created_at", -1).limit(limit).to_list(limit)
+    
+    # Combine and format
+    all_notifs = []
+    
+    for n in notifications:
+        payload = n.get("payload", {})
+        all_notifs.append({
+            "id": n.get("id"),
+            "title": payload.get("title", "Notification"),
+            "title_te": payload.get("title_te"),
+            "message": payload.get("body", ""),
+            "message_te": payload.get("body_te"),
+            "type": payload.get("category", "system"),
+            "priority": payload.get("priority", "normal"),
+            "read": n.get("status") in ["delivered", "read"],
+            "action_url": payload.get("url"),
+            "image_url": payload.get("image"),
+            "created_at": n.get("created_at"),
+            "time_ago": get_time_ago(n.get("created_at"))
+        })
+    
+    for b in broadcasts:
+        payload = b.get("payload", {})
+        # Check if already added
+        if any(n["id"] == b.get("id") for n in all_notifs):
+            continue
+        
+        # Check if user has read this broadcast
+        read_record = await db.notification_reads.find_one({
+            "notification_id": b.get("id"),
+            "user_id": user["id"]
+        })
+        
+        all_notifs.append({
+            "id": b.get("id"),
+            "title": payload.get("title", "Announcement"),
+            "title_te": payload.get("title_te"),
+            "message": payload.get("body", ""),
+            "message_te": payload.get("body_te"),
+            "type": payload.get("category", "announcement"),
+            "priority": payload.get("priority", "normal"),
+            "read": read_record is not None,
+            "action_url": payload.get("url"),
+            "image_url": payload.get("image"),
+            "sent_by_name": b.get("sent_by_name"),
+            "created_at": b.get("created_at"),
+            "time_ago": get_time_ago(b.get("created_at"))
+        })
+    
+    # Sort by created_at descending
+    all_notifs.sort(key=lambda x: x.get("created_at", ""), reverse=True)
+    
+    return {"notifications": all_notifs[:limit], "count": len(all_notifs[:limit])}
+
+@router.get("/unread-count")
+async def get_unread_count(user: dict = Depends(get_current_user)):
+    """Get unread notification count for the bell badge"""
+    # Count pending notifications
+    pending_count = await db.pending_notifications.count_documents({
+        "user_id": user["id"],
+        "status": "pending"
+    })
+    
+    # Count unread broadcasts
+    broadcasts = await db.notification_broadcasts.find(
+        {"$or": [
+            {"target_users": user["id"]},
+            {"target_users": None},
+            {"target_users": {"$exists": False}}
+        ]},
+        {"_id": 0, "id": 1}
+    ).to_list(100)
+    
+    broadcast_ids = [b["id"] for b in broadcasts]
+    read_broadcasts = await db.notification_reads.count_documents({
+        "notification_id": {"$in": broadcast_ids},
+        "user_id": user["id"]
+    })
+    
+    unread_broadcasts = len(broadcast_ids) - read_broadcasts
+    
+    total_unread = pending_count + max(0, unread_broadcasts)
+    
+    return {"count": min(total_unread, 99)}  # Cap at 99 for display
+
+@router.post("/mark-read/{notification_id}")
+async def mark_notification_read(notification_id: str, user: dict = Depends(get_current_user)):
+    """Mark a notification as read"""
+    # Try updating pending notification
+    result = await db.pending_notifications.update_one(
+        {"id": notification_id, "user_id": user["id"]},
+        {"$set": {"status": "read", "read_at": now_iso()}}
+    )
+    
+    if result.modified_count == 0:
+        # Try adding read record for broadcast
+        await db.notification_reads.update_one(
+            {"notification_id": notification_id, "user_id": user["id"]},
+            {"$set": {
+                "notification_id": notification_id,
+                "user_id": user["id"],
+                "read_at": now_iso()
+            }},
+            upsert=True
+        )
+    
+    return {"success": True}
+
+@router.post("/mark-all-read")
+async def mark_all_read(user: dict = Depends(get_current_user)):
+    """Mark all notifications as read"""
+    # Mark pending notifications as read
+    await db.pending_notifications.update_many(
+        {"user_id": user["id"], "status": "pending"},
+        {"$set": {"status": "read", "read_at": now_iso()}}
+    )
+    
+    # Get all broadcasts and mark them as read
+    broadcasts = await db.notification_broadcasts.find(
+        {"$or": [
+            {"target_users": user["id"]},
+            {"target_users": None},
+            {"target_users": {"$exists": False}}
+        ]},
+        {"_id": 0, "id": 1}
+    ).to_list(100)
+    
+    for b in broadcasts:
+        await db.notification_reads.update_one(
+            {"notification_id": b["id"], "user_id": user["id"]},
+            {"$set": {
+                "notification_id": b["id"],
+                "user_id": user["id"],
+                "read_at": now_iso()
+            }},
+            upsert=True
+        )
+    
+    return {"success": True}
+
+# ============== ADMIN/MANAGER SEND WITH SMS ==============
+
+async def send_sms_notification(phone: str, message: str):
+    """Send SMS via Authkey.io"""
+    import httpx
+    try:
+        authkey = os.environ.get("AUTHKEY_API_KEY")
+        sender_id = os.environ.get("AUTHKEY_SENDER_ID", "MYDAMM")
+        
+        if not authkey:
+            logging.warning("SMS not sent - AUTHKEY_API_KEY not configured")
+            return False
+        
+        # Clean phone number
+        clean_phone = phone.replace("+", "").replace(" ", "")
+        if clean_phone.startswith("91"):
+            clean_phone = clean_phone[2:]
+        
+        async with httpx.AsyncClient() as client:
+            response = await client.get(
+                "https://api.authkey.io/request",
+                params={
+                    "authkey": authkey,
+                    "mobile": clean_phone,
+                    "country_code": "91",
+                    "sms": message,
+                    "sender": sender_id
+                },
+                timeout=30.0
+            )
+            
+            if response.status_code == 200:
+                logging.info(f"SMS sent to {clean_phone}")
+                return True
+            else:
+                logging.error(f"SMS failed: {response.text}")
+                return False
+    except Exception as e:
+        logging.error(f"SMS error: {e}")
+        return False
+
+@router.post("/admin/send")
+async def admin_send_notification(
+    notification: BroadcastNotification,
+    background_tasks: BackgroundTasks,
+    send_sms: bool = False,
+    user: dict = Depends(get_current_user)
+):
+    """Admin/Manager: Send notification with optional SMS"""
+    if user.get("role") not in ["admin", "manager", "super_admin"]:
+        raise HTTPException(status_code=403, detail="Admin or Manager access required")
+    
+    payload = {
+        "title": notification.title,
+        "title_te": notification.title_te,
+        "body": notification.body,
+        "body_te": notification.body_te,
+        "category": notification.category,
+        "priority": notification.priority,
+        "url": notification.url,
+        "image": notification.image,
+        "data": notification.data or {},
+        "timestamp": now_iso()
+    }
+    
+    # Store broadcast record
+    broadcast_record = {
+        "id": generate_id(),
+        "admin_id": user["id"],
+        "sent_by_name": user.get("name"),
+        "sent_by_role": user.get("role"),
+        "payload": payload,
+        "target_users": notification.target_users,
+        "target_area": notification.target_area,
+        "send_sms": send_sms,
+        "created_at": now_iso()
+    }
+    await db.notification_broadcasts.insert_one(broadcast_record)
+    
+    # Get target users
+    target_users = []
+    if notification.target_users:
+        target_users = await db.users.find(
+            {"id": {"$in": notification.target_users}},
+            {"_id": 0, "id": 1, "phone": 1, "name": 1}
+        ).to_list(1000)
+    elif notification.target_area:
+        target_users = await db.users.find(
+            {"area_id": notification.target_area, "is_active": {"$ne": False}},
+            {"_id": 0, "id": 1, "phone": 1, "name": 1}
+        ).to_list(10000)
+    else:
+        # All users
+        target_users = await db.users.find(
+            {"is_active": {"$ne": False}},
+            {"_id": 0, "id": 1, "phone": 1, "name": 1}
+        ).to_list(10000)
+    
+    # Send push notifications
+    user_ids = [u["id"] for u in target_users]
+    push_count = await notify_multiple_users(user_ids, notification.category, payload)
+    
+    # Send SMS in background if enabled
+    sms_count = 0
+    if send_sms:
+        sms_message = f"{notification.title}: {notification.body[:100]}"
+        for u in target_users[:500]:  # Limit SMS to 500
+            if u.get("phone"):
+                background_tasks.add_task(send_sms_notification, u["phone"], sms_message)
+                sms_count += 1
+    
+    return {
+        "success": True,
+        "broadcast_id": broadcast_record["id"],
+        "push_sent": push_count,
+        "sms_queued": sms_count,
+        "total_recipients": len(target_users)
+    }
+
+@router.get("/admin/history")
+async def admin_notification_history(limit: int = 50, user: dict = Depends(get_current_user)):
+    """Get notification history for admin"""
+    if user.get("role") not in ["admin", "manager", "super_admin"]:
+        raise HTTPException(status_code=403, detail="Admin access required")
+    
+    broadcasts = await db.notification_broadcasts.find(
+        {},
+        {"_id": 0}
+    ).sort("created_at", -1).limit(limit).to_list(limit)
+    
+    for b in broadcasts:
+        b["time_ago"] = get_time_ago(b.get("created_at"))
+        # Get read stats
+        read_count = await db.notification_reads.count_documents({
+            "notification_id": b["id"]
+        })
+        b["read_count"] = read_count
+    
+    return {"notifications": broadcasts, "count": len(broadcasts)}
