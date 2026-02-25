@@ -94,9 +94,6 @@ export default function Dashboard() {
   // AQI data
   const [aqiData, setAqiData] = useState(null);
   
-  // Kaizer Fitness Coming Soon modal
-  const [showFitnessComingSoon, setShowFitnessComingSoon] = useState(false);
-  
   // Wall posts for widget
   const [latestWallPost, setLatestWallPost] = useState(null);
   
