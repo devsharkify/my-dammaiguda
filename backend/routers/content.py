@@ -373,7 +373,7 @@ async def seed_default_content(user: dict = Depends(get_current_user)):
             "id": generate_id(),
             "key": "dumpyard_config",
             "value": {
-                "daily_waste_tons": 1200,
+                "daily_waste_tons": 10000,
                 "area_acres": 350,
                 "red_zone_km": 2,
                 "status": "Active",
