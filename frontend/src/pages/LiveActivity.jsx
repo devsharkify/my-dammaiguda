@@ -263,8 +263,20 @@ export default function LiveActivity() {
   // Pause/Resume
   const togglePause = () => {
     if (isPaused) {
+      // Resume - restart timer
       setIsPaused(false);
+      
+      // Clear any existing timer first to prevent duplicates
+      if (timerRef.current) {
+        clearInterval(timerRef.current);
+        timerRef.current = null;
+      }
+      
+      lastTickRef.current = Date.now();
       timerRef.current = setInterval(() => {
+        const now = Date.now();
+        lastTickRef.current = now;
+        
         setElapsedSeconds(prev => {
           const newSec = prev + 1;
           
@@ -282,8 +294,12 @@ export default function LiveActivity() {
       }, 1000);
       toast.info(language === "te" ? "కొనసాగించబడింది" : "Resumed");
     } else {
+      // Pause - stop timer
       setIsPaused(true);
-      if (timerRef.current) clearInterval(timerRef.current);
+      if (timerRef.current) {
+        clearInterval(timerRef.current);
+        timerRef.current = null;
+      }
       toast.info(language === "te" ? "విరామం" : "Paused");
     }
   };
