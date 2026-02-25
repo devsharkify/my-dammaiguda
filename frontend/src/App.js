@@ -61,17 +61,30 @@ import SafetyStandards from "./pages/SafetyStandards";
 
 import "./App.css";
 
-// Page transition variants
+// Native-like page transition variants
 const pageVariants = {
-  initial: { opacity: 0, y: 10 },
-  in: { opacity: 1, y: 0 },
-  out: { opacity: 0, y: -10 }
+  initial: { 
+    opacity: 0, 
+    x: 20,
+    scale: 0.98
+  },
+  in: { 
+    opacity: 1, 
+    x: 0,
+    scale: 1
+  },
+  out: { 
+    opacity: 0, 
+    x: -20,
+    scale: 0.98
+  }
 };
 
 const pageTransition = {
-  type: "tween",
-  ease: "easeInOut",
-  duration: 0.2
+  type: "spring",
+  stiffness: 300,
+  damping: 30,
+  mass: 0.8
 };
 
 // Animated page wrapper
