@@ -17,6 +17,9 @@ from middleware.rate_limiter import limiter
 AUTHKEY_API_KEY = os.environ.get("AUTHKEY_API_KEY", "")
 AUTHKEY_ENABLED = bool(AUTHKEY_API_KEY)
 
+# Production mode - when True, disables test phone backdoors
+PRODUCTION_MODE = os.environ.get("PRODUCTION_MODE", "false").lower() == "true"
+
 # OTP store (stores LogID from Authkey for verification, or OTP for dev mode)
 otp_store = {}
 
