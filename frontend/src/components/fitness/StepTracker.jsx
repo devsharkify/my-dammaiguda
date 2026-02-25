@@ -62,14 +62,13 @@ export default function StepTracker({ onDataUpdate, compact = false }) {
     calories,
     distance,
     isWalking,
-    progress,
     startTracking,
     stopTracking,
     resetSteps,
     setInitialSteps,
     requestPermission,
   } = useStepCounter({
-    targetSteps: 10000,
+    targetSteps: stepGoal,
     onStep: (data) => {
       if (onDataUpdate) {
         onDataUpdate(data);
@@ -77,11 +76,15 @@ export default function StepTracker({ onDataUpdate, compact = false }) {
     },
   });
 
+  // Calculate progress based on current goal
+  const progress = Math.min((steps / stepGoal) * 100, 100);
+
   const headers = { Authorization: `Bearer ${token}` };
 
-  // Load today's steps on mount
+  // Load today's steps and goal on mount
   useEffect(() => {
     loadTodaySteps();
+    loadStepGoal();
   }, []);
 
   const loadTodaySteps = async () => {
@@ -93,6 +96,31 @@ export default function StepTracker({ onDataUpdate, compact = false }) {
       }
     } catch (err) {
       console.log('Could not load today steps');
+    }
+  };
+
+  const loadStepGoal = async () => {
+    try {
+      const res = await axios.get(`${API}/fitness/step-goal`, { headers });
+      if (res.data?.goal) {
+        setStepGoal(res.data.goal);
+      }
+    } catch (err) {
+      // Use default 10000
+    }
+  };
+
+  const saveStepGoal = async (newGoal) => {
+    setLoadingGoal(true);
+    try {
+      await axios.post(`${API}/fitness/step-goal`, { goal: newGoal }, { headers });
+      setStepGoal(newGoal);
+      setShowGoalDialog(false);
+      toast.success(language === 'te' ? `లక్ష్యం ${newGoal.toLocaleString()} కు మార్చబడింది` : `Goal set to ${newGoal.toLocaleString()} steps`);
+    } catch (err) {
+      toast.error(language === 'te' ? 'లక్ష్యం సేవ్ చేయడం విఫలమైంది' : 'Failed to save goal');
+    } finally {
+      setLoadingGoal(false);
     }
   };
 
