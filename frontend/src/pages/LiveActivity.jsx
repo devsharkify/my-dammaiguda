@@ -485,14 +485,25 @@ export default function LiveActivity() {
         </div>
       )}
 
-      {/* Timer Display */}
-      <div className="p-6 text-center">
-        <p className="text-muted-foreground text-sm mb-2">
+      {/* Timer Display with inline Start button */}
+      <div className="p-6">
+        <p className="text-muted-foreground text-sm mb-2 text-center">
           {isPaused ? (language === "te" ? "విరామంలో" : "Paused") : (language === "te" ? "సమయం" : "Duration")}
         </p>
-        <p className={`text-5xl font-mono font-bold ${isPaused ? "text-yellow-500" : ""}`} data-testid="timer">
-          {formatTime(elapsedSeconds)}
-        </p>
+        <div className="flex items-center justify-center gap-4">
+          <p className={`text-5xl font-mono font-bold ${isPaused ? "text-yellow-500" : ""}`} data-testid="timer">
+            {formatTime(elapsedSeconds)}
+          </p>
+          {!isRunning && (
+            <Button
+              onClick={startActivity}
+              className={`h-14 w-14 rounded-full bg-gradient-to-r ${config.color} shadow-lg`}
+              data-testid="start-btn"
+            >
+              <Play className="h-6 w-6" />
+            </Button>
+          )}
+        </div>
       </div>
 
       {/* Stats Grid */}
