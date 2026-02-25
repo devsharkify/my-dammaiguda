@@ -719,6 +719,20 @@ Replaced Google Fit with a native accelerometer-based step counter that works on
   3. "View on Map" opens Google Maps for reference
 - **Files Modified:** `/app/frontend/src/pages/MyFamily.jsx`
 
+### 4. Background Location Sharing
+- **Feature:** Family members can share location even when app is closed
+- **How it works:**
+  1. User enables "Background Location" toggle in My Family page
+  2. App requests location permission (one-time)
+  3. Service Worker syncs location every 15 minutes in background
+  4. Family members can refresh to see latest location
+- **Implementation:**
+  - Created `/app/frontend/src/hooks/useBackgroundLocation.js`
+  - Added background sync to `/app/frontend/public/service-worker.js`
+  - Uses IndexedDB to store auth token for background access
+  - Uses Periodic Background Sync API when available
+- **Limitations:** Background sync may be restricted by browser/OS power saving
+
 
 ---
 
