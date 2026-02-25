@@ -14,6 +14,11 @@ body {
     -moz-user-select: none;
     -ms-user-select: none;
     user-select: none;
+    /* Enable scrolling */
+    overflow-y: auto !important;
+    overflow-x: hidden !important;
+    height: auto !important;
+    min-height: 100vh;
 }
 
 /* Allow selection in form elements */
