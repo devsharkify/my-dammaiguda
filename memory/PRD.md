@@ -650,3 +650,48 @@ The app now supports easy replication for different areas (e.g., "My AS Rao Naga
 - `/app/frontend/src/pages/AdminPanel.jsx` (Added Benefits tab)
 - `/app/frontend/src/pages/CitizenBenefits.jsx` (Added banner)
 
+
+
+---
+
+## Google Fit Replacement with Accelerometer Step Counter (Feb 25, 2026)
+
+### Background:
+Google Fit API was deprecated by Google (shutdown date: June 30, 2025). The integration was non-functional showing "Access blocked" errors.
+
+### Solution Implemented:
+Replaced Google Fit with a native accelerometer-based step counter that works on TWA/PWA apps.
+
+### New Components Created:
+1. **`/app/frontend/src/hooks/useStepCounter.js`**
+   - Custom React hook for accelerometer-based step detection
+   - Uses `DeviceMotionEvent` API
+   - Features: step counting, pace calculation, distance estimation, calorie estimation
+   - Works on Android and iOS (with permission request)
+
+2. **`/app/frontend/src/components/fitness/StepTracker.jsx`**
+   - Full and compact UI variants
+   - Real-time step counting with visual feedback
+   - Auto-saves to backend every 100 steps
+   - Progress tracking toward 10,000 daily goal
+
+3. **`POST /api/fitness/steps/sync`** - New backend endpoint
+   - Simple step count synchronization
+   - Estimates calories and distance based on steps
+   - Updates daily fitness summary
+
+### Files Modified:
+- `/app/frontend/src/pages/KaizerFit.jsx` - Replaced Google Fit card with StepTracker
+- `/app/frontend/src/pages/DeviceSync.jsx` - Added StepTracker to Activity tab, removed Google Fit from device list
+- `/app/backend/routers/fitness.py` - Added `StepSyncData` model and `/steps/sync` endpoint
+
+### Security Improvement:
+- Added `PRODUCTION_MODE` environment variable to `/app/backend/routers/auth.py`
+- Test phone backdoor (`_TA` list) is now disabled when `PRODUCTION_MODE=true`
+- Production deployments should set `PRODUCTION_MODE=true` in environment
+
+### TWA Hardware Access Note:
+- TWA apps CAN access: Accelerometer, Gyroscope, GPS, Camera, Microphone
+- TWA apps CANNOT access: Native Pedometer sensor, Health Connect API, Bluetooth (limited)
+- The accelerometer-based approach is the best solution for PWA/TWA step counting
+
