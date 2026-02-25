@@ -451,11 +451,11 @@ export default function LiveActivity() {
 
         <Card className="border-0 shadow-md">
           <CardContent className="p-4 text-center">
-            <div className="h-10 w-10 mx-auto mb-2 rounded-full bg-orange-100 flex items-center justify-center">
-              <Flame className="h-5 w-5 text-orange-600" />
+            <div className="h-10 w-10 mx-auto mb-2 rounded-full bg-cyan-100 flex items-center justify-center">
+              <Navigation className="h-5 w-5 text-cyan-600" />
             </div>
-            <p className="text-2xl font-bold" data-testid="calories">{calories}</p>
-            <p className="text-xs text-muted-foreground">{language === "te" ? "కేలరీలు" : "Calories"}</p>
+            <p className="text-2xl font-bold" data-testid="speed">{speed > 0 ? speed : "—"}</p>
+            <p className="text-xs text-muted-foreground">{language === "te" ? "వేగం km/h" : "Speed km/h"}</p>
           </CardContent>
         </Card>
 
@@ -471,13 +471,26 @@ export default function LiveActivity() {
 
         <Card className="border-0 shadow-md">
           <CardContent className="p-4 text-center">
-            <div className="h-10 w-10 mx-auto mb-2 rounded-full bg-purple-100 flex items-center justify-center">
-              <Activity className="h-5 w-5 text-purple-600" />
+            <div className="h-10 w-10 mx-auto mb-2 rounded-full bg-orange-100 flex items-center justify-center">
+              <Flame className="h-5 w-5 text-orange-600" />
             </div>
-            <p className="text-2xl font-bold">{pace > 0 ? `${pace}'` : "—"}</p>
-            <p className="text-xs text-muted-foreground">{language === "te" ? "పేస్ /km" : "Pace /km"}</p>
+            <p className="text-2xl font-bold" data-testid="calories">{calories}</p>
+            <p className="text-xs text-muted-foreground">{language === "te" ? "కేలరీలు" : "Calories"}</p>
           </CardContent>
         </Card>
+
+        {/* Pace - only for GPS activities */}
+        {config.tracksGPS && (
+          <Card className="border-0 shadow-md col-span-2">
+            <CardContent className="p-4 text-center">
+              <div className="h-10 w-10 mx-auto mb-2 rounded-full bg-purple-100 flex items-center justify-center">
+                <Activity className="h-5 w-5 text-purple-600" />
+              </div>
+              <p className="text-2xl font-bold">{pace > 0 ? `${pace}'` : "—"}</p>
+              <p className="text-xs text-muted-foreground">{language === "te" ? "పేస్ (నిమిషాలు/km)" : "Pace (min/km)"}</p>
+            </CardContent>
+          </Card>
+        )}
       </div>
 
       {/* Control Buttons */}
