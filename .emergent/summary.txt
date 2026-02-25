@@ -8,209 +8,192 @@ Build a production-ready, mobile-first civic engagement platform “My Dammaigud
 - **Multi-Area Admin Panel:** Develop a centralized admin dashboard to manage all cloned areas.
 - **Manager Portal:** Create a separate portal for area-specific Managers.
 - **Recent User Requests:**
-    - **(In Progress)** Fix several bugs: Google Fit Access Blocked error, news not syncing on production, accelerometer not working as expected, and phone number inputs requiring .
-    - **(In Progress)** Improve the native feel of the app to resolve issues with zooming, slow loading, and non-native transitions.
-    - **(In Progress)** Enhance the Admin/Manager portals to allow editing of all frontend content (text, banners) and enabling/disabling entire app sections.
-    - **(In Progress)** Enhance the CloneMaker to support a large list of areas and gradient color schemes.
+    - **(New)** Implement a comprehensive notification system (in-app, browser push, SMS) with a bell icon in the header.
+    - **(New)** SOS alerts for family members.
+    - **(New)** Create a standalone News API application.
+    - **(Latent Bug)** Fitness page is not working properly, and step counts are not getting saved.
+    - **(Fixed)** Fix scrolling issue on Android devices.
+    - **(Fixed)** Fix invisible buttons due to theme color mismatch.
+    - **(Updated)** Change Dammaiguda Dumpyard to Jawaharnagar Dump Yard and update waste capacity to 10,000 tonnes.
 
 **User's preferred language**: English
 
 **what currently exists?**
-A mature, full-stack, multi-tenant Progressive Web App (PWA) built with FastAPI and React. The platform is live on the Google Play Store as a Trusted Web Activity (TWA).
+A full-stack Progressive Web App (PWA) with a FastAPI backend and React frontend. The application is multi-tenant and has a CloneMaker feature.
 
-This session focused on significant feature enhancements and bug-fixing:
-1.  **Content Management System:** A new Content tab was added to the Admin and Manager portals, allowing full CRUD operations on banners, benefits, and site-wide text. It also allows toggling entire app sections (e.g., Fitness, News) on or off.
-2.  **CloneMaker V2:** The cloning tool was massively upgraded. It now features a searchable dropdown with 300 pre-configured areas, a dozen gradient theme presets with custom color pickers, and direct Push to GitHub and Download ZIP functionality.
-3.  **Native Feel Improvements:** The application's user experience was enhanced with a splash screen, skeleton loaders, framer-motion page transitions, and a pull-to-refresh mechanism. The viewport was locked to prevent zooming on web/PWA versions.
-4.  **Bug Fixes & Diagnostics:**
-    *   Fixed inconsistent phone number inputs by creating a standardized  component.
-    *   Resolved the News not syncing and OTP backdoor security issues from the previous session.
-    *   Diagnosed the production backend on Railway being down and guided the user on how to check its status.
-    *   Correctly identified that the Google Fit Access Blocked error is a Google Cloud Console configuration issue on the user's side.
-    *   Diagnosed that the Play Store app's zoom issue is specific to the TWA build and requires rebuilding in PWABuilder.
+In this session, the agent successfully fixed several critical bugs, including a show-stopping Android scrolling issue and invisible buttons caused by a CSS theme conflict. The agent also implemented the initial framework for a notification system by adding a functional bell icon and dropdown to the header. A standalone News API application was also created and is ready for deployment. However, the user reported that the fitness page is still not working properly and requested that the live tracking feature be temporarily disabled with a Coming Soon message, which has been implemented.
 
 **Last working item**:
-    - Last item agent was working: Diagnosing why the user's production backend was down. The user provided a failing Google Fit callback URL. The agent confirmed via  that  routes were returning HTML, indicating the backend service was not running or not proxied correctly on Railway. After the user seemingly restarted it, the agent confirmed the  endpoint was responding correctly.
-    - Status: USER VERIFICATION PENDING
-    - Agent Testing Done: Y
-    - Which testing method agent to use? The user needs to manually re-attempt the Google Fit connection flow to see if it proceeds past the Access Blocked error. The next step depends on the user's Google Cloud Console configuration.
+    - Last item agent was working: The user requested a redesign of the notification pop-up. The agent had just called the  to get a UI/UX proposal for the notification dropdown, which should appear from the right side.
+    - Status: IN PROGRESS
+    - Agent Testing Done: N
+    - Which testing method agent to use? Frontend testing agent to verify the new UI, or screenshot tool for a quick visual check.
     - User Testing Done: N
 
 **All Pending/In progress Issue list**:
-  - Issue 1:  **Google Fit Access blocked Error (P0)**
+  - Issue 1:  **Fitness module is not working properly (P0)**
   - Issue 2:  **News Not Syncing on Production (P1)**
   - Issue 3:  **App Zoom Issue in Play Store TWA (P1)**
-  - Issue 4:  **Full Clone Generation (P2)**
-  - Issue 5:  **Remove Test OTP Backdoor (P2)**
 
   Issues Detail:
   - Issue 1: 
-     - Attempted fixes: The agent correctly diagnosed this as a Google Cloud Console configuration error and provided the user with a step-by-step guide to fix it (add authorized JS origins and redirect URIs).
-     - Next debug checklist: 
-        1. Ask the user to confirm they have added the correct URIs ( and ) to their Google Cloud OAuth client settings.
-        2. Ask the user to ensure the OAuth consent screen is set to In Production.
-        3. Once confirmed, ask the user to try the Google Fit connection again.
-     - Why fix this issue and what will be achieved with the fix? This is a core feature (fitness tracking) that is completely broken for users.
-     - Status:  BLOCKED
-     - Is recurring issue? N
-     - Should Test frontend/backend/both after fix? frontend
-     - Blocked on other issue: User action in Google Cloud Console.
+     - **Description**: The user reported steps are not getting fitnsss oage ia not working properly. Instead of debugging, the agent disabled the live tracking feature and put up a Coming Soon modal as a temporary workaround. The root cause is still unknown.
+     - Attempted fixes: None. The feature was disabled before investigation.
+     - Next debug checklist:
+        1. Review  and  to understand how steps are tracked and synced.
+        2. Check browser console logs for errors when the step counter is active.
+        3. Examine the backend endpoint  in  to ensure it correctly saves data.
+        4. Check network requests to see if the sync call is failing.
+     - Why fix this issue and what will be achieved with the fix? The fitness module is a core feature. Fixing it will restore key user functionality.
+     - Status:  NOT STARTED
+     - Is recurring issue? Y
+     - Should Test frontend/backend/both after fix? both
+     - Blocked on other issue: None.
 
   - Issue 2: 
-     - Attempted fixes: The agent identified that the production backend API was returning HTML instead of JSON, indicating a deployment/proxy issue on Railway. While the backend service came back online, it's not confirmed if the news sync issue is resolved.
+     - **Description**: The news feature is not working on the production URL ().
+     - Attempted fixes: Previously diagnosed as a potential Railway deployment/proxy issue. Not investigated in this session.
      - Next debug checklist:
-        1. <!doctype html><html lang="en"><head><meta charset="utf-8"/><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,minimum-scale=1,user-scalable=0,shrink-to-fit=no,viewport-fit=cover"/><meta name="theme-color" content="#0F766E"/><meta name="description" content="My Dammaiguda - Track Issues. Protect Health. Claim Benefits. Your civic engagement platform for Dammaiguda ward, Telangana."/><meta http-equiv="X-UA-Compatible" content="IE=edge"/><meta http-equiv="Content-Security-Policy" content="frame-ancestors 'none';"/><meta name="referrer" content="strict-origin-when-cross-origin"/><meta name="robots" content="noarchive, noimageindex"/><meta name="application-name" content="My Dammaiguda"/><meta name="apple-mobile-web-app-capable" content="yes"/><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/><meta name="apple-mobile-web-app-title" content="My Dammaiguda"/><meta name="mobile-web-app-capable" content="yes"/><meta name="format-detection" content="telephone=no"/><meta name="msapplication-TileColor" content="#0F766E"/><meta name="msapplication-tap-highlight" content="no"/><meta name="HandheldFriendly" content="true"/><meta name="MobileOptimized" content="width"/><meta property="og:type" content="website"/><meta property="og:title" content="My Dammaiguda - Civic Engagement Platform"/><meta property="og:description" content="Track Issues. Protect Health. Claim Benefits. Your one-stop civic engagement platform."/><meta property="og:site_name" content="My Dammaiguda"/><meta property="og:locale" content="en_IN"/><meta name="twitter:card" content="summary_large_image"/><meta name="twitter:title" content="My Dammaiguda"/><meta name="twitter:description" content="Track Issues. Protect Health. Claim Benefits."/><link rel="manifest" href="/manifest.json"/><link rel="apple-touch-icon" href="/icons/icon-192x192.png"/><link rel="apple-touch-icon" sizes="152x152" href="/icons/icon-152x152.png"/><link rel="apple-touch-icon" sizes="180x180" href="/icons/icon-192x192.png"/><link rel="apple-touch-icon" sizes="167x167" href="/icons/icon-192x192.png"/><link rel="icon" type="image/png" sizes="32x32" href="/favicon.ico"/><link rel="icon" type="image/png" sizes="192x192" href="/icons/icon-192x192.png"/><link rel="mask-icon" href="/icons/maskable-icon-512x512.png" color="#0F766E"/><link rel="apple-touch-startup-image" href="/icons/icon-512x512.png"/><link rel="preconnect" href="https://fonts.googleapis.com"/><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Merriweather:wght@400;700;900&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet"/><title>My Dammaiguda</title><script>"serviceWorker"in navigator&&window.addEventListener("load",function(){navigator.serviceWorker.register("/service-worker.js").then(function(e){console.log("SW registered: ",e.scope)}).catch(function(e){console.log("SW registration failed: ",e)})})</script><script defer="defer" src="/static/js/main.fa22d93e.js"></script><link href="/static/css/main.e0bfef26.css" rel="stylesheet"></head><body><noscript>You need to enable JavaScript to run this app.</noscript><script>!function(){"use strict";function e(){window.visualViewport&&1!==window.visualViewport.scale&&(document.body.style.transform="scale("+1/window.visualViewport.scale+")",document.body.style.transformOrigin="0 0",document.body.style.width=100*window.visualViewport.scale+"%")}window.visualViewport&&(window.visualViewport.addEventListener("resize",e),window.visualViewport.addEventListener("scroll",e)),document.addEventListener("touchstart",function(e){if(e.touches.length>1)return e.preventDefault(),e.stopPropagation(),!1},{passive:!1,capture:!0}),document.addEventListener("touchmove",function(e){if(e.touches.length>1||1!==e.scale)return e.preventDefault(),e.stopPropagation(),!1},{passive:!1,capture:!0}),["gesturestart","gesturechange","gestureend"].forEach(function(e){document.addEventListener(e,function(e){return e.preventDefault(),e.stopPropagation(),!1},{passive:!1,capture:!0})});var t=0;document.addEventListener("touchend",function(e){var n=Date.now();n-t<=300&&(e.preventDefault(),e.stopPropagation()),t=n},{passive:!1,capture:!0}),document.addEventListener("wheel",function(e){if(e.ctrlKey||e.metaKey)return e.preventDefault(),e.stopPropagation(),!1},{passive:!1,capture:!0}),document.addEventListener("keydown",function(e){if((e.ctrlKey||e.metaKey)&&("+"===e.key||"-"===e.key||"="===e.key||"0"===e.key||187===e.keyCode||189===e.keyCode||48===e.keyCode))return e.preventDefault(),e.stopPropagation(),!1},{passive:!1,capture:!0}),setInterval(function(){window.visualViewport&&1!==window.visualViewport.scale&&window.scrollTo(0,0)},500)}()</script><div id="root"><div id="app-loader" style="position:fixed;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;background:linear-gradient(135deg,#0f766e 0,#0d9488 100%);z-index:9999"><div style="width:80px;height:80px;border-radius:20px;background:rgba(255,255,255,.2);display:flex;align-items:center;justify-content:center;margin-bottom:16px;animation:pulse 1.5s ease-in-out infinite"><span style="font-size:40px;font-weight:700;color:#fff">M</span></div><div style="color:#fff;font-size:18px;font-weight:600">My Dammaiguda</div><div style="color:rgba(255,255,255,.7);font-size:12px;margin-top:4px">Loading...</div></div></div><style>@keyframes pulse{0%,100%{transform:scale(1);opacity:1}50%{transform:scale(1.05);opacity:.8}}#root:not(:empty) #app-loader{display:none!important}</style></body></html> to verify if the endpoint returns JSON data.
-        2. If it returns HTML, guide the user to check their Railway proxy/routing configuration for the backend service.
-        3. If it returns JSON, the issue is resolved.
-     - Why fix this issue and what will be achieved with the fix? The news feature is a key part of user engagement and currently shows no data on the production app.
-     - Status:  TESTING PENDING
+        1. <!doctype html><html lang="en"><head><meta charset="utf-8"/><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"/><meta name="theme-color" content="#0F766E"/><meta name="description" content="My Dammaiguda - Track Issues. Protect Health. Claim Benefits. Your civic engagement platform for Dammaiguda ward, Telangana."/><meta name="application-name" content="My Dammaiguda"/><meta name="apple-mobile-web-app-capable" content="yes"/><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/><meta name="apple-mobile-web-app-title" content="My Dammaiguda"/><meta name="mobile-web-app-capable" content="yes"/><meta name="format-detection" content="telephone=no"/><meta name="msapplication-TileColor" content="#0F766E"/><meta name="HandheldFriendly" content="true"/><meta name="MobileOptimized" content="width"/><meta property="og:type" content="website"/><meta property="og:title" content="My Dammaiguda - Civic Engagement Platform"/><meta property="og:description" content="Track Issues. Protect Health. Claim Benefits. Your one-stop civic engagement platform."/><meta property="og:site_name" content="My Dammaiguda"/><meta property="og:locale" content="en_IN"/><meta name="twitter:card" content="summary_large_image"/><meta name="twitter:title" content="My Dammaiguda"/><meta name="twitter:description" content="Track Issues. Protect Health. Claim Benefits."/><link rel="manifest" href="/manifest.json"/><link rel="apple-touch-icon" href="/icons/icon-192x192.png"/><link rel="apple-touch-icon" sizes="152x152" href="/icons/icon-152x152.png"/><link rel="apple-touch-icon" sizes="180x180" href="/icons/icon-192x192.png"/><link rel="apple-touch-icon" sizes="167x167" href="/icons/icon-192x192.png"/><link rel="icon" type="image/png" sizes="32x32" href="/favicon.ico"/><link rel="icon" type="image/png" sizes="192x192" href="/icons/icon-192x192.png"/><link rel="mask-icon" href="/icons/maskable-icon-512x512.png" color="#0F766E"/><link rel="apple-touch-startup-image" href="/icons/icon-512x512.png"/><link rel="preconnect" href="https://fonts.googleapis.com"/><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Merriweather:wght@400;700;900&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet"/><title>My Dammaiguda</title><script>"serviceWorker"in navigator&&window.addEventListener("load",function(){navigator.serviceWorker.register("/service-worker.js").then(function(e){console.log("SW registered: ",e.scope)}).catch(function(e){console.log("SW registration failed: ",e)})})</script><script defer="defer" src="/static/js/main.4105b6b0.js"></script><link href="/static/css/main.7a08922a.css" rel="stylesheet"></head><body><noscript>You need to enable JavaScript to run this app.</noscript><script>!function(){"use strict";["gesturestart","gesturechange","gestureend"].forEach(function(e){document.addEventListener(e,function(e){e.preventDefault()},{passive:!1})});var e=0;document.addEventListener("touchend",function(t){var n=Date.now();n-e<=300&&"INPUT"!==t.target.tagName&&"TEXTAREA"!==t.target.tagName&&t.preventDefault(),e=n},{passive:!1}),document.addEventListener("wheel",function(e){(e.ctrlKey||e.metaKey)&&e.preventDefault()},{passive:!1}),document.addEventListener("keydown",function(e){!e.ctrlKey&&!e.metaKey||"+"!==e.key&&"-"!==e.key&&"="!==e.key&&"0"!==e.key||e.preventDefault()},{passive:!1})}()</script><div id="root"><div id="app-loader" style="position:fixed;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;background:linear-gradient(135deg,#0f766e 0,#0d9488 100%);z-index:9999"><div style="width:80px;height:80px;border-radius:20px;background:rgba(255,255,255,.2);display:flex;align-items:center;justify-content:center;margin-bottom:16px;animation:pulse 1.5s ease-in-out infinite"><span style="font-size:40px;font-weight:700;color:#fff">M</span></div><div style="color:#fff;font-size:18px;font-weight:600">My Dammaiguda</div><div style="color:rgba(255,255,255,.7);font-size:12px;margin-top:4px">Loading...</div></div></div><style>@keyframes pulse{0%,100%{transform:scale(1);opacity:1}50%{transform:scale(1.05);opacity:.8}}#root:not(:empty) #app-loader{display:none!important}</style></body></html> to verify if the production endpoint returns JSON data.
+        2. If it returns HTML, the user needs to be guided to check their Railway proxy/routing configuration.
+     - Why fix this issue and what will be achieved with the fix? A key user engagement feature is broken in production.
+     - Status:  NOT STARTED
      - Is recurring issue? Y
      - Should Test frontend/backend/both after fix? backend
      - Blocked on other issue: None.
 
   - Issue 3: 
-     - Attempted fixes: The agent successfully disabled zoom on the web/PWA version. The agent correctly explained that the TWA (Play Store app) caches its own settings and needs to be rebuilt.
-     - Next debug checklist: Guide the user to go to PWABuilder, rebuild the Android package, and ensure any enable zoom setting is disabled in the TWA options before generating the new AAB/APK.
-     - Why fix this issue and what will be achieved with the fix? It will make the app feel more native and less like a wrapped website, which was a direct user complaint.
-     - Status:  BLOCKED
-     - Is recurring issue? N
-     - Should Test frontend/backend/both after fix? N/A
-     - Blocked on other issue: User action in PWABuilder.
-
-  - Issue 4: 
-     - Attempted fixes: The user tried to use the CloneMaker-generated files but realized it only provided config files, not the full source code.
-     - Next debug checklist: 
-        1. Confirm with the user if they want the CloneMaker to generate a full source code ZIP.
-        2. If yes, update the  endpoint in  to copy the entire  directory structure, replace the config files, and then create the ZIP.
-     - Why fix this issue and what will be achieved with the fix? This will fulfill the user's goal of being able to quickly create and deploy full, independent frontend clones.
+     - **Description**: The app zooms unintentionally when used as a Trusted Web Activity (TWA) from the Play Store.
+     - Attempted fixes: All zoom-prevention logic was removed to fix the scrolling bug. This issue is likely still present or even worse.
+     - Next debug checklist: Once all critical features are stable, re-implement a non-intrusive zoom prevention method and guide the user to rebuild the TWA.
+     - Why fix this issue and what will be achieved with the fix? Improves the native-app feel as requested by the user.
      - Status:  NOT STARTED
      - Is recurring issue? N
-     - Should Test frontend/backend/both after fix? backend
-     - Blocked on other issue: None.
-
-  - Issue 5: 
-     - Attempted fixes: The agent added a  flag in  to disable the  OTP backdoor.
-     - Next debug checklist: 
-        1. Open .
-        2. Completely remove the  list and the associated conditional logic. The  flag was a good temporary measure, but the dead code should be removed for security.
-     - Why fix this issue and what will be achieved with the fix? Removes a critical security vulnerability from the codebase.
-     - Status:  IN PROGRESS
-     - Is recurring issue? Y
-     - Should Test frontend/backend/both after fix? backend
+     - Should Test frontend/backend/both after fix? N/A
      - Blocked on other issue: None.
 
 **In progress Task List**:
-  - None.
+  - Task 1:  **Redesign Notification Dropdown (P0)**
+
+ Task Detail:
+  - Task 1: 
+     - Where to resume: The agent has received design guidance from the . The next step is to implement this new design in .
+     - What will be achieved with this? Fulfill the user's request for a better-looking notification pop-up that appears from the right side.
+     - Status:  IN PROGRESS
+     - Should Test frontend/backend/both after fix? frontend
+     - Blocked on something: None.
 
 **Upcoming and Future Tasks**
     Upcoming Tasks:
-    - P1: Enhance CloneMaker to generate a full frontend source code ZIP.
+    - P0: Implement the full notification system backend logic (Admin/Manager push, targeting, SMS for SOS).
+    - P1: Investigate and fix the root cause of the fitness module bugs (steps not getting saved).
+    - P1: Refactor the monolithic  router (2000+ lines) into smaller files.
+    - P1: Deploy and test the standalone News API created in .
+    - P2: Enhance CloneMaker to generate a full frontend source code ZIP.
     - P2: Generate **tablet** screenshots for the Play Store listing.
-    - P2: Guide user through the Apple App Store submission process.
 
     Future Tasks:
-    - P3: Refactor the monolithic  router (2000+ lines).
     - P3: Deprecate and fully remove the old  route.
     - P3: Clean up redundant course management UI from .
     - P3: Refactor  router.
+    - P3: Guide user through the Apple App Store submission process.
 
 **Completed work in this session**
-- **Content Management System:** Implemented a new Content section in the Admin/Manager portals to edit banners, benefits, text, and toggle app sections on/off.
-- **CloneMaker V2:** Massively enhanced the app cloning tool with a searchable 300-area dropdown, gradient theme presets, and Push to GitHub / Download ZIP actions.
-- **Native App Feel:** Added a splash screen, skeleton loaders, framer-motion page transitions, pull-to-refresh, hardware back button support, and disabled viewport zoom to make the PWA feel more like a native application.
-- **News Page Fix:** Correctly implemented logic to show only admin-pushed news, removing mock data.
-- **Security Fix:** Implemented a  flag in  to disable the test OTP backdoor.
-- **Phone Input Standardization:** Created a reusable  component with a fixed  prefix and updated relevant forms.
-- **PWA Manifest Fixes:** Resolved issues in  for better PWABuilder scores and store compliance, and created a  page.
-- **Production Diagnostics:** Diagnosed and guided the user through several production issues, including the backend service being down on Railway and the Google Fit OAuth Access Blocked configuration error.
+- **Critical Bug Fixes:**
+  - **Android Scrolling:** Resolved a critical bug preventing scrolling on Android devices by fixing touch event handling in  and removing blocking code from .
+  - **Fitness Timer:** Fixed bugs in  causing the timer to run fast and fail to save.
+  - **Invisible Buttons:** Fixed a theme-wide issue where buttons were invisible (white text on white background) by correcting CSS variable definitions in  and .
+- **Feature Implementation & Updates:**
+  - **Notification System (Phase 1):**
+    - Added backend endpoints for fetching notifications and unread counts in .
+    - Created a  component and added a functional bell icon with a dropdown to the main layout header ().
+  - **Fitness Module Workaround:** Temporarily disabled the live activity tracking feature by implementing a Coming Soon modal on the  page, per user request.
+  - **Content Updates:**
+    - Renamed Dammaiguda Dumpyard to Jawaharnagar Dump Yard across the frontend and backend.
+    - Updated daily waste capacity from 1200 to **10,000 tonnes** in  and other files.
+  - **Standalone News API:** Created a complete, standalone FastAPI application for the news module in the  directory, including backend, admin UI, Docker files, and setup scripts.
 
 **Earlier issues found/mentioned but not fixed**
-   - **Test OTP Backdoor:** A critical security risk in  allowing login with a static OTP remains in the code, albeit behind a  flag. It should be removed entirely.
+   - **Fitness Module Stability**: The user explicitly stated steps are not getting fitnsss oage ia not working properly. This was not debugged; the feature was disabled as a workaround. This is now the highest priority pending issue.
+   - ** Refactor**: The request to refactor the massive  file from the previous session remains unaddressed.
 
 **Known issue recurrence from previous fork**
-  - **Test OTP Backdoor:** This was a pending P0 issue from the last fork. It was partially addressed but not fully resolved.
+  - **Test OTP Backdoor:** The user has confirmed they want to keep the test OTP () active for testing. This is a deliberate feature and should not be removed.
 
 **Code Architecture**
 
 
 **Key Technical Concepts**
-- **PWA to Native Feel:** Enhancing a PWA with splash screens, skeleton loaders, framer-motion transitions, and viewport locks to mimic native app behavior.
-- **Dynamic App Generation (CloneMaker):** Building a sophisticated tool within the app to configure and export new, branded frontend instances with options for themes, and direct deployment via GitHub integration or ZIP download.
-- **Headless CMS:** Implementing a content management system within the existing admin panel to control frontend content (banners, text, features) dynamically from the backend.
-- **Production Debugging:** Diagnosing live environment issues, including service downtime on Railway, proxy misconfigurations, and third-party OAuth errors (Google Fit).
-- **TWA vs. PWA Configuration:** Differentiating between web-level settings (e.g., viewport meta tags for PWA) and wrapper-level settings (e.g., TWA build options in PWABuilder for the Play Store app).
+- **PWA Cache Busting:** The Android scrolling fix required bumping the service worker cache version ( to ) and instructing the user to clear their app/browser cache to see the changes. This is a critical concept for PWA development.
+- **CSS Variable Scoping & Overrides:** The invisible button bug was caused by  overriding  with a different format for color variables (HEX vs. HSL), which broke Tailwind's  utility.
+- **Event Handling on Mobile:** The scrolling bug was fixed by conditionally using  in  only when a pull-to-refresh gesture is detected, instead of blocking all vertical scroll movements.
 
 **key DB schema**
-  - The architecture relies on an  or  field in various collections (, , , etc.) to support the multi-tenant design. No new collections were added in this session.
+  - ****: (New) Stores in-app notifications for users. 
 
 **changes in tech stack**
   - None.
 
 **All files of reference**
-- **Clone Maker:** , , 
-- **Content Manager:** , , 
-- **Native Feel:** , , , 
-- **Phone Input Fix:** , , 
-- **Security:** 
+- **Notification System:** , , 
+- **Fitness Coming Soon:** , 
+- **Button Color Fix:** , , and various components like .
+- **Android Scroll Fix:** , , 
+- **Standalone News App:** 
 
 **Areas that need refactoring**:
-- ** router:** Extremely large (2000+ lines) and needs to be broken down into smaller, domain-specific files.
-- **:** Contains redundant UI for course management that should be removed.
-- ** router:** Could be split by role.
-- **:** The  logic, while currently disabled by a flag, should be removed entirely.
+- ** router:** This remains a top priority. It's a massive file that is hard to maintain and likely contains the bugs the user reported.
+- ****: This new file contains all logic for the standalone news app. It should be broken down into a proper project structure with routers and models if it is to be maintained.
 
 **key api endpoints**
-- : Generates and downloads a ZIP of configuration files for a new clone.
-- : Pushes a new clone's configuration to a new GitHub repository.
-- : A new set of endpoints for the headless CMS (banners, benefits, text).
-- : Gets and updates which app sections are enabled/disabled.
-- : The endpoint that is currently failing due to a Google Cloud configuration issue on the user's end.
+- : (New) Get all notifications for the logged-in user.
+- : (New) Get the count of unread notifications.
+- : (New) Mark a specific notification as read.
+- : (New) Endpoint for admins to send notifications.
 
 **Critical Info for New Agent**
-- **Production vs. Preview:** The user's production environment on Railway has been unstable. If the user reports an issue, first verify the production services are running correctly with . Many recent problems were due to deployment issues, not code bugs.
-- **User-Side Configurations are Blocking:** Two key issues are blocked on user action:
-    1.  **Google Fit:** The Access Blocked error requires the user to update their Google Cloud Console settings. The agent has already provided the correct instructions.
-    2.  **TWA Zoom:** The zoom issue in the Play Store app requires the user to rebuild the app in PWABuilder with zoom disabled. The web/PWA version is already fixed. You must reinforce this distinction.
-- **CloneMaker is the Core Focus:** The user is heavily invested in the multi-area cloning functionality. The next logical step is to make it generate the full source code. Prioritize any requests related to this feature.
+- **Priority Order:** 1. Finish the notification UI redesign. 2. Investigate and fix the underlying fitness module bugs (don't just disable features). 3. Complete the notification backend (push, SMS).
+- **PWA Caching:** Be aware that users (especially on TWA) will not see changes until their cache is cleared or the service worker is updated. Always bump the version in  after making critical frontend fixes.
+- **Fitness Module is Unstable:** The user has reported it's not working properly. The Coming Soon implementation was a temporary patch. The real work of debugging the step counter and sync logic needs to be done.
+- **Standalone News App:** The files are in . The user may ask to deploy or enhance it.
 
 **documents and test reports created in this job**
-  - None.
+  - 
 
 **Last 10 User Messages and any pending HUMAN messages**
-1.  **Still (able to zoom)**: User reports zoom is still possible. (Agent clarified it's a TWA issue requiring rebuild).
-2.  **No (I can't zoom on the preview URL)**: User confirms the web/PWA version is fixed. (This confirms the issue is isolated to the Play Store TWA).
-3.  **App still has that (zoom issue)**: User re-iterates the issue is present in their app. (Agent asks for clarification on where they are testing).
-4.  **Google Fit callback URL provided**: User shares the failing URL. (Agent diagnoses production backend is down).
-5.  **Image of Railway logs**: User provides logs showing the backend is now active. (Agent confirms it's back online).
-6.  **Access blocked: This app’s request is invalid**: User reports the Google Fit error. (Agent provides fix instructions for Google Cloud Console).
-7.  **Like a mobile view 2eb.. able to zoom and zoom out...need a fix view**: User requests to disable zoom. (COMPLETED for PWA).
-8.  **Accelerometer is not working...**: User reports multiple bugs: accelerometer, phone input, and news sync. (Partially COMPLETED/Diagnosed).
-9.  **All 5**: User confirms their app feels like a website wrapper in all 5 ways the agent listed. (COMPLETED - Native Feel improvements implemented).
-10. **Even my dammaiguda app (feels like a wrapper)**: User clarifies the wrapper feeling is about the main app, not just the clone. (Agent begins native feel improvements).
+1.  **Use sesifb agent and desufn the pop of thenotificatjon...**: User wants to redesign the notification pop-up. (IN PROGRESS)
+2.  **...from.admin and manager i want oush notiifcationa...**: User defined requirements for the notification system (push, targeting, SMS, SOS). (PENDING)
+3.  **Is ir update don the main screen widget also...**: User asked if the dump yard tonnes update is on the dashboard widget. (COMPLETED)
+4.  **Replace dammaiguda dumoyard to jawaharnagar dump yard**: User requested renaming the dump yard. (COMPLETED)
+5.  **Atill it saya 1200 tonnea..move it to 10000 tonnea per day**: User requested updating the dump yard capacity. (COMPLETED)
+6.  **...in main page fir sss shohks be active only...**: User clarified that the main fitness page should be active, but only live tracking should be Coming Soon. (COMPLETED)
+7.  **Steps are not getting fitnsss oage ia not working properly...**: User reported the fitness page is buggy and asked to temporarily disable it with a Coming Soon message. (WORKAROUND IMPLEMENTED, ROOT CAUSE NOT FIXED)
+8.  **...submit buttom are not visible becos ita hsowinf xomplete white color**: User reported invisible buttons. (COMPLETED)
+9.  **Looks like buttons ..issue found in major places...**: User reported button color issues. (COMPLETED)
+10. **Give the atuff what all youd veeloped i news...**: User asked for details on the news module to build a separate app. (COMPLETED - Agent provided docs and a standalone app).
 
 **Project Health Check:**
 - **Broken:**
-    - Google Fit integration is non-functional due to an OAuth configuration error on the user's side.
-    - Production backend on Railway is unstable and has recently experienced downtime, which may have broken news syncing and other features.
-- **Mocked:** The  OTP backdoor still exists in the code, though it is disabled by a feature flag. This remains a security risk.
+    - **Fitness Module:** The core functionality (step tracking/syncing) is reportedly not working. It's currently masked by a Coming Soon message.
+- **Mocked:**
+    - **Test OTP:** The OTP  is intentionally active for testing, per the user's request.
 
 **3rd Party Integrations**
-- **Google Fit API:** **(BROKEN)** - Blocked by user-side OAuth configuration error in Google Cloud Console.
-- **Authkey.io (SMS):** Functional.
+- **Authkey.io (SMS):** Functional. The new notification system will require this for SMS alerts.
 - **Cloudinary (Media Storage):** Functional.
 - **OpenAI API:** Functional.
-- **BeautifulSoup4/lxml (Web Scraping):** Functional, but disabled in the news router.
 
 **Testing status**
-  - Testing agent used after significant changes: NO
+  - Testing agent used after significant changes: YES (For the initial scroll/timer fix)
   - Troubleshoot agent used after agent stuck in loop: NO
   - Test files created: []
-  - Known regressions: None.
+  - Known regressions: None, but the fitness module is in an unknown broken state.
 
 **Credentials to test flow:**
-- **Admin/Manager/User:**
-    - Phone: 
-    - OTP:  (This works only if  is  in ).
+- **Phone:** 
+- **OTP:** 
 
 **What agent forgot to execute**
-- The agent did not fully remove the test OTP backdoor from , which was a P0 security task from the previous fork. It was put behind a  flag, which is a good temporary step but not the final solution. The dead code should be removed.</analysis>
+- The agent did not investigate the root cause of the fitness module bug (steps are not getting).
+- The agent did not address the two pending issues from the original handoff: News Not Syncing on Production and App Zoom Issue in Play Store TWA.
+- The user-requested refactoring of  is still pending.</analysis>

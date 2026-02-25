@@ -68,7 +68,7 @@ My Dammaiguda is a **production-ready, mobile-first civic engagement platform** 
                               ▼
 ┌─────────────────────────────────────────────────────────────┐
 │                     KUBERNETES INGRESS                       │
-│            https://civic-connect-59.preview.emergentagent.com │
+│            https://dammaiguda.preview.emergentagent.com │
 └─────────────────────────────────────────────────────────────┘
                               │
             ┌─────────────────┴─────────────────┐
@@ -98,7 +98,7 @@ My Dammaiguda is a **production-ready, mobile-first civic engagement platform** 
 ### Production URLs
 | Environment | URL |
 |-------------|-----|
-| **Preview** | https://civic-connect-59.preview.emergentagent.com |
+| **Preview** | https://dammaiguda.preview.emergentagent.com |
 | **Production** | https://www.mydammaiguda.in |
 | **Railway Backend** | https://sparkling-abundance-production-0143.up.railway.app |
 
@@ -162,17 +162,17 @@ My Dammaiguda is a **production-ready, mobile-first civic engagement platform** 
 ### Quick Login Commands
 ```bash
 # Send OTP
-curl -X POST "https://civic-connect-59.preview.emergentagent.com/api/auth/otp" \
+curl -X POST "https://dammaiguda.preview.emergentagent.com/api/auth/otp" \
   -H "Content-Type: application/json" \
   -d '{"phone":"9999999999"}'
 
 # Verify OTP & Get Token
-curl -X POST "https://civic-connect-59.preview.emergentagent.com/api/auth/verify" \
+curl -X POST "https://dammaiguda.preview.emergentagent.com/api/auth/verify" \
   -H "Content-Type: application/json" \
   -d '{"phone":"9999999999","otp":"123456"}'
 
 # Admin Login (Password)
-curl -X POST "https://civic-connect-59.preview.emergentagent.com/api/auth/admin-login" \
+curl -X POST "https://dammaiguda.preview.emergentagent.com/api/auth/admin-login" \
   -H "Content-Type: application/json" \
   -d '{"phone":"9100063133","password":"Plan@123"}'
 ```
@@ -536,7 +536,7 @@ TWILIO_WHATSAPP_NUMBER=+12692304345
 
 #### Frontend (.env)
 ```env
-REACT_APP_BACKEND_URL=https://civic-connect-59.preview.emergentagent.com
+REACT_APP_BACKEND_URL=https://dammaiguda.preview.emergentagent.com
 WDS_SOCKET_PORT=443
 CI=false
 DISABLE_ESLINT_PLUGIN=true
@@ -680,7 +680,7 @@ Tracking Features:
 ### Quick Test Commands
 ```bash
 # Health Check
-curl https://civic-connect-59.preview.emergentagent.com/api/health
+curl https://dammaiguda.preview.emergentagent.com/api/health
 
 # Test Authentication
 curl -X POST "...api/auth/otp" -d '{"phone":"9999999999"}'
@@ -723,7 +723,7 @@ sudo supervisorctl restart frontend
 tail -f /var/log/supervisor/backend.err.log
 
 # Test API
-API="https://civic-connect-59.preview.emergentagent.com/api"
+API="https://dammaiguda.preview.emergentagent.com/api"
 curl $API/health
 ```
 

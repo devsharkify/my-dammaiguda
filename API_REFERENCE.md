@@ -2,7 +2,7 @@
 
 ## Base URL
 ```
-https://civic-connect-59.preview.emergentagent.com/api
+https://dammaiguda.preview.emergentagent.com/api
 ```
 
 ---

@@ -11,7 +11,7 @@ import pytest
 import requests
 import os
 
-BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', 'https://civic-connect-59.preview.emergentagent.com')
+BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', 'https://dammaiguda.preview.emergentagent.com')
 
 # Test credentials
 MANAGER_PHONE = "+919876543211"

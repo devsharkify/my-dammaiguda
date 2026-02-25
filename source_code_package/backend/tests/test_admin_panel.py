@@ -7,7 +7,7 @@ import requests
 import os
 import time
 
-BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', 'https://civic-connect-59.preview.emergentagent.com').rstrip('/')
+BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', 'https://dammaiguda.preview.emergentagent.com').rstrip('/')
 
 class TestAdminPanelAPIs:
     """Test Admin Panel Backend APIs"""
