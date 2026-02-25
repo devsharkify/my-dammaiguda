@@ -451,11 +451,10 @@ export default function MyFamily() {
                     value={newContact.name}
                     onChange={(e) => setNewContact({ ...newContact, name: e.target.value })}
                   />
-                  <Input
-                    type="tel"
-                    placeholder={language === "te" ? "ఫోన్ నంబర్" : "Phone Number"}
+                  <PhoneInput
                     value={newContact.phone}
-                    onChange={(e) => setNewContact({ ...newContact, phone: e.target.value })}
+                    onChange={(phone) => setNewContact({ ...newContact, phone })}
+                    placeholder={language === "te" ? "10 అంకెల నంబర్" : "10-digit number"}
                   />
                   <select
                     value={newContact.relationship}
