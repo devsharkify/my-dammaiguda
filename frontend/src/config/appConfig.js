@@ -90,10 +90,10 @@ const APP_CONFIG = {
   // ============== DUMP YARD CONFIG ==============
   dumpYard: {
     enabled: true,
-    name: "Local Dump Yard",
-    name_te: "డంప్ యార్డ్",
-    dailyWasteTons: 5000,
-    areaAcres: 100,
+    name: "Jawaharnagar Dump Yard",
+    name_te: "జవహర్‌నగర్ డంప్ యార్డ్",
+    dailyWasteTons: 10000,
+    areaAcres: 350,
     redZoneKm: 2,
   },
 
