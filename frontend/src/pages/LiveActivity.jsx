@@ -106,6 +106,7 @@ export default function LiveActivity() {
   const timerRef = useRef(null);
   const gpsWatchRef = useRef(null);
   const lastPositionRef = useRef(null);
+  const lastTickRef = useRef(null); // Track last tick time for accurate timing
   
   const headers = { Authorization: `Bearer ${token}` };
 
