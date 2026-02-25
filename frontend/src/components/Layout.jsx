@@ -4,6 +4,7 @@ import { useAuth } from "../context/AuthContext";
 import { useAppConfig, useFeatureFlags } from "../context/AppConfigContext";
 import { Button } from "../components/ui/button";
 import { motion, AnimatePresence } from "framer-motion";
+import NotificationBell from "./NotificationBell";
 import {
   Home,
   AlertTriangle,
