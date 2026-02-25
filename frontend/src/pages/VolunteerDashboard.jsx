@@ -133,7 +133,7 @@ export default function VolunteerDashboard() {
             <TabsTrigger value="queue" className="text-sm">
               {language === "te" ? "ధృవీకరణ క్యూ" : "Verification Queue"}
               {queue.length > 0 && (
-                <Badge className="ml-2 bg-secondary text-white">{queue.length}</Badge>
+                <Badge className="ml-2 bg-teal-500 text-white">{queue.length}</Badge>
               )}
             </TabsTrigger>
             <TabsTrigger value="history" className="text-sm">
