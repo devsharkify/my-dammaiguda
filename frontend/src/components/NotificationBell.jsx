@@ -231,43 +231,42 @@ export default function NotificationBell() {
               className="fixed right-0 top-0 bottom-0 w-full max-w-[360px] bg-white shadow-2xl z-50 flex flex-col"
             >
               {/* Header */}
-              <div className="bg-gradient-to-r from-teal-500 to-emerald-500 px-4 py-3">
+              <div className="bg-gradient-to-r from-gray-900 to-gray-800 px-5 py-4 flex-shrink-0">
                 <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-2">
-                    <div className="h-8 w-8 bg-white/20 rounded-full flex items-center justify-center">
-                      <Bell className="h-4 w-4 text-white" />
+                  <div className="flex items-center gap-3">
+                    <div className="h-10 w-10 bg-white/10 rounded-xl flex items-center justify-center">
+                      <Bell className="h-5 w-5 text-white" />
                     </div>
                     <div>
-                      <h3 className="font-semibold text-white text-sm">
+                      <h3 className="font-semibold text-white text-lg">
                         {language === "te" ? "నోటిఫికేషన్లు" : "Notifications"}
                       </h3>
                       {unreadCount > 0 && (
-                        <p className="text-[10px] text-white/80">
+                        <p className="text-xs text-white/70">
                           {unreadCount} {language === "te" ? "చదవని" : "unread"}
                         </p>
                       )}
                     </div>
                   </div>
-                  <div className="flex items-center gap-2">
-                    {unreadCount > 0 && (
-                      <button
-                        onClick={markAllAsRead}
-                        className="text-[11px] text-white/90 hover:text-white flex items-center gap-1 px-2 py-1 rounded-full bg-white/10 hover:bg-white/20 transition-colors"
-                      >
-                        <CheckCheck className="h-3 w-3" />
-                        <span className="hidden sm:inline">
-                          {language === "te" ? "అన్నీ చదివినట్లు" : "Mark all"}
-                        </span>
-                      </button>
-                    )}
-                    <button
-                      onClick={() => setIsOpen(false)}
-                      className="p-1 rounded-full hover:bg-white/20 transition-colors"
-                    >
-                      <X className="h-4 w-4 text-white/80" />
-                    </button>
-                  </div>
+                  <button
+                    onClick={() => setIsOpen(false)}
+                    className="p-2 rounded-xl hover:bg-white/10 transition-colors"
+                    data-testid="close-notifications"
+                  >
+                    <X className="h-5 w-5 text-white" />
+                  </button>
                 </div>
+                
+                {/* Mark All Read Button */}
+                {unreadCount > 0 && (
+                  <button
+                    onClick={markAllAsRead}
+                    className="mt-3 w-full text-sm text-white/90 hover:text-white flex items-center justify-center gap-2 py-2 rounded-xl bg-white/10 hover:bg-white/20 transition-colors"
+                  >
+                    <CheckCheck className="h-4 w-4" />
+                    {language === "te" ? "అన్నీ చదివినట్లు గుర్తించు" : "Mark all as read"}
+                  </button>
+                )}
               </div>
 
               {/* Notifications List */}
