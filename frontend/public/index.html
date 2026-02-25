@@ -76,66 +76,91 @@
     <body>
         <noscript>You need to enable JavaScript to run this app.</noscript>
         
-        <!-- AGGRESSIVE: Prevent ALL zoom behaviors -->
+        <!-- FORCE: Prevent ALL zoom and reset if zoomed -->
         <script>
             (function() {
-                // Prevent pinch zoom (iOS Safari, Chrome)
+                'use strict';
+                
+                // Force reset zoom using visualViewport
+                function resetZoom() {
+                    if (window.visualViewport && window.visualViewport.scale !== 1) {
+                        document.body.style.transform = 'scale(' + (1 / window.visualViewport.scale) + ')';
+                        document.body.style.transformOrigin = '0 0';
+                        document.body.style.width = (window.visualViewport.scale * 100) + '%';
+                    }
+                }
+                
+                // Monitor visualViewport for zoom changes
+                if (window.visualViewport) {
+                    window.visualViewport.addEventListener('resize', resetZoom);
+                    window.visualViewport.addEventListener('scroll', resetZoom);
+                }
+                
+                // Block ALL touch events with more than 1 finger
                 document.addEventListener('touchstart', function(e) {
                     if (e.touches.length > 1) {
                         e.preventDefault();
+                        e.stopPropagation();
+                        return false;
                     }
-                }, { passive: false });
+                }, { passive: false, capture: true });
                 
                 document.addEventListener('touchmove', function(e) {
-                    if (e.touches.length > 1) {
+                    if (e.touches.length > 1 || e.scale !== 1) {
                         e.preventDefault();
+                        e.stopPropagation();
+                        return false;
                     }
-                }, { passive: false });
+                }, { passive: false, capture: true });
                 
-                // Prevent gesture events (iOS)
-                document.addEventListener('gesturestart', function(e) {
-                    e.preventDefault();
-                    return false;
-                }, { passive: false });
+                // Block gesture events completely
+                ['gesturestart', 'gesturechange', 'gestureend'].forEach(function(gesture) {
+                    document.addEventListener(gesture, function(e) {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        return false;
+                    }, { passive: false, capture: true });
+                });
                 
-                document.addEventListener('gesturechange', function(e) {
-                    e.preventDefault();
-                    return false;
-                }, { passive: false });
-                
-                document.addEventListener('gestureend', function(e) {
-                    e.preventDefault();
-                    return false;
-                }, { passive: false });
-                
-                // Prevent double-tap zoom
+                // Block double-tap zoom
                 var lastTouchEnd = 0;
                 document.addEventListener('touchend', function(e) {
                     var now = Date.now();
                     if (now - lastTouchEnd <= 300) {
                         e.preventDefault();
+                        e.stopPropagation();
                     }
                     lastTouchEnd = now;
-                }, { passive: false });
+                }, { passive: false, capture: true });
                 
-                // Prevent Ctrl+wheel zoom (desktop)
+                // Block Ctrl/Cmd + wheel zoom
                 document.addEventListener('wheel', function(e) {
                     if (e.ctrlKey || e.metaKey) {
                         e.preventDefault();
+                        e.stopPropagation();
+                        return false;
                     }
-                }, { passive: false });
+                }, { passive: false, capture: true });
                 
-                // Prevent keyboard zoom (Ctrl +/-)
+                // Block keyboard zoom shortcuts
                 document.addEventListener('keydown', function(e) {
-                    if ((e.ctrlKey || e.metaKey) && (e.key === '+' || e.key === '-' || e.key === '=' || e.key === '0')) {
+                    if ((e.ctrlKey || e.metaKey) && 
+                        (e.key === '+' || e.key === '-' || e.key === '=' || e.key === '0' || 
+                         e.keyCode === 187 || e.keyCode === 189 || e.keyCode === 48)) {
                         e.preventDefault();
+                        e.stopPropagation();
+                        return false;
                     }
-                });
+                }, { passive: false, capture: true });
                 
-                // Reset zoom if somehow changed
-                if (document.documentElement) {
-                    document.documentElement.style.zoom = '1';
-                }
+                // Periodically check and reset zoom
+                setInterval(function() {
+                    if (window.visualViewport && window.visualViewport.scale !== 1) {
+                        // Try to reset by scrolling
+                        window.scrollTo(0, 0);
+                    }
+                }, 500);
+                
             })();
         </script>
         
