@@ -327,7 +327,7 @@ export default function StepTracker({ onDataUpdate, compact = false }) {
     );
   }
 
-  // Full version
+  // Full version - always tracking, no start button
   return (
     <Card className="border-0 shadow-lg overflow-hidden">
       <div className={`h-2 ${isTracking ? 'bg-gradient-to-r from-green-500 to-emerald-500' : 'bg-gradient-to-r from-blue-500 to-cyan-500'}`} />
@@ -442,50 +442,23 @@ export default function StepTracker({ onDataUpdate, compact = false }) {
               </div>
             </div>
 
-            {/* Controls */}
-            <div className="flex gap-3">
-              <Button
-                className={`flex-1 h-12 rounded-xl font-semibold ${
-                  isTracking 
-                    ? 'bg-gradient-to-r from-red-500 to-rose-500 hover:from-red-600 hover:to-rose-600' 
-                    : 'bg-gradient-to-r from-green-500 to-emerald-500 hover:from-green-600 hover:to-emerald-600'
-                } text-white`}
-                onClick={handleToggleTracking}
-              >
-                {isTracking ? (
-                  <>
-                    <Pause className="h-5 w-5 mr-2" />
-                    {language === 'te' ? 'ఆపివేయి' : 'Pause'}
-                  </>
-                ) : (
-                  <>
-                    <Play className="h-5 w-5 mr-2" />
-                    {language === 'te' ? 'ప్రారంభించు' : 'Start'}
-                  </>
-                )}
-              </Button>
+            {/* Goal Button Only - No Start/Pause */}
+            <div className="flex justify-center gap-3">
               <Button
                 variant="outline"
-                className="h-12 rounded-xl"
-                onClick={handleReset}
-                disabled={steps === 0}
-              >
-                <RotateCcw className="h-5 w-5" />
-              </Button>
-              <Button
-                variant="outline"
-                className="h-12 rounded-xl"
+                className="h-12 rounded-xl px-6"
                 onClick={() => setShowGoalDialog(true)}
               >
-                <Target className="h-5 w-5" />
+                <Target className="h-5 w-5 mr-2" />
+                {language === 'te' ? 'లక్ష్యం మార్చు' : 'Change Goal'}
               </Button>
             </div>
 
-            {/* Last saved indicator */}
+            {/* Sync status indicator */}
             {lastSaved && (
               <p className="text-xs text-center text-muted-foreground mt-3">
                 <CheckCircle className="h-3 w-3 inline mr-1 text-green-500" />
-                {language === 'te' ? 'సేవ్ చేయబడింది' : 'Saved'} {lastSaved.toLocaleTimeString()}
+                {language === 'te' ? 'సేవ్ చేయబడింది' : 'Synced'} {lastSaved.toLocaleTimeString()}
               </p>
             )}
           </>
@@ -495,8 +468,8 @@ export default function StepTracker({ onDataUpdate, compact = false }) {
         <div className="mt-4 p-3 rounded-lg bg-blue-50 border border-blue-100">
           <p className="text-xs text-blue-700">
             💡 {language === 'te' 
-              ? 'మీ ఫోన్ సెన్సర్‌లను ఉపయోగించి అడుగులు లెక్కించబడతాయి. ఉత్తమ ఫలితాల కోసం ఫోన్‌ను మీ జేబులో ఉంచండి.' 
-              : 'Steps are counted using your phone sensors. Keep phone in your pocket for best results.'}
+              ? 'స్టెప్ కౌంటర్ స్వయంచాలకంగా నడుస్తుంది మరియు ప్రతి 100 అడుగులకు సింక్ అవుతుంది.' 
+              : 'Step counter runs automatically and syncs every 100 steps.'}
           </p>
         </div>
         
