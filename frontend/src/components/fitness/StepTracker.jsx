@@ -196,7 +196,7 @@ export default function StepTracker({ onDataUpdate, compact = false }) {
     toast.info(language === 'te' ? 'స్టెప్స్ రీసెట్ చేయబడ్డాయి' : 'Steps reset');
   };
 
-  // Compact version for dashboard
+  // Compact version for dashboard - always tracking, no start button
   if (compact) {
     return (
       <Card className="border-0 bg-gradient-to-br from-blue-500/10 to-cyan-500/10 border border-blue-200">
@@ -205,7 +205,7 @@ export default function StepTracker({ onDataUpdate, compact = false }) {
             <div className="flex items-center gap-3">
               <div className={`h-12 w-12 rounded-xl flex items-center justify-center ${
                 isTracking 
-                  ? 'bg-gradient-to-br from-green-500 to-emerald-600 animate-pulse' 
+                  ? 'bg-gradient-to-br from-green-500 to-emerald-600' 
                   : 'bg-gradient-to-br from-blue-500 to-cyan-600'
               }`}>
                 <Footprints className="h-6 w-6 text-white" />
@@ -218,6 +218,13 @@ export default function StepTracker({ onDataUpdate, compact = false }) {
               </div>
             </div>
             <div className="flex items-center gap-2">
+              {/* Tracking indicator */}
+              {isTracking && (
+                <Badge variant="outline" className="bg-green-50 text-green-600 border-green-200 text-xs">
+                  <Activity className="h-3 w-3 mr-1 animate-pulse" />
+                  {language === 'te' ? 'యాక్టివ్' : 'Active'}
+                </Badge>
+              )}
               {/* Goal Streak Badge */}
               {goalStreak && goalStreak.current_streak > 0 && (
                 <div className="flex items-center gap-1 px-2 py-1 bg-gradient-to-r from-amber-100 to-orange-100 rounded-full border border-amber-300">
@@ -233,15 +240,6 @@ export default function StepTracker({ onDataUpdate, compact = false }) {
               >
                 <Target className="h-4 w-4" />
               </Button>
-              <Button
-                size="sm"
-                variant={isTracking ? "destructive" : "default"}
-                onClick={handleToggleTracking}
-                disabled={!isSupported}
-                className="rounded-full"
-              >
-                {isTracking ? <Pause className="h-4 w-4" /> : <Play className="h-4 w-4" />}
-              </Button>
             </div>
           </div>
           <Progress value={progress} className="h-2 mt-3" />
@@ -249,9 +247,10 @@ export default function StepTracker({ onDataUpdate, compact = false }) {
             <p className="text-xs text-muted-foreground">
               {Math.round(progress)}% {language === 'te' ? 'లక్ష్యం' : `of ${stepGoal.toLocaleString()} goal`}
             </p>
-            {goalStreak && goalStreak.next_milestone && (
-              <p className="text-xs text-amber-600 font-medium">
-                {language === 'te' ? `${goalStreak.days_to_next_milestone} రోజులు ${goalStreak.next_milestone}-day కు` : `${goalStreak.days_to_next_milestone} days to ${goalStreak.next_milestone}-day streak`}
+            {saving && (
+              <p className="text-xs text-blue-600 flex items-center gap-1">
+                <Loader2 className="h-3 w-3 animate-spin" />
+                {language === 'te' ? 'సేవ్ అవుతోంది...' : 'Syncing...'}
               </p>
             )}
           </div>
@@ -312,21 +311,6 @@ export default function StepTracker({ onDataUpdate, compact = false }) {
                       <p className="text-2xl font-bold text-amber-600">{goalStreak.total_days_goal_hit || 0}</p>
                       <p className="text-xs text-amber-600">{language === 'te' ? 'మొత్తం' : 'Total'}</p>
                     </div>
-                  </div>
-                  {/* Milestone badges */}
-                  <div className="flex gap-2 mt-3 justify-center">
-                    {[3, 7, 14, 30].map((days) => (
-                      <div 
-                        key={days} 
-                        className={`px-2 py-1 rounded-full text-xs font-medium ${
-                          goalStreak.current_streak >= days 
-                            ? 'bg-amber-500 text-white' 
-                            : 'bg-gray-200 text-gray-500'
-                        }`}
-                      >
-                        {days}d
-                      </div>
-                    ))}
                   </div>
                 </div>
               )}
