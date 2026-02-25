@@ -281,6 +281,45 @@ export default function StepTracker({ onDataUpdate, compact = false }) {
                   </button>
                 ))}
               </div>
+              
+              {/* Streak Milestones */}
+              {goalStreak && (
+                <div className="mt-4 p-3 bg-gradient-to-r from-amber-50 to-orange-50 rounded-lg border border-amber-200">
+                  <p className="text-sm font-medium text-amber-800 mb-2">
+                    🔥 {language === 'te' ? 'స్టెప్ గోల్ స్ట్రీక్' : 'Step Goal Streak'}
+                  </p>
+                  <div className="flex items-center justify-between">
+                    <div className="text-center">
+                      <p className="text-2xl font-bold text-amber-600">{goalStreak.current_streak}</p>
+                      <p className="text-xs text-amber-600">{language === 'te' ? 'ప్రస్తుత' : 'Current'}</p>
+                    </div>
+                    <div className="text-center">
+                      <p className="text-2xl font-bold text-amber-600">{goalStreak.longest_streak}</p>
+                      <p className="text-xs text-amber-600">{language === 'te' ? 'ఉత్తమ' : 'Best'}</p>
+                    </div>
+                    <div className="text-center">
+                      <p className="text-2xl font-bold text-amber-600">{goalStreak.total_days_goal_hit || 0}</p>
+                      <p className="text-xs text-amber-600">{language === 'te' ? 'మొత్తం' : 'Total'}</p>
+                    </div>
+                  </div>
+                  {/* Milestone badges */}
+                  <div className="flex gap-2 mt-3 justify-center">
+                    {[3, 7, 14, 30].map((days) => (
+                      <div 
+                        key={days} 
+                        className={`px-2 py-1 rounded-full text-xs font-medium ${
+                          goalStreak.current_streak >= days 
+                            ? 'bg-amber-500 text-white' 
+                            : 'bg-gray-200 text-gray-500'
+                        }`}
+                      >
+                        {days}d
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+              
               {loadingGoal && (
                 <div className="flex items-center justify-center py-2">
                   <Loader2 className="h-5 w-5 animate-spin text-blue-500" />
@@ -312,6 +351,14 @@ export default function StepTracker({ onDataUpdate, compact = false }) {
               </Badge>
             )}
           </div>
+          {/* Streak badge */}
+          {goalStreak && goalStreak.current_streak > 0 && (
+            <div className="flex items-center gap-1 px-3 py-1 bg-gradient-to-r from-amber-100 to-orange-100 rounded-full border border-amber-300">
+              <span>🔥</span>
+              <span className="font-bold text-amber-700">{goalStreak.current_streak}</span>
+              <span className="text-xs text-amber-600">{language === 'te' ? 'రోజులు' : 'day streak'}</span>
+            </div>
+          )}
           {saving && <Loader2 className="h-4 w-4 animate-spin text-muted-foreground" />}
         </div>
 
