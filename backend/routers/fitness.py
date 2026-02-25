@@ -1328,6 +1328,43 @@ BADGES = {
         "icon": "👑",
         "color": "from-purple-500 to-pink-500"
     },
+    # New Step Goal Streak Badges
+    "goal_streak_3": {
+        "id": "goal_streak_3",
+        "name": "Goal Getter",
+        "name_te": "గోల్ గెట్టర్",
+        "description": "Hit your step goal 3 days in a row",
+        "description_te": "వరుసగా 3 రోజులు మీ స్టెప్ లక్ష్యాన్ని చేరుకోండి",
+        "icon": "🎯",
+        "color": "from-green-500 to-teal-500"
+    },
+    "goal_streak_7": {
+        "id": "goal_streak_7",
+        "name": "Weekly Winner",
+        "name_te": "వీక్లీ విన్నర్",
+        "description": "Hit your step goal 7 days in a row",
+        "description_te": "వరుసగా 7 రోజులు మీ స్టెప్ లక్ష్యాన్ని చేరుకోండి",
+        "icon": "🏆",
+        "color": "from-amber-500 to-orange-500"
+    },
+    "goal_streak_14": {
+        "id": "goal_streak_14",
+        "name": "Fortnight Champion",
+        "name_te": "పక్షం ఛాంపియన్",
+        "description": "Hit your step goal 14 days in a row",
+        "description_te": "వరుసగా 14 రోజులు మీ స్టెప్ లక్ష్యాన్ని చేరుకోండి",
+        "icon": "💎",
+        "color": "from-blue-500 to-purple-500"
+    },
+    "goal_streak_30": {
+        "id": "goal_streak_30",
+        "name": "Step Master",
+        "name_te": "స్టెప్ మాస్టర్",
+        "description": "Hit your step goal 30 days in a row",
+        "description_te": "వరుసగా 30 రోజులు మీ స్టెప్ లక్ష్యాన్ని చేరుకోండి",
+        "icon": "👑",
+        "color": "from-yellow-400 to-amber-500"
+    },
     "steps_10k": {
         "id": "steps_10k",
         "name": "10K Club",
@@ -1336,6 +1373,24 @@ BADGES = {
         "description_te": "ఒక రోజులో 10,000 అడుగులు నడవండి",
         "icon": "👟",
         "color": "from-green-500 to-emerald-500"
+    },
+    "steps_15k": {
+        "id": "steps_15k",
+        "name": "15K Elite",
+        "name_te": "15K ఎలిట్",
+        "description": "Walk 15,000 steps in a day",
+        "description_te": "ఒక రోజులో 15,000 అడుగులు నడవండి",
+        "icon": "🚀",
+        "color": "from-indigo-500 to-blue-500"
+    },
+    "steps_total_100k": {
+        "id": "steps_total_100k",
+        "name": "100K Total",
+        "name_te": "మొత్తం 100K",
+        "description": "Walk 100,000 total steps",
+        "description_te": "మొత్తం 100,000 అడుగులు నడవండి",
+        "icon": "🎖️",
+        "color": "from-teal-500 to-cyan-500"
     },
     "calories_500": {
         "id": "calories_500",
