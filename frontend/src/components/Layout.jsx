@@ -1,4 +1,4 @@
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useLanguage } from "../context/LanguageContext";
 import { useAuth } from "../context/AuthContext";
 import { useAppConfig, useFeatureFlags } from "../context/AppConfigContext";
@@ -32,15 +32,46 @@ import {
   Gift,
   Phone
 } from "lucide-react";
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect, useCallback } from "react";
 
-export default function Layout({ children, title, showBackButton = false }) {
+export default function Layout({ children, title, showBackButton = false, onRefresh }) {
   const { t, language, toggleLanguage } = useLanguage();
   const { user, logout, isVolunteer, isAdmin } = useAuth();
   const location = useLocation();
+  const navigate = useNavigate();
   const [menuOpen, setMenuOpen] = useState(false);
   const config = useAppConfig();
   const features = useFeatureFlags();
+
+  // Handle hardware back button (Android)
+  useEffect(() => {
+    const handlePopState = (e) => {
+      if (menuOpen) {
+        e.preventDefault();
+        setMenuOpen(false);
+        window.history.pushState(null, '', window.location.href);
+      }
+    };
+
+    window.addEventListener('popstate', handlePopState);
+    return () => window.removeEventListener('popstate', handlePopState);
+  }, [menuOpen]);
+
+  // Push state when menu opens for back button handling
+  useEffect(() => {
+    if (menuOpen) {
+      window.history.pushState(null, '', window.location.href);
+    }
+  }, [menuOpen]);
+
+  // Native back button handler
+  const handleBack = useCallback(() => {
+    if (window.history.length > 1) {
+      navigate(-1);
+    } else {
+      navigate('/dashboard');
+    }
+  }, [navigate]);
 
   // Bottom navigation items - main features (5 items with center bulge for NEWS)
   const bottomNavItems = [
