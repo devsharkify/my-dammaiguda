@@ -193,20 +193,82 @@ export default function StepTracker({ onDataUpdate, compact = false }) {
                 </p>
               </div>
             </div>
-            <Button
-              size="sm"
-              variant={isTracking ? "destructive" : "default"}
-              onClick={handleToggleTracking}
-              disabled={!isSupported}
-              className="rounded-full"
-            >
-              {isTracking ? <Pause className="h-4 w-4" /> : <Play className="h-4 w-4" />}
-            </Button>
+            <div className="flex items-center gap-2">
+              <Button
+                size="sm"
+                variant="ghost"
+                onClick={() => setShowGoalDialog(true)}
+                className="rounded-full h-8 w-8 p-0"
+              >
+                <Target className="h-4 w-4" />
+              </Button>
+              <Button
+                size="sm"
+                variant={isTracking ? "destructive" : "default"}
+                onClick={handleToggleTracking}
+                disabled={!isSupported}
+                className="rounded-full"
+              >
+                {isTracking ? <Pause className="h-4 w-4" /> : <Play className="h-4 w-4" />}
+              </Button>
+            </div>
           </div>
           <Progress value={progress} className="h-2 mt-3" />
-          <p className="text-xs text-muted-foreground mt-1 text-center">
-            {Math.round(progress)}% {language === 'te' ? 'లక్ష్యం' : 'of 10,000 goal'}
-          </p>
+          <div className="flex justify-between items-center mt-1">
+            <p className="text-xs text-muted-foreground">
+              {Math.round(progress)}% {language === 'te' ? 'లక్ష్యం' : `of ${stepGoal.toLocaleString()} goal`}
+            </p>
+            <button 
+              onClick={() => setShowGoalDialog(true)}
+              className="text-xs text-blue-500 hover:underline"
+            >
+              {language === 'te' ? 'మార్చు' : 'Change'}
+            </button>
+          </div>
+          
+          {/* Goal Selection Dialog */}
+          <Dialog open={showGoalDialog} onOpenChange={setShowGoalDialog}>
+            <DialogContent className="max-w-sm">
+              <DialogHeader>
+                <DialogTitle className="flex items-center gap-2">
+                  <Target className="h-5 w-5 text-blue-500" />
+                  {language === 'te' ? 'దినచర్య లక్ష్యం' : 'Daily Step Goal'}
+                </DialogTitle>
+              </DialogHeader>
+              <div className="space-y-2 py-4">
+                {STEP_GOALS.map((goal) => (
+                  <button
+                    key={goal.value}
+                    onClick={() => saveStepGoal(goal.value)}
+                    disabled={loadingGoal}
+                    className={`w-full p-3 rounded-lg border-2 transition-all flex items-center justify-between ${
+                      stepGoal === goal.value 
+                        ? 'border-blue-500 bg-blue-50' 
+                        : 'border-gray-200 hover:border-blue-300'
+                    }`}
+                  >
+                    <div className="flex items-center gap-3">
+                      <Footprints className={`h-5 w-5 ${stepGoal === goal.value ? 'text-blue-500' : 'text-gray-400'}`} />
+                      <div className="text-left">
+                        <p className="font-semibold">{goal.label} {language === 'te' ? 'అడుగులు' : 'steps'}</p>
+                        <p className="text-xs text-muted-foreground">
+                          {language === 'te' ? goal.descTe : goal.description}
+                        </p>
+                      </div>
+                    </div>
+                    {stepGoal === goal.value && (
+                      <CheckCircle className="h-5 w-5 text-blue-500" />
+                    )}
+                  </button>
+                ))}
+              </div>
+              {loadingGoal && (
+                <div className="flex items-center justify-center py-2">
+                  <Loader2 className="h-5 w-5 animate-spin text-blue-500" />
+                </div>
+              )}
+            </DialogContent>
+          </Dialog>
         </CardContent>
       </Card>
     );
