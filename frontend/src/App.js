@@ -6,9 +6,11 @@ import { ThemeProvider } from "./context/ThemeContext";
 import { AppConfigProvider } from "./context/AppConfigContext";
 import { OfflineBanner } from "./components/OfflineBanner";
 import { useServiceWorker } from "./hooks/useOffline";
-import { useEffect } from "react";
+import { useEffect, useState, useCallback, Suspense, lazy } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import initSecurityShield from "./utils/securityShield";
+import SplashScreen from "./components/SplashScreen";
+import { PageSkeleton } from "./components/Skeletons";
 
 // Pages
 import LandingPage from "./pages/LandingPage";
