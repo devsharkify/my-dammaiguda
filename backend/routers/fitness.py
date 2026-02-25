@@ -806,6 +806,58 @@ async def sync_phone_sensor_data(data: PhoneSensorData, user: dict = Depends(get
         "daily_summary": summary
     }
 
+class StepSyncData(BaseModel):
+    """Simple step sync from accelerometer-based counter"""
+    steps: int
+    source: str = "phone_pedometer"
+    date: str  # YYYY-MM-DD
+
+@router.post("/steps/sync")
+async def sync_steps_simple(data: StepSyncData, user: dict = Depends(get_current_user)):
+    """Simple step count sync from phone accelerometer/pedometer"""
+    # Calculate estimated values
+    weight = user.get("health_profile", {}).get("weight_kg", 70)
+    estimated_calories = int(data.steps * 0.04 * (weight / 70))
+    estimated_distance = round(data.steps * 0.75 / 1000, 2)  # ~0.75m per step
+    
+    # Check for existing record today
+    existing = await db.step_counts.find_one({
+        "user_id": user["id"],
+        "date": data.date,
+        "source": data.source
+    })
+    
+    record = {
+        "user_id": user["id"],
+        "date": data.date,
+        "steps": data.steps,
+        "calories": estimated_calories,
+        "distance_km": estimated_distance,
+        "source": data.source,
+        "updated_at": now_iso()
+    }
+    
+    if existing:
+        await db.step_counts.update_one(
+            {"_id": existing["_id"]},
+            {"$set": record}
+        )
+        record["action"] = "updated"
+    else:
+        record["id"] = generate_id()
+        record["created_at"] = now_iso()
+        await db.step_counts.insert_one(record)
+        record["action"] = "created"
+    
+    # Update daily summary
+    await update_daily_fitness_summary(user["id"], data.date)
+    
+    record.pop("_id", None)
+    return {
+        "success": True,
+        "data": record
+    }
+
 @router.post("/sync/smartwatch")
 async def sync_smartwatch_data(data: SmartWatchData, user: dict = Depends(get_current_user)):
     """Sync comprehensive health data from smartwatch"""
