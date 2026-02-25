@@ -11,7 +11,7 @@ const STATIC_ASSETS = [
   '/icons/maskable-icon-192x192.png',
 ];
 
-const API_CACHE_NAME = 'my-dammaiguda-api-v2';
+const API_CACHE_NAME = 'my-dammaiguda-api-v3';
 const CACHEABLE_API_ROUTES = [
   '/api/aqi/both',
   '/api/aqi/current',
