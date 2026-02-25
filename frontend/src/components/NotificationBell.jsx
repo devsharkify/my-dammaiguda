@@ -209,27 +209,26 @@ export default function NotificationBell() {
         </AnimatePresence>
       </button>
 
-      {/* Dropdown Panel */}
+      {/* Slide-out Panel from Right */}
       <AnimatePresence>
         {isOpen && (
           <>
-            {/* Backdrop for mobile */}
+            {/* Backdrop */}
             <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
-              className="fixed inset-0 bg-black/20 z-40 md:hidden"
+              className="fixed inset-0 bg-black/40 backdrop-blur-sm z-40"
               onClick={() => setIsOpen(false)}
             />
             
-            {/* Notification Panel */}
+            {/* Notification Panel - Slides from Right */}
             <motion.div
-              initial={{ opacity: 0, y: -10, scale: 0.95 }}
-              animate={{ opacity: 1, y: 0, scale: 1 }}
-              exit={{ opacity: 0, y: -10, scale: 0.95 }}
-              transition={{ type: "spring", damping: 25, stiffness: 300 }}
-              className="fixed right-2 top-14 w-[calc(100vw-16px)] max-w-[380px] bg-white rounded-2xl shadow-2xl z-50 overflow-hidden border border-gray-100"
-              style={{ maxHeight: 'calc(100vh - 80px)' }}
+              initial={{ x: "100%" }}
+              animate={{ x: 0 }}
+              exit={{ x: "100%" }}
+              transition={{ type: "spring", damping: 30, stiffness: 300 }}
+              className="fixed right-0 top-0 bottom-0 w-full max-w-[360px] bg-white shadow-2xl z-50 flex flex-col"
             >
               {/* Header */}
               <div className="bg-gradient-to-r from-teal-500 to-emerald-500 px-4 py-3">
