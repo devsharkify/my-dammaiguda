@@ -22,7 +22,7 @@ export default function NotificationBell() {
   const [loading, setLoading] = useState(false);
   const dropdownRef = useRef(null);
 
-  const token = localStorage.getItem("token");
+  const token = localStorage.getItem("dammaiguda_token");
   const headers = token ? { Authorization: `Bearer ${token}` } : {};
 
   // Fetch unread count
