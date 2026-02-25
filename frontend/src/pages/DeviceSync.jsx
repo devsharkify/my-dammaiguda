@@ -9,6 +9,7 @@ import { Badge } from "../components/ui/badge";
 import { Switch } from "../components/ui/switch";
 import { Progress } from "../components/ui/progress";
 import { toast } from "sonner";
+import StepTracker from "../components/fitness/StepTracker";
 import {
   Watch,
   Smartphone,
