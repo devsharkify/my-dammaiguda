@@ -367,68 +367,10 @@ export default function KaizerFit() {
     }
   };
 
-  // Google Fit functions
-  const checkGoogleFitStatus = async () => {
-    try {
-      const res = await axios.get(`${API}/fitness/google-fit/status`, { headers });
-      setGoogleFitConnected(res.data.connected);
-      if (res.data.connected) {
-        fetchGoogleFitData();
-      }
-    } catch (err) {
-      console.error("Google Fit status error:", err);
-    }
+  // Handle step tracker data updates
+  const handleStepDataUpdate = (data) => {
+    setStepTrackerData(data);
   };
-
-  const connectGoogleFit = async () => {
-    setGoogleFitLoading(true);
-    try {
-      const res = await axios.get(`${API}/fitness/google-fit/connect`, { headers });
-      if (res.data.auth_url) {
-        window.location.href = res.data.auth_url;
-      }
-    } catch (err) {
-      toast.error(language === "te" ? "కనెక్ట్ విఫలం" : "Failed to connect");
-    } finally {
-      setGoogleFitLoading(false);
-    }
-  };
-
-  const disconnectGoogleFit = async () => {
-    try {
-      await axios.delete(`${API}/fitness/google-fit/disconnect`, { headers });
-      setGoogleFitConnected(false);
-      setGoogleFitData(null);
-      toast.success(language === "te" ? "డిస్‌కనెక్ట్ అయింది" : "Disconnected");
-    } catch (err) {
-      toast.error(language === "te" ? "డిస్‌కనెక్ట్ విఫలం" : "Failed to disconnect");
-    }
-  };
-
-  const fetchGoogleFitData = async () => {
-    try {
-      const res = await axios.get(`${API}/fitness/google-fit/summary`, { headers });
-      setGoogleFitData(res.data);
-    } catch (err) {
-      console.error("Google Fit data error:", err);
-    }
-  };
-
-  // Check Google Fit status on mount and handle callback
-  useEffect(() => {
-    checkGoogleFitStatus();
-    
-    // Check for callback params
-    const params = new URLSearchParams(window.location.search);
-    if (params.get("connected") === "true") {
-      toast.success(language === "te" ? "Google Fit కనెక్ట్ అయింది!" : "Google Fit connected!");
-      checkGoogleFitStatus();
-      window.history.replaceState({}, document.title, window.location.pathname);
-    } else if (params.get("error")) {
-      toast.error(`Connection error: ${params.get("error")}`);
-      window.history.replaceState({}, document.title, window.location.pathname);
-    }
-  }, []);
 
   // Current stats
   const currentWeight = weightStats?.current_weight || user?.health_profile?.weight_kg || 0;
