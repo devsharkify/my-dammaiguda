@@ -1009,24 +1009,163 @@ export default function AdminPanel() {
             <Card>
               <CardHeader className="flex flex-row items-center justify-between">
                 <div>
-                  <CardTitle className="text-base">Announcements</CardTitle>
-                  <CardDescription>Broadcast messages to users</CardDescription>
+                  <CardTitle className="text-base">Push Notifications</CardTitle>
+                  <CardDescription>Send notifications to app users (In-app + Browser + SMS)</CardDescription>
                 </div>
-                <Button>
-                  <Megaphone className="h-4 w-4 mr-2" />
-                  New Announcement
-                </Button>
               </CardHeader>
               <CardContent>
-                <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4 mb-4">
-                  <p className="text-sm text-yellow-800">
-                    <strong>Tip:</strong> Select specific areas above to send targeted announcements, 
-                    or keep "All Areas" to broadcast to everyone.
-                  </p>
-                </div>
-                <div className="text-center py-8 text-muted-foreground">
-                  <Megaphone className="h-12 w-12 mx-auto mb-2 opacity-20" />
-                  <p>No announcements yet</p>
+                <div className="space-y-4">
+                  {/* Target Selection */}
+                  <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                    <p className="text-sm text-blue-800">
+                      <strong>Targeting:</strong> {selectedArea === "all" ? "All areas" : `Area: ${selectedArea}`}
+                    </p>
+                  </div>
+                  
+                  {/* Notification Form */}
+                  <div className="grid gap-4">
+                    <div className="grid md:grid-cols-2 gap-4">
+                      <div>
+                        <Label>Title (English) *</Label>
+                        <Input
+                          id="notif-title"
+                          placeholder="Important Update"
+                          className="mt-1"
+                        />
+                      </div>
+                      <div>
+                        <Label>Title (Telugu)</Label>
+                        <Input
+                          id="notif-title-te"
+                          placeholder="ముఖ్యమైన అప్‌డేట్"
+                          className="mt-1"
+                        />
+                      </div>
+                    </div>
+                    <div className="grid md:grid-cols-2 gap-4">
+                      <div>
+                        <Label>Message (English) *</Label>
+                        <Textarea
+                          id="notif-message"
+                          placeholder="Notification message content..."
+                          className="mt-1"
+                          rows={3}
+                        />
+                      </div>
+                      <div>
+                        <Label>Message (Telugu)</Label>
+                        <Textarea
+                          id="notif-message-te"
+                          placeholder="నోటిఫికేషన్ సందేశం..."
+                          className="mt-1"
+                          rows={3}
+                        />
+                      </div>
+                    </div>
+                    <div className="grid md:grid-cols-3 gap-4">
+                      <div>
+                        <Label>Type</Label>
+                        <Select defaultValue="announcement">
+                          <SelectTrigger id="notif-type" className="mt-1">
+                            <SelectValue />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="announcement">📢 Announcement</SelectItem>
+                            <SelectItem value="alert">🚨 Alert</SelectItem>
+                            <SelectItem value="reminder">⏰ Reminder</SelectItem>
+                            <SelectItem value="event">📅 Event</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+                      <div>
+                        <Label>Priority</Label>
+                        <Select defaultValue="normal">
+                          <SelectTrigger id="notif-priority" className="mt-1">
+                            <SelectValue />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="low">Low</SelectItem>
+                            <SelectItem value="normal">Normal</SelectItem>
+                            <SelectItem value="high">High</SelectItem>
+                            <SelectItem value="urgent">🔴 Urgent</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+                      <div>
+                        <Label>Action URL (optional)</Label>
+                        <Input
+                          id="notif-url"
+                          placeholder="/dashboard or /news"
+                          className="mt-1"
+                        />
+                      </div>
+                    </div>
+                    
+                    {/* Delivery Options */}
+                    <div className="flex items-center gap-6 pt-2">
+                      <label className="flex items-center gap-2 cursor-pointer">
+                        <input type="checkbox" id="send-push" defaultChecked className="w-4 h-4 rounded text-teal-500" />
+                        <span className="text-sm">📱 In-app + Browser Push</span>
+                      </label>
+                      <label className="flex items-center gap-2 cursor-pointer">
+                        <input type="checkbox" id="send-sms" className="w-4 h-4 rounded text-teal-500" />
+                        <span className="text-sm">💬 SMS (costs extra)</span>
+                      </label>
+                    </div>
+                    
+                    <div className="flex gap-3 pt-4">
+                      <Button
+                        className="bg-gradient-to-r from-teal-500 to-emerald-500 hover:from-teal-600 hover:to-emerald-600"
+                        onClick={async () => {
+                          const title = document.getElementById("notif-title").value;
+                          const message = document.getElementById("notif-message").value;
+                          const titleTe = document.getElementById("notif-title-te").value;
+                          const messageTe = document.getElementById("notif-message-te").value;
+                          const type = document.getElementById("notif-type")?.textContent?.toLowerCase()?.includes("alert") ? "alert" : "announcement";
+                          const priority = document.getElementById("notif-priority")?.textContent?.toLowerCase() || "normal";
+                          const url = document.getElementById("notif-url")?.value;
+                          const sendSms = document.getElementById("send-sms")?.checked || false;
+                          
+                          if (!title || !message) {
+                            toast.error("Title and message are required");
+                            return;
+                          }
+                          
+                          try {
+                            const token = localStorage.getItem("token");
+                            const res = await axios.post(
+                              `${process.env.REACT_APP_BACKEND_URL}/api/notifications/admin/send?send_sms=${sendSms}`,
+                              {
+                                title,
+                                title_te: titleTe || title,
+                                body: message,
+                                body_te: messageTe || message,
+                                category: type,
+                                priority,
+                                url,
+                                target_area: selectedArea !== "all" ? selectedArea : null
+                              },
+                              { headers: { Authorization: `Bearer ${token}` } }
+                            );
+                            
+                            if (res.data.success) {
+                              toast.success(`Notification sent to ${res.data.total_recipients} users! ${sendSms ? `SMS queued: ${res.data.sms_queued}` : ""}`);
+                              // Clear form
+                              document.getElementById("notif-title").value = "";
+                              document.getElementById("notif-message").value = "";
+                              document.getElementById("notif-title-te").value = "";
+                              document.getElementById("notif-message-te").value = "";
+                            }
+                          } catch (error) {
+                            toast.error(error.response?.data?.detail || "Failed to send notification");
+                          }
+                        }}
+                      >
+                        <Megaphone className="h-4 w-4 mr-2" />
+                        Send Notification
+                      </Button>
+                    </div>
+                  </div>
                 </div>
               </CardContent>
             </Card>
