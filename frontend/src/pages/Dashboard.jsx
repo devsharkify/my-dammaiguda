@@ -1107,6 +1107,86 @@ export default function Dashboard() {
           </div>
         </DialogContent>
       </Dialog>
+
+      {/* Kaizer Fitness Coming Soon Modal */}
+      <Dialog open={showFitnessComingSoon} onOpenChange={setShowFitnessComingSoon}>
+        <DialogContent className="max-w-sm mx-auto rounded-3xl p-0 overflow-hidden border-0">
+          {/* Header with gradient */}
+          <div className="bg-gradient-to-br from-teal-500 via-emerald-500 to-cyan-500 p-6 text-center relative overflow-hidden">
+            {/* Animated background circles */}
+            <div className="absolute top-0 left-0 w-32 h-32 bg-white/10 rounded-full -translate-x-1/2 -translate-y-1/2"></div>
+            <div className="absolute bottom-0 right-0 w-24 h-24 bg-white/10 rounded-full translate-x-1/2 translate-y-1/2"></div>
+            
+            {/* Heart pulse animation */}
+            <div className="relative inline-flex items-center justify-center mb-4">
+              <div className="absolute w-20 h-20 bg-white/20 rounded-full animate-ping"></div>
+              <div className="relative w-16 h-16 bg-white rounded-full flex items-center justify-center shadow-xl">
+                <Heart className="h-8 w-8 text-teal-500 animate-pulse" />
+              </div>
+            </div>
+            
+            <h2 className="text-2xl font-bold text-white mb-1 font-heading">
+              {language === "te" ? "కైజర్ ఫిట్" : "Kaizer Fit"}
+            </h2>
+            <p className="text-white/90 text-sm">
+              {language === "te" ? "త్వరలో వస్తుంది" : "Coming Soon"}
+            </p>
+          </div>
+          
+          {/* Content */}
+          <div className="p-6 text-center bg-white">
+            {/* Launch Date */}
+            <div className="mb-5">
+              <div className="inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-rose-50 to-pink-50 rounded-full border border-rose-200">
+                <Sparkles className="h-4 w-4 text-rose-500" />
+                <span className="text-sm font-semibold text-rose-600">
+                  {language === "te" ? "ఏప్రిల్ 7, 2025" : "April 7, 2025"}
+                </span>
+              </div>
+              <p className="text-xs text-muted-foreground mt-2">
+                {language === "te" ? "ప్రపంచ ఆరోగ్య దినం" : "World Health Day"}
+              </p>
+            </div>
+            
+            {/* Features Preview */}
+            <div className="grid grid-cols-3 gap-3 mb-5">
+              <div className="p-3 bg-blue-50 rounded-xl">
+                <Activity className="h-5 w-5 text-blue-500 mx-auto mb-1" />
+                <p className="text-[10px] font-medium text-blue-700">
+                  {language === "te" ? "స్టెప్స్" : "Steps"}
+                </p>
+              </div>
+              <div className="p-3 bg-orange-50 rounded-xl">
+                <Heart className="h-5 w-5 text-orange-500 mx-auto mb-1" />
+                <p className="text-[10px] font-medium text-orange-700">
+                  {language === "te" ? "కేలరీలు" : "Calories"}
+                </p>
+              </div>
+              <div className="p-3 bg-purple-50 rounded-xl">
+                <Star className="h-5 w-5 text-purple-500 mx-auto mb-1" />
+                <p className="text-[10px] font-medium text-purple-700">
+                  {language === "te" ? "బ్యాడ్జెస్" : "Badges"}
+                </p>
+              </div>
+            </div>
+            
+            {/* Message */}
+            <p className="text-sm text-muted-foreground mb-5">
+              {language === "te" 
+                ? "మీ ఆరోగ్యాన్ని ట్రాక్ చేయండి, లక్ష్యాలను సాధించండి, బహుమతులు గెలుచుకోండి!"
+                : "Track your health, achieve goals, win rewards!"}
+            </p>
+            
+            {/* CTA Button */}
+            <Button 
+              onClick={() => setShowFitnessComingSoon(false)}
+              className="w-full h-12 bg-gradient-to-r from-teal-500 to-emerald-500 text-white rounded-full font-semibold shadow-lg hover:from-teal-600 hover:to-emerald-600"
+            >
+              {language === "te" ? "అర్థమైంది!" : "Got it!"}
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
     </Layout>
   );
 }
