@@ -152,7 +152,7 @@ function AppRoutes() {
       } />
       <Route path="/fitness" element={
         <ProtectedRoute>
-          <KaizerFit />
+          <FitnessComingSoon />
         </ProtectedRoute>
       } />
       <Route path="/doctor" element={
