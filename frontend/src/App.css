@@ -71,6 +71,9 @@ html, body {
   touch-action: pan-x pan-y !important;
   width: 100%;
   min-height: 100%;
+  height: auto !important;
+  overflow-y: auto !important;
+  overflow-x: hidden !important;
   margin: 0;
   padding: 0;
 }
@@ -78,7 +81,8 @@ html, body {
 #root {
   width: 100%;
   min-height: 100vh;
-  overflow-y: auto;
+  height: auto !important;
+  overflow-y: visible !important;
   overflow-x: hidden;
   -webkit-overflow-scrolling: touch;
   touch-action: pan-y !important;
