@@ -207,6 +207,13 @@ export default function StepTracker({ onDataUpdate, compact = false }) {
               </div>
             </div>
             <div className="flex items-center gap-2">
+              {/* Goal Streak Badge */}
+              {goalStreak && goalStreak.current_streak > 0 && (
+                <div className="flex items-center gap-1 px-2 py-1 bg-gradient-to-r from-amber-100 to-orange-100 rounded-full border border-amber-300">
+                  <span className="text-sm">🔥</span>
+                  <span className="text-xs font-bold text-amber-700">{goalStreak.current_streak}</span>
+                </div>
+              )}
               <Button
                 size="sm"
                 variant="ghost"
@@ -231,12 +238,11 @@ export default function StepTracker({ onDataUpdate, compact = false }) {
             <p className="text-xs text-muted-foreground">
               {Math.round(progress)}% {language === 'te' ? 'లక్ష్యం' : `of ${stepGoal.toLocaleString()} goal`}
             </p>
-            <button 
-              onClick={() => setShowGoalDialog(true)}
-              className="text-xs text-blue-500 hover:underline"
-            >
-              {language === 'te' ? 'మార్చు' : 'Change'}
-            </button>
+            {goalStreak && goalStreak.next_milestone && (
+              <p className="text-xs text-amber-600 font-medium">
+                {language === 'te' ? `${goalStreak.days_to_next_milestone} రోజులు ${goalStreak.next_milestone}-day కు` : `${goalStreak.days_to_next_milestone} days to ${goalStreak.next_milestone}-day streak`}
+              </p>
+            )}
           </div>
           
           {/* Goal Selection Dialog */}
