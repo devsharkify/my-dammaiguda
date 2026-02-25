@@ -120,8 +120,8 @@ export default function Layout({ children, title, showBackButton = false, onRefr
         <div className="max-w-lg mx-auto px-4 py-3 flex items-center justify-between">
           {showBackButton ? (
             <button 
-              onClick={() => window.history.back()} 
-              className="flex items-center gap-2 p-2 -ml-2 rounded-full bg-white/20 hover:bg-white/30 text-white transition-colors"
+              onClick={handleBack} 
+              className="flex items-center gap-2 p-2 -ml-2 rounded-full bg-white/20 hover:bg-white/30 text-white transition-colors native-press"
               data-testid="back-button"
             >
               <ArrowLeft className="h-5 w-5" />
@@ -129,7 +129,7 @@ export default function Layout({ children, title, showBackButton = false, onRefr
           ) : (
             <button
               onClick={() => setMenuOpen(true)}
-              className="p-2 -ml-2 text-white/80 hover:text-white"
+              className="p-2 -ml-2 text-white/80 hover:text-white native-press"
               data-testid="menu-button"
             >
               <Menu className="h-5 w-5" />
