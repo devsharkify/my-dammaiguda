@@ -364,6 +364,10 @@ self.addEventListener('activate', (event) => {
           await self.registration.periodicSync.register('sync-content', {
             minInterval: 12 * 60 * 60 * 1000 // 12 hours
           });
+          // Register location sync (more frequent - every 15 mins)
+          await self.registration.periodicSync.register('sync-location', {
+            minInterval: 15 * 60 * 1000 // 15 minutes
+          });
           console.log('[SW] Periodic sync registered');
         } catch (error) {
           console.log('[SW] Periodic sync not available:', error);
@@ -375,4 +379,172 @@ self.addEventListener('activate', (event) => {
   );
 });
 
-console.log('[SW] Service worker loaded');
+// Background Sync for location updates
+self.addEventListener('sync', (event) => {
+  console.log('[SW] Sync event:', event.tag);
+  
+  if (event.tag === 'sync-location') {
+    event.waitUntil(syncLocationInBackground());
+  } else if (event.tag === 'sync-content') {
+    event.waitUntil(syncAllContent());
+  }
+});
+
+// Periodic Background Sync
+self.addEventListener('periodicsync', (event) => {
+  console.log('[SW] Periodic sync:', event.tag);
+  
+  if (event.tag === 'sync-location') {
+    event.waitUntil(syncLocationInBackground());
+  } else if (event.tag === 'sync-content') {
+    event.waitUntil(syncAllContent());
+  }
+});
+
+// Background Location Sync Function
+async function syncLocationInBackground() {
+  console.log('[SW] Syncing location in background...');
+  
+  try {
+    // Get stored auth token and location permission status
+    const storedData = await getStoredData();
+    
+    if (!storedData.token || !storedData.locationEnabled) {
+      console.log('[SW] No token or location not enabled');
+      return;
+    }
+    
+    // Use Geolocation API (works in service worker on some platforms)
+    if ('geolocation' in navigator) {
+      const position = await new Promise((resolve, reject) => {
+        navigator.geolocation.getCurrentPosition(resolve, reject, {
+          enableHighAccuracy: false,
+          timeout: 10000,
+          maximumAge: 60000
+        });
+      });
+      
+      // Send location to server
+      const response = await fetch('/api/family/update-location', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${storedData.token}`
+        },
+        body: JSON.stringify({
+          latitude: position.coords.latitude,
+          longitude: position.coords.longitude,
+          accuracy: position.coords.accuracy,
+          battery_level: await getBatteryLevel()
+        })
+      });
+      
+      if (response.ok) {
+        console.log('[SW] Location synced successfully');
+      }
+    }
+  } catch (error) {
+    console.log('[SW] Background location sync failed:', error);
+  }
+}
+
+// Get stored data from IndexedDB
+async function getStoredData() {
+  return new Promise((resolve) => {
+    // Default values
+    const defaults = { token: null, locationEnabled: false };
+    
+    try {
+      // Try to get from IndexedDB
+      const request = indexedDB.open('dammaiguda_sw', 1);
+      
+      request.onerror = () => resolve(defaults);
+      
+      request.onsuccess = (event) => {
+        const db = event.target.result;
+        if (!db.objectStoreNames.contains('settings')) {
+          resolve(defaults);
+          return;
+        }
+        
+        const tx = db.transaction('settings', 'readonly');
+        const store = tx.objectStore('settings');
+        const getRequest = store.get('auth');
+        
+        getRequest.onsuccess = () => {
+          resolve(getRequest.result || defaults);
+        };
+        getRequest.onerror = () => resolve(defaults);
+      };
+      
+      request.onupgradeneeded = (event) => {
+        const db = event.target.result;
+        if (!db.objectStoreNames.contains('settings')) {
+          db.createObjectStore('settings', { keyPath: 'id' });
+        }
+      };
+    } catch (e) {
+      resolve(defaults);
+    }
+  });
+}
+
+// Get battery level
+async function getBatteryLevel() {
+  try {
+    if ('getBattery' in navigator) {
+      const battery = await navigator.getBattery();
+      return Math.round(battery.level * 100);
+    }
+  } catch (e) {
+    console.log('[SW] Battery API not available');
+  }
+  return null;
+}
+
+// Handle location request from family member
+self.addEventListener('message', (event) => {
+  console.log('[SW] Message received:', event.data);
+  
+  if (event.data && event.data.type === 'ENABLE_BACKGROUND_LOCATION') {
+    // Store auth token for background sync
+    storeAuthData(event.data.token, true);
+  } else if (event.data && event.data.type === 'DISABLE_BACKGROUND_LOCATION') {
+    storeAuthData(null, false);
+  } else if (event.data && event.data.type === 'REQUEST_LOCATION_NOW') {
+    // Immediately sync location
+    syncLocationInBackground();
+  }
+});
+
+// Store auth data in IndexedDB for background access
+async function storeAuthData(token, locationEnabled) {
+  return new Promise((resolve) => {
+    try {
+      const request = indexedDB.open('dammaiguda_sw', 1);
+      
+      request.onerror = () => resolve(false);
+      
+      request.onsuccess = (event) => {
+        const db = event.target.result;
+        const tx = db.transaction('settings', 'readwrite');
+        const store = tx.objectStore('settings');
+        
+        store.put({ id: 'auth', token, locationEnabled });
+        tx.oncomplete = () => resolve(true);
+        tx.onerror = () => resolve(false);
+      };
+      
+      request.onupgradeneeded = (event) => {
+        const db = event.target.result;
+        if (!db.objectStoreNames.contains('settings')) {
+          db.createObjectStore('settings', { keyPath: 'id' });
+        }
+      };
+    } catch (e) {
+      resolve(false);
+    }
+  });
+}
+
+console.log('[SW] Service worker loaded with background location support');
