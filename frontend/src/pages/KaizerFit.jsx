@@ -440,14 +440,21 @@ export default function KaizerFit() {
 
         {/* Start Live Activity Button */}
         <div className="grid grid-cols-2 gap-3">
-          <Button
-            onClick={() => setShowActivityPicker(true)}
-            className="h-14 bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600 text-white rounded-2xl text-sm font-semibold shadow-lg shadow-emerald-500/25 transition-all active:scale-[0.98]"
-            data-testid="start-live-activity-btn"
-          >
-            <Play className="h-5 w-5 mr-2" />
-            {language === "te" ? "లైవ్ ట్రాకింగ్" : "Start Live"}
-          </Button>
+          {/* Live Tracking - Coming Soon */}
+          <div className="relative">
+            <Button
+              onClick={() => setShowLiveComingSoon(true)}
+              className="w-full h-14 bg-gradient-to-r from-emerald-500/70 to-teal-500/70 hover:from-emerald-500/80 hover:to-teal-500/80 text-white rounded-2xl text-sm font-semibold shadow-lg transition-all active:scale-[0.98] border-2 border-dashed border-emerald-300"
+              data-testid="start-live-activity-btn"
+            >
+              <Play className="h-5 w-5 mr-2" />
+              {language === "te" ? "లైవ్ ట్రాకింగ్" : "Start Live"}
+            </Button>
+            {/* Coming Soon Badge */}
+            <div className="absolute -top-2 -right-2 px-2 py-0.5 bg-gradient-to-r from-amber-400 to-orange-500 rounded-full shadow-lg">
+              <span className="text-[9px] font-bold text-white">SOON</span>
+            </div>
+          </div>
           <Button
             onClick={() => setShowManualRecord(true)}
             variant="outline"
@@ -459,12 +466,38 @@ export default function KaizerFit() {
           </Button>
         </div>
 
-        {/* Step Counter - Replaces deprecated Google Fit */}
-        <div className="mt-2">
-          <StepTracker 
-            compact={true} 
-            onDataUpdate={handleStepDataUpdate} 
-          />
+        {/* Step Counter - Coming Soon Notice */}
+        <div className="relative mt-2">
+          <div 
+            onClick={() => setShowLiveComingSoon(true)}
+            className="cursor-pointer"
+          >
+            <Card className="border-2 border-dashed border-blue-200 bg-blue-50/50 overflow-hidden">
+              <CardContent className="p-4">
+                <div className="flex items-center justify-between opacity-60">
+                  <div className="flex items-center gap-3">
+                    <div className="h-12 w-12 rounded-xl bg-blue-100 flex items-center justify-center">
+                      <Footprints className="h-6 w-6 text-blue-400" />
+                    </div>
+                    <div>
+                      <p className="font-semibold text-lg text-blue-400">0</p>
+                      <p className="text-xs text-blue-300">
+                        {language === 'te' ? 'అడుగులు' : 'steps today'}
+                      </p>
+                    </div>
+                  </div>
+                  <Badge className="bg-gradient-to-r from-amber-400 to-orange-500 text-white border-0">
+                    {language === "te" ? "త్వరలో" : "Coming Soon"}
+                  </Badge>
+                </div>
+                <p className="text-xs text-center text-blue-400 mt-3">
+                  {language === "te" 
+                    ? "స్టెప్ కౌంటర్ ఏప్రిల్ 7న లాంచ్ అవుతుంది" 
+                    : "Step counter launching April 7th"}
+                </p>
+              </CardContent>
+            </Card>
+          </div>
         </div>
 
         {/* Streak & Badges Section */}
