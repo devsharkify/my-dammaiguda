@@ -160,7 +160,7 @@ async def get_dumpyard_config():
     if not config:
         # Return defaults
         return {
-            "daily_waste_tons": 1200,
+            "daily_waste_tons": 10000,
             "area_acres": 350,
             "red_zone_km": 2,
             "status": "Active",
