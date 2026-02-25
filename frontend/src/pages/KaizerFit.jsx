@@ -98,6 +98,9 @@ export default function KaizerFit() {
   const [showBadgesDialog, setShowBadgesDialog] = useState(false);
   const [showNewBadgeDialog, setShowNewBadgeDialog] = useState(false);
   
+  // Live Activity Coming Soon
+  const [showLiveComingSoon, setShowLiveComingSoon] = useState(false);
+  
   // Weight tracking
   const [weightHistory, setWeightHistory] = useState([]);
   const [weightStats, setWeightStats] = useState(null);
