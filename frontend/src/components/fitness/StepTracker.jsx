@@ -51,6 +51,7 @@ export default function StepTracker({ onDataUpdate, compact = false }) {
   const [stepGoal, setStepGoal] = useState(10000);
   const [showGoalDialog, setShowGoalDialog] = useState(false);
   const [loadingGoal, setLoadingGoal] = useState(false);
+  const [goalStreak, setGoalStreak] = useState(null);
 
   const {
     steps,
@@ -81,10 +82,11 @@ export default function StepTracker({ onDataUpdate, compact = false }) {
 
   const headers = { Authorization: `Bearer ${token}` };
 
-  // Load today's steps and goal on mount
+  // Load today's steps, goal, and streak on mount
   useEffect(() => {
     loadTodaySteps();
     loadStepGoal();
+    loadGoalStreak();
   }, []);
 
   const loadTodaySteps = async () => {
@@ -110,6 +112,15 @@ export default function StepTracker({ onDataUpdate, compact = false }) {
     }
   };
 
+  const loadGoalStreak = async () => {
+    try {
+      const res = await axios.get(`${API}/fitness/step-goal-streak`, { headers });
+      setGoalStreak(res.data);
+    } catch (err) {
+      console.log('Could not load goal streak');
+    }
+  };
+
   const saveStepGoal = async (newGoal) => {
     setLoadingGoal(true);
     try {
@@ -117,6 +128,8 @@ export default function StepTracker({ onDataUpdate, compact = false }) {
       setStepGoal(newGoal);
       setShowGoalDialog(false);
       toast.success(language === 'te' ? `లక్ష్యం ${newGoal.toLocaleString()} కు మార్చబడింది` : `Goal set to ${newGoal.toLocaleString()} steps`);
+      // Reload streak after goal change
+      loadGoalStreak();
     } catch (err) {
       toast.error(language === 'te' ? 'లక్ష్యం సేవ్ చేయడం విఫలమైంది' : 'Failed to save goal');
     } finally {
