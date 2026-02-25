@@ -673,17 +673,18 @@ Replaced Google Fit with a native accelerometer-based step counter that works on
    - Full and compact UI variants
    - Real-time step counting with visual feedback
    - Auto-saves to backend every 100 steps
-   - Progress tracking toward 10,000 daily goal
+   - **Custom goal selection (5k, 8k, 10k, 12k, 15k steps)**
+   - Progress tracking toward customizable daily goal
 
-3. **`POST /api/fitness/steps/sync`** - New backend endpoint
-   - Simple step count synchronization
-   - Estimates calories and distance based on steps
-   - Updates daily fitness summary
+3. **Backend Endpoints:**
+   - `POST /api/fitness/steps/sync` - Step count synchronization
+   - `GET /api/fitness/step-goal` - Get user's step goal preference
+   - `POST /api/fitness/step-goal` - Set user's step goal preference
 
 ### Files Modified:
 - `/app/frontend/src/pages/KaizerFit.jsx` - Replaced Google Fit card with StepTracker
 - `/app/frontend/src/pages/DeviceSync.jsx` - Added StepTracker to Activity tab, removed Google Fit from device list
-- `/app/backend/routers/fitness.py` - Added `StepSyncData` model and `/steps/sync` endpoint
+- `/app/backend/routers/fitness.py` - Added step sync and goal endpoints
 
 ### Security Improvement:
 - Added `PRODUCTION_MODE` environment variable to `/app/backend/routers/auth.py`
