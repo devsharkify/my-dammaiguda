@@ -575,7 +575,7 @@ export default function ContentManager({ areaId = "dammaiguda" }) {
                     type="number"
                     value={dumpyard.daily_waste_tons || ""}
                     onChange={(e) => setDumpyard({ ...dumpyard, daily_waste_tons: e.target.value })}
-                    placeholder="1200"
+                    placeholder="10000"
                   />
                 </div>
                 <div className="space-y-2">
