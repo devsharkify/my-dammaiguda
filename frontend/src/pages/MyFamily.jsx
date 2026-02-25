@@ -60,9 +60,57 @@ export default function MyFamily() {
   const [triggeringSOS, setTriggeringSOS] = useState(false);
   const [mapLocation, setMapLocation] = useState(null);
   const [loadingLocation, setLoadingLocation] = useState(false);
-  const [refreshingMember, setRefreshingMember] = useState(null); // Track which member location is being refreshed
+  const [refreshingMember, setRefreshingMember] = useState(null);
+  const [enablingBackground, setEnablingBackground] = useState(false);
+
+  // Background location hook
+  const {
+    permissionStatus,
+    backgroundEnabled,
+    isSupported: bgLocationSupported,
+    enableBackgroundLocation,
+    disableBackgroundLocation
+  } = useBackgroundLocation();
 
   const headers = { Authorization: `Bearer ${token}` };
+
+  // Handle background location toggle
+  const handleBackgroundToggle = async (enabled) => {
+    setEnablingBackground(true);
+    try {
+      if (enabled) {
+        const success = await enableBackgroundLocation();
+        if (success) {
+          toast.success(
+            language === "te" 
+              ? "బ్యాక్‌గ్రౌండ్ లొకేషన్ ఎనేబుల్ అయింది" 
+              : "Background location enabled"
+          );
+        } else {
+          toast.error(
+            language === "te" 
+              ? "లొకేషన్ అనుమతి అవసరం" 
+              : "Location permission required"
+          );
+        }
+      } else {
+        await disableBackgroundLocation();
+        toast.info(
+          language === "te" 
+            ? "బ్యాక్‌గ్రౌండ్ లొకేషన్ డిసేబుల్ అయింది" 
+            : "Background location disabled"
+        );
+      }
+    } catch (error) {
+      toast.error(
+        language === "te" 
+          ? "ఏదో తప్పు జరిగింది" 
+          : "Something went wrong"
+      );
+    } finally {
+      setEnablingBackground(false);
+    }
+  };
 
   const fetchData = useCallback(async () => {
     try {
