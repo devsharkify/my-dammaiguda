@@ -331,9 +331,6 @@ function App() {
   const [showSplash, setShowSplash] = useState(true);
   const [appReady, setAppReady] = useState(false);
   
-  // Prevent zoom on mobile
-  usePreventZoom();
-  
   // Register service worker for PWA
   useServiceWorker();
   
