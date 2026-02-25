@@ -116,9 +116,27 @@ DISABLE_ESLINT_PLUGIN=true
 
 ---
 
-## Completed Tasks (This Session - Feb 23, 2026)
+## Completed Tasks (This Session - Feb 25, 2026)
 
-### Session 2 (Latest)
+### Session 3 (Latest)
+1. ✅ **FIXED Android Scrolling Bug (CRITICAL)**
+   - Removed aggressive `e.preventDefault()` in `PullToRefresh.jsx` that was blocking vertical scroll
+   - Added `touchAction: 'pan-y'` style to allow vertical scrolling on Android
+   - Removed touch event blocking from `index.html` that was preventing all scrolling
+   - Scrolling now works on Android devices (verified with 1603px dashboard, 1642px fitness page)
+
+2. ✅ **FIXED Fitness Timer Bug**
+   - Timer was running too fast due to duplicate intervals being created
+   - Added proper interval cleanup before creating new ones
+   - Used `lastTickRef` for accurate timing tracking
+   - Pause/Resume now work correctly
+
+3. ✅ **FIXED Save Activity Bug**
+   - Was failing with 500 error due to missing fields in `LiveActivityEnd` Pydantic model
+   - Added missing fields: `avg_speed_kmh`, `avg_pace_min_per_km`, `route_polyline`, `gps_points`
+   - Activity saves now work correctly
+
+### Session 2 (Feb 23, 2026)
 1. ✅ **FIXED News Page** - Removed all scraped/mock data, now shows only admin-pushed news
    - Modified `/api/news/{category}` endpoint to exclude RSS scraping
    - Modified `/api/news/feed/all` endpoint to exclude RSS scraping
