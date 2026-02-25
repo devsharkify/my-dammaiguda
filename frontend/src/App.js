@@ -317,20 +317,48 @@ function AnimatedRoutes() {
         exit="out"
         variants={pageVariants}
         transition={pageTransition}
+        className="min-h-screen"
       >
-        <AppRoutes />
+        <Suspense fallback={<PageSkeleton />}>
+          <AppRoutes />
+        </Suspense>
       </motion.div>
     </AnimatePresence>
   );
 }
 
 function App() {
+  const [showSplash, setShowSplash] = useState(true);
+  const [appReady, setAppReady] = useState(false);
+  
   // Register service worker for PWA
   useServiceWorker();
   
   // Initialize security shield
   useEffect(() => {
     initSecurityShield();
+    
+    // Preload critical resources
+    const preloadApp = async () => {
+      // Give splash screen minimum display time
+      await new Promise(resolve => setTimeout(resolve, 100));
+      setAppReady(true);
+    };
+    
+    preloadApp();
+  }, []);
+  
+  const handleSplashComplete = useCallback(() => {
+    setShowSplash(false);
+  }, []);
+  
+  // Show splash screen on first load only (session-based)
+  useEffect(() => {
+    if (sessionStorage.getItem('splashShown')) {
+      setShowSplash(false);
+    } else {
+      sessionStorage.setItem('splashShown', 'true');
+    }
   }, []);
   
   return (
@@ -339,6 +367,9 @@ function App() {
         <ThemeProvider>
           <LanguageProvider>
             <AuthProvider>
+              {showSplash && appReady && (
+                <SplashScreen onComplete={handleSplashComplete} />
+              )}
               <OfflineBanner />
               <AnimatedRoutes />
               <Toaster position="top-center" richColors />
