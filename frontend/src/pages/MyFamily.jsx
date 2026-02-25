@@ -751,8 +751,14 @@ export default function MyFamily() {
         </Card>
 
         {/* Geofence Dialog */}
-        <Dialog open={showGeofenceDialog} onOpenChange={setShowGeofenceDialog}>
-          <DialogContent className="max-w-md">
+        <Dialog open={showGeofenceDialog} onOpenChange={(open) => {
+          setShowGeofenceDialog(open);
+          if (!open) {
+            setMapLocation(null);
+            setNewGeofence({ name: "", radius_meters: 500, lat: null, lng: null });
+          }
+        }}>
+          <DialogContent className="max-w-md max-h-[90vh] overflow-y-auto">
             <DialogHeader>
               <DialogTitle className="flex items-center gap-2">
                 <Target className="h-5 w-5 text-blue-500" />
@@ -761,7 +767,7 @@ export default function MyFamily() {
             </DialogHeader>
             
             <div className="space-y-4">
-              <p className="text-sm text-text-muted">
+              <p className="text-sm text-muted-foreground">
                 {language === "te" 
                   ? `${selectedMember?.family_member_name} కోసం సేఫ్ జోన్ సెట్ చేయండి. వారు ఈ జోన్ నుండి బయటికి వెళ్తే అలర్ట్ వస్తుంది.`
                   : `Set a safe zone for ${selectedMember?.family_member_name}. You'll get an alert when they leave this zone.`}
@@ -774,7 +780,7 @@ export default function MyFamily() {
               />
               
               <div>
-                <label className="text-sm text-text-muted mb-1 block">
+                <label className="text-sm text-muted-foreground mb-1 block">
                   {language === "te" ? "వ్యాసార్థం (మీటర్లు)" : "Radius (meters)"}
                 </label>
                 <select
@@ -790,11 +796,122 @@ export default function MyFamily() {
                 </select>
               </div>
               
-              <p className="text-xs text-text-muted bg-muted/50 p-3 rounded-lg">
-                {language === "te" 
-                  ? "మీ ప్రస్తుత లొకేషన్ సేఫ్ జోన్ సెంటర్‌గా ఉపయోగించబడుతుంది"
-                  : "Your current location will be used as the safe zone center"}
-              </p>
+              {/* Location Selection */}
+              <div className="space-y-2">
+                <label className="text-sm text-muted-foreground block">
+                  {language === "te" ? "లొకేషన్ ఎంచుకోండి" : "Select Location"}
+                </label>
+                
+                {/* Map placeholder with location picker */}
+                <div className="rounded-lg border border-dashed border-blue-300 bg-blue-50/50 p-4">
+                  {mapLocation ? (
+                    <div className="text-center">
+                      <div className="inline-flex items-center justify-center h-12 w-12 rounded-full bg-blue-500 text-white mb-2">
+                        <MapPin className="h-6 w-6" />
+                      </div>
+                      <p className="text-sm font-medium text-blue-700">
+                        {language === "te" ? "లొకేషన్ ఎంపిక చేయబడింది" : "Location Selected"}
+                      </p>
+                      <p className="text-xs text-blue-600 mt-1">
+                        {mapLocation.lat.toFixed(5)}, {mapLocation.lng.toFixed(5)}
+                      </p>
+                      <Button 
+                        variant="ghost" 
+                        size="sm" 
+                        className="mt-2 text-blue-600"
+                        onClick={() => {
+                          setMapLocation(null);
+                          setNewGeofence({ ...newGeofence, lat: null, lng: null });
+                        }}
+                      >
+                        <X className="h-4 w-4 mr-1" />
+                        {language === "te" ? "మార్చండి" : "Change"}
+                      </Button>
+                    </div>
+                  ) : (
+                    <div className="text-center py-2">
+                      <MapPin className="h-8 w-8 text-blue-400 mx-auto mb-2" />
+                      <p className="text-sm text-blue-600 mb-3">
+                        {language === "te" ? "లొకేషన్ ఎంచుకోండి" : "Choose a location"}
+                      </p>
+                      <div className="flex flex-col gap-2">
+                        <Button 
+                          variant="default"
+                          size="sm" 
+                          className="bg-blue-500 hover:bg-blue-600"
+                          onClick={getMyLocation}
+                          disabled={loadingLocation}
+                        >
+                          {loadingLocation ? (
+                            <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                          ) : (
+                            <Navigation className="h-4 w-4 mr-2" />
+                          )}
+                          {language === "te" ? "నా ప్రస్తుత లొకేషన్" : "Use My Current Location"}
+                        </Button>
+                        <Button 
+                          variant="outline"
+                          size="sm"
+                          onClick={() => {
+                            // Open Google Maps in a new tab for location selection
+                            window.open(
+                              `https://www.google.com/maps/@17.4875,78.3953,15z`,
+                              '_blank'
+                            );
+                            toast.info(
+                              language === "te" 
+                                ? "మ్యాప్‌లో లొకేషన్ కాపీ చేయండి లేదా 'నా ప్రస్తుత లొకేషన్' ఉపయోగించండి" 
+                                : "Copy coordinates from map or use 'My Current Location'"
+                            );
+                          }}
+                        >
+                          <MapPin className="h-4 w-4 mr-2" />
+                          {language === "te" ? "మ్యాప్‌లో చూడండి" : "View on Map"}
+                        </Button>
+                      </div>
+                    </div>
+                  )}
+                </div>
+                
+                {/* Manual coordinate input */}
+                <details className="text-sm">
+                  <summary className="text-muted-foreground cursor-pointer hover:text-foreground">
+                    {language === "te" ? "కోఆర్డినేట్లు మాన్యువల్‌గా నమోదు చేయండి" : "Enter coordinates manually"}
+                  </summary>
+                  <div className="grid grid-cols-2 gap-2 mt-2">
+                    <Input
+                      type="number"
+                      step="any"
+                      placeholder="Latitude"
+                      value={newGeofence.lat || ""}
+                      onChange={(e) => {
+                        const lat = parseFloat(e.target.value);
+                        if (!isNaN(lat)) {
+                          setNewGeofence({ ...newGeofence, lat });
+                          if (newGeofence.lng) {
+                            setMapLocation({ lat, lng: newGeofence.lng });
+                          }
+                        }
+                      }}
+                    />
+                    <Input
+                      type="number"
+                      step="any"
+                      placeholder="Longitude"
+                      value={newGeofence.lng || ""}
+                      onChange={(e) => {
+                        const lng = parseFloat(e.target.value);
+                        if (!isNaN(lng)) {
+                          setNewGeofence({ ...newGeofence, lng });
+                          if (newGeofence.lat) {
+                            setMapLocation({ lat: newGeofence.lat, lng });
+                          }
+                        }
+                      }}
+                    />
+                  </div>
+                </details>
+              </div>
               
               <Button onClick={addGeofence} className="w-full bg-blue-500 hover:bg-blue-600">
                 <Shield className="h-4 w-4 mr-2" />
