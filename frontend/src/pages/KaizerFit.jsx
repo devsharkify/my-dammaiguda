@@ -126,10 +126,8 @@ export default function KaizerFit() {
   const [foodCategories, setFoodCategories] = useState([]);
   const [selectedCategory, setSelectedCategory] = useState("");
   
-  // Google Fit connection
-  const [googleFitConnected, setGoogleFitConnected] = useState(false);
-  const [googleFitLoading, setGoogleFitLoading] = useState(false);
-  const [googleFitData, setGoogleFitData] = useState(null);
+  // Step tracker data (replaces deprecated Google Fit)
+  const [stepTrackerData, setStepTrackerData] = useState(null);
   
   // Live activity
   const [showActivityPicker, setShowActivityPicker] = useState(false);
