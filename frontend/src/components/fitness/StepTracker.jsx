@@ -11,6 +11,7 @@ import { Card, CardContent } from '../ui/card';
 import { Button } from '../ui/button';
 import { Progress } from '../ui/progress';
 import { Badge } from '../ui/badge';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '../ui/dialog';
 import { toast } from 'sonner';
 import axios from 'axios';
 import {
@@ -25,10 +26,21 @@ import {
   AlertCircle,
   CheckCircle,
   Loader2,
-  TrendingUp
+  TrendingUp,
+  Target,
+  Settings
 } from 'lucide-react';
 
 const API = `${process.env.REACT_APP_BACKEND_URL}/api`;
+
+// Predefined step goals
+const STEP_GOALS = [
+  { value: 5000, label: '5,000', labelTe: '5,000', description: 'Light activity', descTe: 'తేలికపాటి' },
+  { value: 8000, label: '8,000', labelTe: '8,000', description: 'Moderate', descTe: 'మధ్యస్థం' },
+  { value: 10000, label: '10,000', labelTe: '10,000', description: 'Recommended', descTe: 'సిఫార్సు' },
+  { value: 12000, label: '12,000', labelTe: '12,000', description: 'Active', descTe: 'యాక్టివ్' },
+  { value: 15000, label: '15,000', labelTe: '15,000', description: 'Very Active', descTe: 'చాలా యాక్టివ్' },
+];
 
 export default function StepTracker({ onDataUpdate, compact = false }) {
   const { language } = useLanguage();
@@ -36,6 +48,9 @@ export default function StepTracker({ onDataUpdate, compact = false }) {
   const [saving, setSaving] = useState(false);
   const [lastSaved, setLastSaved] = useState(null);
   const [todaySteps, setTodaySteps] = useState(0);
+  const [stepGoal, setStepGoal] = useState(10000);
+  const [showGoalDialog, setShowGoalDialog] = useState(false);
+  const [loadingGoal, setLoadingGoal] = useState(false);
 
   const {
     steps,
