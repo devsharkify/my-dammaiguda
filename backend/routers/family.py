@@ -28,7 +28,20 @@ class LocationUpdate(BaseModel):
 @router.post("/send-request")
 async def send_family_request(request: FamilyMemberRequest, user: dict = Depends(get_current_user)):
     """Send a family tracking request to another user"""
-    target_user = await db.users.find_one({"phone": request.phone}, {"_id": 0})
+    # Normalize phone number - handle with or without +91
+    phone = request.phone.strip()
+    phone_normalized = phone.replace("+91", "").replace(" ", "").replace("-", "")
+    
+    # Search for user with various phone formats
+    target_user = await db.users.find_one({
+        "$or": [
+            {"phone": phone},
+            {"phone": f"+91{phone_normalized}"},
+            {"phone": phone_normalized},
+            {"phone": f"91{phone_normalized}"}
+        ]
+    }, {"_id": 0})
+    
     if not target_user:
         raise HTTPException(status_code=404, detail="User not found. They need to register first.")
     
