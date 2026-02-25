@@ -557,17 +557,12 @@ export default function MyFamily() {
                 <h3 className="font-semibold text-sm">
                   {language === "te" ? "కుటుంబ సభ్యుడిని జోడించండి" : "Add Family Member"}
                 </h3>
-                <div className="relative">
-                  <Phone className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-text-muted" />
-                  <Input
-                    type="tel"
-                    placeholder={language === "te" ? "ఫోన్ నంబర్" : "Phone Number"}
-                    value={newMember.phone}
-                    onChange={(e) => setNewMember({ ...newMember, phone: e.target.value })}
-                    className="pl-10"
-                    data-testid="family-phone-input"
-                  />
-                </div>
+                <PhoneInput
+                  value={newMember.phone}
+                  onChange={(phone) => setNewMember({ ...newMember, phone })}
+                  placeholder={language === "te" ? "10 అంకెల నంబర్" : "10-digit number"}
+                  data-testid="family-phone-input"
+                />
                 <select
                   value={newMember.relationship}
                   onChange={(e) => setNewMember({ ...newMember, relationship: e.target.value })}
