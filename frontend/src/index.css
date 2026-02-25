@@ -2,7 +2,6 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Security: Disable text selection on body (allow in inputs) */
 body {
     margin: 0;
     font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen",
@@ -10,87 +9,6 @@ body {
         sans-serif;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
-    -webkit-user-select: none;
-    -moz-user-select: none;
-    -ms-user-select: none;
-    user-select: none;
-    /* Enable scrolling */
-    overflow-y: auto !important;
-    overflow-x: hidden !important;
-    height: auto !important;
-    min-height: 100vh;
-}
-
-/* Allow selection in form elements */
-input, textarea, [contenteditable="true"], .selectable {
-    -webkit-user-select: text !important;
-    -moz-user-select: text !important;
-    -ms-user-select: text !important;
-    user-select: text !important;
-}
-
-/* Disable image dragging and right-click saving */
-img {
-    -webkit-user-drag: none;
-    -khtml-user-drag: none;
-    -moz-user-drag: none;
-    -o-user-drag: none;
-    user-drag: none;
-    pointer-events: none;
-}
-
-/* Allow clickable images (buttons, links) */
-a img, button img, .clickable img {
-    pointer-events: auto;
-}
-
-/* Disable print */
-@media print {
-    body {
-        display: none !important;
-    }
-    html {
-        display: none !important;
-    }
-}
-
-/* Prevent content extraction via CSS */
-body::before {
-    content: "";
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 0;
-    height: 0;
-    z-index: -1;
-}
-
-/* Disable highlighting */
-::selection {
-    background: transparent;
-}
-
-::-moz-selection {
-    background: transparent;
-}
-
-/* Allow selection in inputs */
-input::selection,
-textarea::selection,
-.selectable::selection {
-    background: #b4d5fe;
-}
-
-/* Watermark overlay for protected content (invisible) */
-.protected::after {
-    content: "";
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    pointer-events: none;
-    background: transparent;
 }
 
 code {
@@ -134,37 +52,5 @@ code {
     }
     body {
         @apply bg-background text-foreground;
-    }
-}
-
-@layer base {
-    [data-debug-wrapper="true"] {
-        display: contents !important;
-    }
-
-    [data-debug-wrapper="true"] > * {
-        margin-left: inherit;
-        margin-right: inherit;
-        margin-top: inherit;
-        margin-bottom: inherit;
-        padding-left: inherit;
-        padding-right: inherit;
-        padding-top: inherit;
-        padding-bottom: inherit;
-        column-gap: inherit;
-        row-gap: inherit;
-        gap: inherit;
-        border-left-width: inherit;
-        border-right-width: inherit;
-        border-top-width: inherit;
-        border-bottom-width: inherit;
-        border-left-style: inherit;
-        border-right-style: inherit;
-        border-top-style: inherit;
-        border-bottom-style: inherit;
-        border-left-color: inherit;
-        border-right-color: inherit;
-        border-top-color: inherit;
-        border-bottom-color: inherit;
     }
 }
