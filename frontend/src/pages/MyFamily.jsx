@@ -527,6 +527,41 @@ export default function MyFamily() {
               SOS
             </Button>
           </div>
+
+          {/* Background Location Toggle */}
+          {bgLocationSupported && (
+            <div className="mt-4 bg-white/10 rounded-lg p-3">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <Radio className={`h-4 w-4 ${backgroundEnabled ? 'text-green-300 animate-pulse' : 'text-white/70'}`} />
+                  <div>
+                    <p className="text-sm font-medium">
+                      {language === "te" ? "బ్యాక్‌గ్రౌండ్ లొకేషన్" : "Background Location"}
+                    </p>
+                    <p className="text-xs text-white/60">
+                      {language === "te" 
+                        ? "యాప్ మూసినా షేర్ అవుతుంది" 
+                        : "Share even when app is closed"}
+                    </p>
+                  </div>
+                </div>
+                <Switch
+                  checked={backgroundEnabled}
+                  onCheckedChange={handleBackgroundToggle}
+                  disabled={enablingBackground}
+                  className="data-[state=checked]:bg-green-400"
+                />
+              </div>
+              {backgroundEnabled && (
+                <p className="text-xs text-green-300 mt-2 flex items-center gap-1">
+                  <Bell className="h-3 w-3" />
+                  {language === "te" 
+                    ? "మీ లొకేషన్ ప్రతి 15 నిమిషాలకు అప్డేట్ అవుతుంది" 
+                    : "Your location updates every 15 minutes"}
+                </p>
+              )}
+            </div>
+          )}
         </div>
 
         {/* SOS Setup Dialog */}
