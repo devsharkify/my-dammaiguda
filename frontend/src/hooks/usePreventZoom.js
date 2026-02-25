@@ -1,26 +1,7 @@
-import { useEffect } from 'react';
-
-/**
- * Minimal zoom prevention - ONLY blocks iOS gesture zoom
- * Does NOT interfere with scrolling or touch events
- */
+// Disabled - was blocking scroll
+// This hook is intentionally empty now
 export function usePreventZoom() {
-  useEffect(() => {
-    // Only prevent iOS Safari gesture-based zoom
-    const preventGesture = (e) => {
-      e.preventDefault();
-    };
-
-    document.addEventListener('gesturestart', preventGesture);
-    document.addEventListener('gesturechange', preventGesture);
-    document.addEventListener('gestureend', preventGesture);
-
-    return () => {
-      document.removeEventListener('gesturestart', preventGesture);
-      document.removeEventListener('gesturechange', preventGesture);
-      document.removeEventListener('gestureend', preventGesture);
-    };
-  }, []);
+  // Do nothing - let the viewport meta handle zoom
 }
 
 export default usePreventZoom;
