@@ -93,6 +93,7 @@ export default function LiveActivity() {
   const [calories, setCalories] = useState(0);
   const [steps, setSteps] = useState(0);
   const [pace, setPace] = useState(0);
+  const [speed, setSpeed] = useState(0); // km/h
   
   // GPS
   const [currentPosition, setCurrentPosition] = useState(null);
