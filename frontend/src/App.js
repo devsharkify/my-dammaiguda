@@ -11,7 +11,6 @@ import { AnimatePresence, motion } from "framer-motion";
 import initSecurityShield from "./utils/securityShield";
 import SplashScreen from "./components/SplashScreen";
 import { PageSkeleton } from "./components/Skeletons";
-import usePreventZoom from "./hooks/usePreventZoom";
 
 // Pages
 import LandingPage from "./pages/LandingPage";
