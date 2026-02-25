@@ -411,6 +411,13 @@ export default function StepTracker({ onDataUpdate, compact = false }) {
               >
                 <RotateCcw className="h-5 w-5" />
               </Button>
+              <Button
+                variant="outline"
+                className="h-12 rounded-xl"
+                onClick={() => setShowGoalDialog(true)}
+              >
+                <Target className="h-5 w-5" />
+              </Button>
             </div>
 
             {/* Last saved indicator */}
@@ -431,6 +438,50 @@ export default function StepTracker({ onDataUpdate, compact = false }) {
               : 'Steps are counted using your phone sensors. Keep phone in your pocket for best results.'}
           </p>
         </div>
+        
+        {/* Goal Selection Dialog */}
+        <Dialog open={showGoalDialog} onOpenChange={setShowGoalDialog}>
+          <DialogContent className="max-w-sm">
+            <DialogHeader>
+              <DialogTitle className="flex items-center gap-2">
+                <Target className="h-5 w-5 text-blue-500" />
+                {language === 'te' ? 'దినచర్య లక్ష్యం' : 'Daily Step Goal'}
+              </DialogTitle>
+            </DialogHeader>
+            <div className="space-y-2 py-4">
+              {STEP_GOALS.map((goal) => (
+                <button
+                  key={goal.value}
+                  onClick={() => saveStepGoal(goal.value)}
+                  disabled={loadingGoal}
+                  className={`w-full p-3 rounded-lg border-2 transition-all flex items-center justify-between ${
+                    stepGoal === goal.value 
+                      ? 'border-blue-500 bg-blue-50' 
+                      : 'border-gray-200 hover:border-blue-300'
+                  }`}
+                >
+                  <div className="flex items-center gap-3">
+                    <Footprints className={`h-5 w-5 ${stepGoal === goal.value ? 'text-blue-500' : 'text-gray-400'}`} />
+                    <div className="text-left">
+                      <p className="font-semibold">{goal.label} {language === 'te' ? 'అడుగులు' : 'steps'}</p>
+                      <p className="text-xs text-muted-foreground">
+                        {language === 'te' ? goal.descTe : goal.description}
+                      </p>
+                    </div>
+                  </div>
+                  {stepGoal === goal.value && (
+                    <CheckCircle className="h-5 w-5 text-blue-500" />
+                  )}
+                </button>
+              ))}
+            </div>
+            {loadingGoal && (
+              <div className="flex items-center justify-center py-2">
+                <Loader2 className="h-5 w-5 animate-spin text-blue-500" />
+              </div>
+            )}
+          </DialogContent>
+        </Dialog>
       </CardContent>
     </Card>
   );
