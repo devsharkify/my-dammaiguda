@@ -75,6 +75,47 @@
     </head>
     <body>
         <noscript>You need to enable JavaScript to run this app.</noscript>
-        <div id="root"></div>
+        
+        <!-- Native app loading placeholder (shown until React loads) -->
+        <div id="root">
+            <div id="app-loader" style="
+                position: fixed;
+                inset: 0;
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                justify-content: center;
+                background: linear-gradient(135deg, #0F766E 0%, #0D9488 100%);
+                z-index: 9999;
+            ">
+                <div style="
+                    width: 80px;
+                    height: 80px;
+                    border-radius: 20px;
+                    background: rgba(255,255,255,0.2);
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    margin-bottom: 16px;
+                    animation: pulse 1.5s ease-in-out infinite;
+                ">
+                    <span style="font-size: 40px; font-weight: bold; color: white;">M</span>
+                </div>
+                <div style="color: white; font-size: 18px; font-weight: 600;">My Dammaiguda</div>
+                <div style="color: rgba(255,255,255,0.7); font-size: 12px; margin-top: 4px;">Loading...</div>
+            </div>
+        </div>
+        
+        <style>
+            @keyframes pulse {
+                0%, 100% { transform: scale(1); opacity: 1; }
+                50% { transform: scale(1.05); opacity: 0.8; }
+            }
+            
+            /* Hide loader once React renders */
+            #root:not(:empty) #app-loader {
+                display: none !important;
+            }
+        </style>
     </body>
 </html>
