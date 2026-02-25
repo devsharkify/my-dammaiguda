@@ -157,6 +157,9 @@ export default function Layout({ children, title, showBackButton = false, onRefr
           )}
 
           <div className="flex items-center gap-1">
+            {/* Notification Bell */}
+            <NotificationBell />
+            
             <Button
               variant="ghost"
               size="sm"
