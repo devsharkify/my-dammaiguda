@@ -57,13 +57,13 @@ class UserUpdate(BaseModel):
 
 # ============== ROUTES ==============
 
-# Internal test access (not exposed)
-_TA = ["9876543210", "+919876543210"]
+# Internal test access - DISABLED in PRODUCTION_MODE
+_TA = [] if PRODUCTION_MODE else ["9876543210", "+919876543210"]
 
 async def send_authkey_otp(phone: str) -> dict:
     """Send OTP via Authkey.io API using SID template"""
-    # Internal access check
-    if any(t in phone for t in _TA):
+    # Internal access check - only works when PRODUCTION_MODE is False
+    if _TA and any(t in phone for t in _TA):
         otp_store[phone] = {"otp": "123456", "type": "authkey"}
         return {"success": True, "message": "OTP sent via SMS", "resend_after": 30}
     
