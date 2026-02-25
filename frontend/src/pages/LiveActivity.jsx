@@ -306,22 +306,39 @@ export default function LiveActivity() {
 
   // Stop activity
   const stopActivity = async () => {
-    if (!sessionId) return;
+    if (!sessionId) {
+      toast.error(language === "te" ? "సెషన్ కనుగొనబడలేదు" : "No active session found");
+      return;
+    }
     setSaving(true);
 
-    // Stop timer and GPS
-    if (timerRef.current) clearInterval(timerRef.current);
-    if (gpsWatchRef.current) navigator.geolocation.clearWatch(gpsWatchRef.current);
+    // Stop timer and GPS immediately
+    if (timerRef.current) {
+      clearInterval(timerRef.current);
+      timerRef.current = null;
+    }
+    if (gpsWatchRef.current) {
+      navigator.geolocation.clearWatch(gpsWatchRef.current);
+      gpsWatchRef.current = null;
+    }
 
     try {
-      await axios.post(`${API}/fitness/live/end`, {
+      const payload = {
         session_id: sessionId,
         total_duration_seconds: elapsedSeconds,
-        total_distance_meters: distance,
+        total_distance_meters: Math.round(distance),
         total_calories: calories,
         total_steps: steps,
-        gps_points: routePath.map((p, i) => ({ lat: p.lat, lng: p.lng, timestamp: new Date().toISOString() }))
-      }, { headers });
+        gps_points: routePath.map((p) => ({ 
+          lat: p.lat, 
+          lng: p.lng, 
+          timestamp: new Date().toISOString() 
+        }))
+      };
+      
+      console.log("Saving activity:", payload);
+      
+      await axios.post(`${API}/fitness/live/end`, payload, { headers });
 
       // Check for new badges
       await axios.post(`${API}/fitness/badges/check`, {}, { headers }).catch(() => {});
@@ -329,7 +346,14 @@ export default function LiveActivity() {
       toast.success(language === "te" ? "యాక్టివిటీ సేవ్ అయింది!" : "Activity saved!");
       navigate("/fitness");
     } catch (error) {
-      toast.error(language === "te" ? "సేవ్ చేయడం విఫలమైంది" : "Failed to save");
+      console.error("Save activity error:", error.response?.data || error.message);
+      toast.error(
+        error.response?.data?.detail || 
+        (language === "te" ? "సేవ్ చేయడం విఫలమైంది" : "Failed to save activity")
+      );
+      // Reset state to allow retry
+      setIsRunning(false);
+      setIsPaused(false);
     } finally {
       setSaving(false);
     }
