@@ -378,6 +378,9 @@ export default function DeviceSync() {
         {activeTab === "activity" ? (
           // Activity Tab
           <div className="space-y-4">
+            {/* Step Tracker - Uses Phone Sensors */}
+            <StepTracker />
+            
             {/* Live Heart Rate Card */}
             {connectedDevices.length > 0 && liveHeartRate && (
               <Card className="border-0 bg-gradient-to-br from-red-500 to-pink-600 text-white overflow-hidden">
