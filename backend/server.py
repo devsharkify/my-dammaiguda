@@ -228,7 +228,7 @@ async def get_dumpyard_info():
     """Get dump yard information"""
     return {
         "name": "Jawaharnagar Dump Yard",
-        "name_te": "దమ్మాయిగూడ డంప్ యార్డ్",
+        "name_te": "జవహర్‌నగర్ డంప్ యార్డ్",
         "location": {"lat": 17.4875, "lng": 78.5625},
         "status": "active",
         "daily_waste_tons": 10000,
