@@ -1,6 +1,6 @@
 /* eslint-disable no-restricted-globals */
 
-const CACHE_NAME = 'my-dammaiguda-v4';
+const CACHE_NAME = 'my-dammaiguda-v5';
 const STATIC_ASSETS = [
   '/',
   '/index.html',
