@@ -1,8 +1,10 @@
 """SOS Router - Emergency alerts and geo-fencing"""
-from fastapi import APIRouter, HTTPException, Depends
+from fastapi import APIRouter, HTTPException, Depends, BackgroundTasks
 from pydantic import BaseModel
 from typing import Optional, List
 from .utils import db, generate_id, now_iso, get_current_user, haversine_distance, is_inside_geofence
+from .notifications import trigger_sos_notification, send_sms_notification
+import logging
 
 router = APIRouter(prefix="/sos", tags=["SOS & Safety"])
 
