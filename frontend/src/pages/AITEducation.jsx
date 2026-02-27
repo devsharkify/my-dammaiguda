@@ -594,6 +594,71 @@ export default function AITEducation() {
           </TabsContent>
         </Tabs>
       </div>
+
+      {/* Benefits Access Dialog */}
+      <Dialog open={showBenefitsDialog} onOpenChange={setShowBenefitsDialog}>
+        <DialogContent className="max-w-sm mx-auto">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2 text-xl">
+              <Gift className="h-6 w-6 text-primary" />
+              {language === "te" ? "ఉచిత యాక్సెస్ పొందండి!" : "Get Free Access!"}
+            </DialogTitle>
+            <DialogDescription className="pt-2">
+              {language === "te" 
+                ? "ఈ ప్రీమియం కోర్సుకు ఉచిత యాక్సెస్ పొందడానికి, సిటిజన్ బెనిఫిట్స్‌లో అప్లై చేయండి."
+                : "To get free access to this premium course, apply in Citizen Benefits."}
+            </DialogDescription>
+          </DialogHeader>
+          
+          {selectedFeaturedCourse && (
+            <div className={`bg-gradient-to-r ${selectedFeaturedCourse.color} rounded-xl p-4 text-white my-4`}>
+              <div className="flex items-center gap-3">
+                <div className="h-12 w-12 rounded-xl bg-white/20 flex items-center justify-center">
+                  {selectedFeaturedCourse.icon}
+                </div>
+                <div>
+                  <h4 className="font-bold">
+                    {language === "te" ? selectedFeaturedCourse.title_te : selectedFeaturedCourse.title}
+                  </h4>
+                  <p className="text-white/80 text-sm">
+                    ₹{selectedFeaturedCourse.price.toLocaleString()} • {language === "te" ? selectedFeaturedCourse.duration_te : selectedFeaturedCourse.duration}
+                  </p>
+                </div>
+              </div>
+            </div>
+          )}
+
+          <div className="space-y-3">
+            <div className="bg-green-50 border border-green-200 rounded-lg p-3">
+              <p className="text-green-800 text-sm font-medium flex items-center gap-2">
+                <Sparkles className="h-4 w-4" />
+                {language === "te" 
+                  ? "₹54,999 విలువైన ఎడ్యుకేషన్ వౌచర్ ఉచితంగా పొందండి!"
+                  : "Get ₹54,999 worth Education Voucher for FREE!"}
+              </p>
+            </div>
+            
+            <Button 
+              className="w-full bg-gradient-to-r from-primary to-emerald-500 hover:from-primary/90 hover:to-emerald-600 h-12 text-base"
+              onClick={() => {
+                setShowBenefitsDialog(false);
+                navigate("/claim-benefits");
+              }}
+            >
+              <Gift className="h-5 w-5 mr-2" />
+              {language === "te" ? "సిటిజన్ బెనిఫిట్స్‌లో అప్లై చేయండి" : "Apply in Citizen Benefits"}
+            </Button>
+            
+            <Button 
+              variant="ghost" 
+              className="w-full text-muted-foreground"
+              onClick={() => setShowBenefitsDialog(false)}
+            >
+              {language === "te" ? "తర్వాత" : "Maybe Later"}
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
     </Layout>
   );
 }
