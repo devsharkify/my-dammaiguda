@@ -818,6 +818,41 @@ Replaced Google Fit with a native accelerometer-based step counter that works on
 - Existing notification endpoints remain unchanged
 
 ### Test Credentials:
+
+
+---
+
+## Premium Courses Addition (Feb 25, 2026)
+
+### 3 New Premium Courses Added:
+1. **Digital Marketing Mastery**
+   - Duration: 6 months
+   - Cost: ₹54,999
+   - Start Date: March 5, 2026
+   - Provider: Bose American Academy
+
+2. **Government Job Preparation**
+   - Duration: 6 months
+   - Cost: ₹54,999
+   - Start Date: March 15, 2026
+   - Provider: Bose American Academy
+
+3. **AI & Technology**
+   - Duration: 6 months
+   - Cost: ₹64,999
+   - Start Date: April 1, 2026
+   - Provider: Bose American Academy
+
+### Implementation:
+- Courses displayed as colorful gradient cards at top of Education page
+- Click on any course shows popup: "Get Free Access! Apply in Citizen Benefits"
+- Users redirected to `/claim-benefits` to apply for ₹54,999 Education Voucher
+- Telugu translations included for all course content
+
+### Files Modified:
+- `/app/frontend/src/pages/AITEducation.jsx` - Added featured courses and benefits dialog
+
+
 - Phone: 9876543210, OTP: 123456 (Test user)
 - Phone: 9100063133 (Admin)
 - Phone: 9844548537 (Manager)
