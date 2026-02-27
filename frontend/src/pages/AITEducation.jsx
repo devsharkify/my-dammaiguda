@@ -321,6 +321,74 @@ export default function AITEducation() {
 
           {/* Explore Tab */}
           <TabsContent value="explore" className="mt-4 space-y-4">
+            
+            {/* Featured Premium Courses - Bose American Academy */}
+            <div className="space-y-3">
+              <div className="flex items-center justify-between">
+                <h2 className="font-bold text-lg flex items-center gap-2">
+                  <Sparkles className="h-5 w-5 text-yellow-500" />
+                  {language === "te" ? "ప్రీమియం కోర్సులు" : "Premium Courses"}
+                </h2>
+                <Badge className="bg-gradient-to-r from-yellow-500 to-orange-500 text-white border-0">
+                  {language === "te" ? "బోస్ అకాడమీ" : "Bose Academy"}
+                </Badge>
+              </div>
+              
+              <div className="grid gap-3">
+                {featuredPremiumCourses.map((course) => (
+                  <Card 
+                    key={course.id}
+                    className="overflow-hidden cursor-pointer hover:shadow-xl transition-all transform hover:scale-[1.01] border-2 border-transparent hover:border-primary/30"
+                    onClick={() => handleFeaturedCourseClick(course)}
+                    data-testid={`featured-course-${course.id}`}
+                  >
+                    <div className={`bg-gradient-to-r ${course.color} p-4 text-white`}>
+                      <div className="flex items-start justify-between">
+                        <div className="flex-1">
+                          <div className="flex items-center gap-2 mb-2">
+                            <div className="h-12 w-12 rounded-xl bg-white/20 flex items-center justify-center">
+                              {course.icon}
+                            </div>
+                            <div>
+                              <h3 className="font-bold text-lg">
+                                {language === "te" ? course.title_te : course.title}
+                              </h3>
+                              <p className="text-white/80 text-sm">{course.instructor}</p>
+                            </div>
+                          </div>
+                          <p className="text-white/90 text-sm line-clamp-2 mb-3">
+                            {language === "te" ? course.description_te : course.description}
+                          </p>
+                        </div>
+                      </div>
+                      
+                      <div className="flex items-center justify-between pt-3 border-t border-white/20">
+                        <div className="flex items-center gap-4 text-sm">
+                          <span className="flex items-center gap-1">
+                            <Clock className="h-4 w-4" />
+                            {language === "te" ? course.duration_te : course.duration}
+                          </span>
+                          <span className="flex items-center gap-1">
+                            <Calendar className="h-4 w-4" />
+                            {language === "te" ? course.start_date_te : course.start_date}
+                          </span>
+                        </div>
+                        <div className="text-right">
+                          <span className="text-2xl font-bold">₹{course.price.toLocaleString()}</span>
+                        </div>
+                      </div>
+                    </div>
+                  </Card>
+                ))}
+              </div>
+            </div>
+
+            <div className="border-t border-dashed pt-4 mt-4">
+              <h3 className="font-semibold text-muted-foreground mb-3">
+                {language === "te" ? "ఇతర కోర్సులు" : "Other Courses"}
+              </h3>
+            </div>
+
             {/* Categories - Only show enabled ones */}
             <div className="flex gap-2 overflow-x-auto pb-2 scrollbar-hide -mx-4 px-4">
               <button
