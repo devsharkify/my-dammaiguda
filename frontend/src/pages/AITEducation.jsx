@@ -9,6 +9,7 @@ import { Badge } from "../components/ui/badge";
 import { Input } from "../components/ui/input";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "../components/ui/tabs";
 import { Progress } from "../components/ui/progress";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "../components/ui/dialog";
 import { toast } from "sonner";
 import Layout from "../components/Layout";
 import {
@@ -31,7 +32,11 @@ import {
   Laptop,
   Calendar,
   Target,
-  Flame
+  Flame,
+  Gift,
+  Sparkles,
+  Brain,
+  FileText
 } from "lucide-react";
 
 const API = `${process.env.REACT_APP_BACKEND_URL}/api`;
