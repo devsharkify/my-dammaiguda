@@ -55,8 +55,67 @@ export default function AITEducation() {
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCategory, setSelectedCategory] = useState(null);
   const [activeTab, setActiveTab] = useState("explore");
+  const [showBenefitsDialog, setShowBenefitsDialog] = useState(false);
+  const [selectedFeaturedCourse, setSelectedFeaturedCourse] = useState(null);
 
   const headers = { Authorization: `Bearer ${token}` };
+
+  // Featured Premium Courses - Bose American Academy
+  const featuredPremiumCourses = [
+    {
+      id: "featured-digital-marketing",
+      title: "Digital Marketing Mastery",
+      title_te: "డిజిటల్ మార్కెటింగ్ మాస్టరీ",
+      description: "Complete digital marketing course covering SEO, Social Media, PPC, Content Marketing & Analytics",
+      description_te: "SEO, సోషల్ మీడియా, PPC, కంటెంట్ మార్కెటింగ్ & అనలిటిక్స్ కవర్ చేసే పూర్తి డిజిటల్ మార్కెటింగ్ కోర్సు",
+      duration: "6 months",
+      duration_te: "6 నెలలు",
+      price: 54999,
+      start_date: "March 5, 2026",
+      start_date_te: "మార్చి 5, 2026",
+      icon: <Target className="h-8 w-8" />,
+      color: "from-blue-500 to-cyan-500",
+      instructor: "Bose American Academy",
+      category: "professional"
+    },
+    {
+      id: "featured-govt-job",
+      title: "Government Job Preparation",
+      title_te: "ప్రభుత్వ ఉద్యోగ తయారీ",
+      description: "Comprehensive preparation for UPSC, SSC, Bank PO, Railways & State PSC exams with mock tests",
+      description_te: "UPSC, SSC, బ్యాంక్ PO, రైల్వేస్ & స్టేట్ PSC పరీక్షలకు మాక్ టెస్ట్‌లతో సమగ్ర తయారీ",
+      duration: "6 months",
+      duration_te: "6 నెలలు",
+      price: 54999,
+      start_date: "March 15, 2026",
+      start_date_te: "మార్చి 15, 2026",
+      icon: <FileText className="h-8 w-8" />,
+      color: "from-orange-500 to-red-500",
+      instructor: "Bose American Academy",
+      category: "professional"
+    },
+    {
+      id: "featured-ai-tech",
+      title: "AI & Technology",
+      title_te: "AI & టెక్నాలజీ",
+      description: "Learn AI, Machine Learning, Python, ChatGPT & emerging technologies for future careers",
+      description_te: "భవిష్యత్ కెరీర్ల కోసం AI, మెషిన్ లెర్నింగ్, Python, ChatGPT & ఎమర్జింగ్ టెక్నాలజీలను నేర్చుకోండి",
+      duration: "6 months",
+      duration_te: "6 నెలలు",
+      price: 64999,
+      start_date: "April 1, 2026",
+      start_date_te: "ఏప్రిల్ 1, 2026",
+      icon: <Brain className="h-8 w-8" />,
+      color: "from-purple-500 to-pink-500",
+      instructor: "Bose American Academy",
+      category: "tech"
+    }
+  ];
+
+  const handleFeaturedCourseClick = (course) => {
+    setSelectedFeaturedCourse(course);
+    setShowBenefitsDialog(true);
+  };
 
   const categoryIcons = {
     professional: <Briefcase className="h-5 w-5" />,
