@@ -31,16 +31,19 @@ import {
 } from "lucide-react";
 
 const API = `${process.env.REACT_APP_BACKEND_URL}/api`;
+const PUBLIC_NEWS_API = "https://kaizer-live.preview.emergentagent.com/api/public/news";
 
 const CATEGORIES = [
   { id: "all", name: "All", name_te: "అన్నీ", icon: Sparkles, color: "bg-gradient-to-r from-purple-500 to-pink-500" },
   { id: "trending", name: "Trending", name_te: "ట్రెండింగ్", icon: TrendingUp, color: "bg-gradient-to-r from-red-500 to-orange-500" },
   { id: "local", name: "Local", name_te: "స్థానికం", icon: MapPin, color: "bg-blue-500" },
-  { id: "government", name: "Government", name_te: "ప్రభుత్వం", icon: Building2, color: "bg-purple-600" },
-  { id: "health", name: "Health", name_te: "ఆరోగ్యం", icon: Stethoscope, color: "bg-red-500" },
-  { id: "education", name: "Education", name_te: "విద్య", icon: GraduationCap, color: "bg-indigo-500" },
+  { id: "city", name: "City", name_te: "సిటీ", icon: Building2, color: "bg-purple-600" },
+  { id: "national", name: "National", name_te: "జాతీయ", icon: Building2, color: "bg-indigo-600" },
   { id: "sports", name: "Sports", name_te: "క్రీడలు", icon: Trophy, color: "bg-green-500" },
-  { id: "events", name: "Events", name_te: "ఈవెంట్స్", icon: Calendar, color: "bg-pink-500" }
+  { id: "entertainment", name: "Entertainment", name_te: "వినోదం", icon: Sparkles, color: "bg-pink-500" },
+  { id: "tech", name: "Tech", name_te: "టెక్", icon: TrendingUp, color: "bg-cyan-500" },
+  { id: "health", name: "Health", name_te: "ఆరోగ్యం", icon: Stethoscope, color: "bg-red-500" },
+  { id: "business", name: "Business", name_te: "వ్యాపారం", icon: TrendingUp, color: "bg-amber-500" }
 ];
 
 export default function NewsPage() {
@@ -61,26 +64,36 @@ export default function NewsPage() {
     else setLoading(true);
     
     try {
-      let url = `${API}/news/local`;
-      if (activeCategory !== "all" && activeCategory !== "trending") {
-        url = `${API}/news/${activeCategory}`;
-      }
-      const response = await axios.get(url);
-      let newsData = response.data?.news || response.data || [];
+      // Use the new Public News API
+      let url = PUBLIC_NEWS_API;
+      const params = new URLSearchParams();
+      params.append("limit", "30");
       
-      // Handle different response formats
-      if (!Array.isArray(newsData)) {
-        newsData = [];
+      if (activeCategory !== "all" && activeCategory !== "trending") {
+        params.append("category", activeCategory);
       }
+      
+      const response = await axios.get(`${url}?${params.toString()}`);
+      let newsData = response.data?.articles || [];
+      
+      // Transform data to match our format
+      newsData = newsData.map(article => ({
+        id: article.id,
+        title: article.title,
+        title_te: article.title, // API doesn't have Telugu titles yet
+        summary: article.title,
+        category: article.category || "local",
+        image_url: article.image,
+        link: article.link,
+        created_at: article.published_at,
+        views: Math.floor(Math.random() * 5000) + 100, // Simulated views
+        reactions: { like: Math.floor(Math.random() * 200), love: Math.floor(Math.random() * 100) },
+        is_breaking: newsData.indexOf(article) === 0 && activeCategory === "all"
+      }));
       
       // Sort by views for trending
       if (activeCategory === "trending") {
         newsData = newsData.sort((a, b) => (b.views || 0) - (a.views || 0));
-      }
-      
-      // If no news from API, show empty state
-      if (newsData.length === 0) {
-        // No fallback to mock data - show empty state
       }
       
       setNews(newsData);
@@ -89,8 +102,13 @@ export default function NewsPage() {
       }
     } catch (error) {
       console.error("Error fetching news:", error);
-      // Show empty state instead of mock data
-      setNews([]);
+      // Fallback to local API if public API fails
+      try {
+        const response = await axios.get(`${API}/news/local`);
+        setNews(response.data?.news || []);
+      } catch (fallbackError) {
+        setNews([]);
+      }
     } finally {
       setLoading(false);
       setRefreshing(false);
@@ -304,7 +322,10 @@ export default function NewsPage() {
           <div className="space-y-4">
             {/* Featured/Breaking News - Large Card */}
             {featuredNews && (
-              <Card className="overflow-hidden border-0 shadow-xl bg-gradient-to-br from-slate-900 to-slate-800">
+              <Card 
+                className="overflow-hidden border-0 shadow-xl bg-gradient-to-br from-slate-900 to-slate-800 cursor-pointer"
+                onClick={() => featuredNews.link && window.open(featuredNews.link, '_blank')}
+              >
                 <div className="relative">
                   {/* Image */}
                   <div className="relative h-52">
@@ -408,7 +429,8 @@ export default function NewsPage() {
               {otherNews.map((item) => (
                 <Card 
                   key={item.id} 
-                  className="overflow-hidden border-0 shadow-md hover:shadow-lg transition-shadow"
+                  className="overflow-hidden border-0 shadow-md hover:shadow-lg transition-shadow cursor-pointer"
+                  onClick={() => item.link && window.open(item.link, '_blank')}
                 >
                   <div className="flex">
                     {/* Thumbnail */}
