@@ -1,10 +1,13 @@
-"""AI Chat Router - Multi-persona AI assistant"""
+"""AI Chat Router - Multi-persona AI assistant with Emergent LLM"""
 from fastapi import APIRouter, HTTPException, Depends
 from pydantic import BaseModel
 from typing import Optional
 import os
-import httpx
+from dotenv import load_dotenv
+from emergentintegrations.llm.chat import LlmChat, UserMessage
 from .utils import db, generate_id, now_iso, get_current_user
+
+load_dotenv()
 
 router = APIRouter(prefix="/chat", tags=["AI Chat"])
 
@@ -59,7 +62,7 @@ async def chat(message: ChatMessage, user: dict = Depends(get_current_user)):
     
     persona = CHAT_PERSONAS[message.chat_type]
     
-    # Get conversation history
+    # Get conversation history from DB
     history = await db.chat_history.find(
         {"user_id": user["id"], "chat_type": message.chat_type},
         {"_id": 0}
@@ -67,27 +70,30 @@ async def chat(message: ChatMessage, user: dict = Depends(get_current_user)):
     
     history.reverse()
     
-    # Build messages for OpenAI
-    openai_messages = [{"role": "system", "content": persona["system"]}]
-    for h in history:
-        openai_messages.append({"role": "user", "content": h["message"]})
-        openai_messages.append({"role": "assistant", "content": h["response"]})
-    openai_messages.append({"role": "user", "content": message.message})
-    
     try:
-        openai_key = os.environ.get('OPENAI_API_KEY')
-        if not openai_key:
+        # Use Emergent LLM Key
+        llm_key = os.environ.get('EMERGENT_LLM_KEY')
+        if not llm_key:
             raise HTTPException(status_code=500, detail="AI service not configured")
         
-        async with httpx.AsyncClient() as client:
-            resp = await client.post(
-                "https://api.openai.com/v1/chat/completions",
-                headers={"Authorization": f"Bearer {openai_key}", "Content-Type": "application/json"},
-                json={"model": "gpt-4o-mini", "messages": openai_messages, "max_tokens": 1000},
-                timeout=30.0
-            )
-            resp.raise_for_status()
-            response = resp.json()["choices"][0]["message"]["content"]
+        # Create unique session for this user + chat_type
+        session_id = f"{user['id']}_{message.chat_type}"
+        
+        # Initialize LlmChat with Emergent key
+        chat_instance = LlmChat(
+            api_key=llm_key,
+            session_id=session_id,
+            system_message=persona["system"]
+        ).with_model("openai", "gpt-4o-mini")
+        
+        # Add conversation history to context
+        for h in history:
+            await chat_instance.send_message(UserMessage(text=h["message"]))
+            # The history is already in the chat instance now
+        
+        # Send the new message
+        user_msg = UserMessage(text=message.message)
+        response = await chat_instance.send_message(user_msg)
         
         # Save to history
         chat_entry = {
