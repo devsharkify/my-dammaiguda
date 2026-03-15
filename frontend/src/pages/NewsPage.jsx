@@ -31,19 +31,20 @@ import {
 } from "lucide-react";
 
 const API = `${process.env.REACT_APP_BACKEND_URL}/api`;
-const PUBLIC_NEWS_API = "https://kaizer-live.preview.emergentagent.com/api/public/news";
+const KAIZER_NEWS_API = "https://seo-powered-news.preview.emergentagent.com/api/public/v1";
+const KAIZER_API_KEY = "kn_7991b489c5cfe6f1f9e12746cfa975bccef7d05af6a058ce";
 
 const CATEGORIES = [
   { id: "all", name: "All", name_te: "అన్నీ", icon: Sparkles, color: "bg-gradient-to-r from-purple-500 to-pink-500" },
   { id: "trending", name: "Trending", name_te: "ట్రెండింగ్", icon: TrendingUp, color: "bg-gradient-to-r from-red-500 to-orange-500" },
   { id: "local", name: "Local", name_te: "స్థానికం", icon: MapPin, color: "bg-blue-500" },
   { id: "city", name: "City", name_te: "సిటీ", icon: Building2, color: "bg-purple-600" },
-  { id: "national", name: "National", name_te: "జాతీయ", icon: Building2, color: "bg-indigo-600" },
+  { id: "state", name: "State", name_te: "రాష్ట్రం", icon: Building2, color: "bg-indigo-600" },
+  { id: "national", name: "National", name_te: "జాతీయ", icon: Building2, color: "bg-amber-600" },
   { id: "sports", name: "Sports", name_te: "క్రీడలు", icon: Trophy, color: "bg-green-500" },
   { id: "entertainment", name: "Entertainment", name_te: "వినోదం", icon: Sparkles, color: "bg-pink-500" },
   { id: "tech", name: "Tech", name_te: "టెక్", icon: TrendingUp, color: "bg-cyan-500" },
-  { id: "health", name: "Health", name_te: "ఆరోగ్యం", icon: Stethoscope, color: "bg-red-500" },
-  { id: "business", name: "Business", name_te: "వ్యాపారం", icon: TrendingUp, color: "bg-amber-500" }
+  { id: "health", name: "Health", name_te: "ఆరోగ్యం", icon: Stethoscope, color: "bg-red-500" }
 ];
 
 export default function NewsPage() {
@@ -64,31 +65,40 @@ export default function NewsPage() {
     else setLoading(true);
     
     try {
-      // Use the new Public News API
-      let url = PUBLIC_NEWS_API;
-      const params = new URLSearchParams();
-      params.append("limit", "30");
+      // Use Kaizer News API
+      let url = `${KAIZER_NEWS_API}/feed?limit=30`;
       
+      // Add category filter
       if (activeCategory !== "all" && activeCategory !== "trending") {
-        params.append("category", activeCategory);
+        url += `&category=${activeCategory}`;
       }
       
-      const response = await axios.get(`${url}?${params.toString()}`);
+      // Add Telugu language support
+      if (language === "te") {
+        url += "&lang=te";
+      }
+      
+      const response = await axios.get(url, {
+        headers: { "X-API-Key": KAIZER_API_KEY }
+      });
+      
       let newsData = response.data?.articles || [];
       
       // Transform data to match our format
-      newsData = newsData.map(article => ({
+      newsData = newsData.map((article, index) => ({
         id: article.id,
         title: article.title,
-        title_te: article.title, // API doesn't have Telugu titles yet
-        summary: article.title,
+        title_te: article.title_te || article.title,
+        summary: article.summary || article.title,
         category: article.category || "local",
+        category_label: article.category_label,
         image_url: article.image,
         link: article.link,
+        source: article.source,
         created_at: article.published_at,
-        views: Math.floor(Math.random() * 5000) + 100, // Simulated views
+        views: Math.floor(Math.random() * 5000) + 100,
         reactions: { like: Math.floor(Math.random() * 200), love: Math.floor(Math.random() * 100) },
-        is_breaking: newsData.indexOf(article) === 0 && activeCategory === "all"
+        is_breaking: index === 0 && activeCategory === "all"
       }));
       
       // Sort by views for trending
@@ -102,13 +112,8 @@ export default function NewsPage() {
       }
     } catch (error) {
       console.error("Error fetching news:", error);
-      // Fallback to local API if public API fails
-      try {
-        const response = await axios.get(`${API}/news/local`);
-        setNews(response.data?.news || []);
-      } catch (fallbackError) {
-        setNews([]);
-      }
+      setNews([]);
+      toast.error(language === "te" ? "వార్తలు లోడ్ చేయడంలో విఫలమైంది" : "Failed to load news");
     } finally {
       setLoading(false);
       setRefreshing(false);
