@@ -85,7 +85,7 @@ async def send_authkey_otp(phone: str) -> dict:
         "mobile": mobile,
         "country_code": "91",
         "sid": "35306",
-        "company": "My Dammaiguda",
+        "company": "MyDammaiguda",
         "otp": otp
     }
     
@@ -94,21 +94,21 @@ async def send_authkey_otp(phone: str) -> dict:
             response = await client.get(url, params=params, timeout=30.0)
             result = response.json() if response.text else {}
             
-            # Check for success (Authkey returns "Message Sent" or similar)
-            if response.status_code == 200 and "Message" in str(result):
+            print(f"Authkey Response for {mobile}: {result}")
+            
+            # Check for success (Authkey returns "Submitted Successfully")
+            if response.status_code == 200 and "Submitted" in str(result.get("Message", "")):
                 # Store OTP for verification
                 otp_store[phone] = {"otp": otp, "type": "authkey"}
+                print(f"OTP {otp} stored for {phone}")
                 return {"success": True, "message": "OTP sent via SMS", "resend_after": 30}
             else:
-                # Log error and fallback
-                print(f"Authkey error: {result}")
-                otp_store[phone] = {"otp": otp, "type": "authkey"}
-                return {"success": True, "message": "OTP sent via SMS", "resend_after": 30}
+                # Log error
+                print(f"Authkey failed: {result}")
+                return {"success": False, "message": f"SMS failed: {result.get('Message', 'Unknown error')}"}
     except Exception as e:
         print(f"Authkey exception: {str(e)}")
-        # Still store OTP and try to send
-        otp_store[phone] = {"otp": otp, "type": "authkey"}
-        return {"success": True, "message": "OTP sent", "resend_after": 30}
+        return {"success": False, "message": f"SMS service error: {str(e)}"}
 
 # ============== PASSWORD LOGIN (Admin/Manager) ==============
 
