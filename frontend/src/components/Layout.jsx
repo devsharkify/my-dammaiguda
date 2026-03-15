@@ -282,22 +282,6 @@ export default function Layout({ children, title, showBackButton = false, onRefr
         {children}
       </main>
 
-      {/* Floating AI Chat Button */}
-      {!showBackButton && location.pathname !== "/chat" && (
-        <motion.button
-          onClick={() => navigate("/chat")}
-          className="fixed right-4 bottom-24 z-40 h-14 w-14 rounded-full bg-gradient-to-br from-teal-500 to-emerald-600 text-white shadow-lg flex items-center justify-center"
-          whileHover={{ scale: 1.1 }}
-          whileTap={{ scale: 0.9 }}
-          initial={{ scale: 0, opacity: 0 }}
-          animate={{ scale: 1, opacity: 1 }}
-          transition={{ type: "spring", stiffness: 260, damping: 20 }}
-          data-testid="ai-chat-fab"
-        >
-          <MessageCircle className="h-6 w-6" />
-        </motion.button>
-      )}
-
       {/* Bottom Navigation Bar - Black to Match Header */}
       {!showBackButton && (
         <nav className="fixed bottom-0 left-0 right-0 bg-gray-900 border-t border-gray-800 shadow-lg z-40">
