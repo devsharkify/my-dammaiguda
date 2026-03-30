@@ -90,6 +90,18 @@ export default function ClaimBenefits() {
     address: ""
   });
 
+  // Startup Funding Form
+  const [startupForm, setStartupForm] = useState({
+    name: "",
+    email: "",
+    phone: "",
+    startup_name: "",
+    startup_idea: "",
+    stage: "",
+    funding_required: "",
+    team_size: ""
+  });
+
   const headers = { Authorization: `Bearer ${token}` };
 
   useEffect(() => {
@@ -265,12 +277,42 @@ export default function ClaimBenefits() {
     }
   };
 
+  // Submit Startup Funding Application
+  const submitStartupFunding = async () => {
+    if (!termsAccepted) {
+      toast.error("Please accept the terms and conditions");
+      return;
+    }
+    if (!startupForm.name || !startupForm.startup_name || !startupForm.startup_idea) {
+      toast.error("Please fill all required fields");
+      return;
+    }
+    
+    setLoading(true);
+    try {
+      const res = await axios.post(`${API}/benefits/startup-funding`, {
+        ...startupForm,
+        terms_accepted: true
+      }, { headers });
+      
+      toast.success("Application submitted successfully! We'll contact you soon.");
+      setShowModal(null);
+      resetForms();
+      fetchMyApplications();
+    } catch (err) {
+      toast.error(err.response?.data?.detail || "Failed to submit application");
+    } finally {
+      setLoading(false);
+    }
+  };
+
   // Reset forms
   const resetForms = () => {
     setPrimaryApplicant({ ...EMPTY_MEMBER });
     setFamilyMembers([]);
     setHealthForm({ name: "", mobile_number: "", family_count: 1 });
     setEducationForm({ name: "", education: "", occupation: "", dob: "", aadhar_number: "", voter_id: "", address: "" });
+    setStartupForm({ name: "", email: "", phone: "", startup_name: "", startup_idea: "", stage: "", funding_required: "", team_size: "" });
     setTermsAccepted(false);
     setVoucherCode(null);
   };
@@ -299,6 +341,7 @@ export default function ClaimBenefits() {
       case 'accidental_insurance': return '₹2 Lakhs Accidental Insurance';
       case 'health_insurance': return '25% Health Insurance Reimbursement';
       case 'education_voucher': return 'Education Voucher ₹54,999';
+      case 'startup_funding': return '₹10 Lakhs Tech Startup Funding';
       default: return type;
     }
   };
@@ -463,6 +506,28 @@ export default function ClaimBenefits() {
                 </div>
               </div>
               <Button className="w-full mt-4 bg-purple-500 hover:bg-purple-600" onClick={() => { setShowModal('education'); setTermsAccepted(false); setVoucherCode(null); }}>
+                Apply Now
+              </Button>
+            </CardContent>
+          </Card>
+
+          {/* Tech Startup Funding */}
+          <Card className="border-2 border-amber-200 bg-gradient-to-br from-amber-50 to-white dark:from-amber-950/30 dark:to-background">
+            <CardContent className="pt-6">
+              <div className="flex items-start gap-4">
+                <div className="h-14 w-14 rounded-2xl bg-gradient-to-br from-amber-500 to-orange-500 flex items-center justify-center shrink-0">
+                  <IndianRupee className="h-7 w-7 text-white" />
+                </div>
+                <div className="flex-1">
+                  <h3 className="font-bold text-lg">₹10 Lakhs Tech Startup Funding</h3>
+                  <p className="text-sm text-muted-foreground mt-1">Seed funding for innovative tech startups by local entrepreneurs</p>
+                  <div className="flex items-center gap-2 mt-2 text-xs text-amber-600">
+                    <AlertTriangle className="w-3 h-3" />
+                    <span>Limited slots • Apply early</span>
+                  </div>
+                </div>
+              </div>
+              <Button className="w-full mt-4 bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600" onClick={() => { setShowModal('startup'); setTermsAccepted(false); }}>
                 Apply Now
               </Button>
             </CardContent>
@@ -730,6 +795,128 @@ export default function ClaimBenefits() {
               </Button>
             </div>
           )}
+        </DialogContent>
+      </Dialog>
+
+      {/* Startup Funding Dialog */}
+      <Dialog open={showModal === 'startup'} onOpenChange={(open) => { if (!open) { setShowModal(null); resetForms(); } }}>
+        <DialogContent className="max-w-lg max-h-[90vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <div className="h-10 w-10 rounded-xl bg-gradient-to-br from-amber-500 to-orange-500 flex items-center justify-center">
+                <IndianRupee className="h-5 w-5 text-white" />
+              </div>
+              ₹10 Lakhs Tech Startup Funding
+            </DialogTitle>
+            <DialogDescription>
+              Apply for seed funding to kickstart your tech startup
+            </DialogDescription>
+          </DialogHeader>
+          
+          <div className="space-y-4 py-4">
+            {/* Form Fields */}
+            <div className="grid grid-cols-2 gap-3">
+              <div className="col-span-2">
+                <Label>Full Name *</Label>
+                <Input 
+                  placeholder="Your full name" 
+                  value={startupForm.name}
+                  onChange={(e) => setStartupForm({...startupForm, name: e.target.value})}
+                />
+              </div>
+              <div>
+                <Label>Email *</Label>
+                <Input 
+                  type="email"
+                  placeholder="email@example.com" 
+                  value={startupForm.email}
+                  onChange={(e) => setStartupForm({...startupForm, email: e.target.value})}
+                />
+              </div>
+              <div>
+                <Label>Phone *</Label>
+                <Input 
+                  placeholder="10-digit mobile" 
+                  value={startupForm.phone}
+                  onChange={(e) => setStartupForm({...startupForm, phone: e.target.value})}
+                />
+              </div>
+              <div className="col-span-2">
+                <Label>Startup Name *</Label>
+                <Input 
+                  placeholder="Your startup name" 
+                  value={startupForm.startup_name}
+                  onChange={(e) => setStartupForm({...startupForm, startup_name: e.target.value})}
+                />
+              </div>
+              <div className="col-span-2">
+                <Label>Startup Idea *</Label>
+                <Textarea 
+                  placeholder="Describe your startup idea in 2-3 sentences" 
+                  value={startupForm.startup_idea}
+                  onChange={(e) => setStartupForm({...startupForm, startup_idea: e.target.value})}
+                  rows={3}
+                />
+              </div>
+              <div>
+                <Label>Stage</Label>
+                <Select value={startupForm.stage} onValueChange={(v) => setStartupForm({...startupForm, stage: v})}>
+                  <SelectTrigger><SelectValue placeholder="Select stage" /></SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="idea">Idea Stage</SelectItem>
+                    <SelectItem value="mvp">MVP Ready</SelectItem>
+                    <SelectItem value="early">Early Traction</SelectItem>
+                    <SelectItem value="growth">Growth Stage</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              <div>
+                <Label>Funding Required</Label>
+                <Select value={startupForm.funding_required} onValueChange={(v) => setStartupForm({...startupForm, funding_required: v})}>
+                  <SelectTrigger><SelectValue placeholder="Select amount" /></SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="2-5">₹2-5 Lakhs</SelectItem>
+                    <SelectItem value="5-10">₹5-10 Lakhs</SelectItem>
+                    <SelectItem value="10">₹10 Lakhs</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              <div>
+                <Label>Team Size</Label>
+                <Select value={startupForm.team_size} onValueChange={(v) => setStartupForm({...startupForm, team_size: v})}>
+                  <SelectTrigger><SelectValue placeholder="Select size" /></SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="1">Solo Founder</SelectItem>
+                    <SelectItem value="2-3">2-3 Members</SelectItem>
+                    <SelectItem value="4-5">4-5 Members</SelectItem>
+                    <SelectItem value="5+">5+ Members</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+            
+            {/* Provider Info */}
+            <div className="p-3 bg-amber-50 dark:bg-amber-950/30 rounded-lg border border-amber-200 text-sm text-amber-800 dark:text-amber-200">
+              <p className="font-medium mb-1">Initiative by Rohan Kulkarni for local tech entrepreneurs.</p>
+              <p className="text-xs text-amber-600 dark:text-amber-400">Selected startups will be invited for pitch presentation. Funding decision subject to evaluation.</p>
+            </div>
+
+            {/* Confirmation */}
+            <div className="flex items-start gap-2">
+              <Checkbox id="terms-startup" checked={termsAccepted} onCheckedChange={setTermsAccepted} />
+              <label htmlFor="terms-startup" className="text-sm">
+                I confirm all information provided is accurate and I agree to the evaluation process.
+              </label>
+            </div>
+            
+            <DialogFooter>
+              <Button variant="outline" onClick={() => { setShowModal(null); resetForms(); }}>Cancel</Button>
+              <Button onClick={submitStartupFunding} disabled={loading || !termsAccepted} className="bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600">
+                {loading ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : null}
+                Submit Application
+              </Button>
+            </DialogFooter>
+          </div>
         </DialogContent>
       </Dialog>
     </div>

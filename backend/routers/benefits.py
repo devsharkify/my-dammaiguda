@@ -106,6 +106,17 @@ class ApplicationStatusUpdate(BaseModel):
     notes: Optional[str] = None
     document_url: Optional[str] = None  # For insurance PDF/JPG
 
+class StartupFundingApplication(BaseModel):
+    name: str
+    email: str
+    phone: str
+    startup_name: str
+    startup_idea: str
+    stage: Optional[str] = None  # idea, mvp, early, growth
+    funding_required: Optional[str] = None  # 2-5, 5-10, 10
+    team_size: Optional[str] = None
+    terms_accepted: bool = True
+
 # ============== HELPER FUNCTIONS ==============
 
 def generate_voucher_code():
@@ -282,6 +293,47 @@ async def apply_education_voucher(
         "success": True,
         "message": "Your education voucher has been generated! Use this code to enroll in courses.",
         "voucher_code": voucher_code,
+        "application_id": app_record["id"],
+        "application": app_record
+    }
+
+@router.post("/startup-funding")
+async def apply_startup_funding(
+    application: StartupFundingApplication,
+    user: dict = Depends(get_current_user)
+):
+    """Apply for ₹10 Lakhs Tech Startup Funding"""
+    
+    if not application.terms_accepted:
+        raise HTTPException(status_code=400, detail="Please accept the terms and conditions")
+    
+    # Create application record
+    app_record = {
+        "id": generate_id(),
+        "type": "startup_funding",
+        "user_id": user["id"],
+        "user_phone": user.get("phone", ""),
+        "name": application.name,
+        "email": application.email,
+        "phone": application.phone,
+        "startup_name": application.startup_name,
+        "startup_idea": application.startup_idea,
+        "stage": application.stage,
+        "funding_required": application.funding_required,
+        "team_size": application.team_size,
+        "status": "pending",  # Requires manual review
+        "created_at": now_iso(),
+        "updated_at": now_iso(),
+        "terms_accepted": application.terms_accepted,
+        "notes": "Awaiting review"
+    }
+    
+    await db.benefit_applications.insert_one(app_record)
+    app_record.pop("_id", None)
+    
+    return {
+        "success": True,
+        "message": "Your startup funding application has been submitted! We'll review and contact you soon.",
         "application_id": app_record["id"],
         "application": app_record
     }
