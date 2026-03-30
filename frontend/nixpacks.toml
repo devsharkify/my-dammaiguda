@@ -1,8 +1,8 @@
 [phases.setup]
-nixPkgs = ["nodejs_18", "yarn"]
+nixPkgs = ["nodejs_20", "yarn"]
 
 [phases.install]
-cmds = ["yarn install"]
+cmds = ["yarn install --ignore-engines"]
 
 [phases.build]
 cmds = ["CI=false DISABLE_ESLINT_PLUGIN=true yarn build"]
